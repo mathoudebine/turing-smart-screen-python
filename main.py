@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C display
+# https://github.com/mathoudebine/turing-smart-screen-python
+
 import struct
 from time import sleep
 import serial  # Install pyserial : pip install pyserial
@@ -10,6 +13,7 @@ COM_PORT = "/dev/ttyACM1"
 
 DISPLAY_WIDTH = 320
 DISPLAY_HEIGHT = 480
+
 
 class Command:
     RESET = 101
@@ -83,21 +87,26 @@ def DisplayText(ser, text, x=0, y=0,
                 font="roboto/Roboto-Regular.ttf",
                 font_size=20,
                 font_color=(0, 0, 0),
-                background_color=(255, 255, 255)):
+                background_color=(255, 255, 255),
+                background_image=None):
     # Convert text to bitmap using PIL and display it
+    # Provide the background image path to display text with transparent background
 
-    # The text bitmap is created with max width/height by default
-    # Note : alpha component from RGBA is not supported by the display
-    text_image = Image.new('RGB', (DISPLAY_WIDTH, DISPLAY_HEIGHT), background_color)
+    if background_image is None:
+        # A text bitmap is created with max width/height by default : text with solid background
+        text_image = Image.new('RGB', (DISPLAY_WIDTH, DISPLAY_HEIGHT), background_color)
+    else:
+        # The text bitmap is created from provided background image : text with transparent background
+        text_image = Image.open(background_image)
 
     # Draw text with specified color & font
     font = ImageFont.truetype("./res/fonts/" + font, font_size)
     d = ImageDraw.Draw(text_image)
-    d.text((0, 0), text, font=font, fill=font_color)
+    d.text((x, y), text, font=font, fill=font_color)
 
-    # Crop text bitmap to the size of the text
+    # Crop text bitmap to keep only the text
     text_width, text_height = d.textsize(text, font=font)
-    text_image = text_image.crop((0, 0, text_width, text_height))
+    text_image = text_image.crop((x, y, x + text_width, y + text_height))
 
     DisplayPILImage(ser, text_image, x, y)
 
@@ -117,11 +126,17 @@ if __name__ == "__main__":
 
     # Display sample text
     DisplayText(lcd_comm, "Basic text", 50, 100)
-    
-    DisplayText(lcd_comm, "Custom text", 5, 150,
-                font="roboto/Roboto-BoldItalic.ttf",
-                font_size=40,
+
+    DisplayText(lcd_comm, "Custom italic text", 5, 150,
+                font="roboto/Roboto-Italic.ttf",
+                font_size=30,
                 font_color=(0, 0, 255),
                 background_color=(255, 255, 0))
+
+    DisplayText(lcd_comm, "Transparent bold text", 5, 300,
+                font="roboto/Roboto-Bold.ttf",
+                font_size=30,
+                font_color=(255, 255, 255),
+                background_image="res/example.png")
 
     lcd_comm.close()
