@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C display
 # https://github.com/mathoudebine/turing-smart-screen-python
-
+import signal
+from datetime import datetime
 import struct
 from time import sleep
 import serial  # Install pyserial : pip install pyserial
 from PIL import Image, ImageDraw, ImageFont  # Install PIL or Pillow
 
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
-COM_PORT = "/dev/ttyACM1"
+COM_PORT = "/dev/ttyACM0"
 # COM_PORT = "COM5"
 
 DISPLAY_WIDTH = 320
@@ -60,19 +61,26 @@ def DisplayPILImage(ser, image, x, y):
     image_height = image.size[1]
     image_width = image.size[0]
 
-    SendReg(ser, Command.DISPLAY_BITMAP, x, y, image_width - 1, image_height - 1)
+    SendReg(ser, Command.DISPLAY_BITMAP, x, y, x + image_width - 1, y + image_height - 1)
 
     pix = image.load()
+    line = bytes()
     for h in range(image_height):
-        line = bytes()
         for w in range(image_width):
-            if w < image_width:
-                R = pix[w, h][0] >> 3
-                G = pix[w, h][1] >> 2
-                B = pix[w, h][2] >> 3
+            R = pix[w, h][0] >> 3
+            G = pix[w, h][1] >> 2
+            B = pix[w, h][2] >> 3
 
-                rgb = (R << 11) | (G << 5) | B
-                line += struct.pack('H', rgb)
+            rgb = (R << 11) | (G << 5) | B
+            line += struct.pack('H', rgb)
+
+            # Send image data by multiple of DISPLAY_WIDTH bytes
+            if len(line) >= DISPLAY_WIDTH*4:
+                ser.write(line)
+                line = bytes()
+
+    # Write last line if needed
+    if len(line) > 0:
         ser.write(line)
 
     sleep(0.01)  # Wait 10 ms after picture display
@@ -111,7 +119,19 @@ def DisplayText(ser, text, x=0, y=0,
     DisplayPILImage(ser, text_image, x, y)
 
 
+stop = False
+
 if __name__ == "__main__":
+
+    def sighandler(signum, frame):
+        global stop
+        stop = True
+
+    # Set the signal handlers, to send a complete frame to the LCD before exit
+    signal.signal(signal.SIGINT, sighandler)
+    signal.signal(signal.SIGQUIT, sighandler)
+    signal.signal(signal.SIGTERM, sighandler)
+
     # Do not change COM port settings unless you know what you are doing
     lcd_comm = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
 
@@ -142,10 +162,18 @@ if __name__ == "__main__":
                 background_image="res/example.png")
 
     # Display text that overflows
-    DisplayText(lcd_comm, "Text overflow!", 5, 450,
+    DisplayText(lcd_comm, "Text overflow!", 5, 430,
                 font="roboto/Roboto-Bold.ttf",
                 font_size=60,
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
+
+    # Display the current time as fast as possible
+    while not stop:
+        DisplayText(lcd_comm, str(datetime.now().time()), 160, 2,
+                    font="roboto/Roboto-Bold.ttf",
+                    font_size=20,
+                    font_color=(255, 0, 0),
+                    background_image="res/example.png")
 
     lcd_comm.close()
