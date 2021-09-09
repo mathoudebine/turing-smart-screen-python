@@ -106,7 +106,7 @@ def DisplayText(ser, text, x=0, y=0,
 
     # Crop text bitmap to keep only the text
     text_width, text_height = d.textsize(text, font=font)
-    text_image = text_image.crop((x, y, x + text_width, y + text_height))
+    text_image = text_image.crop(box=(x, y, min(x + text_width, DISPLAY_WIDTH), min(y + text_height, DISPLAY_HEIGHT)))
 
     DisplayPILImage(ser, text_image, x, y)
 
@@ -127,15 +127,24 @@ if __name__ == "__main__":
     # Display sample text
     DisplayText(lcd_comm, "Basic text", 50, 100)
 
+    # Display custom text with solid background
     DisplayText(lcd_comm, "Custom italic text", 5, 150,
                 font="roboto/Roboto-Italic.ttf",
                 font_size=30,
                 font_color=(0, 0, 255),
                 background_color=(255, 255, 0))
 
+    # Display custom text with transparent background
     DisplayText(lcd_comm, "Transparent bold text", 5, 300,
                 font="roboto/Roboto-Bold.ttf",
                 font_size=30,
+                font_color=(255, 255, 255),
+                background_image="res/example.png")
+
+    # Display text that overflows
+    DisplayText(lcd_comm, "Text overflow!", 5, 450,
+                font="roboto/Roboto-Bold.ttf",
+                font_size=60,
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
 
