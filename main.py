@@ -1,12 +1,22 @@
+#!/usr/bin/env python3
 import struct
 from time import sleep
-
 import serial  # Install pyserial : pip install pyserial
 from PIL import Image  # Install PIL or Pillow
 
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
 COM_PORT = "/dev/ttyACM1"
 # COM_PORT = "COM5"
+
+
+class Command:
+    RESET = 101
+    CLEAR = 102
+    SCREEN_OFF = 108
+    SCREEN_ON = 109
+    SET_BRIGHTNESS = 110
+    DISPLAY_BITMAP = 197
+
 
 def SendReg(ser, reg, x, y, ex, ey):
     byteBuffer = bytearray(6)
@@ -20,24 +30,24 @@ def SendReg(ser, reg, x, y, ex, ey):
 
 
 def Reset(ser):
-    SendReg(ser, 101, 0, 0, 0, 0)
+    SendReg(ser, Command.RESET, 0, 0, 0, 0)
 
 
 def Clear(ser):
-    SendReg(ser, 102, 0, 0, 0, 0)
+    SendReg(ser, Command.CLEAR, 0, 0, 0, 0)
 
 
 def ScreenOff(ser):
-    SendReg(ser, 108, 0, 0, 0, 0)
+    SendReg(ser, Command.SCREEN_OFF, 0, 0, 0, 0)
 
 
 def ScreenOn(ser):
-    SendReg(ser, 109, 0, 0, 0, 0)
+    SendReg(ser, Command.SCREEN_ON, 0, 0, 0, 0)
 
 
 def SetBrightness(ser, level):
-    # Level : 0 (bright) - 255 (darkest)
-    SendReg(ser, 110, level, 0, 0, 0)
+    # Level : 0 (brightest) - 255 (darkest)
+    SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
 def PrintImage(ser, image):
@@ -45,7 +55,7 @@ def PrintImage(ser, image):
     image_height = im.size[1]
     image_width = im.size[0]
 
-    SendReg(ser, 197, 0, 0, image_width - 1, image_height - 1)
+    SendReg(ser, Command.DISPLAY_BITMAP, 0, 0, image_width - 1, image_height - 1)
 
     pix = im.load()
     for h in range(image_height):
@@ -64,15 +74,16 @@ def PrintImage(ser, image):
 
 
 if __name__ == "__main__":
-    ser = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
+    # Do not change COM port settings unless you know what you are doing
+    lcd_comm = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
 
     # Clear screen (blank)
-    Clear(ser)
+    Clear(lcd_comm)
 
     # Set brightness to max value
-    SetBrightness(ser, 0)
+    SetBrightness(lcd_comm, 0)
 
     # Display sample picture
-    PrintImage(ser, "res/example.png")
+    PrintImage(lcd_comm, "res/example.png")
 
-    ser.close()
+    lcd_comm.close()
