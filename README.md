@@ -12,10 +12,11 @@ This is a 3.5" USB-C display that shows as a serial port once connected.
 It cannot be seen by the operating system as a monitor but picture can be displayed on it.
 
 A Windows-only software is [available here](https://translate.google.com/translate?sl=auto&u=https://gitee.com/emperg/usblcd/raw/master/dev0/realse.ini) to manage this display.
-This software allows creating themes to display your computer sensors on the display, but does not offer a simple way to display custom pictures.
+This software allows creating themes to display your computer sensors on the screen, but does not offer a simple way to display custom pictures or text.
 
 This Python script has been created to do some simple operations on this display like :
 - **Display custom picture**
+- **Display text**
 - Clear the screen (blank)
 - Turn the screen on/off
 - Display soft reset
