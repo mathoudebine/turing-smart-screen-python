@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C display
 # https://github.com/mathoudebine/turing-smart-screen-python
+
+import os
 import signal
-from datetime import datetime
 import struct
+from datetime import datetime
 from time import sleep
+
 import serial  # Install pyserial : pip install pyserial
 from PIL import Image, ImageDraw, ImageFont  # Install PIL or Pillow
 
@@ -129,8 +132,10 @@ if __name__ == "__main__":
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
-    signal.signal(signal.SIGQUIT, sighandler)
     signal.signal(signal.SIGTERM, sighandler)
+    is_posix = os.name == 'posix'
+    if is_posix:
+        signal.signal(signal.SIGQUIT, sighandler)
 
     # Do not change COM port settings unless you know what you are doing
     lcd_comm = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
