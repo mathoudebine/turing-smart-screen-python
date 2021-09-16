@@ -122,6 +122,40 @@ def DisplayText(ser, text, x=0, y=0,
     DisplayPILImage(ser, text_image, x, y)
 
 
+def DisplayProgressBar(ser, x, y, width, height, min_value=0, max_value=100, value=50,
+                       bar_color=(0, 0, 0),
+                       bar_outline=True,
+                       background_color=(255, 255, 255),
+                       background_image=None):
+    # Generate a progress bar and display it
+    # Provide the background image path to display progress bar with transparent background
+
+    assert x + width <= DISPLAY_WIDTH, 'Progress bar width exceeds display width'
+    assert y + height <= DISPLAY_HEIGHT, 'Progress bar height exceeds display height'
+    assert min_value <= value <= max_value, 'Progress bar value shall be between min and max'
+
+    if background_image is None:
+        # A bitmap is created with solid background
+        bar_image = Image.new('RGB', (width, height), background_color)
+    else:
+        # A bitmap is created from provided background image
+        bar_image = Image.open(background_image)
+
+        # Crop bitmap to keep only the progress bar background
+        bar_image = bar_image.crop(box=(x, y, x + width, y + height))
+
+    # Draw progress bar
+    bar_filled_width = value / (max_value - min_value) * width
+    draw = ImageDraw.Draw(bar_image)
+    draw.rectangle([0, 0, bar_filled_width, height], fill=bar_color, outline=bar_color)
+
+    # Draw outline
+    if bar_outline:
+        draw.rectangle([0, 0, width, height], fill=None, outline=bar_color)
+
+    DisplayPILImage(ser, bar_image, x, y)
+
+
 stop = False
 
 if __name__ == "__main__":
@@ -173,12 +207,21 @@ if __name__ == "__main__":
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
 
-    # Display the current time as fast as possible
+    # Display the current time and a progress bar as fast as possible
+    bar_value = 0
     while not stop:
         DisplayText(lcd_comm, str(datetime.now().time()), 160, 2,
                     font="roboto/Roboto-Bold.ttf",
                     font_size=20,
                     font_color=(255, 0, 0),
                     background_image="res/example.png")
+
+        DisplayProgressBar(lcd_comm, 0, 100,
+                           width=DISPLAY_WIDTH, height=50,
+                           min_value=0, max_value=100, value=bar_value,
+                           bar_color=(255, 255, 0), bar_outline=True,
+                           background_image="res/example.png")
+
+        bar_value = (bar_value + 1) % 100
 
     lcd_comm.close()
