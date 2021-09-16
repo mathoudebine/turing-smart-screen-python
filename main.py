@@ -204,7 +204,7 @@ if __name__ == "__main__":
 
     # Display custom text with transparent background
     DisplayText(lcd_comm, "Transparent bold text", 5, 300,
-                font="roboto/Roboto-Bold.ttf",
+                font="geforce/GeForce-Bold.ttf",
                 font_size=30,
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
