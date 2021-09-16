@@ -78,7 +78,7 @@ def DisplayPILImage(ser, image, x, y):
             line += struct.pack('H', rgb)
 
             # Send image data by multiple of DISPLAY_WIDTH bytes
-            if len(line) >= DISPLAY_WIDTH*4:
+            if len(line) >= DISPLAY_WIDTH * 4:
                 ser.write(line)
                 line = bytes()
 
@@ -163,6 +163,7 @@ if __name__ == "__main__":
     def sighandler(signum, frame):
         global stop
         stop = True
+
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
