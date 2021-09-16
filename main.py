@@ -28,7 +28,7 @@ class Command:
     DISPLAY_BITMAP = 197
 
 
-def SendReg(ser, cmd, x, y, ex, ey):
+def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
     byteBuffer = bytearray(6)
     byteBuffer[0] = (x >> 2)
     byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
@@ -39,30 +39,34 @@ def SendReg(ser, cmd, x, y, ex, ey):
     ser.write(bytes(byteBuffer))
 
 
-def Reset(ser):
+def Reset(ser: serial.Serial):
     SendReg(ser, Command.RESET, 0, 0, 0, 0)
 
 
-def Clear(ser):
+def Clear(ser: serial.Serial):
     SendReg(ser, Command.CLEAR, 0, 0, 0, 0)
 
 
-def ScreenOff(ser):
+def ScreenOff(ser: serial.Serial):
     SendReg(ser, Command.SCREEN_OFF, 0, 0, 0, 0)
 
 
-def ScreenOn(ser):
+def ScreenOn(ser: serial.Serial):
     SendReg(ser, Command.SCREEN_ON, 0, 0, 0, 0)
 
 
-def SetBrightness(ser, level):
+def SetBrightness(ser: serial.Serial, level: int):
     # Level : 0 (brightest) - 255 (darkest)
+    assert 255 >= level >= 0, 'Brightness level must be [0-255]'
     SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
-def DisplayPILImage(ser, image, x, y):
+def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
     image_height = image.size[1]
     image_width = image.size[0]
+
+    assert image_height > 0, 'Image width must be > 0'
+    assert image_width > 0, 'Image height must be > 0'
 
     SendReg(ser, Command.DISPLAY_BITMAP, x, y, x + image_width - 1, y + image_height - 1)
 
@@ -78,7 +82,7 @@ def DisplayPILImage(ser, image, x, y):
             line += struct.pack('H', rgb)
 
             # Send image data by multiple of DISPLAY_WIDTH bytes
-            if len(line) >= DISPLAY_WIDTH*4:
+            if len(line) >= DISPLAY_WIDTH * 8:
                 ser.write(line)
                 line = bytes()
 
@@ -89,19 +93,22 @@ def DisplayPILImage(ser, image, x, y):
     sleep(0.01)  # Wait 10 ms after picture display
 
 
-def DisplayBitmap(ser, bitmap_path, x=0, y=0):
+def DisplayBitmap(ser: serial.Serial, bitmap_path: str, x=0, y=0):
     image = Image.open(bitmap_path)
     DisplayPILImage(ser, image, x, y)
 
 
-def DisplayText(ser, text, x=0, y=0,
+def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
                 font="roboto/Roboto-Regular.ttf",
                 font_size=20,
                 font_color=(0, 0, 0),
                 background_color=(255, 255, 255),
-                background_image=None):
+                background_image: str = None):
     # Convert text to bitmap using PIL and display it
     # Provide the background image path to display text with transparent background
+
+    assert len(text) > 0, 'Text must not be empty'
+    assert font_size > 0, "Font size must be > 0"
 
     if background_image is None:
         # A text bitmap is created with max width/height by default : text with solid background
@@ -122,6 +129,41 @@ def DisplayText(ser, text, x=0, y=0,
     DisplayPILImage(ser, text_image, x, y)
 
 
+def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: int, min_value=0, max_value=100,
+                       value=50,
+                       bar_color=(0, 0, 0),
+                       bar_outline=True,
+                       background_color=(255, 255, 255),
+                       background_image: str = None):
+    # Generate a progress bar and display it
+    # Provide the background image path to display progress bar with transparent background
+
+    assert x + width <= DISPLAY_WIDTH, 'Progress bar width exceeds display width'
+    assert y + height <= DISPLAY_HEIGHT, 'Progress bar height exceeds display height'
+    assert min_value <= value <= max_value, 'Progress bar value shall be between min and max'
+
+    if background_image is None:
+        # A bitmap is created with solid background
+        bar_image = Image.new('RGB', (width, height), background_color)
+    else:
+        # A bitmap is created from provided background image
+        bar_image = Image.open(background_image)
+
+        # Crop bitmap to keep only the progress bar background
+        bar_image = bar_image.crop(box=(x, y, x + width, y + height))
+
+    # Draw progress bar
+    bar_filled_width = value / (max_value - min_value) * width
+    draw = ImageDraw.Draw(bar_image)
+    draw.rectangle([0, 0, bar_filled_width-1, height-1], fill=bar_color, outline=bar_color)
+
+    if bar_outline:
+        # Draw outline
+        draw.rectangle([0, 0, width-1, height-1], fill=None, outline=bar_color)
+
+    DisplayPILImage(ser, bar_image, x, y)
+
+
 stop = False
 
 if __name__ == "__main__":
@@ -129,6 +171,7 @@ if __name__ == "__main__":
     def sighandler(signum, frame):
         global stop
         stop = True
+
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
@@ -173,12 +216,27 @@ if __name__ == "__main__":
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
 
-    # Display the current time as fast as possible
+    # Display the current time and some progress bars as fast as possible
+    bar_value = 0
     while not stop:
         DisplayText(lcd_comm, str(datetime.now().time()), 160, 2,
                     font="roboto/Roboto-Bold.ttf",
                     font_size=20,
                     font_color=(255, 0, 0),
                     background_image="res/example.png")
+
+        DisplayProgressBar(lcd_comm, 10, 40,
+                           width=140, height=30,
+                           min_value=0, max_value=100, value=bar_value,
+                           bar_color=(255, 255, 0), bar_outline=True,
+                           background_image="res/example.png")
+
+        DisplayProgressBar(lcd_comm, 160, 40,
+                           width=140, height=30,
+                           min_value=0, max_value=19, value=bar_value % 20,
+                           bar_color=(0, 255, 0), bar_outline=False,
+                           background_image="res/example.png")
+
+        bar_value = (bar_value + 2) % 101
 
     lcd_comm.close()
