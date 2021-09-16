@@ -28,7 +28,7 @@ class Command:
     DISPLAY_BITMAP = 197
 
 
-def SendReg(ser, cmd, x, y, ex, ey):
+def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
     byteBuffer = bytearray(6)
     byteBuffer[0] = (x >> 2)
     byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
@@ -39,28 +39,28 @@ def SendReg(ser, cmd, x, y, ex, ey):
     ser.write(bytes(byteBuffer))
 
 
-def Reset(ser):
+def Reset(ser: serial.Serial):
     SendReg(ser, Command.RESET, 0, 0, 0, 0)
 
 
-def Clear(ser):
+def Clear(ser: serial.Serial):
     SendReg(ser, Command.CLEAR, 0, 0, 0, 0)
 
 
-def ScreenOff(ser):
+def ScreenOff(ser: serial.Serial):
     SendReg(ser, Command.SCREEN_OFF, 0, 0, 0, 0)
 
 
-def ScreenOn(ser):
+def ScreenOn(ser: serial.Serial):
     SendReg(ser, Command.SCREEN_ON, 0, 0, 0, 0)
 
 
-def SetBrightness(ser, level):
+def SetBrightness(ser: serial.Serial, level: int):
     # Level : 0 (brightest) - 255 (darkest)
     SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
-def DisplayPILImage(ser, image, x, y):
+def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
     image_height = image.size[1]
     image_width = image.size[0]
 
@@ -89,17 +89,17 @@ def DisplayPILImage(ser, image, x, y):
     sleep(0.01)  # Wait 10 ms after picture display
 
 
-def DisplayBitmap(ser, bitmap_path, x=0, y=0):
+def DisplayBitmap(ser: serial.Serial, bitmap_path: str, x=0, y=0):
     image = Image.open(bitmap_path)
     DisplayPILImage(ser, image, x, y)
 
 
-def DisplayText(ser, text, x=0, y=0,
+def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
                 font="roboto/Roboto-Regular.ttf",
                 font_size=20,
                 font_color=(0, 0, 0),
                 background_color=(255, 255, 255),
-                background_image=None):
+                background_image: str = None):
     # Convert text to bitmap using PIL and display it
     # Provide the background image path to display text with transparent background
 
@@ -122,11 +122,12 @@ def DisplayText(ser, text, x=0, y=0,
     DisplayPILImage(ser, text_image, x, y)
 
 
-def DisplayProgressBar(ser, x, y, width, height, min_value=0, max_value=100, value=50,
+def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: int, min_value=0, max_value=100,
+                       value=50,
                        bar_color=(0, 0, 0),
                        bar_outline=True,
                        background_color=(255, 255, 255),
-                       background_image=None):
+                       background_image: str = None):
     # Generate a progress bar and display it
     # Provide the background image path to display progress bar with transparent background
 
