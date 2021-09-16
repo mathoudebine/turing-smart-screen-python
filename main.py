@@ -57,12 +57,16 @@ def ScreenOn(ser: serial.Serial):
 
 def SetBrightness(ser: serial.Serial, level: int):
     # Level : 0 (brightest) - 255 (darkest)
+    assert 255 >= level >= 0, 'Brightness level must be [0-255]'
     SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
 def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
     image_height = image.size[1]
     image_width = image.size[0]
+
+    assert image_height > 0, 'Image width must be > 0'
+    assert image_width > 0, 'Image height must be > 0'
 
     SendReg(ser, Command.DISPLAY_BITMAP, x, y, x + image_width - 1, y + image_height - 1)
 
@@ -78,7 +82,7 @@ def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
             line += struct.pack('H', rgb)
 
             # Send image data by multiple of DISPLAY_WIDTH bytes
-            if len(line) >= DISPLAY_WIDTH * 4:
+            if len(line) >= DISPLAY_WIDTH * 8:
                 ser.write(line)
                 line = bytes()
 
@@ -102,6 +106,9 @@ def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
                 background_image: str = None):
     # Convert text to bitmap using PIL and display it
     # Provide the background image path to display text with transparent background
+
+    assert len(text) > 0, 'Text must not be empty'
+    assert font_size > 0, "Font size must be > 0"
 
     if background_image is None:
         # A text bitmap is created with max width/height by default : text with solid background
@@ -148,11 +155,11 @@ def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: i
     # Draw progress bar
     bar_filled_width = value / (max_value - min_value) * width
     draw = ImageDraw.Draw(bar_image)
-    draw.rectangle([0, 0, bar_filled_width, height], fill=bar_color, outline=bar_color)
+    draw.rectangle([0, 0, bar_filled_width-1, height-1], fill=bar_color, outline=bar_color)
 
-    # Draw outline
     if bar_outline:
-        draw.rectangle([0, 0, width, height], fill=None, outline=bar_color)
+        # Draw outline
+        draw.rectangle([0, 0, width-1, height-1], fill=None, outline=bar_color)
 
     DisplayPILImage(ser, bar_image, x, y)
 
@@ -209,7 +216,7 @@ if __name__ == "__main__":
                 font_color=(255, 255, 255),
                 background_image="res/example.png")
 
-    # Display the current time and a progress bar as fast as possible
+    # Display the current time and some progress bars as fast as possible
     bar_value = 0
     while not stop:
         DisplayText(lcd_comm, str(datetime.now().time()), 160, 2,
@@ -218,12 +225,18 @@ if __name__ == "__main__":
                     font_color=(255, 0, 0),
                     background_image="res/example.png")
 
-        DisplayProgressBar(lcd_comm, 0, 100,
-                           width=DISPLAY_WIDTH, height=50,
+        DisplayProgressBar(lcd_comm, 10, 40,
+                           width=140, height=30,
                            min_value=0, max_value=100, value=bar_value,
                            bar_color=(255, 255, 0), bar_outline=True,
                            background_image="res/example.png")
 
-        bar_value = (bar_value + 1) % 100
+        DisplayProgressBar(lcd_comm, 160, 40,
+                           width=140, height=30,
+                           min_value=0, max_value=19, value=bar_value % 20,
+                           bar_color=(0, 255, 0), bar_outline=False,
+                           background_image="res/example.png")
+
+        bar_value = (bar_value + 2) % 101
 
     lcd_comm.close()
