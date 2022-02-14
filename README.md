@@ -14,7 +14,8 @@ It cannot be seen by the operating system as a monitor but picture can be displa
 A Windows-only software is [available in Chinese](https://lgb123-1253504678.cos.ap-beijing.myqcloud.com/35inch.rar) or [in English](https://lgb123-1253504678.cos.ap-beijing.myqcloud.com/35inchENG.rar) to manage this display.
 This software allows creating themes to display your computer sensors on the screen, but does not offer a simple way to display custom pictures or text.
 
-This Python script has been created to do some simple operations on this display like :
+## Features
+This Python script can do some simple operations on the Turing display like :
 - **Display custom picture**
 - **Display text**
 - **Display progress bar**
@@ -22,3 +23,17 @@ This Python script has been created to do some simple operations on this display
 - Turn the screen on/off
 - Display soft reset
 - Set brightness
+
+Not yet implemented:
+- Screen rotation
+
+## Getting started
+_Python knowledges recommended._  
+Download the `main.py` file from this project  
+Download and install latest Python 3.x for your OS: https://www.python.org/downloads/  
+Plug your Turing display to your computer (install the drivers if on Windows)  
+Open the `main.py` file and edit the [`COM_PORT`](https://github.com/mathoudebine/turing-smart-screen-python/blob/deb0a60b772f2c5acef377f13b959632ca649f9f/main.py#L15)  variable to the port used by the display  
+Open a terminal and run `python3 main.py` or `py -3 main.py` depending on your OS  
+You should see animated content on your Turing display!  
+
+You can then edit the `main.py` file to change the content displayed, or use this file as a Python module for your personal Python project
