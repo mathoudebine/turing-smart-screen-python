@@ -1,7 +1,7 @@
 # turing-smart-screen-python
 
 ---
-**⚠️ DISCLAIMER - PLEASE READ ⚠️**
+### ⚠️ DISCLAIMER - PLEASE READ ⚠️
 
 This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing brand**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing products. All product and company names are the registered trademarks of their original owners.
 
