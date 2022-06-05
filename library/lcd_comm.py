@@ -7,13 +7,13 @@ CONFIG_DATA = config.CONFIG_DATA
 
 
 class Command:
-    RESET = 101
-    CLEAR = 102
-    SCREEN_OFF = 108
-    SCREEN_ON = 109
-    SET_BRIGHTNESS = 110
-    DISPLAY_BITMAP = 197
-    TO_BLACK = 103  # ?
+    RESET = 101  # Resets the display
+    CLEAR = 102  # Clears the display to a white screen
+    TO_BLACK = 103  # Makes the screen go black. NOT TESTED
+    SCREEN_OFF = 108  # Turns the screen off
+    SCREEN_ON = 109  # Turns the screen on
+    SET_BRIGHTNESS = 110  # Sets the screens brightness
+    DISPLAY_BITMAP = 197  # Displays an image on the screen
 
 
 def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):

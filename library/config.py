@@ -5,6 +5,7 @@ import os
 import sys
 import serial
 import queue
+from serial.tools.list_ports import comports
 
 
 def load_yaml(configfile):
@@ -22,7 +23,28 @@ def load_yaml(configfile):
         return yamlconfig
 
 
+def AutoDetectCommPort():
+    comports = serial.tools.list_ports.comports()
+    auto_comport = None
+
+    for comport in comports:
+        if comport.serial_number == CONFIG_DATA['display']['SERIAL_NUMBER']:
+            auto_comport = comport.device
+
+    return auto_comport
+
+
+
 PATH = sys.path[0]
 CONFIG_DATA = load_yaml("config.yaml")
-lcd_comm = serial.Serial(CONFIG_DATA["config"]["COM_PORT"], 115200, timeout=1, rtscts=1)
+
+if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
+    lcd_com_port = AutoDetectCommPort()
+    lcd_comm = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+    print(f"Auto detected comm port: {lcd_com_port}")
+else:
+    lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
+    print(f"Static comm port: {lcd_com_port}")
+    lcd_comm = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+
 update_queue = queue.Queue()
