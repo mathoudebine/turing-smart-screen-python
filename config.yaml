@@ -1,0 +1,232 @@
+---
+config:
+  # Configuration values to set up basic communication
+  # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
+  # COM_PORT: "/dev/ttyACM0"
+  # COM_PORT: "COM3"
+  COM_PORT: "AUTO"
+display:
+  # Display size
+  DISPLAY_WIDTH: 320
+  DISPLAY_HEIGHT: 480
+  # Display Brightness
+  # Set this as the desired %, 0 being completely dark and 100 being max brightness
+  BRIGHTNESS: 10
+  # Serial Number - Used for auto-detecting the display
+  SERIAL_NUMBER: USB35INCHIPSV2
+static_images:
+  # Specify what static images we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Images are drawn in the order they are listed below, the top image will be drawn first (so places images back to front)
+  # IMAGE_NAME:
+  #   PATH:
+  #   X:
+  #   Y:
+  #   WIDTH:
+  #   HEIGHT:
+  BACKGROUND:
+    # PATH: res/backgrounds/600px_solid_Black.png
+    PATH: res/themes/Terminal_theme_background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+static_text:
+  # Specify what static text we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Text are drawn in the order they are listed below, the top text will be drawn first (so places text back to front)
+  # IMAGE_NAME:
+  #   TEXT:
+  #   X:
+  #   Y:
+  #   FONT:
+  #   FONT_SIZE:
+  #   FONT_COLOR: 0, 0, 0
+  #   BACKGROUND_COLOR=255, 255, 255
+  #   BACKGROUND_IMAGE
+  BASICTEXT:
+   TEXT: Basic text
+   X: 50
+   Y: 100
+  CUSTOMITALICTEXTSOLIDBACKGROUND:
+   TEXT: Custom italic text
+   X: 5
+   Y: 150
+   FONT: roboto/Roboto-Italic.ttf
+   FONT_SIZE: 30
+   FONT_COLOR: 0, 0, 255
+   BACKGROUND_COLOR: 255, 255, 0
+  CUSTOMTEXTTRANSPARENTBACKGROUND:
+   TEXT: Transparent bold text
+   X: 5
+   Y: 300
+   FONT: geforce/GeForce-Bold.ttf
+   FONT_SIZE: 30
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: res/example.png
+  TEXTOVERFLOWS:
+   TEXT: Text overflow!
+   X: 5
+   Y: 430
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 60
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: res/example.png
+STATS:
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        X: 100
+        Y: 20
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: res/backgrounds/600px_solid_Black.png
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 71
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
+    FREQUENCY:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        X: 100
+        Y: 87
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+    LOAD:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      ONE:
+        TEXT:
+          SHOW: True
+          X: 110
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIVE:
+        TEXT:
+          SHOW: TRUE
+          X: 183
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIFTEEN:
+        TEXT:
+          SHOW: TRUE
+          X: 265
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+  GPU:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 197
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
+    MEMORY:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 215
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: TRUE
+        X: 115
+        Y: 231
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+  MEMORY:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 5
+    SWAP:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 285
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 303
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
+  DISK:
+    INTERVAL: 10
+    GRAPH:
+      SHOW: True
+      X: 115
+      Y: 357
+      WIDTH: 178
+      HEIGHT: 13
+      MIN_VALUE: 0
+      MAX_VALUE: 100
+      BAR_COLOR: 255, 0, 0
+      BAR_OUTLINE: False
+      BACKGROUND_COLOR: 0, 0, 0
+      # BACKGROUND_IMAGE: res/progressbars/320px-Green_Progress_bar_100.png
