@@ -23,7 +23,7 @@ def load_yaml(configfile):
         return yamlconfig
 
 
-def AutoDetectCommPort():
+def auto_detect_com_port():
     comports = serial.tools.list_ports.comports()
     auto_comport = None
 
@@ -34,12 +34,11 @@ def AutoDetectCommPort():
     return auto_comport
 
 
-
 PATH = sys.path[0]
 CONFIG_DATA = load_yaml("config.yaml")
 
 if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
-    lcd_com_port = AutoDetectCommPort()
+    lcd_com_port = auto_detect_com_port()
     lcd_comm = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
     print(f"Auto detected comm port: {lcd_com_port}")
 else:

@@ -34,7 +34,7 @@ def WriteData(ser, byteBuffer):
     try:
         ser.write(bytes(byteBuffer))
     except serial.serialutil.SerialTimeoutException:
-        # We timed out trying to write to our device, slow things down.
+        # We timed-out trying to write to our device, slow things down.
         print("(Write data) Too fast! Slow down!")
 
 
@@ -46,7 +46,7 @@ def WriteLine(ser, line):
     try:
         ser.write(line)
     except serial.serialutil.SerialTimeoutException:
-        # We timed out trying to write to our device, slow things down.
+        # We timed-out trying to write to our device, slow things down.
         print("(Write line) Too fast! Slow down!")
 
 
@@ -77,7 +77,13 @@ def SetBrightness(ser: serial.Serial, level: int = CONFIG_DATA["display"]["BRIGH
     SendReg(ser, Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
 
-def DisplayPILImage(ser: serial.Serial, image: Image, x: int = 0, y: int = 0, image_width: int = 0, image_height: int = 0):
+def DisplayPILImage(
+        ser: serial.Serial,
+        image: Image,
+        x: int = 0, y: int = 0,
+        image_width: int = 0,
+        image_height: int = 0
+):
     # If the image height/width isn't provided, use the native image size
     if not image_height:
         image_height = image.size[1]
@@ -147,7 +153,11 @@ def DisplayText(
 
     if background_image is None:
         # A text bitmap is created with max width/height by default : text with solid background
-        text_image = Image.new('RGB', (CONFIG_DATA["display"]["DISPLAY_WIDTH"], CONFIG_DATA["display"]["DISPLAY_HEIGHT"]), background_color)
+        text_image = Image.new(
+            'RGB',
+            (CONFIG_DATA["display"]["DISPLAY_WIDTH"], CONFIG_DATA["display"]["DISPLAY_HEIGHT"]),
+            background_color
+        )
     else:
         # The text bitmap is created from provided background image : text with transparent background
         text_image = Image.open(background_image)
@@ -159,7 +169,11 @@ def DisplayText(
 
     # Crop text bitmap to keep only the text
     text_width, text_height = d.textsize(text, font=font)
-    text_image = text_image.crop(box=(x, y, min(x + text_width, CONFIG_DATA["display"]["DISPLAY_WIDTH"]), min(y + text_height, CONFIG_DATA["display"]["DISPLAY_HEIGHT"])))
+    text_image = text_image.crop(box=(
+        x, y,
+        min(x + text_width, CONFIG_DATA["display"]["DISPLAY_WIDTH"]),
+        min(y + text_height, CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
+    ))
 
     DisplayPILImage(ser, text_image, x, y)
 

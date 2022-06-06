@@ -90,7 +90,6 @@ def GPUStats():
 @async_job("Memory_Stats")
 @schedule(timedelta(seconds=CONFIG_DATA['STATS']['MEMORY'].get("INTERVAL", None)).total_seconds())
 def MemoryStats():
-    queue = sched.scheduler.queue
     # print("Refresh memory stats")
     stats.Memory.stats()
 
