@@ -12,7 +12,7 @@ display:
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
   BRIGHTNESS: 10
-  # Serial Number - Used for auto detecting the display
+  # Serial Number - Used for auto-detecting the display
   SERIAL_NUMBER: USB35INCHIPSV2
 static_images:
   # Specify what static images we want to show on the display

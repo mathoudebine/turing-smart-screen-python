@@ -1,5 +1,5 @@
-from library import config
 import library.lcd_comm as lcd
+from library import config
 
 CONFIG_DATA = config.CONFIG_DATA
 

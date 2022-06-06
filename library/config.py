@@ -1,10 +1,10 @@
 import logging
-
-import yaml
 import os
-import sys
-import serial
 import queue
+import sys
+
+import serial
+import yaml
 from serial.tools.list_ports import comports
 
 

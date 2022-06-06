@@ -1,9 +1,8 @@
+import GPUtil
 import psutil
+
 import library.config as config
 import library.lcd_comm as lcd
-import GPUtil
-import win32com.client
-
 
 CONFIG_DATA = config.CONFIG_DATA
 

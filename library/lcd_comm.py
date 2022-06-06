@@ -1,7 +1,9 @@
-from PIL import Image, ImageDraw, ImageFont
-from library import config
-import serial
 import struct
+
+import serial
+from PIL import Image, ImageDraw, ImageFont
+
+from library import config
 
 CONFIG_DATA = config.CONFIG_DATA
 

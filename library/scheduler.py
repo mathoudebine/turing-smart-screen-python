@@ -1,10 +1,11 @@
-import threading
 import sched
+import threading
 import time
 from datetime import timedelta
 from functools import wraps
-import library.stats as stats
+
 import library.config as config
+import library.stats as stats
 
 CONFIG_DATA = config.CONFIG_DATA
 

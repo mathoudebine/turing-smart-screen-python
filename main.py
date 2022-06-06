@@ -3,12 +3,12 @@
 # https://github.com/mathoudebine/turing-smart-screen-python
 
 import os
-import sys
 import signal
-from library.static_display import StaticDisplay
-import library.scheduler as scheduler
+import sys
 
+import library.scheduler as scheduler
 from library import config
+from library.static_display import StaticDisplay
 
 CONFIG_DATA = config.CONFIG_DATA
 stop = False
