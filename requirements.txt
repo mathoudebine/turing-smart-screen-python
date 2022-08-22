@@ -1,5 +1,5 @@
-Pillow==9.1.1
-pyserial==3.5
+Pillow~=9.2.0
+pyserial~=3.5
 PyYAML~=6.0
 psutil~=5.9.1
 GPUtil~=1.4.0

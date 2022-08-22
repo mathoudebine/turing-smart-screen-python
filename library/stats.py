@@ -172,7 +172,9 @@ class GPU:
                 background_color=CONFIG_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=CONFIG_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE", None)
             )
-
+    @staticmethod
+    def is_available():
+        return len(GPUtil.getGPUs()) > 0
 
 class Memory:
     @staticmethod

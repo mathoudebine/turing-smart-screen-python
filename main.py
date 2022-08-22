@@ -11,52 +11,44 @@ from library import config
 from library.static_display import StaticDisplay
 
 CONFIG_DATA = config.CONFIG_DATA
-stop = False
 
 if __name__ == "__main__":
 
     def sighandler(signum, frame):
-        global stop
-        stop = True
-
-    try:
-        # Set the signal handlers, to send a complete frame to the LCD before exit
-        signal.signal(signal.SIGINT, sighandler)
-        signal.signal(signal.SIGTERM, sighandler)
-        is_posix = os.name == 'posix'
-        if is_posix:
-            signal.signal(signal.SIGQUIT, sighandler)
-
-        # Initialize the display
-        StaticDisplay.initialize_display()
-
-        # Create all static images
-        StaticDisplay.display_static_images()
-
-        # Overlay Static Text
-        # StaticDisplay.display_static_text()
-
-        # Run our jobs that update data
-        import library.stats as stats
-        # while True:
-        #     stats.CPU.percentage()
-
-        scheduler.CPUPercentage()
-        scheduler.CPUFrequency()
-        scheduler.CPULoad()
-        scheduler.GPUStats()
-        scheduler.MemoryStats()
-        scheduler.DiskStats()
-        scheduler.QueueHandler()
-
-    except KeyboardInterrupt:
-
-        print('Keyboard interrupt received from user')
-
-        # Close communication with the screen
-        config.lcd_comm.close()
-
+        print("Caught signal ", str(signum), ", exiting...")
         try:
             sys.exit(0)
         except:
             os._exit(0)
+
+    # Set the signal handlers, to send a complete frame to the LCD before exit
+    signal.signal(signal.SIGINT, sighandler)
+    signal.signal(signal.SIGTERM, sighandler)
+    is_posix = os.name == 'posix'
+    if is_posix:
+        signal.signal(signal.SIGQUIT, sighandler)
+
+    # Initialize the display
+    StaticDisplay.initialize_display()
+
+    # Create all static images
+    StaticDisplay.display_static_images()
+
+    # Overlay Static Text
+    # StaticDisplay.display_static_text()
+
+    # Run our jobs that update data
+    import library.stats as stats
+
+    scheduler.CPUPercentage()
+    scheduler.CPUFrequency()
+    scheduler.CPULoad()
+    if stats.GPU.is_available():
+        scheduler.GPUStats()
+    else:
+        print("STATS: Your GPU is not supported yet")
+    scheduler.MemoryStats()
+    scheduler.DiskStats()
+    scheduler.QueueHandler()
+
+
