@@ -1,6 +1,11 @@
 # turing-smart-screen-python
 
+| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0 alpha 3 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-alpha.3) or the `feature/system-monitoring` branch!  <br><img src="https://user-images.githubusercontent.com/38615348/185988100-c191201f-7b65-4fb6-8677-bbf412abb0d8.jpg" width="400" />  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._ |
+
 ---
+
 ### ⚠️ DISCLAIMER - PLEASE READ ⚠️
 
 This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing brand**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing products. All product and company names are the registered trademarks of their original owners.
