@@ -117,13 +117,13 @@ def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
         # The text bitmap is created from provided background image : text with transparent background
         text_image = Image.open(background_image)
 
-    # Draw text with specified color & font
+    # Draw text with specified color & font (also crop if text overflows display)
     font = ImageFont.truetype("./res/fonts/" + font, font_size)
     d = ImageDraw.Draw(text_image)
     d.text((x, y), text, font=font, fill=font_color)
 
     # Crop text bitmap to keep only the text
-    text_width, text_height = d.textsize(text, font=font)
+    left, top, text_width, text_height = d.textbbox((0,0), text, font=font)
     text_image = text_image.crop(box=(x, y, min(x + text_width, DISPLAY_WIDTH), min(y + text_height, DISPLAY_HEIGHT)))
 
     DisplayPILImage(ser, text_image, x, y)
