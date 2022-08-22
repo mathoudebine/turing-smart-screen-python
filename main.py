@@ -7,15 +7,12 @@ import signal
 import sys
 
 import library.scheduler as scheduler
-from library import config
 from library.static_display import StaticDisplay
-
-CONFIG_DATA = config.CONFIG_DATA
 
 if __name__ == "__main__":
 
     def sighandler(signum, frame):
-        print("Caught signal ", str(signum), ", exiting...")
+        print(" Caught signal ", str(signum), ", exiting...")
         try:
             sys.exit(0)
         except:
@@ -34,8 +31,8 @@ if __name__ == "__main__":
     # Create all static images
     StaticDisplay.display_static_images()
 
-    # Overlay Static Text
-    # StaticDisplay.display_static_text()
+    # Create all static texts
+    StaticDisplay.display_static_text()
 
     # Run our jobs that update data
     import library.stats as stats

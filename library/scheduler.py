@@ -7,7 +7,7 @@ from functools import wraps
 import library.config as config
 import library.stats as stats
 
-CONFIG_DATA = config.CONFIG_DATA
+THEME_DATA = config.THEME_DATA
 
 
 def async_job(threadname=None):
@@ -56,7 +56,7 @@ def schedule(interval):
 
 
 @async_job("CPU_Percentage")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)).total_seconds())
 def CPUPercentage():
     """ Refresh the CPU Percentage """
     # print("Refresh CPU Percentage")
@@ -64,7 +64,7 @@ def CPUPercentage():
 
 
 @async_job("CPU_Frequency")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['CPU']['FREQUENCY'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['FREQUENCY'].get("INTERVAL", None)).total_seconds())
 def CPUFrequency():
     """ Refresh the CPU Frequency """
     # print("Refresh CPU Frequency")
@@ -72,7 +72,7 @@ def CPUFrequency():
 
 
 @async_job("CPU_Load")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['CPU']['LOAD'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['LOAD'].get("INTERVAL", None)).total_seconds())
 def CPULoad():
     """ Refresh the CPU Load """
     # print("Refresh CPU Load")
@@ -80,7 +80,7 @@ def CPULoad():
 
 
 @async_job("GPU_Stats")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
 def GPUStats():
     """ Refresh the GPU Stats """
     # print("Refresh GPU Stats")
@@ -88,14 +88,14 @@ def GPUStats():
 
 
 @async_job("Memory_Stats")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['MEMORY'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['MEMORY'].get("INTERVAL", None)).total_seconds())
 def MemoryStats():
     # print("Refresh memory stats")
     stats.Memory.stats()
 
 
 @async_job("Disk_Stats")
-@schedule(timedelta(seconds=CONFIG_DATA['STATS']['DISK'].get("INTERVAL", None)).total_seconds())
+@schedule(timedelta(seconds=THEME_DATA['STATS']['DISK'].get("INTERVAL", None)).total_seconds())
 def DiskStats():
     # print("Refresh disk stats")
     stats.Disk.stats()
