@@ -167,8 +167,8 @@ def DisplayText(
     d = ImageDraw.Draw(text_image)
     d.text((x, y), text, font=font, fill=font_color)
 
-    # Crop text bitmap to keep only the text
-    text_width, text_height = d.textsize(text, font=font)
+    # Crop text bitmap to keep only the text (also crop if text overflows display)
+    left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
     text_image = text_image.crop(box=(
         x, y,
         min(x + text_width, CONFIG_DATA["display"]["DISPLAY_WIDTH"]),
