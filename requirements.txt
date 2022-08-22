@@ -3,3 +3,4 @@ pyserial~=3.5
 PyYAML~=6.0
 psutil~=5.9.1
 GPUtil~=1.4.0
+pyamdgpuinfo~=2.1.3

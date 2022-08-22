@@ -40,8 +40,10 @@ if __name__ == "__main__":
     scheduler.CPUPercentage()
     scheduler.CPUFrequency()
     scheduler.CPULoad()
-    if stats.GPU.is_available():
-        scheduler.GPUStats()
+    if stats.GpuNvidia.is_available():
+        scheduler.GpuNvidiaStats()
+    elif stats.GpuAmd.is_available():
+        scheduler.GpuAmdStats()
     else:
         print("STATS: Your GPU is not supported yet")
     scheduler.MemoryStats()

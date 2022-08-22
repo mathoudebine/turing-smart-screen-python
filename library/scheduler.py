@@ -81,10 +81,18 @@ def CPULoad():
 
 @async_job("GPU_Stats")
 @schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
-def GPUStats():
+def GpuNvidiaStats():
     """ Refresh the GPU Stats """
     # print("Refresh GPU Stats")
-    stats.GPU.stats()
+    stats.GpuNvidia.stats()
+
+
+@async_job("GPU_Stats")
+@schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
+def GpuAmdStats():
+    """ Refresh the GPU Stats """
+    # print("Refresh GPU Stats")
+    stats.GpuAmd.stats()
 
 
 @async_job("Memory_Stats")
