@@ -59,7 +59,7 @@ class CPU:
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
             lcd.DisplayText(
                 ser=config.lcd_comm,
-                text=str(int(cpu_freq.current)),
+                text=str(f'{int(cpu_freq.current)/1000:.2f}') + " GHz",
                 x=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
