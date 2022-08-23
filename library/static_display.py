@@ -5,6 +5,13 @@ THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
 
 
+def get_full_path(path, name):
+    if name:
+        return path + name
+    else:
+        return None
+
+
 class StaticDisplay:
     @staticmethod
     def initialize_display():
@@ -42,5 +49,6 @@ class StaticDisplay:
                     font_size=THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
                     font_color=THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
                     background_color=THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
-                    background_image=THEME_DATA['PATH'] + THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None)
+                    background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None))
                 )

@@ -28,15 +28,33 @@ static_text:
   #   FONT_COLOR: 0, 0, 0
   #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
   #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
-#  TEXT_EXAMPLE:
-#   TEXT: Add your custom text here!
-#   X: 20
-#   Y: 400
-#   FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-#   FONT_SIZE: 20
-#   FONT_COLOR: 255, 255, 255
-#   # BACKGROUND_COLOR: 255, 255, 255
-#   BACKGROUND_IMAGE: background.png
+  DISK_USED_LABEL:
+    TEXT: "Used:"
+    X: 124
+    Y: 405
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 23
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+    # BACKGROUND_IMAGE: background.png
+  DISK_FREE_LABEL:
+    TEXT: "Free:"
+    X: 124
+    Y: 435
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 23
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+    # BACKGROUND_IMAGE: background.png
+  DISK_TOTAL_LABEL:
+    TEXT: "Total:"
+    X: 124
+    Y: 375
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 23
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+    # BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:
@@ -234,21 +252,21 @@ STATS:
     INTERVAL: 10
     USED:
       GRAPH:
-        SHOW: False
-        X: 115
-        Y: 357
-        WIDTH: 178
-        HEIGHT: 13
+        SHOW: True
+        X: 155
+        Y: 345
+        WIDTH: 150
+        HEIGHT: 15
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
+        BAR_COLOR: 0, 0, 255
         BAR_OUTLINE: False
         BACKGROUND_COLOR: 0, 0, 0
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: TRUE
-        X: 130
-        Y: 375
+        X: 204
+        Y: 405
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -257,8 +275,8 @@ STATS:
     TOTAL:
       TEXT:
         SHOW: TRUE
-        X: 130
-        Y: 405
+        X: 204
+        Y: 375
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -267,7 +285,7 @@ STATS:
     FREE:
       TEXT:
         SHOW: TRUE
-        X: 130
+        X: 204
         Y: 435
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
