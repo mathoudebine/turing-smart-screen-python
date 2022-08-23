@@ -1,6 +1,8 @@
+import os
 import GPUtil
 import psutil
-import pyamdgpuinfo
+if os.name == 'posix':
+    import pyamdgpuinfo
 
 import library.config as config
 import library.lcd_comm as lcd
@@ -119,10 +121,11 @@ class CPU:
 
     @staticmethod
     def is_temperature_available():
-        if 'coretemp' in psutil.sensors_temperatures() or 'k10temp' in psutil.sensors_temperatures():
-            return True
-        else:
-            return False
+        if os.name == 'posix':
+            if 'coretemp' in psutil.sensors_temperatures() or 'k10temp' in psutil.sensors_temperatures():
+                return True
+
+        return False
 
     @staticmethod
     def temperature():
@@ -286,7 +289,7 @@ class GpuAmd:
 
     @staticmethod
     def is_available():
-        return pyamdgpuinfo.detect_gpus() > 0
+        return os.name == 'posix' and pyamdgpuinfo.detect_gpus() > 0
 
 
 class Memory:
