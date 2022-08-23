@@ -7,7 +7,6 @@ from library import config
 
 CONFIG_DATA = config.CONFIG_DATA
 
-
 class Command:
     RESET = 101  # Resets the display
     CLEAR = 102  # Clears the display to a white screen
@@ -27,7 +26,9 @@ def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
     byteBuffer[4] = (ey & 255)
     byteBuffer[5] = cmd
 
-    config.update_queue.put((WriteData, [ser, byteBuffer]))
+    # Lock queue mutex then queue the request
+    with config.update_queue_mutex:
+        config.update_queue.put((WriteData, [ser, byteBuffer]))
 
 
 def WriteData(ser, byteBuffer):
@@ -103,23 +104,26 @@ def DisplayPILImage(
 
     pix = image.load()
     line = bytes()
-    for h in range(image_height):
-        for w in range(image_width):
-            R = pix[w, h][0] >> 3
-            G = pix[w, h][1] >> 2
-            B = pix[w, h][2] >> 3
 
-            rgb = (R << 11) | (G << 5) | B
-            line += struct.pack('H', rgb)
+    # Lock queue mutex then queue all the requests for the image data
+    with config.update_queue_mutex:
+        for h in range(image_height):
+            for w in range(image_width):
+                R = pix[w, h][0] >> 3
+                G = pix[w, h][1] >> 2
+                B = pix[w, h][2] >> 3
 
-            # Send image data by multiple of DISPLAY_WIDTH bytes
-            if len(line) >= CONFIG_DATA["display"]["DISPLAY_WIDTH"] * 8:
-                SendLine(ser, line)
-                line = bytes()
+                rgb = (R << 11) | (G << 5) | B
+                line += struct.pack('H', rgb)
 
-    # Write last line if needed
-    if len(line) > 0:
-        SendLine(ser, line)
+                # Send image data by multiple of DISPLAY_WIDTH bytes
+                if len(line) >= CONFIG_DATA["display"]["DISPLAY_WIDTH"] * 8:
+                    SendLine(ser, line)
+                    line = bytes()
+
+        # Write last line if needed
+        if len(line) > 0:
+            SendLine(ser, line)
 
 
 def DisplayBitmap(*, ser: serial.Serial, bitmap_path: str, x: int = 0, y: int = 0, width: int = 0, height: int = 0):

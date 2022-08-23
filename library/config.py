@@ -2,6 +2,7 @@ import logging
 import os
 import queue
 import sys
+import threading
 
 import serial
 import yaml
@@ -58,4 +59,10 @@ else:
     print(f"Static comm port: {lcd_com_port}")
     lcd_comm = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
 
+# Queue containing the serial requests to send to the screen
 update_queue = queue.Queue()
+
+# Mutex to protect the queue in case a thread want to add multiple requests (e.g. image data) that should not be
+# mixed with other requests in-between
+update_queue_mutex = threading.Lock()
+
