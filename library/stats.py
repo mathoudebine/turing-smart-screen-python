@@ -363,21 +363,63 @@ class Memory:
 class Disk:
     @staticmethod
     def stats():
-        percent = psutil.disk_usage("/").percent
+        disk_usage = psutil.disk_usage("/")
 
-        if THEME_DATA['STATS']['DISK']['GRAPH'].get("SHOW", False):
+        if THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("SHOW", False):
             lcd.DisplayProgressBar(
                 ser=config.lcd_comm,
-                x=THEME_DATA['STATS']['DISK']['GRAPH'].get("X", 0),
-                y=THEME_DATA['STATS']['DISK']['GRAPH'].get("Y", 0),
-                width=THEME_DATA['STATS']['DISK']['GRAPH'].get("WIDTH", 0),
-                height=THEME_DATA['STATS']['DISK']['GRAPH'].get("HEIGHT", 0),
-                value=int(percent),
-                min_value=THEME_DATA['STATS']['DISK']['GRAPH'].get("MIN_VALUE", 0),
-                max_value=THEME_DATA['STATS']['DISK']['GRAPH'].get("MAX_VALUE", 100),
-                bar_color=THEME_DATA['STATS']['DISK']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
-                bar_outline=THEME_DATA['STATS']['DISK']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=THEME_DATA['STATS']['DISK']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                x=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("X", 0),
+                y=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("Y", 0),
+                width=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("WIDTH", 0),
+                height=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("HEIGHT", 0),
+                value=int(disk_usage.percent),
+                min_value=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MIN_VALUE", 0),
+                max_value=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MAX_VALUE", 100),
+                bar_color=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
+                bar_outline=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_OUTLINE", False),
+                background_color=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['DISK']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_IMAGE", None))
+            )
+
+        if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
+            lcd.DisplayText(
+                ser=config.lcd_comm,
+                text=f"{int(disk_usage.used / 1000000000):>5} G",
+                x=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_IMAGE", None))
+            )
+
+        if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
+            lcd.DisplayText(
+                ser=config.lcd_comm,
+                text=f"{int(disk_usage.total / 1000000000):>5} G",
+                x=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_IMAGE", None))
+            )
+
+        if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
+            lcd.DisplayText(
+                ser=config.lcd_comm,
+                text=f"{int(disk_usage.free / 1000000000):>5} G",
+                x=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE", None))
             )

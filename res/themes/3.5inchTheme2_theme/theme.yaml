@@ -232,15 +232,45 @@ STATS:
         # BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
-    GRAPH:
-      SHOW: False
-      X: 115
-      Y: 357
-      WIDTH: 178
-      HEIGHT: 13
-      MIN_VALUE: 0
-      MAX_VALUE: 100
-      BAR_COLOR: 255, 0, 0
-      BAR_OUTLINE: False
-      BACKGROUND_COLOR: 0, 0, 0
-      # BACKGROUND_IMAGE: background.png
+    USED:
+      GRAPH:
+        SHOW: False
+        X: 115
+        Y: 357
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: TRUE
+        X: 130
+        Y: 375
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    TOTAL:
+      TEXT:
+        SHOW: TRUE
+        X: 130
+        Y: 405
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    FREE:
+      TEXT:
+        SHOW: TRUE
+        X: 130
+        Y: 435
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
