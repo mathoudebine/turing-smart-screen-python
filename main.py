@@ -6,8 +6,17 @@ import os
 import signal
 import sys
 
+MIN_PYTHON = (3, 7)
+if sys.version_info < MIN_PYTHON:
+    print("Error: Python %s.%s or later is required.\n" % MIN_PYTHON)
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
+
 import library.scheduler as scheduler
 from library.static_display import StaticDisplay
+
 
 if __name__ == "__main__":
 
@@ -40,14 +49,18 @@ if __name__ == "__main__":
     scheduler.CPUPercentage()
     scheduler.CPUFrequency()
     scheduler.CPULoad()
+    if stats.CPU.is_temperature_available():
+        scheduler.CPUTemperature()
+    else:
+        print("STATS: Your CPU temperature is not supported yet")
     if stats.GpuNvidia.is_available():
+        print("Detected Nvidia GPU(s)")
         scheduler.GpuNvidiaStats()
     elif stats.GpuAmd.is_available():
+        print("Detected AMD GPU(s)")
         scheduler.GpuAmdStats()
     else:
         print("STATS: Your GPU is not supported yet")
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.QueueHandler()
-
-

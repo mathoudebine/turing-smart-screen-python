@@ -7,7 +7,8 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  THEME: Terminal_theme
+  # THEME: Terminal_theme
+  THEME: 3.5inchTheme2_theme
 
 display:
   # Display size
