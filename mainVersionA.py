@@ -6,6 +6,7 @@ import os
 import signal
 import struct
 from datetime import datetime
+from enum import IntEnum
 from time import sleep
 
 import serial  # Install pyserial : pip install pyserial
@@ -19,16 +20,43 @@ DISPLAY_WIDTH = 320
 DISPLAY_HEIGHT = 480
 
 
-class Command:
+class Orientation(IntEnum):
+    PORTRAIT = 0
+    LANDSCAPE = 2
+    REVERSE_PORTRAIT = 1
+    REVERSE_LANDSCAPE = 3
+
+
+CUR_ORIENTATION = Orientation.PORTRAIT
+
+
+def getWidth():
+    global CUR_ORIENTATION
+    if CUR_ORIENTATION == Orientation.PORTRAIT or CUR_ORIENTATION == Orientation.REVERSE_PORTRAIT:
+        return DISPLAY_WIDTH
+    else:
+        return DISPLAY_HEIGHT
+
+
+def getHeight():
+    global CUR_ORIENTATION
+    if CUR_ORIENTATION == Orientation.PORTRAIT or CUR_ORIENTATION == Orientation.REVERSE_PORTRAIT:
+        return DISPLAY_HEIGHT
+    else:
+        return DISPLAY_WIDTH
+
+
+class Command(IntEnum):
     RESET = 101
     CLEAR = 102
     SCREEN_OFF = 108
     SCREEN_ON = 109
     SET_BRIGHTNESS = 110
     DISPLAY_BITMAP = 197
+    SET_ORIENTATION = 121
 
 
-def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
+def SendReg(ser: serial.Serial, cmd: Command, x: int, y: int, ex: int, ey: int):
     byteBuffer = bytearray(6)
     byteBuffer[0] = (x >> 2)
     byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
@@ -61,10 +89,36 @@ def SetBrightness(ser: serial.Serial, level: int):
     SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
+def SetOrientation(ser: serial.Serial, orientation: Orientation):
+    global CUR_ORIENTATION
+    CUR_ORIENTATION = orientation
+    width = getWidth()
+    height = getHeight()
+    x = 0
+    y = 0
+    ex = 0
+    ey = 0
+    byteBuffer = bytearray(11)
+    byteBuffer[0] = (x >> 2)
+    byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
+    byteBuffer[2] = (((y & 15) << 4) + (ex >> 6))
+    byteBuffer[3] = (((ex & 63) << 2) + (ey >> 8))
+    byteBuffer[4] = (ey & 255)
+    byteBuffer[5] = Command.SET_ORIENTATION
+    byteBuffer[6] = (CUR_ORIENTATION + 100)
+    byteBuffer[7] = (width >> 8)
+    byteBuffer[8] = (width & 255)
+    byteBuffer[9] = (height >> 8)
+    byteBuffer[10] = (height & 255)
+    ser.write(bytes(byteBuffer))
+
+
 def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
     image_height = image.size[1]
     image_width = image.size[0]
 
+    assert x <= getWidth(), 'Image X coordinate must be <= display width'
+    assert y <= getHeight(), 'Image Y coordinate must be <= display height'
     assert image_height > 0, 'Image width must be > 0'
     assert image_width > 0, 'Image height must be > 0'
 
@@ -82,7 +136,7 @@ def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
             line += struct.pack('H', rgb)
 
             # Send image data by multiple of DISPLAY_WIDTH bytes
-            if len(line) >= DISPLAY_WIDTH * 8:
+            if len(line) >= getWidth() * 8:
                 ser.write(line)
                 line = bytes()
 
@@ -107,12 +161,14 @@ def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
     # Convert text to bitmap using PIL and display it
     # Provide the background image path to display text with transparent background
 
+    assert x <= getWidth(), 'Text X coordinate must be <= display width'
+    assert y <= getHeight(), 'Text Y coordinate must be <= display height'
     assert len(text) > 0, 'Text must not be empty'
     assert font_size > 0, "Font size must be > 0"
 
     if background_image is None:
         # A text bitmap is created with max width/height by default : text with solid background
-        text_image = Image.new('RGB', (DISPLAY_WIDTH, DISPLAY_HEIGHT), background_color)
+        text_image = Image.new('RGB', (getWidth(), getHeight()), background_color)
     else:
         # The text bitmap is created from provided background image : text with transparent background
         text_image = Image.open(background_image)
@@ -123,8 +179,8 @@ def DisplayText(ser: serial.Serial, text: str, x=0, y=0,
     d.text((x, y), text, font=font, fill=font_color)
 
     # Crop text bitmap to keep only the text
-    left, top, text_width, text_height = d.textbbox((0,0), text, font=font)
-    text_image = text_image.crop(box=(x, y, min(x + text_width, DISPLAY_WIDTH), min(y + text_height, DISPLAY_HEIGHT)))
+    left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
+    text_image = text_image.crop(box=(x, y, min(x + text_width, getWidth()), min(y + text_height, getHeight())))
 
     DisplayPILImage(ser, text_image, x, y)
 
@@ -138,8 +194,10 @@ def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: i
     # Generate a progress bar and display it
     # Provide the background image path to display progress bar with transparent background
 
-    assert x + width <= DISPLAY_WIDTH, 'Progress bar width exceeds display width'
-    assert y + height <= DISPLAY_HEIGHT, 'Progress bar height exceeds display height'
+    assert x <= getWidth(), 'Progress bar X coordinate must be <= display width'
+    assert y <= getHeight(), 'Progress bar Y coordinate must be <= display height'
+    assert x + width <= getWidth(), 'Progress bar width exceeds display width'
+    assert y + height <= getHeight(), 'Progress bar height exceeds display height'
     assert min_value <= value <= max_value, 'Progress bar value shall be between min and max'
 
     if background_image is None:
@@ -155,11 +213,11 @@ def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: i
     # Draw progress bar
     bar_filled_width = value / (max_value - min_value) * width
     draw = ImageDraw.Draw(bar_image)
-    draw.rectangle([0, 0, bar_filled_width-1, height-1], fill=bar_color, outline=bar_color)
+    draw.rectangle([0, 0, bar_filled_width - 1, height - 1], fill=bar_color, outline=bar_color)
 
     if bar_outline:
         # Draw outline
-        draw.rectangle([0, 0, width-1, height-1], fill=None, outline=bar_color)
+        draw.rectangle([0, 0, width - 1, height - 1], fill=None, outline=bar_color)
 
     DisplayPILImage(ser, bar_image, x, y)
 
@@ -184,13 +242,21 @@ if __name__ == "__main__":
     lcd_comm = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
 
     # Clear screen (blank)
+    SetOrientation(lcd_comm, Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing screen
     Clear(lcd_comm)
 
     # Set brightness to max value
     SetBrightness(lcd_comm, 0)
 
+    # Set screen orientation
+    # SetOrientation(lcd_comm, Orientation.LANDSCAPE)
+
+    # Define background picture
+    background = "res/example.png"
+    # background = "res/example_landscape.jpg"
+
     # Display sample picture
-    DisplayBitmap(lcd_comm, "res/example.png")
+    DisplayBitmap(lcd_comm, background)
 
     # Display sample text
     DisplayText(lcd_comm, "Basic text", 50, 100)
@@ -203,18 +269,11 @@ if __name__ == "__main__":
                 background_color=(255, 255, 0))
 
     # Display custom text with transparent background
-    DisplayText(lcd_comm, "Transparent bold text", 5, 300,
+    DisplayText(lcd_comm, "Transparent bold text", 5, 250,
                 font="geforce/GeForce-Bold.ttf",
                 font_size=30,
                 font_color=(255, 255, 255),
-                background_image="res/example.png")
-
-    # Display text that overflows
-    DisplayText(lcd_comm, "Text overflow!", 5, 430,
-                font="roboto/Roboto-Bold.ttf",
-                font_size=60,
-                font_color=(255, 255, 255),
-                background_image="res/example.png")
+                background_image=background)
 
     # Display the current time and some progress bars as fast as possible
     bar_value = 0
@@ -223,19 +282,19 @@ if __name__ == "__main__":
                     font="roboto/Roboto-Bold.ttf",
                     font_size=20,
                     font_color=(255, 0, 0),
-                    background_image="res/example.png")
+                    background_image=background)
 
         DisplayProgressBar(lcd_comm, 10, 40,
                            width=140, height=30,
                            min_value=0, max_value=100, value=bar_value,
                            bar_color=(255, 255, 0), bar_outline=True,
-                           background_image="res/example.png")
+                           background_image=background)
 
         DisplayProgressBar(lcd_comm, 160, 40,
                            width=140, height=30,
                            min_value=0, max_value=19, value=bar_value % 20,
                            bar_color=(0, 255, 0), bar_outline=False,
-                           background_image="res/example.png")
+                           background_image=background)
 
         bar_value = (bar_value + 2) % 101
 
