@@ -1,5 +1,5 @@
-import library.lcd_comm as lcd
 from library import config
+from library.lcd_comm_rev_a import LcdCommRevA, Orientation
 
 THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
@@ -12,26 +12,32 @@ def get_full_path(path, name):
         return None
 
 
-class StaticDisplay:
-    @staticmethod
-    def initialize_display():
+class Display:
+    def __init__(self):
+        self.lcd = None
+        if CONFIG_DATA["display"]["REVISION"] == "A":
+            self.lcd = LcdCommRevA()
+        elif CONFIG_DATA["display"]["REVISION"] == "B":
+            pass
+        else:
+            print("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
+
+    def initialize_display(self):
         # Clear screen (blank)
-        lcd.SetOrientation(config.lcd_comm, lcd.Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
-        lcd.Clear(config.lcd_comm)
+        self.lcd.SetOrientation(Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
+        self.lcd.Clear()
 
         # Set brightness
-        lcd.SetBrightness(config.lcd_comm)
+        self.lcd.SetBrightness()
 
         # Set orientation
-        lcd.SetOrientation(config.lcd_comm)
+        self.lcd.SetOrientation()
 
-    @staticmethod
-    def display_static_images():
+    def display_static_images(self):
         if THEME_DATA['static_images']:
             for image in THEME_DATA['static_images']:
                 print(f"Drawing Image: {image}")
-                lcd.DisplayBitmap(
-                    ser=config.lcd_comm,
+                self.lcd.DisplayBitmap(
                     bitmap_path=THEME_DATA['PATH'] + THEME_DATA['static_images'][image].get("PATH"),
                     x=THEME_DATA['static_images'][image].get("X", 0),
                     y=THEME_DATA['static_images'][image].get("Y", 0),
@@ -39,13 +45,11 @@ class StaticDisplay:
                     height=THEME_DATA['static_images'][image].get("HEIGHT", 0)
                 )
 
-    @staticmethod
-    def display_static_text():
+    def display_static_text(self):
         if THEME_DATA['static_text']:
             for text in THEME_DATA['static_text']:
                 print(f"Drawing Text: {text}")
-                lcd.DisplayText(
-                    ser=config.lcd_comm,
+                self.lcd.DisplayText(
                     text=THEME_DATA['static_text'][text].get("TEXT"),
                     x=THEME_DATA['static_text'][text].get("X", 0),
                     y=THEME_DATA['static_text'][text].get("Y", 0),
@@ -54,5 +58,8 @@ class StaticDisplay:
                     font_color=THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
                     background_color=THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
                     background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None))
+                                                   THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None))
                 )
+
+
+display = Display()

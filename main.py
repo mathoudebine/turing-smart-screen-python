@@ -15,8 +15,7 @@ if sys.version_info < MIN_PYTHON:
         os._exit(0)
 
 import library.scheduler as scheduler
-from library.static_display import StaticDisplay
-
+from library.display import display
 
 if __name__ == "__main__":
 
@@ -27,6 +26,7 @@ if __name__ == "__main__":
         except:
             os._exit(0)
 
+
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
     signal.signal(signal.SIGTERM, sighandler)
@@ -35,13 +35,13 @@ if __name__ == "__main__":
         signal.signal(signal.SIGQUIT, sighandler)
 
     # Initialize the display
-    StaticDisplay.initialize_display()
+    display.initialize_display()
 
     # Create all static images
-    StaticDisplay.display_static_images()
+    display.display_static_images()
 
     # Create all static texts
-    StaticDisplay.display_static_text()
+    display.display_static_text()
 
     # Run our jobs that update data
     import library.stats as stats

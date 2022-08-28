@@ -21,5 +21,6 @@ display:
 
   # Display orientation is configured by themes
 
-  # Serial Number - Used for auto-detecting the display
-  SERIAL_NUMBER: USB35INCHIPSV2
+  # Display revision: A or B (for "flagship" version, use B)
+  # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
+  REVISION: A

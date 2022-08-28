@@ -1,11 +1,13 @@
 import os
+
 import GPUtil
 import psutil
+
 if os.name == 'posix':
     import pyamdgpuinfo
 
 import library.config as config
-import library.lcd_comm as lcd
+from library.display import display
 
 THEME_DATA = config.THEME_DATA
 
@@ -24,22 +26,22 @@ class CPU:
         # print(f"CPU Percentage: {cpu_percentage}")
 
         if THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(cpu_percentage):>3}%",
                 x=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                      (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                    None))
             )
 
         if THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
-            lcd.DisplayProgressBar(
-                ser=config.lcd_comm,
+            display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
                 width=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("WIDTH", 0),
@@ -49,9 +51,11 @@ class CPU:
                 max_value=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("MAX_VALUE", 100),
                 bar_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
                 bar_outline=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
             )
 
     @staticmethod
@@ -59,17 +63,18 @@ class CPU:
         cpu_freq = psutil.cpu_freq()
 
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
-                text=str(f'{int(cpu_freq.current)/1000:.2f}') + " GHz",
+            display.lcd.DisplayText(
+                text=str(f'{int(cpu_freq.current) / 1000:.2f}') + " GHz",
                 x=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                     (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                   None))
             )
 
     @staticmethod
@@ -78,45 +83,48 @@ class CPU:
         # print(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
 
         if THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(cpu_load[0]):>3}%",
                 x=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
             )
 
         if THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(cpu_load[1]):>3}%",
                 x=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                        (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get(
+                                                   "BACKGROUND_IMAGE", None))
             )
 
         if THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(cpu_load[2]):>3}%",
                 x=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                           (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get(
+                                                   "BACKGROUND_IMAGE", None))
             )
 
     @staticmethod
@@ -138,8 +146,7 @@ class CPU:
             cpu_temp = psutil.sensors_temperatures()['k10temp'][0].current
 
         if THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(cpu_temp):>3}°C",
                 x=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("Y", 0),
@@ -147,7 +154,7 @@ class CPU:
                 font_size=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                        (255, 255, 255)),
+                                                                                       (255, 255, 255)),
                 background_image=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE", None)
             )
         # TODO: Built in function for *nix in psutil, for Windows can use WMI or a third party library
@@ -156,8 +163,7 @@ class CPU:
 def display_gpu_stats(load, memory_percentage, memory_used, temperature):
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
         # print(f"GPU Load: {load}")
-        lcd.DisplayProgressBar(
-            ser=config.lcd_comm,
+        display.lcd.DisplayProgressBar(
             x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
             width=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("WIDTH", 0),
@@ -169,12 +175,12 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
             bar_outline=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_OUTLINE", False),
             background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
             background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                 None))
         )
 
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
-        lcd.DisplayText(
-            ser=config.lcd_comm,
+        display.lcd.DisplayText(
             text=f"{int(load):>3}%",
             x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("Y", 0),
@@ -183,13 +189,13 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
             font_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
             background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
             background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                None))
         )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("SHOW", False):
         # print(f"GPU Load: {load}")
-        lcd.DisplayProgressBar(
-            ser=config.lcd_comm,
+        display.lcd.DisplayProgressBar(
             x=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("Y", 0),
             width=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("WIDTH", 0),
@@ -205,9 +211,8 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
         )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("SHOW", False):
-        lcd.DisplayText(
-            ser=config.lcd_comm,
-            text=f"{int(memory_used/1000000):>5} M",
+        display.lcd.DisplayText(
+            text=f"{int(memory_used / 1000000):>5} M",
             x=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("Y", 0),
             font=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
@@ -219,8 +224,7 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
         )
 
     if THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
-        lcd.DisplayText(
-            ser=config.lcd_comm,
+        display.lcd.DisplayText(
             text=f"{int(temperature):>3}°C",
             x=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("Y", 0),
@@ -229,7 +233,8 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
             font_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
             background_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
             background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                           THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                 None))
         )
     pass
 
@@ -265,11 +270,11 @@ class GpuAmd:
     @staticmethod
     def stats():
         # Unlike the CPU, the GPU pulls in all the stats at once
-        i=0
+        i = 0
         gpu_data = []
         while i < pyamdgpuinfo.detect_gpus():
             gpu_data.append(pyamdgpuinfo.get_gpu(i))
-            i = i+1
+            i = i + 1
 
         memory_used_all = [item.query_vram_usage() for item in gpu_data]
         memory_used = sum(memory_used_all) / len(memory_used_all)
@@ -298,8 +303,7 @@ class Memory:
         swap_percent = psutil.swap_memory().percent
 
         if THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("SHOW", False):
-            lcd.DisplayProgressBar(
-                ser=config.lcd_comm,
+            display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("Y", 0),
                 width=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("WIDTH", 0),
@@ -309,16 +313,17 @@ class Memory:
                 max_value=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("MAX_VALUE", 100),
                 bar_color=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
                 bar_outline=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                    (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['MEMORY']['SWAP']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                  None))
             )
 
         virtual_percent = psutil.virtual_memory().percent
 
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("SHOW", False):
-            lcd.DisplayProgressBar(
-                ser=config.lcd_comm,
+            display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("Y", 0),
                 width=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("WIDTH", 0),
@@ -328,40 +333,45 @@ class Memory:
                 max_value=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("MAX_VALUE", 100),
                 bar_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
                 bar_outline=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
             )
 
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(virtual_percent):>3}%",
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("BACKGROUND_COLOR",
+                                                                                              (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get(
+                                                   "BACKGROUND_IMAGE", None))
             )
 
         virtual_used = psutil.virtual_memory().used
 
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(virtual_used / 1000000):>5} M",
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT", "roboto/Roboto-Regular.ttf"),
                 font_size=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT_SIZE", 10),
                 font_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("BACKGROUND_COLOR",
+                                                                                            (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get(
+                                                   "BACKGROUND_IMAGE", None))
             )
+
 
 class Disk:
     @staticmethod
@@ -369,8 +379,7 @@ class Disk:
         disk_usage = psutil.disk_usage("/")
 
         if THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("SHOW", False):
-            lcd.DisplayProgressBar(
-                ser=config.lcd_comm,
+            display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("Y", 0),
                 width=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("WIDTH", 0),
@@ -382,12 +391,12 @@ class Disk:
                 bar_outline=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_OUTLINE", False),
                 background_color=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                None))
             )
 
         if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(disk_usage.used / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
@@ -396,12 +405,12 @@ class Disk:
                 font_color=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
             )
 
         if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(disk_usage.total / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
@@ -410,12 +419,12 @@ class Disk:
                 font_color=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                None))
             )
 
         if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
-            lcd.DisplayText(
-                ser=config.lcd_comm,
+            display.lcd.DisplayText(
                 text=f"{int(disk_usage.free / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
@@ -424,5 +433,6 @@ class Disk:
                 font_color=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE", None))
+                                               THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
             )
