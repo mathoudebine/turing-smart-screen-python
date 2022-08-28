@@ -14,39 +14,18 @@ from PIL import Image, ImageDraw, ImageFont  # Install PIL or Pillow
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
 COM_PORT = "/dev/ttyACM0"
 # COM_PORT = "COM5"
-# MacOS COM port:
-COM_PORT = '/dev/cu.usbmodem2017_2_251'
-
-# The new device has a serial number of '2017-2-25'
 
 DISPLAY_WIDTH = 320
 DISPLAY_HEIGHT = 480
 
 
-class TuringError(Exception):
-    pass
-
-
 class Command:
-    # Old protocol (6 byte packets, command in final byte)
-    #RESET = 101
-    #CLEAR = 102
-    #SCREEN_OFF = 108
-    #SCREEN_ON = 109
-    #SET_BRIGHTNESS = 110
-    #DISPLAY_BITMAP = 197
-
-    # New protocol (10 byte packets, framed with the command, 8 data bytes inside)
-    HELLO = 0xCA
-    ORIENTATION = 0xCB
-    ORIENTATION_PORTRAIT = 0
-    ORIENTATION_LANDSCAPE = 1
-    # The device seems to start in PORTRAIT, with the row ordering reversed from
-    # the ORIENTATION_PORTRAIT setting. It is not clear how to restore the ordering
-    # to the reset configuration.
-    DISPLAY_BITMAP = 0xCC
-    LIGHTING = 0xCD
-    SET_BRIGHTNESS = 0xCE
+    RESET = 101
+    CLEAR = 102
+    SCREEN_OFF = 108
+    SCREEN_ON = 109
+    SET_BRIGHTNESS = 110
+    DISPLAY_BITMAP = 197
 
 
 def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
@@ -60,83 +39,26 @@ def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
     ser.write(bytes(byteBuffer))
 
 
-def SendCommand(ser: serial.Serial, cmd: int, payload=None):
-    if payload is None:
-        payload = [0] * 8
-    elif len(payload) < 8:
-        payload = list(payload) + [0] * (8 - len(payload))
-
-    byteBuffer = bytearray(10)
-    byteBuffer[0] = cmd
-    byteBuffer[1] = payload[0]
-    byteBuffer[2] = payload[1]
-    byteBuffer[3] = payload[2]
-    byteBuffer[4] = payload[3]
-    byteBuffer[5] = payload[4]
-    byteBuffer[6] = payload[5]
-    byteBuffer[7] = payload[6]
-    byteBuffer[8] = payload[7]
-    byteBuffer[9] = cmd
-    print("Sending %r" % (byteBuffer,))
-    ser.write(bytes(byteBuffer))
-
-
-def Hello(ser: serial.Serial):
-    hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
-    SendCommand(ser, Command.HELLO, payload=hello)
-    response = ser.read(10)
-    if len(response) != 10:
-        raise TuringError("Device not recognised (short response to HELLO)")
-    if response[0] != Command.HELLO or response[-1] != Command.HELLO:
-        raise TuringError("Device not recognised (bad framing)")
-    if [x for x in response[1:6]] != hello:
-        raise TuringError("Device not recognised (No HELLO; got %r)" % (response[1:6],))
-    # The HELLO response here is followed by:
-    #   0x0A, 0x12, 0x00
-    # It is not clear what these might be.
-    # It would be handy if these were a version number, or a set of capability
-    # flags. The 0x0A=10 being version 10 or 0.10, and the 0x12 being the size or the
-    # indication that a backlight is present, would be nice. But that's guessing
-    # based on how I'd do it.
+def Reset(ser: serial.Serial):
+    SendReg(ser, Command.RESET, 0, 0, 0, 0)
 
 
 def Clear(ser: serial.Serial):
-    # Unknown what command this is
-    print("Clear unknown")
-    # Cannot find a 'clear' command
-    #SendReg(ser, Command.CLEAR, 0, 0, 0, 0)
-
-
-def Orientation(ser: serial.Serial, state: int):
-    print("Orientation: %r" % (state,))
-    SendCommand(ser, Command.ORIENTATION, payload=[state])
-
-
-def SetLighting(ser: serial.Serial, red: int, green: int, blue: int):
-    print("Lighting: %i, %i, %i" % (red, green, blue))
-    assert red < 256, 'Red lighting must be < 256'
-    assert green < 256, 'Green lighting must be < 256'
-    assert blue < 256, 'Blue lighting must be < 256'
-    SendCommand(ser, Command.LIGHTING, payload=[red, green, blue])
+    SendReg(ser, Command.CLEAR, 0, 0, 0, 0)
 
 
 def ScreenOff(ser: serial.Serial):
-    print("Screen off unknown")
-    # Cannot find a 'screen off' command
-    #SendReg(ser, Command.SCREEN_OFF, 0, 0, 0, 0)
+    SendReg(ser, Command.SCREEN_OFF, 0, 0, 0, 0)
 
 
 def ScreenOn(ser: serial.Serial):
-    print("Screen on unknown")
-    # Cannot find a 'screen on' command
-    #SendReg(ser, Command.SCREEN_ON, 0, 0, 0, 0)
+    SendReg(ser, Command.SCREEN_ON, 0, 0, 0, 0)
 
 
 def SetBrightness(ser: serial.Serial, level: int):
     # Level : 0 (brightest) - 255 (darkest)
     assert 255 >= level >= 0, 'Brightness level must be [0-255]'
-    # New protocol has 255 as the brightest, and 0 as off.
-    SendCommand(ser, Command.SET_BRIGHTNESS, payload=[255-level])
+    SendReg(ser, Command.SET_BRIGHTNESS, level, 0, 0, 0)
 
 
 def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
@@ -146,14 +68,7 @@ def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
     assert image_height > 0, 'Image width must be > 0'
     assert image_width > 0, 'Image height must be > 0'
 
-    (x0, y0) = (x, y)
-    (x1, y1) = (x + image_width - 1, y + image_height - 1)
-
-    SendCommand(ser, Command.DISPLAY_BITMAP,
-                payload=[(x0>>8) & 255, x0 & 255,
-                         (y0>>8) & 255, y0 & 255,
-                         (x1>>8) & 255, x1 & 255,
-                         (y1>>8) & 255, y1 & 255])
+    SendReg(ser, Command.DISPLAY_BITMAP, x, y, x + image_width - 1, y + image_height - 1)
 
     pix = image.load()
     line = bytes()
@@ -163,15 +78,7 @@ def DisplayPILImage(ser: serial.Serial, image: Image, x: int, y: int):
             G = pix[w, h][1] >> 2
             B = pix[w, h][2] >> 3
 
-            # Original: 0bRRRRRGGGGGGBBBBB
-            #             fedcba9876543210
-            # New:      0bgggBBBBBRRRRRGGG
-            # That is...
-            #   High 3 bits of green in b0-b2
-            #   Low 3 bits of green in b13-b15
-            #   Red 5 bits in b3-b7
-            #   Blue 5 bits in b8-b12
-            rgb = (B << 8) | (G>>3) | ((G&7)<<13) | (R<<3)
+            rgb = (R << 11) | (G << 5) | B
             line += struct.pack('H', rgb)
 
             # Send image data by multiple of DISPLAY_WIDTH bytes
@@ -276,17 +183,11 @@ if __name__ == "__main__":
     # Do not change COM port settings unless you know what you are doing
     lcd_comm = serial.Serial(COM_PORT, 115200, timeout=1, rtscts=1)
 
-    # Hello! to check this is the right device
-    Hello(lcd_comm)
-
-    # Data orientation
-    Orientation(lcd_comm, Command.ORIENTATION_PORTRAIT)
+    # Clear screen (blank)
+    Clear(lcd_comm)
 
     # Set brightness to max value
     SetBrightness(lcd_comm, 0)
-
-    # Lighting (a purple)
-    SetLighting(lcd_comm, 128, 50, 112)
 
     # Display sample picture
     DisplayBitmap(lcd_comm, "res/example.png")

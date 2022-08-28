@@ -17,16 +17,16 @@ This project is an open-source alternative software, not the USBMonitor.exe orig
 A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
 - Turing USB35INCHIPS / USB35INCHIPSV2
 - 3.5 Inch Mini Screen
-- [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005002505149293.html)
+- [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005003723773653.html)
 
-Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3.7
-  
+## Hardware
 <img src="res/pics/smart-screen-3.webp" width="500"/>
 
-This is a 3.5" USB-C display that shows as a serial port once connected.
-It cannot be seen by the operating system as a monitor but picture can be displayed on it.
+The Turing Smart Screen is a 3.5" USB-C display that shows as a serial port once connected.
+It cannot be seen by the operating system as a monitor but pictures can be displayed on it.
 
-A Windows-only software is [available in Chinese](https://lgb123-1253504678.cos.ap-beijing.myqcloud.com/35inch.rar) or [in English](https://lgb123-1253504678.cos.ap-beijing.myqcloud.com/35inchENG.rar) to manage this display.
+There is 3 hardware revisions of the screen: [how to identify my version?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions) Version B and "flagship" use the same protocol.  
+A [Windows-only software is available](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Vendor-apps) is provided by the vendor to manage this display.
 This software allows creating themes to display your computer sensors on the screen, but does not offer a simple way to display custom pictures or text.
 
 ## Features
@@ -34,21 +34,24 @@ This Python script can do some simple operations on the Turing display like :
 - **Display custom picture**
 - **Display text**
 - **Display progress bar**
-- Clear the screen (blank)
-- Turn the screen on/off
-- Display soft reset
+- Clear the screen (blank) - HW version A only
+- Turn the screen on/off - HW version A only
+- Display soft reset - HW version A only
 - Set brightness
 
 Not yet implemented:
 - Screen rotation
 
+Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3.7
+
 ## Getting started
 _Python knowledges recommended._  
-Download the `main.py` file from this project  
-Download and install latest Python 3.x (min. 3.7) for your OS: https://www.python.org/downloads/  
+Download this project by cloning it or using the [Releases sections](https://github.com/mathoudebine/turing-smart-screen-python/releases)   
+Download and install the latest Python 3.x (min. 3.7) for your OS: https://www.python.org/downloads/  
 Plug your Turing display to your computer (install the drivers if on Windows)  
-Open the `main.py` file and edit the [`COM_PORT`](https://github.com/mathoudebine/turing-smart-screen-python/blob/deb0a60b772f2c5acef377f13b959632ca649f9f/main.py#L15)  variable to the port used by the display  
-Open a terminal and run `python3 main.py` or `py -3 main.py` depending on your OS  
+[Identify your hardware revision (version A or version B/flagship)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
+Open the `mainVersionA.py` or `mainVersionB.py` file and edit the [`COM_PORT`](https://github.com/mathoudebine/turing-smart-screen-python/blob/deb0a60b772f2c5acef377f13b959632ca649f9f/main.py#L15)  variable to the port used by the display  
+Open a terminal and run `python3 mainVersionA.py / mainVersionB.py` or `py -3 mainVersionA.py / mainVersionB.py` depending on your OS  
 You should see animated content on your Turing display!  
 
-You can then edit the `main.py` file to change the content displayed, or use this file as a Python module for your personal Python project
+You can then edit the `mainVersionA.py / mainVersionB.py` file to change the content displayed, or use this file as a Python module for your personal Python project
