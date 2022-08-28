@@ -16,10 +16,14 @@ class StaticDisplay:
     @staticmethod
     def initialize_display():
         # Clear screen (blank)
+        lcd.SetOrientation(config.lcd_comm, lcd.Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
         lcd.Clear(config.lcd_comm)
 
         # Set brightness
         lcd.SetBrightness(config.lcd_comm)
+
+        # Set orientation
+        lcd.SetOrientation(config.lcd_comm)
 
     @staticmethod
     def display_static_images():

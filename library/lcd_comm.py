@@ -1,23 +1,61 @@
 import struct
-
+from enum import IntEnum
 import serial
 from PIL import Image, ImageDraw, ImageFont
 
 from library import config
 
 CONFIG_DATA = config.CONFIG_DATA
+THEME_DATA = config.THEME_DATA
 
-class Command:
+
+class Command(IntEnum):
     RESET = 101  # Resets the display
     CLEAR = 102  # Clears the display to a white screen
     TO_BLACK = 103  # Makes the screen go black. NOT TESTED
     SCREEN_OFF = 108  # Turns the screen off
     SCREEN_ON = 109  # Turns the screen on
-    SET_BRIGHTNESS = 110  # Sets the screens brightness
+    SET_BRIGHTNESS = 110  # Sets the screen brightness
+    SET_ORIENTATION = 121  # Sets the screen orientation
     DISPLAY_BITMAP = 197  # Displays an image on the screen
 
 
-def SendReg(ser: serial.Serial, cmd: int, x: int, y: int, ex: int, ey: int):
+class Orientation(IntEnum):
+    PORTRAIT = 0
+    LANDSCAPE = 2
+    REVERSE_PORTRAIT = 1
+    REVERSE_LANDSCAPE = 3
+
+
+def getThemeOrientation():
+    if THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
+        return Orientation.PORTRAIT
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'landscape':
+        return Orientation.LANDSCAPE
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_portrait':
+        return Orientation.REVERSE_PORTRAIT
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
+        return Orientation.REVERSE_LANDSCAPE
+    else:
+        print("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")
+        return Orientation.PORTRAIT
+
+
+def getWidth():
+    if getThemeOrientation() == Orientation.PORTRAIT or getThemeOrientation() == Orientation.REVERSE_PORTRAIT:
+        return CONFIG_DATA["display"]["DISPLAY_WIDTH"]
+    else:
+        return CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
+
+
+def getHeight():
+    if getThemeOrientation() == Orientation.PORTRAIT or getThemeOrientation() == Orientation.REVERSE_PORTRAIT:
+        return CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
+    else:
+        return CONFIG_DATA["display"]["DISPLAY_WIDTH"]
+
+
+def SendReg(ser: serial.Serial, cmd: Command, x: int, y: int, ex: int, ey: int):
     byteBuffer = bytearray(6)
     byteBuffer[0] = (x >> 2)
     byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
@@ -78,6 +116,28 @@ def SetBrightness(ser: serial.Serial, level: int = CONFIG_DATA["display"]["BRIGH
     SendReg(ser, Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
 
+def SetOrientation(ser: serial.Serial, orientation: Orientation = getThemeOrientation()):
+    width = getWidth()
+    height = getHeight()
+    x = 0
+    y = 0
+    ex = 0
+    ey = 0
+    byteBuffer = bytearray(11)
+    byteBuffer[0] = (x >> 2)
+    byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
+    byteBuffer[2] = (((y & 15) << 4) + (ex >> 6))
+    byteBuffer[3] = (((ex & 63) << 2) + (ey >> 8))
+    byteBuffer[4] = (ey & 255)
+    byteBuffer[5] = Command.SET_ORIENTATION
+    byteBuffer[6] = (orientation + 100)
+    byteBuffer[7] = (width >> 8)
+    byteBuffer[8] = (width & 255)
+    byteBuffer[9] = (height >> 8)
+    byteBuffer[10] = (height & 255)
+    ser.write(bytes(byteBuffer))
+
+
 def DisplayPILImage(
         ser: serial.Serial,
         image: Image,
@@ -92,11 +152,13 @@ def DisplayPILImage(
         image_width = image.size[0]
 
     # If our image is bigger than our display, resize it to fit our screen
-    if image.size[1] > CONFIG_DATA["display"]["DISPLAY_HEIGHT"]:
-        image_height = CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-    if image.size[0] > CONFIG_DATA["display"]["DISPLAY_WIDTH"]:
-        image_width = CONFIG_DATA["display"]["DISPLAY_WIDTH"]
+    if image.size[1] > getHeight():
+        image_height = getHeight()
+    if image.size[0] > getWidth():
+        image_width = getWidth()
 
+    assert x <= getWidth(), 'Image X coordinate must be <= display width'
+    assert y <= getHeight(), 'Image Y coordinate must be <= display height'
     assert image_height > 0, 'Image width must be > 0'
     assert image_width > 0, 'Image height must be > 0'
 
@@ -117,7 +179,7 @@ def DisplayPILImage(
                 line += struct.pack('H', rgb)
 
                 # Send image data by multiple of DISPLAY_WIDTH bytes
-                if len(line) >= CONFIG_DATA["display"]["DISPLAY_WIDTH"] * 8:
+                if len(line) >= getWidth() * 8:
                     SendLine(ser, line)
                     line = bytes()
 
@@ -152,6 +214,8 @@ def DisplayText(
     if isinstance(background_color, str):
         background_color = tuple(map(int, background_color.split(', ')))
 
+    assert x <= getWidth(), 'Text X coordinate must be <= display width'
+    assert y <= getHeight(), 'Text Y coordinate must be <= display height'
     assert len(text) > 0, 'Text must not be empty'
     assert font_size > 0, "Font size must be > 0"
 
@@ -159,7 +223,7 @@ def DisplayText(
         # A text bitmap is created with max width/height by default : text with solid background
         text_image = Image.new(
             'RGB',
-            (CONFIG_DATA["display"]["DISPLAY_WIDTH"], CONFIG_DATA["display"]["DISPLAY_HEIGHT"]),
+            (getWidth(), getHeight()),
             background_color
         )
     else:
@@ -175,8 +239,8 @@ def DisplayText(
     left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
     text_image = text_image.crop(box=(
         x, y,
-        min(x + text_width, CONFIG_DATA["display"]["DISPLAY_WIDTH"]),
-        min(y + text_height, CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
+        min(x + text_width, getWidth()),
+        min(y + text_height, getHeight())
     ))
 
     DisplayPILImage(ser, text_image, x, y)
@@ -197,8 +261,10 @@ def DisplayProgressBar(ser: serial.Serial, x: int, y: int, width: int, height: i
     if isinstance(background_color, str):
         background_color = tuple(map(int, background_color.split(', ')))
 
-    assert x + width <= CONFIG_DATA["display"]["DISPLAY_WIDTH"], 'Progress bar width exceeds display width'
-    assert y + height <= CONFIG_DATA["display"]["DISPLAY_HEIGHT"], 'Progress bar height exceeds display height'
+    assert x <= getWidth(), 'Progress bar X coordinate must be <= display width'
+    assert y <= getHeight(), 'Progress bar Y coordinate must be <= display height'
+    assert x + width <= getWidth(), 'Progress bar width exceeds display width'
+    assert y + height <= getHeight(), 'Progress bar height exceeds display height'
 
     # Don't let the set value exceed our min or max value, this is bad :)
     if value < min_value:
