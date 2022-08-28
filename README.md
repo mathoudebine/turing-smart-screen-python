@@ -34,13 +34,11 @@ This Python script can do some simple operations on the Turing display like :
 - **Display custom picture**
 - **Display text**
 - **Display progress bar**
+- **Screen rotation**
 - Clear the screen (blank) - HW version A only
 - Turn the screen on/off - HW version A only
 - Display soft reset - HW version A only
 - Set brightness
-
-Not yet implemented:
-- Screen rotation
 
 Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3.7
 
