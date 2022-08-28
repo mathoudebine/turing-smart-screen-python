@@ -1,9 +1,8 @@
 # turing-smart-screen-python
 
-| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0.0 alpha 4 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-alpha.4) or the `feature/system-monitoring` branch!  <br><img src="https://user-images.githubusercontent.com/38615348/186234233-a29e6321-7de6-4aea-be7a-8b7106f54c92.jpg" height="600" />  <img src="https://user-images.githubusercontent.com/38615348/186235158-bb0daef7-35c3-4f27-b38b-a5c34d04509e.jpg" height="600" />
-  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._ |
+| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0.0 alpha 4 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-alpha.4) or the `feature/system-monitoring` branch!  <br><img src="res/pics/Theme3.5Inch.jpg" height="600" />  <img src="res/pics/ThemeTerminal.jpg" height="600" />  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._ |
 
 ---
 
@@ -20,9 +19,9 @@ A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C (UART) display,
 - 3.5 Inch Mini Screen
 - [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005002505149293.html)
 
-Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3
+Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3.7
   
-<img src="res/smart-screen-3.webp" width="500"/>
+<img src="res/pics/smart-screen-3.webp" width="500"/>
 
 This is a 3.5" USB-C display that shows as a serial port once connected.
 It cannot be seen by the operating system as a monitor but picture can be displayed on it.
@@ -46,7 +45,7 @@ Not yet implemented:
 ## Getting started
 _Python knowledges recommended._  
 Download the `main.py` file from this project  
-Download and install latest Python 3.x for your OS: https://www.python.org/downloads/  
+Download and install latest Python 3.x (min. 3.7) for your OS: https://www.python.org/downloads/  
 Plug your Turing display to your computer (install the drivers if on Windows)  
 Open the `main.py` file and edit the [`COM_PORT`](https://github.com/mathoudebine/turing-smart-screen-python/blob/deb0a60b772f2c5acef377f13b959632ca649f9f/main.py#L15)  variable to the port used by the display  
 Open a terminal and run `python3 main.py` or `py -3 main.py` depending on your OS  
