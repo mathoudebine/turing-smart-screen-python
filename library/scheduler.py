@@ -125,10 +125,10 @@ def DiskStats():
 @async_job("Queue_Handler")
 @schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():
+    # Do next action waiting in the queue
     global STOPPING
-
     if STOPPING:
-        # Empty the message queue to allow program to exit cleanly
+        # Empty the action queue to allow program to exit cleanly
         while not config.update_queue.empty():
             f, args = config.update_queue.get()
             f(*args)
