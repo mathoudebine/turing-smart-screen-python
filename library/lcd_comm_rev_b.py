@@ -19,6 +19,14 @@ class OrientationValueRevB(IntEnum):
     ORIENTATION_LANDSCAPE = 0x1
 
 
+# HW revision B offers 4 sub-revisions to identify the HW capabilities
+class SubRevision(IntEnum):
+    A01 = 0xA01  # HW revision B - brightness 0/1
+    A02 = 0xA02  # HW revision "flagship" - brightness 0/1
+    A11 = 0xA11  # HW revision B - brightness 0-255
+    A12 = 0xA12  # HW revision "flagship" - brightness 0-255
+
+
 def get_rev_b_orientation(orientation: Orientation) -> OrientationValueRevB:
     if orientation == Orientation.PORTRAIT or orientation == Orientation.REVERSE_PORTRAIT:
         return OrientationValueRevB.ORIENTATION_PORTRAIT
@@ -29,12 +37,19 @@ def get_rev_b_orientation(orientation: Orientation) -> OrientationValueRevB:
 class LcdCommRevB(LcdComm):
     def __init__(self):
         self.openSerial()
+        self.sub_revision = SubRevision.A01  # Will be detected later by Hello
 
     def __del__(self):
         try:
             self.lcd_serial.close()
         except:
             pass
+
+    def is_flagship(self):
+        return self.sub_revision == SubRevision.A02 or self.sub_revision == SubRevision.A12
+
+    def is_brightness_range(self):
+        return self.sub_revision == SubRevision.A11 or self.sub_revision == SubRevision.A12
 
     @staticmethod
     def auto_detect_com_port():
@@ -78,7 +93,7 @@ class LcdCommRevB(LcdComm):
             self.lcd_serial.write(bytes(byteBuffer))
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            logger.warn("(Write data) Too fast! Slow down!")
+            logger.warning("(Write data) Too fast! Slow down!")
 
     def SendLine(self, line: bytes):
         config.update_queue.put((self.WriteLine, [line]))
@@ -88,7 +103,7 @@ class LcdCommRevB(LcdComm):
             self.lcd_serial.write(line)
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            logger.warn("(Write line) Too fast! Slow down!")
+            logger.warning("(Write line) Too fast! Slow down!")
 
     def Hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
@@ -98,18 +113,27 @@ class LcdCommRevB(LcdComm):
         response = self.lcd_serial.read(10)
 
         if len(response) != 10:
-            logger.warn("Device not recognised (short response to HELLO)")
+            logger.warning("Device not recognised (short response to HELLO)")
         if response[0] != Command.HELLO or response[-1] != Command.HELLO:
-            logger.warn("Device not recognised (bad framing)")
+            logger.warning("Device not recognised (bad framing)")
         if [x for x in response[1:6]] != hello:
-            logger.warn("Device not recognised (No HELLO; got %r)" % (response[1:6],))
-        # The HELLO response here is followed by:
-        #   0x0A, 0x12, 0x00
-        # It is not clear what these might be.
-        # It would be handy if these were a version number, or a set of capability
-        # flags. The 0x0A=10 being version 10 or 0.10, and the 0x12 being the size or the
-        # indication that a backlight is present, would be nice. But that's guessing
-        # based on how I'd do it.
+            logger.warning("Device not recognised (No HELLO; got %r)" % (response[1:6],))
+        # The HELLO response here is followed by 2 bytes
+        # This is the screen version (not like the revision which is B/flagship)
+        # The version is used to determine what capabilities the screen offers (see SubRevision class above)
+        if response[6] == 0xA:
+            if response[7] == 0x01:
+                self.sub_revision = SubRevision.A01
+            elif response[7] == 0x02:
+                self.sub_revision = SubRevision.A02
+            elif response[7] == 0x11:
+                self.sub_revision = SubRevision.A11
+            elif response[7] == 0x12:
+                self.sub_revision = SubRevision.A12
+            else:
+                logger.warning("Display returned unknown sub-revision on Hello answer")
+
+        logger.debug("HW sub-revision: %s" % (hex(self.sub_revision)))
 
     def InitializeComm(self):
         self.Hello()
@@ -131,18 +155,25 @@ class LcdCommRevB(LcdComm):
         # HW revision B does not implement a "ScreenOn" native command: using SetBrightness() instead
         self.SetBrightness()
 
-    def SetBrightness(self, level: int = CONFIG_DATA["display"]["BRIGHTNESS"]):
-        assert 0 <= level <= 100, 'Brightness level must be [0-100]'
+    def SetBrightness(self, level_user: int = CONFIG_DATA["display"]["BRIGHTNESS"]):
+        assert 0 <= level_user <= 100, 'Brightness level must be [0-100]'
 
-        # Display scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
-        # Convert our brightness % to an absolute value.
-        level_absolute = int((level / 100) * 255)
+        if self.is_brightness_range():
+            # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
+            # Convert our brightness % to an absolute value.
+            level = int((level_user / 100) * 255)
+        else:
+            # Brightness is 1 (off) or 0 (full brightness)
+            logger.info("Your display does not support custom brightness level")
+            level = 1 if level_user == 0 else 0
 
-        # Level : 0 (darkest) - 255 (brightest)
-        self.SendCommand(Command.SET_BRIGHTNESS, payload=[level_absolute])
+        self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
 
     def SetBackplateLedColor(self, led_color: tuple[int, int, int] = THEME_DATA['display']["DISPLAY_RGB_LED"]):
-        self.SendCommand(Command.SET_LIGHTING, payload=led_color)
+        if self.is_flagship():
+            self.SendCommand(Command.SET_LIGHTING, payload=led_color)
+        else:
+            logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
     def SetOrientation(self, orientation: Orientation = get_theme_orientation()):
         self.SendCommand(Command.SET_ORIENTATION, payload=[get_rev_b_orientation(orientation)])

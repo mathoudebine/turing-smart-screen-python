@@ -60,7 +60,7 @@ class LcdCommRevA(LcdComm):
             self.lcd_serial.write(bytes(byteBuffer))
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            logger.warn("(Write data) Too fast! Slow down!")
+            logger.warning("(Write data) Too fast! Slow down!")
 
     def SendLine(self, line: bytes):
         config.update_queue.put((self.WriteLine, [line]))
@@ -70,7 +70,7 @@ class LcdCommRevA(LcdComm):
             self.lcd_serial.write(line)
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            logger.warn("(Write line) Too fast! Slow down!")
+            logger.warning("(Write line) Too fast! Slow down!")
 
     def InitializeComm(self):
         # HW revision A does not need init commands
