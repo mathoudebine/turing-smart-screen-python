@@ -2,9 +2,10 @@ import os
 
 import GPUtil
 import psutil
-
-if os.name == 'posix':
+try:
     import pyamdgpuinfo
+except ImportError:
+    pyamdgpuinfo = None
 
 import library.config as config
 from library.display import display
@@ -133,11 +134,14 @@ class CPU:
 
     @staticmethod
     def is_temperature_available():
-        if os.name == 'posix':
+        try:
             if 'coretemp' in psutil.sensors_temperatures() or 'k10temp' in psutil.sensors_temperatures():
                 return True
-
-        return False
+            else:
+                return False
+        except AttributeError:
+            # sensors_temperatures may not be available at all
+            return False
 
     @staticmethod
     def temperature():
@@ -299,7 +303,9 @@ class GpuAmd:
 
     @staticmethod
     def is_available():
-        return os.name == 'posix' and pyamdgpuinfo.detect_gpus() > 0
+        if not pyamdgpuinfo:
+            return False
+        return pyamdgpuinfo.detect_gpus() > 0
 
 
 class Memory:
