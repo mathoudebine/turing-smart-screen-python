@@ -1,5 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum
+
+import serial
 from PIL import Image, ImageDraw, ImageFont
 
 from library import config
@@ -44,6 +46,21 @@ def get_height() -> int:
 
 
 class LcdComm(ABC):
+    def openSerial(self):
+        if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
+            lcd_com_port = self.auto_detect_com_port()
+            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+            print(f"Auto detected comm port: {lcd_com_port}")
+        else:
+            lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
+            print(f"Static comm port: {lcd_com_port}")
+            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+
+    @staticmethod
+    @abstractmethod
+    def auto_detect_com_port():
+        pass
+
     @abstractmethod
     def InitializeComm(self):
         pass

@@ -1,6 +1,6 @@
 import struct
+import time
 
-import serial
 from serial.tools.list_ports import comports
 
 from library.lcd_comm import *
@@ -19,15 +19,14 @@ class Command(IntEnum):
 
 class LcdCommRevA(LcdComm):
     def __init__(self):
-        self.lcd_serial = None
-        if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
-            lcd_com_port = self.auto_detect_com_port()
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
-            print(f"Auto detected comm port: {lcd_com_port}")
-        else:
-            lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
-            print(f"Static comm port: {lcd_com_port}")
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+        self.openSerial()
+
+    def __del__(self):
+        try:
+            print("close serial")
+            self.lcd_serial.close()
+        except:
+            pass
 
     @staticmethod
     def auto_detect_com_port():
@@ -40,7 +39,7 @@ class LcdCommRevA(LcdComm):
 
         return auto_com_port
 
-    def SendCommand(self, cmd: Command, x: int, y: int, ex: int, ey: int):
+    def SendCommand(self, cmd: Command, x: int, y: int, ex: int, ey: int, bypass_queue: bool = False):
         byteBuffer = bytearray(6)
         byteBuffer[0] = (x >> 2)
         byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
@@ -49,9 +48,12 @@ class LcdCommRevA(LcdComm):
         byteBuffer[4] = (ey & 255)
         byteBuffer[5] = cmd
 
-        # Lock queue mutex then queue the request
-        with config.update_queue_mutex:
-            config.update_queue.put((self.WriteData, [byteBuffer]))
+        if bypass_queue:
+            self.WriteData(byteBuffer)
+        else:
+            # Lock queue mutex then queue the request
+            with config.update_queue_mutex:
+                config.update_queue.put((self.WriteData, [byteBuffer]))
 
     def WriteData(self, byteBuffer: bytearray):
         try:
@@ -75,10 +77,17 @@ class LcdCommRevA(LcdComm):
         pass
 
     def Reset(self):
-        self.SendCommand(Command.RESET, 0, 0, 0, 0)
+        print("Display reset...")
+        # Reset command bypasses queue because it is run when queue threads are not yet started
+        self.SendCommand(Command.RESET, 0, 0, 0, 0, bypass_queue=True)
+        # Wait for display reset then reconnect
+        time.sleep(1)
+        self.openSerial()
 
     def Clear(self):
+        self.SetOrientation(Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
         self.SendCommand(Command.CLEAR, 0, 0, 0, 0)
+        self.SetOrientation()  # Restore default orientation
 
     def ScreenOff(self):
         self.SendCommand(Command.SCREEN_OFF, 0, 0, 0, 0)

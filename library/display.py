@@ -1,5 +1,4 @@
 from library import config
-from library.lcd_comm import Orientation
 from library.lcd_comm_rev_a import LcdCommRevA
 from library.lcd_comm_rev_b import LcdCommRevB
 
@@ -25,15 +24,11 @@ class Display:
             print("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 
     def initialize_display(self):
-        # Send initialization commands
-        self.lcd.InitializeComm()
-
-        # Reset screen in case it was in an unstable state
+        # Reset screen in case it was in an unstable state (screen is also cleared)
         self.lcd.Reset()
 
-        # Clear screen (blank)
-        self.lcd.SetOrientation(Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
-        self.lcd.Clear()
+        # Send initialization commands
+        self.lcd.InitializeComm()
 
         # Set brightness
         self.lcd.SetBrightness()

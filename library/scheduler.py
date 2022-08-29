@@ -9,6 +9,8 @@ import library.stats as stats
 
 THEME_DATA = config.THEME_DATA
 
+STOPPING = False
+
 
 def async_job(threadname=None):
     """ wrapper to handle asynchronous threads """
@@ -36,8 +38,11 @@ def schedule(interval):
 
         def periodic(scheduler, periodic_interval, action, actionargs=()):
             """ Wrap the scheduler with our periodic interval """
-            scheduler.enter(periodic_interval, 1, periodic,
-                            (scheduler, periodic_interval, action, actionargs))
+            global STOPPING
+            if not STOPPING:
+                # If the program is not stopping: re-schedule the task for future execution
+                scheduler.enter(periodic_interval, 1, periodic,
+                                (scheduler, periodic_interval, action, actionargs))
             action(*actionargs)
 
         @wraps(func)
@@ -120,6 +125,19 @@ def DiskStats():
 @async_job("Queue_Handler")
 @schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():
-    f, args = config.update_queue.get()
-    if f:
-        f(*args)
+    global STOPPING
+
+    if STOPPING:
+        # Empty the message queue to allow program to exit cleanly
+        while not config.update_queue.empty():
+            f, args = config.update_queue.get()
+            f(*args)
+    else:
+        # Execute first action in the queue
+        f, args = config.update_queue.get()
+        if f:
+            f(*args)
+
+
+def is_queue_empty() -> bool:
+    return config.update_queue.empty()

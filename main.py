@@ -5,6 +5,7 @@
 import os
 import signal
 import sys
+import time
 
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:
@@ -20,11 +21,26 @@ from library.display import display
 if __name__ == "__main__":
 
     def sighandler(signum, frame):
-        print(" Caught signal ", str(signum), ", exiting...")
+        print(" Caught signal ", str(signum), ", exiting")
+
+        # Do not stop the program now in case data transmission was in progress
+        # Instead, ask the scheduler to finish its current task before stopping
+        scheduler.STOPPING = True
+
+        print("Waiting for all pending request to be sent to display...")
+
+        # Allow 2 seconds max. delay in case scheduler is not responding
+        wait_time = 2
+        while not scheduler.is_queue_empty() and wait_time > 0:
+            time.sleep(0.1)
+            wait_time = wait_time - 0.1
+
+        # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
             sys.exit(0)
         except:
             os._exit(0)
+
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)

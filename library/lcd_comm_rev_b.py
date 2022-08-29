@@ -1,6 +1,5 @@
 import struct
 
-import serial
 from serial.tools.list_ports import comports
 
 from library.lcd_comm import *
@@ -28,15 +27,13 @@ def get_rev_b_orientation(orientation: Orientation) -> OrientationValueRevB:
 
 class LcdCommRevB(LcdComm):
     def __init__(self):
-        self.lcd_serial = None
-        if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
-            lcd_com_port = self.auto_detect_com_port()
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
-            print(f"Auto detected comm port: {lcd_com_port}")
-        else:
-            lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
-            print(f"Static comm port: {lcd_com_port}")
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+        self.openSerial()
+
+    def __del__(self):
+        try:
+            self.lcd_serial.close()
+        except:
+            pass
 
     @staticmethod
     def auto_detect_com_port():
@@ -49,7 +46,7 @@ class LcdCommRevB(LcdComm):
 
         return auto_com_port
 
-    def SendCommand(self, cmd: Command, payload=None):
+    def SendCommand(self, cmd: Command, payload=None, bypass_queue: bool = False):
         # New protocol (10 byte packets, framed with the command, 8 data bytes inside)
         if payload is None:
             payload = [0] * 8
@@ -68,9 +65,12 @@ class LcdCommRevB(LcdComm):
         byteBuffer[8] = payload[7]
         byteBuffer[9] = cmd
 
-        # Lock queue mutex then queue the request
-        with config.update_queue_mutex:
-            config.update_queue.put((self.WriteData, [byteBuffer]))
+        if bypass_queue:
+            self.WriteData(byteBuffer)
+        else:
+            # Lock queue mutex then queue the request
+            with config.update_queue_mutex:
+                config.update_queue.put((self.WriteData, [byteBuffer]))
 
     def WriteData(self, byteBuffer: bytearray):
         try:
@@ -90,28 +90,17 @@ class LcdCommRevB(LcdComm):
             print("(Write line) Too fast! Slow down!")
 
     def Hello(self):
-        # This command reads LCD answer on serial link, so it bypasses the queue
-        byteBuffer = bytearray(10)
-        byteBuffer[0] = Command.HELLO
-        byteBuffer[1] = ord('H')
-        byteBuffer[2] = ord('E')
-        byteBuffer[3] = ord('L')
-        byteBuffer[4] = ord('L')
-        byteBuffer[5] = ord('O')
-        byteBuffer[6] = 0
-        byteBuffer[7] = 0
-        byteBuffer[8] = 0
-        byteBuffer[9] = Command.HELLO
+        hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
 
-        with config.update_queue_mutex:
-            self.WriteData(byteBuffer)
-            response = self.lcd_serial.read(10)
+        # This command reads LCD answer on serial link, so it bypasses the queue
+        self.SendCommand(Command.HELLO, payload=hello, bypass_queue=True)
+        response = self.lcd_serial.read(10)
 
         if len(response) != 10:
             print("Device not recognised (short response to HELLO)")
         if response[0] != Command.HELLO or response[-1] != Command.HELLO:
             print("Device not recognised (bad framing)")
-        if [x for x in response[1:6]] != byteBuffer[1:6]:
+        if [x for x in response[1:6]] != hello:
             print("Device not recognised (No HELLO; got %r)" % (response[1:6],))
         # The HELLO response here is followed by:
         #   0x0A, 0x12, 0x00
@@ -125,11 +114,13 @@ class LcdCommRevB(LcdComm):
         self.Hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it
-        pass
+        # HW revision B does not implement a command to reset it: clear the screen instead
+        self.Clear()
 
     def Clear(self):
-        pass
+        # HW revision B does not implement a Clear command: display a blank image on the whole screen
+        blank = Image.new("RGB", (get_width(), get_height()), (255, 255, 255))
+        self.DisplayPILImage(blank)
 
     def ScreenOff(self):
         # HW revision B does not implement a "ScreenOff" native command: using SetBrightness(0) instead
