@@ -2,6 +2,10 @@
 display:
   # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
   DISPLAY_ORIENTATION: portrait
+
+  # Backplate RGB LED color (for HW revision 'flagship' devices only)
+  DISPLAY_RGB_LED: 255, 0, 0
+
 static_images:
   # Specify what static images we want to show on the display
   # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.

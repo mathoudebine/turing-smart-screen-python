@@ -26,7 +26,6 @@ if __name__ == "__main__":
         except:
             os._exit(0)
 
-
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
     signal.signal(signal.SIGTERM, sighandler)

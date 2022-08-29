@@ -1,5 +1,7 @@
 from library import config
-from library.lcd_comm_rev_a import LcdCommRevA, Orientation
+from library.lcd_comm import Orientation
+from library.lcd_comm_rev_a import LcdCommRevA
+from library.lcd_comm_rev_b import LcdCommRevB
 
 THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
@@ -18,17 +20,26 @@ class Display:
         if CONFIG_DATA["display"]["REVISION"] == "A":
             self.lcd = LcdCommRevA()
         elif CONFIG_DATA["display"]["REVISION"] == "B":
-            pass
+            self.lcd = LcdCommRevB()
         else:
             print("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 
     def initialize_display(self):
+        # Send initialization commands
+        self.lcd.InitializeComm()
+
+        # Reset screen in case it was in an unstable state
+        self.lcd.Reset()
+
         # Clear screen (blank)
         self.lcd.SetOrientation(Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
         self.lcd.Clear()
 
         # Set brightness
         self.lcd.SetBrightness()
+
+        # Set backplate RGB LED color (for supported HW only)
+        self.lcd.SetBackplateLedColor()
 
         # Set orientation
         self.lcd.SetOrientation()
@@ -53,7 +64,7 @@ class Display:
                     text=THEME_DATA['static_text'][text].get("TEXT"),
                     x=THEME_DATA['static_text'][text].get("X", 0),
                     y=THEME_DATA['static_text'][text].get("Y", 0),
-                    font=THEME_DATA['static_text'][text].get("FONT", "roboto/Roboto-Regular.ttf"),
+                    font=THEME_DATA['static_text'][text].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
                     font_size=THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
                     font_color=THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
                     background_color=THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
