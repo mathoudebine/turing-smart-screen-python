@@ -1,6 +1,7 @@
 from library import config
 from library.lcd_comm_rev_a import LcdCommRevA
 from library.lcd_comm_rev_b import LcdCommRevB
+from library.log import logger
 
 THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
@@ -21,7 +22,7 @@ class Display:
         elif CONFIG_DATA["display"]["REVISION"] == "B":
             self.lcd = LcdCommRevB()
         else:
-            print("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
+            logger.error("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)
@@ -42,7 +43,7 @@ class Display:
     def display_static_images(self):
         if THEME_DATA['static_images']:
             for image in THEME_DATA['static_images']:
-                print(f"Drawing Image: {image}")
+                logger.debug(f"Drawing Image: {image}")
                 self.lcd.DisplayBitmap(
                     bitmap_path=THEME_DATA['PATH'] + THEME_DATA['static_images'][image].get("PATH"),
                     x=THEME_DATA['static_images'][image].get("X", 0),
@@ -54,7 +55,7 @@ class Display:
     def display_static_text(self):
         if THEME_DATA['static_text']:
             for text in THEME_DATA['static_text']:
-                print(f"Drawing Text: {text}")
+                logger.debug(f"Drawing Text: {text}")
                 self.lcd.DisplayText(
                     text=THEME_DATA['static_text'][text].get("TEXT"),
                     x=THEME_DATA['static_text'][text].get("X", 0),

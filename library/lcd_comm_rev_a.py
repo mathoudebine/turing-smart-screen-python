@@ -4,6 +4,7 @@ import time
 from serial.tools.list_ports import comports
 
 from library.lcd_comm import *
+from library.log import logger
 
 
 class Command(IntEnum):
@@ -23,7 +24,6 @@ class LcdCommRevA(LcdComm):
 
     def __del__(self):
         try:
-            print("close serial")
             self.lcd_serial.close()
         except:
             pass
@@ -60,7 +60,7 @@ class LcdCommRevA(LcdComm):
             self.lcd_serial.write(bytes(byteBuffer))
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            print("(Write data) Too fast! Slow down!")
+            logger.warn("(Write data) Too fast! Slow down!")
 
     def SendLine(self, line: bytes):
         config.update_queue.put((self.WriteLine, [line]))
@@ -70,14 +70,14 @@ class LcdCommRevA(LcdComm):
             self.lcd_serial.write(line)
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            print("(Write line) Too fast! Slow down!")
+            logger.warn("(Write line) Too fast! Slow down!")
 
     def InitializeComm(self):
         # HW revision A does not need init commands
         pass
 
     def Reset(self):
-        print("Display reset...")
+        logger.info("Display reset...")
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self.SendCommand(Command.RESET, 0, 0, 0, 0, bypass_queue=True)
         # Wait for display reset then reconnect
@@ -106,7 +106,7 @@ class LcdCommRevA(LcdComm):
         self.SendCommand(Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
     def SetBackplateLedColor(self, led_color: tuple[int, int, int] = THEME_DATA['display']["DISPLAY_RGB_LED"]):
-        print("HW revision A does not support backplate LED color setting")
+        logger.info("HW revision A does not support backplate LED color setting")
         pass
 
     def SetOrientation(self, orientation: Orientation = get_theme_orientation()):

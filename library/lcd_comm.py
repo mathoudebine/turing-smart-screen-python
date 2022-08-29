@@ -5,6 +5,7 @@ import serial
 from PIL import Image, ImageDraw, ImageFont
 
 from library import config
+from library.log import logger
 
 CONFIG_DATA = config.CONFIG_DATA
 THEME_DATA = config.THEME_DATA
@@ -27,7 +28,7 @@ def get_theme_orientation() -> Orientation:
     elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
         return Orientation.REVERSE_LANDSCAPE
     else:
-        print("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")
+        logger.warning("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")
         return Orientation.PORTRAIT
 
 
@@ -50,10 +51,10 @@ class LcdComm(ABC):
         if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
             self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
-            print(f"Auto detected comm port: {lcd_com_port}")
+            logger.debug(f"Auto detected comm port: {lcd_com_port}")
         else:
             lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
-            print(f"Static comm port: {lcd_com_port}")
+            logger.debug(f"Static comm port: {lcd_com_port}")
             self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
 
     @staticmethod

@@ -6,6 +6,7 @@ from functools import wraps
 
 import library.config as config
 import library.stats as stats
+from library.log import logger
 
 THEME_DATA = config.THEME_DATA
 
@@ -64,7 +65,7 @@ def schedule(interval):
 @schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)).total_seconds())
 def CPUPercentage():
     """ Refresh the CPU Percentage """
-    # print("Refresh CPU Percentage")
+    # logger.debug("Refresh CPU Percentage")
     stats.CPU.percentage()
 
 
@@ -72,7 +73,7 @@ def CPUPercentage():
 @schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['FREQUENCY'].get("INTERVAL", None)).total_seconds())
 def CPUFrequency():
     """ Refresh the CPU Frequency """
-    # print("Refresh CPU Frequency")
+    # logger.debug("Refresh CPU Frequency")
     stats.CPU.frequency()
 
 
@@ -80,7 +81,7 @@ def CPUFrequency():
 @schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['LOAD'].get("INTERVAL", None)).total_seconds())
 def CPULoad():
     """ Refresh the CPU Load """
-    # print("Refresh CPU Load")
+    # logger.debug("Refresh CPU Load")
     stats.CPU.load()
 
 
@@ -88,7 +89,7 @@ def CPULoad():
 @schedule(timedelta(seconds=THEME_DATA['STATS']['CPU']['TEMPERATURE'].get("INTERVAL", None)).total_seconds())
 def CPUTemperature():
     """ Refresh the CPU Temperature """
-    # print("Refresh CPU Temperature")
+    # logger.debug("Refresh CPU Temperature")
     stats.CPU.temperature()
 
 
@@ -96,7 +97,7 @@ def CPUTemperature():
 @schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
 def GpuNvidiaStats():
     """ Refresh the GPU Stats """
-    # print("Refresh GPU Stats")
+    # logger.debug("Refresh GPU Stats")
     stats.GpuNvidia.stats()
 
 
@@ -104,21 +105,21 @@ def GpuNvidiaStats():
 @schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
 def GpuAmdStats():
     """ Refresh the GPU Stats """
-    # print("Refresh GPU Stats")
+    # logger.debug("Refresh GPU Stats")
     stats.GpuAmd.stats()
 
 
 @async_job("Memory_Stats")
 @schedule(timedelta(seconds=THEME_DATA['STATS']['MEMORY'].get("INTERVAL", None)).total_seconds())
 def MemoryStats():
-    # print("Refresh memory stats")
+    # logger.debug("Refresh memory stats")
     stats.Memory.stats()
 
 
 @async_job("Disk_Stats")
 @schedule(timedelta(seconds=THEME_DATA['STATS']['DISK'].get("INTERVAL", None)).total_seconds())
 def DiskStats():
-    # print("Refresh disk stats")
+    # logger.debug("Refresh disk stats")
     stats.Disk.stats()
 
 

@@ -3,6 +3,7 @@ import struct
 from serial.tools.list_ports import comports
 
 from library.lcd_comm import *
+from library.log import logger
 
 
 class Command(IntEnum):
@@ -77,7 +78,7 @@ class LcdCommRevB(LcdComm):
             self.lcd_serial.write(bytes(byteBuffer))
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            print("(Write data) Too fast! Slow down!")
+            logger.warn("(Write data) Too fast! Slow down!")
 
     def SendLine(self, line: bytes):
         config.update_queue.put((self.WriteLine, [line]))
@@ -87,7 +88,7 @@ class LcdCommRevB(LcdComm):
             self.lcd_serial.write(line)
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
-            print("(Write line) Too fast! Slow down!")
+            logger.warn("(Write line) Too fast! Slow down!")
 
     def Hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
@@ -97,11 +98,11 @@ class LcdCommRevB(LcdComm):
         response = self.lcd_serial.read(10)
 
         if len(response) != 10:
-            print("Device not recognised (short response to HELLO)")
+            logger.warn("Device not recognised (short response to HELLO)")
         if response[0] != Command.HELLO or response[-1] != Command.HELLO:
-            print("Device not recognised (bad framing)")
+            logger.warn("Device not recognised (bad framing)")
         if [x for x in response[1:6]] != hello:
-            print("Device not recognised (No HELLO; got %r)" % (response[1:6],))
+            logger.warn("Device not recognised (No HELLO; got %r)" % (response[1:6],))
         # The HELLO response here is followed by:
         #   0x0A, 0x12, 0x00
         # It is not clear what these might be.

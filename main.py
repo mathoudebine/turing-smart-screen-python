@@ -9,19 +9,20 @@ import time
 
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:
-    print("Error: Python %s.%s or later is required.\n" % MIN_PYTHON)
+    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:
         sys.exit(0)
     except:
         os._exit(0)
 
+from library.log import logger
 import library.scheduler as scheduler
 from library.display import display
 
 if __name__ == "__main__":
 
     def sighandler(signum, frame):
-        print(" Caught signal", str(signum), ", exiting")
+        logger.info(" Caught signal %d, exiting" % signum)
 
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
@@ -29,13 +30,13 @@ if __name__ == "__main__":
 
         # Allow 5 seconds max. delay in case scheduler is not responding
         wait_time = 5
-        print("Waiting for all pending request to be sent to display (%ds max)..." % wait_time)
+        logger.info("Waiting for all pending request to be sent to display (%ds max)..." % wait_time)
 
         while not scheduler.is_queue_empty() and wait_time > 0:
             time.sleep(0.1)
             wait_time = wait_time - 0.1
 
-        print("(%.1fs)" % (5 - wait_time))
+        logger.debug("(%.1fs)" % (5 - wait_time))
 
         # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
@@ -69,15 +70,15 @@ if __name__ == "__main__":
     if stats.CPU.is_temperature_available():
         scheduler.CPUTemperature()
     else:
-        print("STATS: Your CPU temperature is not supported yet")
+        logger.warning("Your CPU temperature is not supported yet")
     if stats.GpuNvidia.is_available():
-        print("Detected Nvidia GPU(s)")
+        logger.info("Detected Nvidia GPU(s)")
         scheduler.GpuNvidiaStats()
     elif stats.GpuAmd.is_available():
-        print("Detected AMD GPU(s)")
+        logger.info("Detected AMD GPU(s)")
         scheduler.GpuAmdStats()
     else:
-        print("STATS: Your GPU is not supported yet")
+        logger.warning("Your GPU is not supported yet")
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.QueueHandler()

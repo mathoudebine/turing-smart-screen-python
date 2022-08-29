@@ -8,6 +8,7 @@ if os.name == 'posix':
 
 import library.config as config
 from library.display import display
+from library.log import logger
 
 THEME_DATA = config.THEME_DATA
 
@@ -23,7 +24,7 @@ class CPU:
     @staticmethod
     def percentage():
         cpu_percentage = psutil.cpu_percent(interval=THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None))
-        # print(f"CPU Percentage: {cpu_percentage}")
+        # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
         if THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
@@ -80,7 +81,7 @@ class CPU:
     @staticmethod
     def load():
         cpu_load = psutil.getloadavg()
-        # print(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
+        # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
 
         if THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
@@ -166,7 +167,7 @@ class CPU:
 
 def display_gpu_stats(load, memory_percentage, memory_used, temperature):
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
-        # print(f"GPU Load: {load}")
+        # logger.debug(f"GPU Load: {load}")
         display.lcd.DisplayProgressBar(
             x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
@@ -198,7 +199,7 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
         )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("SHOW", False):
-        # print(f"GPU Load: {load}")
+        # logger.debug(f"GPU Load: {load}")
         display.lcd.DisplayProgressBar(
             x=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("Y", 0),

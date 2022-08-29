@@ -1,4 +1,3 @@
-import logging
 import os
 import queue
 import sys
@@ -6,19 +5,12 @@ import threading
 
 import yaml
 
+from library.log import logger
+
 
 def load_yaml(configfile):
-    if not os.path.exists(configfile):
-        logging.critical("No YAML file found")
-        exit()
-
     with open(configfile, "r") as stream:
-        try:
-            yamlconfig = yaml.safe_load(stream)
-        except yaml.YAMLError:
-            logging.critical("Failed loading YAML configuration file")
-            exit()
-
+        yamlconfig = yaml.safe_load(stream)
         return yamlconfig
 
 
@@ -27,11 +19,11 @@ CONFIG_DATA = load_yaml("config.yaml")
 
 try:
     theme_path = "res/themes/" + CONFIG_DATA['config']['THEME'] + "/"
-    print("Loading theme", CONFIG_DATA['config']['THEME'], "from ", theme_path + "theme.yaml")
+    logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path + "theme.yaml"))
     THEME_DATA = load_yaml(theme_path + "theme.yaml")
     THEME_DATA['PATH'] = theme_path
 except:
-    print("Theme not found or contains errors!")
+    logger.error("Theme not found or contains errors!")
     try:
         sys.exit(0)
     except:
