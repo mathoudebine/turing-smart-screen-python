@@ -1,8 +1,8 @@
 # turing-smart-screen-python
 
-| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0.0 alpha 4 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-alpha.4) or the `feature/system-monitoring` branch!  <br><img src="res/pics/Theme3.5Inch.jpg" height="600" />  <img src="res/pics/ThemeTerminal.jpg" height="600" />  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._ |
+| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0.0 beta 1 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-beta.1) or the `feature/system-monitoring` branch!  <br><img src="res/pics/Theme3.5Inch.jpg" height="600" />  <img src="res/pics/ThemeTerminal.jpg" height="600" />  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._  |
 
 ---
 
@@ -15,8 +15,8 @@ This project is an open-source alternative software, not the USBMonitor.exe orig
 ---
 
 A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
-- Turing USB35INCHIPS / USB35INCHIPSV2
-- 3.5 Inch Mini Screen
+- Turing USB35INCHIPS / USB35INCHIPSV2 (revision A)
+- XuanFang display (revision B & flagship)
 - [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005003723773653.html)
 
 ## Hardware
