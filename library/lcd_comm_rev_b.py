@@ -30,16 +30,14 @@ class SubRevision(IntEnum):
 
 
 class LcdCommRevB(LcdComm):
-    def __init__(self):
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
+                 update_queue: queue.Queue = None):
+        LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
         self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
-        self.is_reverse_orientation = False  # Can be updated later by setOrientation()
 
     def __del__(self):
-        try:
-            self.lcd_serial.close()
-        except:
-            pass
+        self.closeSerial()
 
     def is_flagship(self):
         return self.sub_revision == SubRevision.A02 or self.sub_revision == SubRevision.A12
@@ -77,29 +75,13 @@ class LcdCommRevB(LcdComm):
         byteBuffer[8] = payload[7]
         byteBuffer[9] = cmd
 
-        if bypass_queue:
+        # If no queue for async requests, or if asked explicitly to do the request sequentially: do request now
+        if not self.update_queue or bypass_queue:
             self.WriteData(byteBuffer)
         else:
             # Lock queue mutex then queue the request
-            with config.update_queue_mutex:
-                config.update_queue.put((self.WriteData, [byteBuffer]))
-
-    def WriteData(self, byteBuffer: bytearray):
-        try:
-            self.lcd_serial.write(bytes(byteBuffer))
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write data) Too fast! Slow down!")
-
-    def SendLine(self, line: bytes):
-        config.update_queue.put((self.WriteLine, [line]))
-
-    def WriteLine(self, line: bytes):
-        try:
-            self.lcd_serial.write(line)
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write line) Too fast! Slow down!")
+            with self.update_queue_mutex:
+                self.update_queue.put((self.WriteData, [byteBuffer]))
 
     def Hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
@@ -140,7 +122,7 @@ class LcdCommRevB(LcdComm):
 
     def Clear(self):
         # HW revision B does not implement a Clear command: display a blank image on the whole screen
-        blank = Image.new("RGB", (get_width(), get_height()), (255, 255, 255))
+        blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.DisplayPILImage(blank)
 
     def ScreenOff(self):
@@ -151,7 +133,7 @@ class LcdCommRevB(LcdComm):
         # HW revision B does not implement a "ScreenOn" native command: using SetBrightness() instead
         self.SetBrightness()
 
-    def SetBrightness(self, level_user: int = CONFIG_DATA["display"]["BRIGHTNESS"]):
+    def SetBrightness(self, level_user: int = 25):
         assert 0 <= level_user <= 100, 'Brightness level must be [0-100]'
 
         if self.is_brightness_range():
@@ -165,20 +147,17 @@ class LcdCommRevB(LcdComm):
 
         self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
 
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = THEME_DATA['display']["DISPLAY_RGB_LED"]):
+    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
         if self.is_flagship():
             self.SendCommand(Command.SET_LIGHTING, payload=led_color)
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
-    def SetOrientation(self, orientation: Orientation = get_theme_orientation()):
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 320, new_height: int = 480):
         # In revision B, basic orientations (portrait / landscape) are managed by the display
         # The reverse orientations (reverse portrait / reverse landscape) are software-managed
-
-        self.is_reverse_orientation = (
-                    orientation == Orientation.REVERSE_PORTRAIT or orientation == Orientation.REVERSE_LANDSCAPE)
-
-        if orientation == Orientation.PORTRAIT or orientation == Orientation.REVERSE_PORTRAIT:
+        self.orientation = orientation
+        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
             self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_PORTRAIT])
         else:
             self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
@@ -197,22 +176,22 @@ class LcdCommRevB(LcdComm):
             image_width = image.size[0]
 
         # If our image is bigger than our display, resize it to fit our screen
-        if image.size[1] > get_height():
-            image_height = get_height()
-        if image.size[0] > get_width():
-            image_width = get_width()
+        if image.size[1] > self.get_height():
+            image_height = self.get_height()
+        if image.size[0] > self.get_width():
+            image_width = self.get_width()
 
-        assert x <= get_width(), 'Image X coordinate must be <= display width'
-        assert y <= get_height(), 'Image Y coordinate must be <= display height'
+        assert x <= self.get_width(), 'Image X coordinate must be <= display width'
+        assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
         assert image_height > 0, 'Image width must be > 0'
         assert image_width > 0, 'Image height must be > 0'
 
-        if not self.is_reverse_orientation:
+        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
             (x0, y0) = (x, y)
             (x1, y1) = (x + image_width - 1, y + image_height - 1)
         else:
-            (x0, y0) = (get_width() - x - image_width, get_height() - y - image_height)
-            (x1, y1) = (get_width() - x - 1, get_height() - y - 1)
+            (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
+            (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 
         self.SendCommand(Command.DISPLAY_BITMAP,
                          payload=[(x0 >> 8) & 255, x0 & 255,
@@ -223,10 +202,10 @@ class LcdCommRevB(LcdComm):
         line = bytes()
 
         # Lock queue mutex then queue all the requests for the image data
-        with config.update_queue_mutex:
+        with self.update_queue_mutex:
             for h in range(image_height):
                 for w in range(image_width):
-                    if not self.is_reverse_orientation:
+                    if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
                         R = pix[w, h][0] >> 3
                         G = pix[w, h][1] >> 2
                         B = pix[w, h][2] >> 3
@@ -247,7 +226,7 @@ class LcdCommRevB(LcdComm):
                     line += struct.pack('H', rgb)
 
                     # Send image data by multiple of DISPLAY_WIDTH bytes
-                    if len(line) >= get_width() * 8:
+                    if len(line) >= self.get_width() * 8:
                         self.SendLine(line)
                         line = bytes()
 

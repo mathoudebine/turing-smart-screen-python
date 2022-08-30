@@ -19,6 +19,7 @@ display:
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
+  # Warning: screen can get very hot at high brightness!
   BRIGHTNESS: 20
 
   # Display revision: A or B (for "flagship" version, use B)

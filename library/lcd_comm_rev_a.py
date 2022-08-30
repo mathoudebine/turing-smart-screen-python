@@ -19,14 +19,13 @@ class Command(IntEnum):
 
 
 class LcdCommRevA(LcdComm):
-    def __init__(self):
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
+                 update_queue: queue.Queue = None):
+        LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
 
     def __del__(self):
-        try:
-            self.lcd_serial.close()
-        except:
-            pass
+        self.closeSerial()
 
     @staticmethod
     def auto_detect_com_port():
@@ -48,36 +47,20 @@ class LcdCommRevA(LcdComm):
         byteBuffer[4] = (ey & 255)
         byteBuffer[5] = cmd
 
-        if bypass_queue:
+        # If no queue for async requests, or if asked explicitly to do the request sequentially: do request now
+        if not self.update_queue or bypass_queue:
             self.WriteData(byteBuffer)
         else:
             # Lock queue mutex then queue the request
-            with config.update_queue_mutex:
-                config.update_queue.put((self.WriteData, [byteBuffer]))
-
-    def WriteData(self, byteBuffer: bytearray):
-        try:
-            self.lcd_serial.write(bytes(byteBuffer))
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write data) Too fast! Slow down!")
-
-    def SendLine(self, line: bytes):
-        config.update_queue.put((self.WriteLine, [line]))
-
-    def WriteLine(self, line: bytes):
-        try:
-            self.lcd_serial.write(line)
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write line) Too fast! Slow down!")
+            with self.update_queue_mutex:
+                self.update_queue.put((self.WriteData, [byteBuffer]))
 
     def InitializeComm(self):
         # HW revision A does not need init commands
         pass
 
     def Reset(self):
-        logger.info("Display reset...")
+        logger.info("Display reset (COM port may change)...")
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self.SendCommand(Command.RESET, 0, 0, 0, 0, bypass_queue=True)
         # Wait for display reset then reconnect
@@ -95,7 +78,7 @@ class LcdCommRevA(LcdComm):
     def ScreenOn(self):
         self.SendCommand(Command.SCREEN_ON, 0, 0, 0, 0)
 
-    def SetBrightness(self, level: int = CONFIG_DATA["display"]["BRIGHTNESS"]):
+    def SetBrightness(self, level: int = 25):
         assert 0 <= level <= 100, 'Brightness level must be [0-100]'
 
         # Display scales from 0 to 255, with 0 being the brightest and 255 being the darkest.
@@ -105,13 +88,14 @@ class LcdCommRevA(LcdComm):
         # Level : 0 (brightest) - 255 (darkest)
         self.SendCommand(Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = THEME_DATA['display']["DISPLAY_RGB_LED"]):
+    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
         logger.info("HW revision A does not support backplate LED color setting")
         pass
 
-    def SetOrientation(self, orientation: Orientation = get_theme_orientation()):
-        width = get_width()
-        height = get_height()
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
+        self.orientation = orientation
+        width = self.get_width()
+        height = self.get_height()
         x = 0
         y = 0
         ex = 0
@@ -144,13 +128,13 @@ class LcdCommRevA(LcdComm):
             image_width = image.size[0]
 
         # If our image is bigger than our display, resize it to fit our screen
-        if image.size[1] > get_height():
-            image_height = get_height()
-        if image.size[0] > get_width():
-            image_width = get_width()
+        if image.size[1] > self.get_height():
+            image_height = self.get_height()
+        if image.size[0] > self.get_width():
+            image_width = self.get_width()
 
-        assert x <= get_width(), 'Image X coordinate must be <= display width'
-        assert y <= get_height(), 'Image Y coordinate must be <= display height'
+        assert x <= self.get_width(), 'Image X coordinate must be <= display width'
+        assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
         assert image_height > 0, 'Image width must be > 0'
         assert image_width > 0, 'Image height must be > 0'
 
@@ -163,7 +147,7 @@ class LcdCommRevA(LcdComm):
         line = bytes()
 
         # Lock queue mutex then queue all the requests for the image data
-        with config.update_queue_mutex:
+        with self.update_queue_mutex:
             for h in range(image_height):
                 for w in range(image_width):
                     R = pix[w, h][0] >> 3
@@ -174,7 +158,7 @@ class LcdCommRevA(LcdComm):
                     line += struct.pack('H', rgb)
 
                     # Send image data by multiple of DISPLAY_WIDTH bytes
-                    if len(line) >= get_width() * 8:
+                    if len(line) >= self.get_width() * 8:
                         self.SendLine(line)
                         line = bytes()
 

@@ -1,4 +1,5 @@
 from library import config
+from library.lcd_comm import Orientation
 from library.lcd_comm_rev_a import LcdCommRevA
 from library.lcd_comm_rev_b import LcdCommRevB
 from library.log import logger
@@ -7,20 +8,40 @@ THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
 
 
-def get_full_path(path, name):
+def _get_full_path(path, name):
     if name:
         return path + name
     else:
         return None
 
 
+def _get_theme_orientation() -> Orientation:
+    if THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
+        return Orientation.PORTRAIT
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'landscape':
+        return Orientation.LANDSCAPE
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_portrait':
+        return Orientation.REVERSE_PORTRAIT
+    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
+        return Orientation.REVERSE_LANDSCAPE
+    else:
+        logger.warning("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")
+        return Orientation.PORTRAIT
+
+
 class Display:
     def __init__(self):
         self.lcd = None
         if CONFIG_DATA["display"]["REVISION"] == "A":
-            self.lcd = LcdCommRevA()
+            self.lcd = LcdCommRevA(com_port=CONFIG_DATA['config']['COM_PORT'],
+                                   display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
+                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
+                                   update_queue=config.update_queue)
         elif CONFIG_DATA["display"]["REVISION"] == "B":
-            self.lcd = LcdCommRevB()
+            self.lcd = LcdCommRevB(com_port=CONFIG_DATA['config']['COM_PORT'],
+                                   display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
+                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
+                                   update_queue=config.update_queue)
         else:
             logger.error("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 
@@ -32,13 +53,13 @@ class Display:
         self.lcd.InitializeComm()
 
         # Set brightness
-        self.lcd.SetBrightness()
+        self.lcd.SetBrightness(CONFIG_DATA["display"]["BRIGHTNESS"])
 
         # Set backplate RGB LED color (for supported HW only)
-        self.lcd.SetBackplateLedColor()
+        self.lcd.SetBackplateLedColor(THEME_DATA['display']["DISPLAY_RGB_LED"])
 
         # Set orientation
-        self.lcd.SetOrientation()
+        self.lcd.SetOrientation(_get_theme_orientation())
 
     def display_static_images(self):
         if THEME_DATA['static_images']:
@@ -64,8 +85,8 @@ class Display:
                     font_size=THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
                     font_color=THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
                     background_color=THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
-                    background_image=get_full_path(THEME_DATA['PATH'],
-                                                   THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None))
+                    background_image=_get_full_path(THEME_DATA['PATH'],
+                                                    THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE", None))
                 )
 
 

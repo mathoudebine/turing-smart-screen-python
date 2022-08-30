@@ -1,14 +1,12 @@
+import queue
+import threading
 from abc import ABC, abstractmethod
 from enum import IntEnum
 
 import serial
 from PIL import Image, ImageDraw, ImageFont
 
-from library import config
 from library.log import logger
-
-CONFIG_DATA = config.CONFIG_DATA
-THEME_DATA = config.THEME_DATA
 
 
 class Orientation(IntEnum):
@@ -18,44 +16,78 @@ class Orientation(IntEnum):
     REVERSE_LANDSCAPE = 3
 
 
-def get_theme_orientation() -> Orientation:
-    if THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return Orientation.PORTRAIT
-    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'landscape':
-        return Orientation.LANDSCAPE
-    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_portrait':
-        return Orientation.REVERSE_PORTRAIT
-    elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
-        return Orientation.REVERSE_LANDSCAPE
-    else:
-        logger.warning("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")
-        return Orientation.PORTRAIT
-
-
-def get_width() -> int:
-    if get_theme_orientation() == Orientation.PORTRAIT or get_theme_orientation() == Orientation.REVERSE_PORTRAIT:
-        return CONFIG_DATA["display"]["DISPLAY_WIDTH"]
-    else:
-        return CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-
-
-def get_height() -> int:
-    if get_theme_orientation() == Orientation.PORTRAIT or get_theme_orientation() == Orientation.REVERSE_PORTRAIT:
-        return CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-    else:
-        return CONFIG_DATA["display"]["DISPLAY_WIDTH"]
-
-
 class LcdComm(ABC):
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
+                 update_queue: queue.Queue = None):
+        self.lcd_serial = None
+
+        # String containing absolute path to serial port e.g. "COM3", "/dev/ttyACM1" or "AUTO" for auto-discovery
+        self.com_port = com_port
+
+        # Display always start in portrait orientation by default
+        self.orientation = Orientation.PORTRAIT
+        # Display width in default orientation (portrait)
+        self.display_width = display_width
+        # Display height in default orientation (portrait)
+        self.display_height = display_height
+
+        # Queue containing the serial requests to send to the screen. An external thread should run to process requests
+        # on the queue. If you want serial requests to be done in sequence, set it to None
+        self.update_queue = update_queue
+
+        # Mutex to protect the queue in case a thread want to add multiple requests (e.g. image data) that should not be
+        # mixed with other requests in-between
+        self.update_queue_mutex = threading.Lock()
+
+    def get_width(self) -> int:
+        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
+            return self.display_width
+        else:
+            return self.display_height
+
+    def get_height(self) -> int:
+        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
+            return self.display_height
+        else:
+            return self.display_width
+
     def openSerial(self):
-        if CONFIG_DATA['config']['COM_PORT'] == 'AUTO':
+        if self.com_port == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
             self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
-            logger.debug(f"Auto detected comm port: {lcd_com_port}")
+            logger.debug(f"Auto detected COM port: {lcd_com_port}")
         else:
-            lcd_com_port = CONFIG_DATA["config"]["COM_PORT"]
-            logger.debug(f"Static comm port: {lcd_com_port}")
+            lcd_com_port = self.com_port
+            logger.debug(f"Static COM port: {lcd_com_port}")
             self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+
+    def closeSerial(self):
+        try:
+            self.lcd_serial.close()
+        except:
+            pass
+
+    def WriteData(self, byteBuffer: bytearray):
+        try:
+            self.lcd_serial.write(bytes(byteBuffer))
+        except serial.serialutil.SerialTimeoutException:
+            # We timed-out trying to write to our device, slow things down.
+            logger.warning("(Write data) Too fast! Slow down!")
+
+    def SendLine(self, line: bytes):
+        if self.update_queue:
+            # Queue the request. Mutex is locked by caller to queue multiple lines
+            self.update_queue.put((self.WriteLine, [line]))
+        else:
+            # If no queue for async requests: do request now
+            self.WriteLine(line)
+
+    def WriteLine(self, line: bytes):
+        try:
+            self.lcd_serial.write(line)
+        except serial.serialutil.SerialTimeoutException:
+            # We timed-out trying to write to our device, slow things down.
+            logger.warning("(Write line) Too fast! Slow down!")
 
     @staticmethod
     @abstractmethod
@@ -128,8 +160,8 @@ class LcdComm(ABC):
         if isinstance(background_color, str):
             background_color = tuple(map(int, background_color.split(', ')))
 
-        assert x <= get_width(), 'Text X coordinate must be <= display width'
-        assert y <= get_height(), 'Text Y coordinate must be <= display height'
+        assert x <= self.get_width(), 'Text X coordinate must be <= display width'
+        assert y <= self.get_height(), 'Text Y coordinate must be <= display height'
         assert len(text) > 0, 'Text must not be empty'
         assert font_size > 0, "Font size must be > 0"
 
@@ -137,7 +169,7 @@ class LcdComm(ABC):
             # A text bitmap is created with max width/height by default : text with solid background
             text_image = Image.new(
                 'RGB',
-                (get_width(), get_height()),
+                (self.get_width(), self.get_height()),
                 background_color
             )
         else:
@@ -153,8 +185,8 @@ class LcdComm(ABC):
         left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
         text_image = text_image.crop(box=(
             x, y,
-            min(x + text_width, get_width()),
-            min(y + text_height, get_height())
+            min(x + text_width, self.get_width()),
+            min(y + text_height, self.get_height())
         ))
 
         self.DisplayPILImage(text_image, x, y)
@@ -174,10 +206,10 @@ class LcdComm(ABC):
         if isinstance(background_color, str):
             background_color = tuple(map(int, background_color.split(', ')))
 
-        assert x <= get_width(), 'Progress bar X coordinate must be <= display width'
-        assert y <= get_height(), 'Progress bar Y coordinate must be <= display height'
-        assert x + width <= get_width(), 'Progress bar width exceeds display width'
-        assert y + height <= get_height(), 'Progress bar height exceeds display height'
+        assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
+        assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
+        assert x + width <= self.get_width(), 'Progress bar width exceeds display width'
+        assert y + height <= self.get_height(), 'Progress bar height exceeds display height'
 
         # Don't let the set value exceed our min or max value, this is bad :)
         if value < min_value:

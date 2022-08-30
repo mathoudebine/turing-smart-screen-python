@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C display
+# A system monitor in Python for "Turing Smart Screen" 3.5" IPS USB-C display
 # https://github.com/mathoudebine/turing-smart-screen-python
 
 import os

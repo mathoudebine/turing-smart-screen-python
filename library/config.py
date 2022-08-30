@@ -1,7 +1,6 @@
 import os
 import queue
 import sys
-import threading
 
 import yaml
 
@@ -31,7 +30,3 @@ except:
 
 # Queue containing the serial requests to send to the screen
 update_queue = queue.Queue()
-
-# Mutex to protect the queue in case a thread want to add multiple requests (e.g. image data) that should not be
-# mixed with other requests in-between
-update_queue_mutex = threading.Lock()
