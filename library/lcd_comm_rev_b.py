@@ -14,6 +14,8 @@ class Command(IntEnum):
     SET_BRIGHTNESS = 0xCE  # Sets the screen brightness
 
 
+# In revision B, basic orientations (portrait / landscape) are managed by the display
+# The reverse orientations (reverse portrait / reverse landscape) are software-managed
 class OrientationValueRevB(IntEnum):
     ORIENTATION_PORTRAIT = 0x0
     ORIENTATION_LANDSCAPE = 0x1
@@ -27,17 +29,11 @@ class SubRevision(IntEnum):
     A12 = 0xA12  # HW revision "flagship" - brightness 0-255
 
 
-def get_rev_b_orientation(orientation: Orientation) -> OrientationValueRevB:
-    if orientation == Orientation.PORTRAIT or orientation == Orientation.REVERSE_PORTRAIT:
-        return OrientationValueRevB.ORIENTATION_PORTRAIT
-    else:
-        return OrientationValueRevB.ORIENTATION_LANDSCAPE
-
-
 class LcdCommRevB(LcdComm):
     def __init__(self):
         self.openSerial()
-        self.sub_revision = SubRevision.A01  # Will be detected later by Hello
+        self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
+        self.is_reverse_orientation = False  # Can be updated later by setOrientation()
 
     def __del__(self):
         try:
@@ -176,7 +172,16 @@ class LcdCommRevB(LcdComm):
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
     def SetOrientation(self, orientation: Orientation = get_theme_orientation()):
-        self.SendCommand(Command.SET_ORIENTATION, payload=[get_rev_b_orientation(orientation)])
+        # In revision B, basic orientations (portrait / landscape) are managed by the display
+        # The reverse orientations (reverse portrait / reverse landscape) are software-managed
+
+        self.is_reverse_orientation = (
+                    orientation == Orientation.REVERSE_PORTRAIT or orientation == Orientation.REVERSE_LANDSCAPE)
+
+        if orientation == Orientation.PORTRAIT or orientation == Orientation.REVERSE_PORTRAIT:
+            self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_PORTRAIT])
+        else:
+            self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
 
     def DisplayPILImage(
             self,
@@ -202,8 +207,12 @@ class LcdCommRevB(LcdComm):
         assert image_height > 0, 'Image width must be > 0'
         assert image_width > 0, 'Image height must be > 0'
 
-        (x0, y0) = (x, y)
-        (x1, y1) = (x + image_width - 1, y + image_height - 1)
+        if not self.is_reverse_orientation:
+            (x0, y0) = (x, y)
+            (x1, y1) = (x + image_width - 1, y + image_height - 1)
+        else:
+            (x0, y0) = (get_width() - x - image_width, get_height() - y - image_height)
+            (x1, y1) = (get_width() - x - 1, get_height() - y - 1)
 
         self.SendCommand(Command.DISPLAY_BITMAP,
                          payload=[(x0 >> 8) & 255, x0 & 255,
@@ -217,9 +226,14 @@ class LcdCommRevB(LcdComm):
         with config.update_queue_mutex:
             for h in range(image_height):
                 for w in range(image_width):
-                    R = pix[w, h][0] >> 3
-                    G = pix[w, h][1] >> 2
-                    B = pix[w, h][2] >> 3
+                    if not self.is_reverse_orientation:
+                        R = pix[w, h][0] >> 3
+                        G = pix[w, h][1] >> 2
+                        B = pix[w, h][2] >> 3
+                    else:
+                        R = pix[image_width - w - 1, image_height - h - 1][0] >> 3
+                        G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
+                        B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
 
                     # Revision A: 0bRRRRRGGGGGGBBBBB
                     #               fedcba9876543210

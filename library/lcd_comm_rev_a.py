@@ -154,7 +154,10 @@ class LcdCommRevA(LcdComm):
         assert image_height > 0, 'Image width must be > 0'
         assert image_width > 0, 'Image height must be > 0'
 
-        self.SendCommand(Command.DISPLAY_BITMAP, x, y, x + image_width - 1, y + image_height - 1)
+        (x0, y0) = (x, y)
+        (x1, y1) = (x + image_width - 1, y + image_height - 1)
+
+        self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
 
         pix = image.load()
         line = bytes()
