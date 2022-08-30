@@ -1,7 +1,6 @@
-import os
-
 import GPUtil
 import psutil
+
 try:
     import pyamdgpuinfo
 except ImportError:
@@ -164,7 +163,9 @@ class CPU:
                 font_color=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR",
                                                                                        (255, 255, 255)),
-                background_image=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE", None)
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
             )
         # TODO: Built in function for *nix in psutil, for Windows can use WMI or a third party library
 

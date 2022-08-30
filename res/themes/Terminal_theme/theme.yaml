@@ -26,7 +26,7 @@ static_text:
   # Specify what static text we want to show on the display
   # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
   # Text are drawn in the order they are listed below, the top text will be drawn first (so places text back to front)
-  # IMAGE_NAME:
+  # TEXT_NAME:
   #   TEXT:
   #   X:
   #   Y:

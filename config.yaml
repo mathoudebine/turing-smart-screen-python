@@ -8,6 +8,7 @@ config:
 
   # Theme to use (located in res/themes)
   # THEME: Terminal_theme
+  # THEME: Landscape6Grid
   THEME: 3.5inchTheme2_theme
 
 display:
