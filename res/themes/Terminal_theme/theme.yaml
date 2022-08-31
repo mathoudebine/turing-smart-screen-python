@@ -1,0 +1,283 @@
+---
+display:
+  # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
+  DISPLAY_ORIENTATION: portrait
+
+  # Backplate RGB LED color (for HW revision 'flagship' devices only)
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  # Specify what static images we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Images are drawn in the order they are listed below, the top image will be drawn first (so places images back to front)
+  # IMAGE_NAME:
+  #   PATH:
+  #   X:
+  #   Y:
+  #   WIDTH:
+  #   HEIGHT:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+static_text:
+  # Specify what static text we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Text are drawn in the order they are listed below, the top text will be drawn first (so places text back to front)
+  # TEXT_NAME:
+  #   TEXT:
+  #   X:
+  #   Y:
+  #   FONT:
+  #   FONT_SIZE:
+  #   FONT_COLOR: 0, 0, 0
+  #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
+  #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
+  TEXT_EXAMPLE:
+   TEXT: Add your custom text here!
+   X: 20
+   Y: 400
+   FONT: geforce/GeForce-Bold.ttf
+   FONT_SIZE: 20
+   FONT_COLOR: 255, 255, 255
+   # BACKGROUND_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+STATS:
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        X: 100
+        Y: 20
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 71
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        X: 100
+        Y: 87
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+        # BACKGROUND_IMAGE: background.png
+    LOAD:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      ONE:
+        TEXT:
+          SHOW: True
+          X: 110
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIVE:
+        TEXT:
+          SHOW: TRUE
+          X: 183
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIFTEEN:
+        TEXT:
+          SHOW: TRUE
+          X: 265
+          Y: 106
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: False
+        X: 154
+        Y: 13
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+  GPU:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 197
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: False
+        X: 250
+        Y: 140
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    MEMORY:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 215
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: False
+        X: 204
+        Y: 195
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: TRUE
+        X: 115
+        Y: 231
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+        # BACKGROUND_IMAGE: background.png
+  MEMORY:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 5
+    SWAP:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 285
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 303
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      VALUE_TEXT:
+        SHOW: False
+        X: 204
+        Y: 290
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: False
+        X: 250
+        Y: 240
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 357
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: False
+        X: 204
+        Y: 405
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    TOTAL:
+      TEXT:
+        SHOW: False
+        X: 204
+        Y: 375
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    FREE:
+      TEXT:
+        SHOW: False
+        X: 204
+        Y: 435
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png

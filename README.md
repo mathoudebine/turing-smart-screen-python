@@ -1,11 +1,5 @@
 # turing-smart-screen-python
 
-| Check out new version with system monitoring features!                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Are you using your Turing Smart Screen for system monitoring?  <br>If so, check out the new [**pre-release 2.0.0 beta 1 - 📊 System Monitor**](https://github.com/mathoudebine/turing-smart-screen-python/releases/tag/2.0.0-beta.1) or the `feature/system-monitoring` branch!  <br><img src="res/pics/Theme3.5Inch.jpg" height="600" />  <img src="res/pics/ThemeTerminal.jpg" height="600" />  <br>It contains embedded hardware monitoring functions, theme creation from configuration files, serial port auto-detection...  <br>See Release Notes to learn more about features and current limitations <br>_Python knowledges recommended._  |
-
----
-
 ### ⚠️ DISCLAIMER - PLEASE READ ⚠️
 
 This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing brand**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing products. All product and company names are the registered trademarks of their original owners.
@@ -14,42 +8,60 @@ This project is an open-source alternative software, not the USBMonitor.exe orig
 
 ---
 
-A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
+A Python system monitor program and a library for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
 - Turing USB35INCHIPS / USB35INCHIPSV2 (revision A)
 - XuanFang display (revision B & flagship)
 - [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005003723773653.html)
 
-## Hardware
-<img src="res/pics/smart-screen-3.webp" width="500"/>
+<img src="res/docs/smart-screen-2.webp" height="300" />
 
-The Turing Smart Screen is a 3.5" USB-C display that shows as a serial port once connected.
-It cannot be seen by the operating system as a monitor but pictures can be displayed on it.
+[**Display hardware revisions supported: A, B & flagship**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions).  
+Flagship backplate RGB LEDs are also supported!  
 
-There is 3 hardware revisions of the screen: [how to identify my version?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions) Version B and "flagship" use the same protocol.  
-A [Windows-only software is available](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Vendor-apps) is provided by the vendor to manage this display.
-This software allows creating themes to display your computer sensors on the screen, but does not offer a simple way to display custom pictures or text.
+Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python 3.x
 
-## Features
-This Python script can do some simple operations on the Turing display like :
+
+## How to use
+
+### [> Follow instructions on the wiki to configure and start this project.](https://github.com/mathoudebine/turing-smart-screen-python/wiki)
+
+There are 2 possible uses of this project Python code:
+* **[as a System Monitor](#system-monitor)**, a standalone program working with themes to display your computer HW info.
+* **[integrated in your project](#control-the-display-from-your-python-projects)**, to control the display from your own Python code.
+
+## System monitor
+
+This project is mainly a complete standalone program to use your screen as a system monitor, like the original vendor app.  
+Some themes are already included for a quick start!
+### [> Configure and start system monitor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start)
+* Fully functional multi-OS code base (operates out of the box, tested on Windows, Linux & MacOS).
+* Display configuration using `config.yaml` file: no Python code to edit.
+* Support for all [3 screen HW revisions: A, B & flagship](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Flagship backplate RGB LEDs are also supported!
+* Support [multiple hardware sensors and metrics (CPU/GPU usage, temperatures, memory, disks, etc)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes#stats-entry) with configurable refresh intervals.
+* Allow [creation of themes (see `res/themes`) with `theme.yaml` files](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be shared with the community!
+* Easy to expand: additional code that pulls specific information can be written in a modular way without impacting existing code.
+* Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
+
+Screenshots from the latest version using included themes:  
+<img src="res/docs/Theme3.5Inch.jpg" height="400" />       <img src="res/docs/ThemeTerminal.jpg" height="400" />
+
+### [> Themes creation/edition](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
+
+## Control the display from your Python projects
+
+If you don't want to use your screen for system monitoring, you can just use this project as a module to do some simple operations on the display from any Python code :
 - **Display custom picture**
 - **Display text**
 - **Display progress bar**
 - **Screen rotation**
-- Clear the screen (blank) - HW version A only
-- Turn the screen on/off - HW version A only
-- Display soft reset - HW version A only
+- Clear the screen (blank)
+- Turn the screen on/off
+- Display soft reset
 - Set brightness
+- Set backplate RGB LEDs color (on supported hardware rev.) 
 
-Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python3.7
+Check `simple-program.py` as an example.
 
-## Getting started
-_Python knowledges recommended._  
-Download this project by cloning it or using the [Releases sections](https://github.com/mathoudebine/turing-smart-screen-python/releases)   
-Download and install the latest Python 3.x (min. 3.7) for your OS: https://www.python.org/downloads/  
-Plug your Turing display to your computer (install the drivers if on Windows)  
-[Identify your hardware revision (version A or version B/flagship)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
-Open the `mainVersionA.py` or `mainVersionB.py` file and edit the [`COM_PORT`](https://github.com/mathoudebine/turing-smart-screen-python/blob/deb0a60b772f2c5acef377f13b959632ca649f9f/main.py#L15)  variable to the port used by the display  
-Open a terminal and run `python3 mainVersionA.py / mainVersionB.py` or `py -3 mainVersionA.py / mainVersionB.py` depending on your OS  
-You should see animated content on your Turing display!  
+### [> Control the display from your code](Control-screen-from-your-own-code)
 
-You can then edit the `mainVersionA.py / mainVersionB.py` file to change the content displayed, or use this file as a Python module for your personal Python project
+
