@@ -62,6 +62,6 @@ If you don't want to use your screen for system monitoring, you can just use thi
 
 Check `simple-program.py` as an example.
 
-### [> Control the display from your code](Control-screen-from-your-own-code)
+### [> Control the display from your code](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Control-screen-from-your-own-code)
 
 
