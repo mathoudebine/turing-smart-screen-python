@@ -1,4 +1,5 @@
 import struct
+import time
 
 from serial.tools.list_ports import comports
 
@@ -30,9 +31,8 @@ class SubRevision(IntEnum):
 
 
 class LcdCommRevB(LcdComm):
-    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
-        LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480):
+        super().__init__(com_port, display_width, display_height)
         self.openSerial()
         self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
 
@@ -56,7 +56,13 @@ class LcdCommRevB(LcdComm):
 
         return auto_com_port
 
-    def SendCommand(self, cmd: Command, payload=None, bypass_queue: bool = False):
+    def SendCommand(self, cmd: Command, payload=None):
+
+        # Commands must be sent at least 'inter_bitmap_delay' after the bitmap data.
+        delay = (self.last_bitmap_time + self.inter_bitmap_delay) - time.time()
+        if delay > 0:
+            time.sleep(delay)
+
         # New protocol (10 byte packets, framed with the command, 8 data bytes inside)
         if payload is None:
             payload = [0] * 8
@@ -75,20 +81,15 @@ class LcdCommRevB(LcdComm):
         byteBuffer[8] = payload[7]
         byteBuffer[9] = cmd
 
-        # If no queue for async requests, or if asked explicitly to do the request sequentially: do request now
-        if not self.update_queue or bypass_queue:
-            self.WriteData(byteBuffer)
-        else:
-            # Lock queue mutex then queue the request
-            with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [byteBuffer]))
+        self.WriteData(byteBuffer)
 
     def Hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
 
         # This command reads LCD answer on serial link, so it bypasses the queue
-        self.SendCommand(Command.HELLO, payload=hello, bypass_queue=True)
-        response = self.lcd_serial.read(10)
+        with self.com_mutex:
+            self.SendCommand(Command.HELLO, payload=hello)
+            response = self.lcd_serial.read(10)
 
         if len(response) != 10:
             logger.warning("Device not recognised (short response to HELLO)")
@@ -138,18 +139,19 @@ class LcdCommRevB(LcdComm):
 
         if self.is_brightness_range():
             # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
-            # Convert our brightness % to an absolute value.
             level = int((level_user / 100) * 255)
         else:
             # Brightness is 1 (off) or 0 (full brightness)
             logger.info("Your display does not support custom brightness level")
             level = 1 if level_user == 0 else 0
 
-        self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
+        with self.com_mutex:
+            self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
 
     def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
         if self.is_flagship():
-            self.SendCommand(Command.SET_LIGHTING, payload=led_color)
+            with self.com_mutex:
+                self.SendCommand(Command.SET_LIGHTING, payload=led_color)
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
@@ -157,10 +159,11 @@ class LcdCommRevB(LcdComm):
         # In revision B, basic orientations (portrait / landscape) are managed by the display
         # The reverse orientations (reverse portrait / reverse landscape) are software-managed
         self.orientation = orientation
-        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
-            self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_PORTRAIT])
-        else:
-            self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
+        with self.com_mutex:
+            if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
+                self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_PORTRAIT])
+            else:
+                self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
 
     def DisplayPILImage(
             self,
@@ -193,16 +196,17 @@ class LcdCommRevB(LcdComm):
             (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
             (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 
-        self.SendCommand(Command.DISPLAY_BITMAP,
-                         payload=[(x0 >> 8) & 255, x0 & 255,
-                                  (y0 >> 8) & 255, y0 & 255,
-                                  (x1 >> 8) & 255, x1 & 255,
-                                  (y1 >> 8) & 255, y1 & 255])
+        # Do the image load outside the mutex in case it takes a long time
         pix = image.load()
-        line = bytes()
 
-        # Lock queue mutex then queue all the requests for the image data
-        with self.update_queue_mutex:
+        with self.com_mutex:
+            self.SendCommand(Command.DISPLAY_BITMAP,
+                             payload=[(x0 >> 8) & 255, x0 & 255,
+                                      (y0 >> 8) & 255, y0 & 255,
+                                      (x1 >> 8) & 255, x1 & 255,
+                                      (y1 >> 8) & 255, y1 & 255])
+            line = bytes()
+
             for h in range(image_height):
                 for w in range(image_width):
                     if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
@@ -227,9 +231,13 @@ class LcdCommRevB(LcdComm):
 
                     # Send image data by multiple of DISPLAY_WIDTH bytes
                     if len(line) >= self.get_width() * 8:
-                        self.SendLine(line)
+                        self.WriteLine(line)
                         line = bytes()
 
             # Write last line if needed
             if len(line) > 0:
-                self.SendLine(line)
+                self.WriteLine(line)
+
+            # There must be a short period between the last write of the bitmap data and the next
+            # command. This seems to be around 0.02s on the flagship device.
+            self.last_bitmap_time = time.time()

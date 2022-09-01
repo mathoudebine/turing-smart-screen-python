@@ -35,13 +35,11 @@ class Display:
         if CONFIG_DATA["display"]["REVISION"] == "A":
             self.lcd = LcdCommRevA(com_port=CONFIG_DATA['config']['COM_PORT'],
                                    display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
-                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
-                                   update_queue=config.update_queue)
+                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
         elif CONFIG_DATA["display"]["REVISION"] == "B":
             self.lcd = LcdCommRevB(com_port=CONFIG_DATA['config']['COM_PORT'],
                                    display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
-                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
-                                   update_queue=config.update_queue)
+                                   display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
         else:
             logger.error("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 

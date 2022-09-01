@@ -17,8 +17,11 @@ class Orientation(IntEnum):
 
 
 class LcdComm(ABC):
-    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+    # Amount of time that we should delay between sending bitmap data and sending the next
+    # command. If commands are issued too quickly after a bitmap, corruption is seen.
+    inter_bitmap_delay = 0.02
+
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480):
         self.lcd_serial = None
 
         # String containing absolute path to serial port e.g. "COM3", "/dev/ttyACM1" or "AUTO" for auto-discovery
@@ -31,13 +34,11 @@ class LcdComm(ABC):
         # Display height in default orientation (portrait)
         self.display_height = display_height
 
-        # Queue containing the serial requests to send to the screen. An external thread should run to process requests
-        # on the queue. If you want serial requests to be done in sequence, set it to None
-        self.update_queue = update_queue
+        # Last time we sent bitmap data
+        self.last_bitmap_time = 0
 
-        # Mutex to protect the queue in case a thread want to add multiple requests (e.g. image data) that should not be
-        # mixed with other requests in-between
-        self.update_queue_mutex = threading.Lock()
+        # Mutex that must be held over any requests that must be kept together.
+        self.com_mutex = threading.Lock()
 
     def get_width(self) -> int:
         if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
