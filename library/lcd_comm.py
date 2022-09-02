@@ -2,6 +2,7 @@ import queue
 import threading
 from abc import ABC, abstractmethod
 from enum import IntEnum
+from typing import Tuple
 
 import serial
 from PIL import Image, ImageDraw, ImageFont
@@ -119,7 +120,7 @@ class LcdComm(ABC):
         pass
 
     @abstractmethod
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int]):
+    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 
     @abstractmethod
@@ -147,8 +148,8 @@ class LcdComm(ABC):
             y: int = 0,
             font: str = "roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
-            font_color: tuple[int, int, int] = (0, 0, 0),
-            background_color: tuple[int, int, int] = (255, 255, 255),
+            font_color: Tuple[int, int, int] = (0, 0, 0),
+            background_color: Tuple[int, int, int] = (255, 255, 255),
             background_image: str = None
     ):
         # Convert text to bitmap using PIL and display it
@@ -195,9 +196,9 @@ class LcdComm(ABC):
 
     def DisplayProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                            value: int = 50,
-                           bar_color: tuple[int, int, int] = (0, 0, 0),
+                           bar_color: Tuple[int, int, int] = (0, 0, 0),
                            bar_outline: bool = True,
-                           background_color: tuple[int, int, int] = (255, 255, 255),
+                           background_color: Tuple[int, int, int] = (255, 255, 255),
                            background_image: str = None):
         # Generate a progress bar and display it
         # Provide the background image path to display progress bar with transparent background

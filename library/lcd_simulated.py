@@ -1,6 +1,36 @@
+import mimetypes
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
 from library.lcd_comm import *
 
 
+# This webserver offer a blank page displaying simulated screen with auto-refresh
+class SimulatedLcdWebServer(BaseHTTPRequestHandler):
+    def log_message(self, format, *args):
+        return
+
+    def do_GET(self):
+        if self.path == "/":
+            self.send_response(200)
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(bytes("<img src=\"screencap.png\" id=\"myImage\" />", "utf-8"))
+            self.wfile.write(bytes("<script>", "utf-8"))
+            self.wfile.write(bytes("setInterval(function() {", "utf-8"))
+            self.wfile.write(bytes("    var myImageElement = document.getElementById('myImage');", "utf-8"))
+            self.wfile.write(bytes("    myImageElement.src = 'screencap.png?rand=' + Math.random();", "utf-8"))
+            self.wfile.write(bytes("}, 250);", "utf-8"))
+            self.wfile.write(bytes("</script>", "utf-8"))
+        elif self.path.startswith("/screencap.png"):
+            imgfile = open("screencap.png", 'rb').read()
+            mimetype = mimetypes.MimeTypes().guess_type("screencap.png")[0]
+            self.send_response(200)
+            self.send_header('Content-type', mimetype)
+            self.end_headers()
+            self.wfile.write(imgfile)
+
+
+# Simulated display: write on a screencap.png file instead of serial port
 class LcdSimulated(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
                  update_queue: queue.Queue = None):
@@ -8,6 +38,11 @@ class LcdSimulated(LcdComm):
         self.screen_image = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.screen_image.save("screencap.png", "PNG")
         self.orientation = Orientation.PORTRAIT
+
+        webServer = HTTPServer(("localhost", 5678), SimulatedLcdWebServer)
+        logger.debug("To see your simulated screen, open http://%s:%s" % ("localhost", 5678))
+
+        threading.Thread(target=webServer.serve_forever).start()
 
     @staticmethod
     def auto_detect_com_port():
@@ -31,7 +66,7 @@ class LcdSimulated(LcdComm):
     def SetBrightness(self, level: int = 25):
         pass
 
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
+    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
