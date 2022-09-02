@@ -2,6 +2,7 @@ from library import config
 from library.lcd_comm import Orientation
 from library.lcd_comm_rev_a import LcdCommRevA
 from library.lcd_comm_rev_b import LcdCommRevB
+from library.lcd_simulated import LcdSimulated
 from library.log import logger
 
 THEME_DATA = config.THEME_DATA
@@ -42,6 +43,9 @@ class Display:
                                    display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
                                    display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
                                    update_queue=config.update_queue)
+        elif CONFIG_DATA["display"]["REVISION"] == "SIMU":
+            self.lcd = LcdSimulated(display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
+                                    display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
         else:
             logger.error("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 

@@ -1,10 +1,17 @@
 import GPUtil
 import psutil
 
+# AMD GPU on Linux
 try:
     import pyamdgpuinfo
 except ImportError:
     pyamdgpuinfo = None
+
+# AMD GPU on Windows
+try:
+    import pyadl
+except ImportError:
+    pyadl = None
 
 import library.config as config
 from library.display import display
@@ -253,20 +260,20 @@ class GpuNvidia:
     @staticmethod
     def stats():
         # Unlike the CPU, the GPU pulls in all the stats at once
-        gpu_data = GPUtil.getGPUs()
+        nvidia_gpus = GPUtil.getGPUs()
 
-        memory_used_all = [item.memoryUsed for item in gpu_data]
+        memory_used_all = [item.memoryUsed for item in nvidia_gpus]
         memory_used = sum(memory_used_all) / len(memory_used_all)
 
-        memory_total_all = [item.memoryTotal for item in gpu_data]
+        memory_total_all = [item.memoryTotal for item in nvidia_gpus]
         memory_total = sum(memory_total_all) / len(memory_total_all)
 
         memory_percentage = (memory_used / memory_total) * 100
 
-        load_all = [item.load for item in gpu_data]
+        load_all = [item.load for item in nvidia_gpus]
         load = (sum(load_all) / len(load_all)) * 100
 
-        temperature_all = [item.temperature for item in gpu_data]
+        temperature_all = [item.temperature for item in nvidia_gpus]
         temperature = sum(temperature_all) / len(temperature_all)
 
         display_gpu_stats(load, memory_percentage, memory_used, temperature)
@@ -280,33 +287,48 @@ class GpuAmd:
     @staticmethod
     def stats():
         # Unlike the CPU, the GPU pulls in all the stats at once
-        i = 0
-        gpu_data = []
-        while i < pyamdgpuinfo.detect_gpus():
-            gpu_data.append(pyamdgpuinfo.get_gpu(i))
-            i = i + 1
+        if pyamdgpuinfo:
+            i = 0
+            amd_gpus = []
+            while i < pyamdgpuinfo.detect_gpus():
+                amd_gpus.append(pyamdgpuinfo.get_gpu(i))
+                i = i + 1
 
-        memory_used_all = [item.query_vram_usage() for item in gpu_data]
-        memory_used = sum(memory_used_all) / len(memory_used_all)
+            memory_used_all = [item.query_vram_usage() for item in amd_gpus]
+            memory_used = sum(memory_used_all) / len(memory_used_all)
 
-        memory_total_all = [item.memory_info["vram_size"] for item in gpu_data]
-        memory_total = sum(memory_total_all) / len(memory_total_all)
+            memory_total_all = [item.memory_info["vram_size"] for item in amd_gpus]
+            memory_total = sum(memory_total_all) / len(memory_total_all)
 
-        memory_percentage = (memory_used / memory_total) * 100
+            memory_percentage = (memory_used / memory_total) * 100
 
-        load_all = [item.query_load() for item in gpu_data]
-        load = (sum(load_all) / len(load_all)) * 100
+            load_all = [item.query_load() for item in amd_gpus]
+            load = (sum(load_all) / len(load_all)) * 100
 
-        temperature_all = [item.query_temperature() for item in gpu_data]
-        temperature = sum(temperature_all) / len(temperature_all)
+            temperature_all = [item.query_temperature() for item in amd_gpus]
+            temperature = sum(temperature_all) / len(temperature_all)
 
-        display_gpu_stats(load, memory_percentage, memory_used, temperature)
+            display_gpu_stats(load, memory_percentage, memory_used, temperature)
+        elif pyadl:
+            amd_gpus = pyadl.ADLManager.getInstance().getDevices()
+
+            load_all = [item.getCurrentUsage() for item in amd_gpus]
+            load = (sum(load_all) / len(load_all))
+
+            temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
+            temperature = sum(temperature_all) / len(temperature_all)
+
+            display_gpu_stats(load, -1, -1, temperature)
 
     @staticmethod
     def is_available():
-        if not pyamdgpuinfo:
+        if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
+            return True
+        elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
+            logger.warning("Your GPU memory size/usage stats are not supported yet")
+            return True
+        else:
             return False
-        return pyamdgpuinfo.detect_gpus() > 0
 
 
 class Memory:

@@ -160,8 +160,10 @@ class LcdComm(ABC):
         if isinstance(background_color, str):
             background_color = tuple(map(int, background_color.split(', ')))
 
-        assert x <= self.get_width(), 'Text X coordinate must be <= display width'
-        assert y <= self.get_height(), 'Text Y coordinate must be <= display height'
+        assert x <= self.get_width(), 'Text X coordinate ' + str(x) + ' must be <= display width ' + str(
+            self.get_width())
+        assert y <= self.get_height(), 'Text Y coordinate ' + str(y) + ' must be <= display height ' + str(
+            self.get_height())
         assert len(text) > 0, 'Text must not be empty'
         assert font_size > 0, "Font size must be > 0"
 
