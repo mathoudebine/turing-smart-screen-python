@@ -7,9 +7,10 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  # THEME: Terminal_theme
+  # THEME: Terminal
   # THEME: Landscape6Grid
-  THEME: 3.5inchTheme2_theme
+  # THEME: Cyberpunk
+  THEME: 3.5inchTheme2
 
 display:
   # Display resolution in portrait orientation
