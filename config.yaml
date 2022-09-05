@@ -7,9 +7,10 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  # THEME: Terminal_theme
+  # THEME: Terminal
   # THEME: Landscape6Grid
-  THEME: 3.5inchTheme2_theme
+  # THEME: 3.5inchTheme2
+  THEME: Cyberpunk
 
 display:
   # Display resolution in portrait orientation
@@ -24,4 +25,4 @@ display:
 
   # Display revision: A or B (for "flagship" version, use B)
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: A
+  REVISION: SIMU
