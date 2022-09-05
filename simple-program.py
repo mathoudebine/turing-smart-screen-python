@@ -69,11 +69,14 @@ if __name__ == "__main__":
     lcd_comm.SetBackplateLedColor(led_color=(255, 255, 255))
 
     # Set orientation (screen starts in Portrait)
-    lcd_comm.SetOrientation(orientation=Orientation.PORTRAIT)
+    orientation = Orientation.PORTRAIT
+    lcd_comm.SetOrientation(orientation=orientation)
 
     # Define background picture
-    background = "res/backgrounds/example.png"
-    # background = "res/backgrounds/example_landscape.png"
+    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
+        background = "res/backgrounds/example.png"
+    else:
+        background = "res/backgrounds/example_landscape.png"
 
     # Display sample picture
     lcd_comm.DisplayBitmap(background)
