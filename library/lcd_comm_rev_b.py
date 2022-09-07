@@ -140,19 +140,19 @@ class LcdCommRevB(LcdComm):
         # HW revision B does not implement a "ScreenOn" native command: using SetBrightness() instead
         self.SetBrightness()
 
-    def SetBrightness(self, level_user: int = 25):
-        assert 0 <= level_user <= 100, 'Brightness level must be [0-100]'
+    def SetBrightness(self, level: int = 25):
+        assert 0 <= level <= 100, 'Brightness level must be [0-100]'
 
         if self.is_brightness_range():
             # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
             # Convert our brightness % to an absolute value.
-            level = int((level_user / 100) * 255)
+            converted_level = int((level / 100) * 255)
         else:
             # Brightness is 1 (off) or 0 (full brightness)
             logger.info("Your display does not support custom brightness level")
-            level = 1 if level_user == 0 else 0
+            converted_level = 1 if level == 0 else 0
 
-        self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
+        self.SendCommand(Command.SET_BRIGHTNESS, payload=[converted_level])
 
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         if isinstance(led_color, str):
