@@ -52,7 +52,7 @@ class LcdSimulated(LcdComm):
         pass
 
     def Reset(self):
-        self.Clear()
+        pass
 
     def Clear(self):
         self.SetOrientation(self.orientation)

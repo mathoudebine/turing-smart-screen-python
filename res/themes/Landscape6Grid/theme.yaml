@@ -4,7 +4,7 @@ display:
   DISPLAY_ORIENTATION: landscape
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
-  DISPLAY_RGB_LED: [0, 0, 255]
+  DISPLAY_RGB_LED: 0, 0, 255
 
 static_images:
   # Specify what static images we want to show on the display

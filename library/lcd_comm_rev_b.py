@@ -117,13 +117,20 @@ class LcdCommRevB(LcdComm):
         self.Hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it: clear the screen instead
-        self.Clear()
+        # HW revision B does not implement a command to reset it
+        pass
 
     def Clear(self):
         # HW revision B does not implement a Clear command: display a blank image on the whole screen
+        # Force an orientation in case the screen is currently configured with one different from the theme
+        backup_orientation = self.orientation
+        self.SetOrientation(orientation=Orientation.PORTRAIT)
+
         blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.DisplayPILImage(blank)
+
+        # Restore orientation
+        self.SetOrientation(orientation=backup_orientation)
 
     def ScreenOff(self):
         # HW revision B does not implement a "ScreenOff" native command: using SetBrightness(0) instead
@@ -148,8 +155,10 @@ class LcdCommRevB(LcdComm):
         self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
 
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
+        if isinstance(led_color, str):
+            led_color = tuple(map(int, led_color.split(', ')))
         if self.is_flagship():
-            self.SendCommand(Command.SET_LIGHTING, payload=led_color)
+            self.SendCommand(Command.SET_LIGHTING, payload=list(led_color))
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 

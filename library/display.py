@@ -60,7 +60,7 @@ class Display:
         self.lcd.SetBrightness(CONFIG_DATA["display"]["BRIGHTNESS"])
 
         # Set backplate RGB LED color (for supported HW only)
-        self.lcd.SetBackplateLedColor(THEME_DATA['display']["DISPLAY_RGB_LED"])
+        self.lcd.SetBackplateLedColor(THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
 
         # Set orientation
         self.lcd.SetOrientation(_get_theme_orientation())
