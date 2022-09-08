@@ -17,6 +17,7 @@ A Python system monitor program and a library for "Turing Smart Screen" 3.5" IPS
 
 [**Display hardware revisions supported: A, B & flagship**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions).  
 Flagship backplate RGB LEDs are also supported!  
+If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
 Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python 3.x
 
