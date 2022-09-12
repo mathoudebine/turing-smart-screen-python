@@ -1,3 +1,5 @@
+import math
+
 import GPUtil
 import psutil
 
@@ -185,7 +187,7 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
             y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
             width=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("WIDTH", 0),
             height=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("HEIGHT", 0),
-            value=int(load),
+            value=int(load) if not math.isnan(load) else 0,
             min_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MIN_VALUE", 0),
             max_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MAX_VALUE", 100),
             bar_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
@@ -198,7 +200,7 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
 
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
         display.lcd.DisplayText(
-            text=f"{int(load):>3}%",
+            text=f"{int(load):>3}%" if not math.isnan(load) else f"{int(0):>3}%",
             x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("X", 0),
             y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("Y", 0),
             font=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
