@@ -4,13 +4,13 @@ import psutil
 # AMD GPU on Linux
 try:
     import pyamdgpuinfo
-except ImportError:
+except:
     pyamdgpuinfo = None
 
 # AMD GPU on Windows
 try:
     import pyadl
-except ImportError:
+except:
     pyadl = None
 
 import library.config as config
@@ -318,6 +318,7 @@ class GpuAmd:
             temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
             temperature = sum(temperature_all) / len(temperature_all)
 
+            # Memory usage not supported by pyadl
             display_gpu_stats(load, -1, -1, temperature)
 
     @staticmethod
