@@ -181,66 +181,86 @@ class CPU:
 
 def display_gpu_stats(load, memory_percentage, memory_used, temperature):
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
-        # logger.debug(f"GPU Load: {load}")
-        display.lcd.DisplayProgressBar(
-            x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("X", 0),
-            y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
-            width=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("WIDTH", 0),
-            height=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("HEIGHT", 0),
-            value=int(load) if not math.isnan(load) else 0,
-            min_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MIN_VALUE", 0),
-            max_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MAX_VALUE", 100),
-            bar_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
-            bar_outline=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_OUTLINE", False),
-            background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
-            background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE",
-                                                                                                 None))
-        )
+        if math.isnan(load):
+            logger.warning("Your GPU load is not supported yet")
+            THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH']['SHOW'] = False
+        else:
+            # logger.debug(f"GPU Load: {load}")
+            display.lcd.DisplayProgressBar(
+                x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("X", 0),
+                y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("Y", 0),
+                width=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("WIDTH", 0),
+                height=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("HEIGHT", 0),
+                value=int(load),
+                min_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MIN_VALUE", 0),
+                max_value=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("MAX_VALUE", 100),
+                bar_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
+                bar_outline=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BAR_OUTLINE", False),
+                background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
+            )
 
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
-        display.lcd.DisplayText(
-            text=f"{int(load):>3}%" if not math.isnan(load) else f"{int(0):>3}%",
-            x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("X", 0),
-            y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("Y", 0),
-            font=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
-            font_size=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT_SIZE", 10),
-            font_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-            background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
-            background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE",
-                                                                                                None))
-        )
+        if math.isnan(load):
+            logger.warning("Your GPU load is not supported yet")
+            THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT']['SHOW'] = False
+        else:
+            display.lcd.DisplayText(
+                text=f"{int(load):>3}%",
+                x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                      (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                    None))
+            )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("SHOW", False):
-        # logger.debug(f"GPU Load: {load}")
-        display.lcd.DisplayProgressBar(
-            x=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("X", 0),
-            y=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("Y", 0),
-            width=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("WIDTH", 0),
-            height=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("HEIGHT", 0),
-            value=int(memory_percentage),
-            min_value=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("MIN_VALUE", 0),
-            max_value=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("MAX_VALUE", 100),
-            bar_color=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
-            bar_outline=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_OUTLINE", False),
-            background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR", (255, 255, 255)),
-            background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BACKGROUND_IMAGE", None))
-        )
+        if math.isnan(memory_percentage):
+            logger.warning("Your GPU memory relative usage (%) is not supported yet")
+            THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH']['SHOW'] = False
+        else:
+            display.lcd.DisplayProgressBar(
+                x=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("X", 0),
+                y=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("Y", 0),
+                width=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("WIDTH", 0),
+                height=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("HEIGHT", 0),
+                value=int(memory_percentage),
+                min_value=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("MIN_VALUE", 0),
+                max_value=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("MAX_VALUE", 100),
+                bar_color=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
+                bar_outline=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_OUTLINE", False),
+                background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BACKGROUND_IMAGE",
+                                                                                                 None))
+            )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("SHOW", False):
-        display.lcd.DisplayText(
-            text=f"{int(memory_used / 1000000):>5} M",
-            x=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("X", 0),
-            y=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("Y", 0),
-            font=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
-            font_size=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT_SIZE", 10),
-            font_color=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-            background_color=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
-            background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("BACKGROUND_IMAGE", None))
-        )
+        if math.isnan(memory_percentage):
+            logger.warning("Your GPU memory absolute usage (M) is not supported yet")
+            THEME_DATA['STATS']['GPU']['MEMORY']['TEXT']['SHOW'] = False
+        else:
+            display.lcd.DisplayText(
+                text=f"{int(memory_used / 1000000):>5} M",
+                x=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                None))
+            )
 
     if THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
         display.lcd.DisplayText(
@@ -320,8 +340,8 @@ class GpuAmd:
             temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
             temperature = sum(temperature_all) / len(temperature_all)
 
-            # Memory usage not supported by pyadl
-            display_gpu_stats(load, -1, -1, temperature)
+            # Memory absolute (M) and relative (%) usage not supported by pyadl
+            display_gpu_stats(load, math.nan, math.nan, temperature)
 
     @staticmethod
     def is_available():
