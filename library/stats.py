@@ -179,11 +179,12 @@ class CPU:
         # TODO: Built in function for *nix in psutil, for Windows can use WMI or a third party library
 
 
-def display_gpu_stats(load, memory_percentage, memory_used, temperature):
+def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
         if math.isnan(load):
             logger.warning("Your GPU load is not supported yet")
             THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH']['SHOW'] = False
+            THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT']['SHOW'] = False
         else:
             # logger.debug(f"GPU Load: {load}")
             display.lcd.DisplayProgressBar(
@@ -206,6 +207,7 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
     if THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
         if math.isnan(load):
             logger.warning("Your GPU load is not supported yet")
+            THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH']['SHOW'] = False
             THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT']['SHOW'] = False
         else:
             display.lcd.DisplayText(
@@ -245,12 +247,12 @@ def display_gpu_stats(load, memory_percentage, memory_used, temperature):
             )
 
     if THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("SHOW", False):
-        if math.isnan(memory_percentage):
+        if math.isnan(memory_used_mb):
             logger.warning("Your GPU memory absolute usage (M) is not supported yet")
             THEME_DATA['STATS']['GPU']['MEMORY']['TEXT']['SHOW'] = False
         else:
             display.lcd.DisplayText(
-                text=f"{int(memory_used / 1000000):>5} M",
+                text=f"{int(memory_used_mb):>5} M",
                 x=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -285,12 +287,12 @@ class GpuNvidia:
         nvidia_gpus = GPUtil.getGPUs()
 
         memory_used_all = [item.memoryUsed for item in nvidia_gpus]
-        memory_used = sum(memory_used_all) / len(memory_used_all)
+        memory_used_mb = sum(memory_used_all) / len(memory_used_all)
 
         memory_total_all = [item.memoryTotal for item in nvidia_gpus]
-        memory_total = sum(memory_total_all) / len(memory_total_all)
+        memory_total_mb = sum(memory_total_all) / len(memory_total_all)
 
-        memory_percentage = (memory_used / memory_total) * 100
+        memory_percentage = (memory_used_mb / memory_total_mb) * 100
 
         load_all = [item.load for item in nvidia_gpus]
         load = (sum(load_all) / len(load_all)) * 100
@@ -298,7 +300,7 @@ class GpuNvidia:
         temperature_all = [item.temperature for item in nvidia_gpus]
         temperature = sum(temperature_all) / len(temperature_all)
 
-        display_gpu_stats(load, memory_percentage, memory_used, temperature)
+        display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
 
     @staticmethod
     def is_available():
@@ -317,12 +319,12 @@ class GpuAmd:
                 i = i + 1
 
             memory_used_all = [item.query_vram_usage() for item in amd_gpus]
-            memory_used = sum(memory_used_all) / len(memory_used_all)
+            memory_used_bytes = sum(memory_used_all) / len(memory_used_all)
 
             memory_total_all = [item.memory_info["vram_size"] for item in amd_gpus]
-            memory_total = sum(memory_total_all) / len(memory_total_all)
+            memory_total_bytes = sum(memory_total_all) / len(memory_total_all)
 
-            memory_percentage = (memory_used / memory_total) * 100
+            memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
 
             load_all = [item.query_load() for item in amd_gpus]
             load = (sum(load_all) / len(load_all)) * 100
@@ -330,7 +332,7 @@ class GpuAmd:
             temperature_all = [item.query_temperature() for item in amd_gpus]
             temperature = sum(temperature_all) / len(temperature_all)
 
-            display_gpu_stats(load, memory_percentage, memory_used, temperature)
+            display_gpu_stats(load, memory_percentage, memory_used_bytes / 1000000, temperature)
         elif pyadl:
             amd_gpus = pyadl.ADLManager.getInstance().getDevices()
 
