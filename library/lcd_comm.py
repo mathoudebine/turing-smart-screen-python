@@ -1,4 +1,6 @@
+import os
 import queue
+import sys
 import threading
 from abc import ABC, abstractmethod
 from enum import IntEnum
@@ -55,8 +57,14 @@ class LcdComm(ABC):
     def openSerial(self):
         if self.com_port == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+            if not lcd_com_port:
+                logger.error("Cannot find COM port automatically, please set it manually in config.yaml")
+                try:
+                    sys.exit(0)
+                except:
+                    os._exit(0)
             logger.debug(f"Auto detected COM port: {lcd_com_port}")
+            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
         else:
             lcd_com_port = self.com_port
             logger.debug(f"Static COM port: {lcd_com_port}")

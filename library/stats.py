@@ -350,7 +350,6 @@ class GpuAmd:
         if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
             return True
         elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
-            logger.warning("Your GPU memory size/usage stats are not supported yet")
             return True
         else:
             return False
