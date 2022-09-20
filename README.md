@@ -28,6 +28,7 @@ Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all
 
 There are 2 possible uses of this project Python code:
 * **[as a System Monitor](#system-monitor)**, a standalone program working with themes to display your computer HW info.
+[Check if your hardware is supported.](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-hardware-support)
 * **[integrated in your project](#control-the-display-from-your-python-projects)**, to control the display from your own Python code.
 
 ## System monitor
