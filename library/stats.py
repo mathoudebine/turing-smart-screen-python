@@ -265,18 +265,24 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
             )
 
     if THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
-        display.lcd.DisplayText(
-            text=f"{int(temperature):>3}°C",
-            x=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("X", 0),
-            y=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("Y", 0),
-            font=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
-            font_size=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT_SIZE", 10),
-            font_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-            background_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
-            background_image=get_full_path(THEME_DATA['PATH'],
-                                           THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
-                                                                                                 None))
-        )
+        if math.isnan(temperature):
+            logger.warning("Your GPU temperature is not supported yet")
+            THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT']['SHOW'] = False
+        else:
+            display.lcd.DisplayText(
+                text=f"{int(temperature):>3}°C",
+                x=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT",
+                                                                           "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                       (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                     None))
+            )
     pass
 
 
@@ -286,19 +292,30 @@ class GpuNvidia:
         # Unlike the CPU, the GPU pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
-        memory_used_all = [item.memoryUsed for item in nvidia_gpus]
-        memory_used_mb = sum(memory_used_all) / len(memory_used_all)
+        try:
+            memory_used_all = [item.memoryUsed for item in nvidia_gpus]
+            memory_used_mb = sum(memory_used_all) / len(memory_used_all)
+        except:
+            memory_used_mb = math.nan
 
-        memory_total_all = [item.memoryTotal for item in nvidia_gpus]
-        memory_total_mb = sum(memory_total_all) / len(memory_total_all)
+        try:
+            memory_total_all = [item.memoryTotal for item in nvidia_gpus]
+            memory_total_mb = sum(memory_total_all) / len(memory_total_all)
+            memory_percentage = (memory_used_mb / memory_total_mb) * 100
+        except:
+            memory_percentage = math.nan
 
-        memory_percentage = (memory_used_mb / memory_total_mb) * 100
+        try:
+            load_all = [item.load for item in nvidia_gpus]
+            load = (sum(load_all) / len(load_all)) * 100
+        except:
+            load = math.nan
 
-        load_all = [item.load for item in nvidia_gpus]
-        load = (sum(load_all) / len(load_all)) * 100
-
-        temperature_all = [item.temperature for item in nvidia_gpus]
-        temperature = sum(temperature_all) / len(temperature_all)
+        try:
+            temperature_all = [item.temperature for item in nvidia_gpus]
+            temperature = sum(temperature_all) / len(temperature_all)
+        except:
+            temperature = math.nan
 
         display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
 
@@ -318,29 +335,48 @@ class GpuAmd:
                 amd_gpus.append(pyamdgpuinfo.get_gpu(i))
                 i = i + 1
 
-            memory_used_all = [item.query_vram_usage() for item in amd_gpus]
-            memory_used_bytes = sum(memory_used_all) / len(memory_used_all)
+            try:
+                memory_used_all = [item.query_vram_usage() for item in amd_gpus]
+                memory_used_bytes = sum(memory_used_all) / len(memory_used_all)
+                memory_used = memory_used_bytes / 1000000
+            except:
+                memory_used_bytes = math.nan
+                memory_used = math.nan
 
-            memory_total_all = [item.memory_info["vram_size"] for item in amd_gpus]
-            memory_total_bytes = sum(memory_total_all) / len(memory_total_all)
+            try:
+                memory_total_all = [item.memory_info["vram_size"] for item in amd_gpus]
+                memory_total_bytes = sum(memory_total_all) / len(memory_total_all)
+                memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
+            except:
+                memory_percentage = math.nan
 
-            memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
+            try:
+                load_all = [item.query_load() for item in amd_gpus]
+                load = (sum(load_all) / len(load_all)) * 100
+            except:
+                load = math.nan
 
-            load_all = [item.query_load() for item in amd_gpus]
-            load = (sum(load_all) / len(load_all)) * 100
+            try:
+                temperature_all = [item.query_temperature() for item in amd_gpus]
+                temperature = sum(temperature_all) / len(temperature_all)
+            except:
+                temperature = math.nan
 
-            temperature_all = [item.query_temperature() for item in amd_gpus]
-            temperature = sum(temperature_all) / len(temperature_all)
-
-            display_gpu_stats(load, memory_percentage, memory_used_bytes / 1000000, temperature)
+            display_gpu_stats(load, memory_percentage, memory_used, temperature)
         elif pyadl:
             amd_gpus = pyadl.ADLManager.getInstance().getDevices()
 
-            load_all = [item.getCurrentUsage() for item in amd_gpus]
-            load = (sum(load_all) / len(load_all))
+            try:
+                load_all = [item.getCurrentUsage() for item in amd_gpus]
+                load = (sum(load_all) / len(load_all))
+            except:
+                load = math.nan
 
-            temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
-            temperature = sum(temperature_all) / len(temperature_all)
+            try:
+                temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
+                temperature = sum(temperature_all) / len(temperature_all)
+            except:
+                temperature = math.nan
 
             # Memory absolute (M) and relative (%) usage not supported by pyadl
             display_gpu_stats(load, math.nan, math.nan, temperature)
