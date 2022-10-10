@@ -1,5 +1,4 @@
 import struct
-import time
 
 from serial.tools.list_ports import comports
 
@@ -118,13 +117,20 @@ class LcdCommRevB(LcdComm):
         self.Hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it: clear the screen instead
-        self.Clear()
+        # HW revision B does not implement a command to reset it
+        pass
 
     def Clear(self):
         # HW revision B does not implement a Clear command: display a blank image on the whole screen
+        # Force an orientation in case the screen is currently configured with one different from the theme
+        backup_orientation = self.orientation
+        self.SetOrientation(orientation=Orientation.PORTRAIT)
+
         blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.DisplayPILImage(blank)
+
+        # Restore orientation
+        self.SetOrientation(orientation=backup_orientation)
 
     def ScreenOff(self):
         # HW revision B does not implement a "ScreenOff" native command: using SetBrightness(0) instead
@@ -134,24 +140,27 @@ class LcdCommRevB(LcdComm):
         # HW revision B does not implement a "ScreenOn" native command: using SetBrightness() instead
         self.SetBrightness()
 
-    def SetBrightness(self, level_user: int = 25):
-        assert 0 <= level_user <= 100, 'Brightness level must be [0-100]'
+    def SetBrightness(self, level: int = 25):
+        assert 0 <= level <= 100, 'Brightness level must be [0-100]'
 
         if self.is_brightness_range():
             # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
-            level = int((level_user / 100) * 255)
+            # Convert our brightness % to an absolute value.
+            converted_level = int((level / 100) * 255)
         else:
             # Brightness is 1 (off) or 0 (full brightness)
             logger.info("Your display does not support custom brightness level")
-            level = 1 if level_user == 0 else 0
+            converted_level = 1 if level == 0 else 0
 
         with self.com_mutex:
-            self.SendCommand(Command.SET_BRIGHTNESS, payload=[level])
+            self.SendCommand(Command.SET_BRIGHTNESS, payload=[converted_level])
 
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
+    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
+        if isinstance(led_color, str):
+            led_color = tuple(map(int, led_color.split(', ')))
         if self.is_flagship():
             with self.com_mutex:
-                self.SendCommand(Command.SET_LIGHTING, payload=led_color)
+                self.SendCommand(Command.SET_LIGHTING, payload=list(led_color))
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 

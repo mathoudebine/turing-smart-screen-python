@@ -133,3 +133,6 @@ dmypy.json
 
 # Git mergetool backup
 *.orig
+
+# Simulated display capture
+screencap.png

@@ -10,6 +10,7 @@ from datetime import datetime
 # Import only the modules for LCD communication
 from library.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd_comm_rev_b import LcdCommRevB
+from library.lcd_simulated import LcdSimulated
 from library.log import logger
 
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux, etc. or "AUTO" for auto-discovery
@@ -17,7 +18,7 @@ from library.log import logger
 # COM_PORT = "COM5"
 COM_PORT = "AUTO"
 
-# Display revision: A or B (for "flagship" version, use B)
+# Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
 # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
 REVISION = "A"
 
@@ -49,6 +50,10 @@ if __name__ == "__main__":
         lcd_comm = LcdCommRevB(com_port="AUTO",
                                display_width=320,
                                display_height=480)
+    elif REVISION == "SIMU":
+        print("Selected Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=320,
+                                display_height=480)
     else:
         print("ERROR: Unknown revision")
         try:
@@ -69,11 +74,14 @@ if __name__ == "__main__":
     lcd_comm.SetBackplateLedColor(led_color=(255, 255, 255))
 
     # Set orientation (screen starts in Portrait)
-    lcd_comm.SetOrientation(orientation=Orientation.PORTRAIT)
+    orientation = Orientation.PORTRAIT
+    lcd_comm.SetOrientation(orientation=orientation)
 
     # Define background picture
-    background = "res/backgrounds/example.png"
-    # background = "res/backgrounds/example_landscape.png"
+    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
+        background = "res/backgrounds/example.png"
+    else:
+        background = "res/backgrounds/example_landscape.png"
 
     # Display sample picture
     lcd_comm.DisplayBitmap(background)

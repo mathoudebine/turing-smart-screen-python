@@ -7,9 +7,10 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  # THEME: Terminal_theme
+  # THEME: Terminal
   # THEME: Landscape6Grid
-  THEME: 3.5inchTheme2_theme
+  # THEME: Cyberpunk
+  THEME: 3.5inchTheme2
 
 display:
   # Display resolution in portrait orientation
@@ -22,6 +23,6 @@ display:
   # Warning: screen can get very hot at high brightness!
   BRIGHTNESS: 20
 
-  # Display revision: A or B (for "flagship" version, use B)
+  # Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
   REVISION: A

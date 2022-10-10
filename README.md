@@ -17,6 +17,7 @@ A Python system monitor program and a library for "Turing Smart Screen" 3.5" IPS
 
 [**Display hardware revisions supported: A, B & flagship**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions).  
 Flagship backplate RGB LEDs are also supported!  
+If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
 Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python 3.x
 
@@ -27,6 +28,7 @@ Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all
 
 There are 2 possible uses of this project Python code:
 * **[as a System Monitor](#system-monitor)**, a standalone program working with themes to display your computer HW info.
+[Check if your hardware is supported.](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-hardware-support)
 * **[integrated in your project](#control-the-display-from-your-python-projects)**, to control the display from your own Python code.
 
 ## System monitor
@@ -43,7 +45,7 @@ Some themes are already included for a quick start!
 * Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
 
 Screenshots from the latest version using included themes:  
-<img src="res/docs/Theme3.5Inch.jpg" height="400" />       <img src="res/docs/ThemeTerminal.jpg" height="400" />
+<img src="res/docs/Theme3.5Inch.jpg" height="400" /> <img src="res/docs/ThemeTerminal.jpg" height="400" /> <img src="res/docs/ThemeCyberpunk.png" height="400" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="400" />
 
 ### [> Themes creation/edition](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
 
@@ -62,6 +64,9 @@ If you don't want to use your screen for system monitoring, you can just use thi
 
 Check `simple-program.py` as an example.
 
-### [> Control the display from your code](Control-screen-from-your-own-code)
+### [> Control the display from your code](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Control-screen-from-your-own-code)
+
+## Troubleshooting
+If you have trouble running the program as described in the wiki, please check [open/closed issues](https://github.com/mathoudebine/turing-smart-screen-python/issues) & [the wiki Troubleshooting page](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting)
 
 

@@ -96,7 +96,7 @@ class LcdCommRevA(LcdComm):
         with self.com_mutex:
             self.SendCommand(Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int] = (255, 255, 255)):
+    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         logger.info("HW revision A does not support backplate LED color setting")
         pass
 

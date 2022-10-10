@@ -2,6 +2,7 @@ from library import config
 from library.lcd_comm import Orientation
 from library.lcd_comm_rev_a import LcdCommRevA
 from library.lcd_comm_rev_b import LcdCommRevB
+from library.lcd_simulated import LcdSimulated
 from library.log import logger
 
 THEME_DATA = config.THEME_DATA
@@ -40,6 +41,9 @@ class Display:
             self.lcd = LcdCommRevB(com_port=CONFIG_DATA['config']['COM_PORT'],
                                    display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
                                    display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
+        elif CONFIG_DATA["display"]["REVISION"] == "SIMU":
+            self.lcd = LcdSimulated(display_width=CONFIG_DATA["display"]["DISPLAY_WIDTH"],
+                                    display_height=CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
         else:
             logger.error("Unknown display revision '", CONFIG_DATA["display"]["REVISION"], "'")
 
@@ -54,7 +58,7 @@ class Display:
         self.lcd.SetBrightness(CONFIG_DATA["display"]["BRIGHTNESS"])
 
         # Set backplate RGB LED color (for supported HW only)
-        self.lcd.SetBackplateLedColor(THEME_DATA['display']["DISPLAY_RGB_LED"])
+        self.lcd.SetBackplateLedColor(THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
 
         # Set orientation
         self.lcd.SetOrientation(_get_theme_orientation())

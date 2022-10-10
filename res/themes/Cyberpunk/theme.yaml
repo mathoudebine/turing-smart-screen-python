@@ -4,7 +4,7 @@ display:
   DISPLAY_ORIENTATION: portrait
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
-  DISPLAY_RGB_LED: [0, 0, 255]
+  DISPLAY_RGB_LED: 255, 255, 0
 
 static_images:
   # Specify what static images we want to show on the display
@@ -35,33 +35,51 @@ static_text:
   #   FONT_COLOR: 0, 0, 0
   #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
   #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
-  DISK_USED_LABEL:
-    TEXT: "Used:"
-    X: 124
-    Y: 405
-    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-    FONT_SIZE: 23
-    FONT_COLOR: 255, 255, 255
-    BACKGROUND_COLOR: 132, 154, 165
-    # BACKGROUND_IMAGE: background.png
-  DISK_FREE_LABEL:
-    TEXT: "Free:"
-    X: 124
-    Y: 435
-    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-    FONT_SIZE: 23
-    FONT_COLOR: 255, 255, 255
-    BACKGROUND_COLOR: 132, 154, 165
-    # BACKGROUND_IMAGE: background.png
-  DISK_TOTAL_LABEL:
-    TEXT: "Total:"
-    X: 124
-    Y: 375
-    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-    FONT_SIZE: 23
-    FONT_COLOR: 255, 255, 255
-    BACKGROUND_COLOR: 132, 154, 165
-    # BACKGROUND_IMAGE: background.png
+  CPU_MODEL:
+    TEXT: Your CPU model here
+    X: 50
+    Y: 127
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+  GPU_MODEL:
+    TEXT: Your GPU model here
+    X: 50
+    Y: 215
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+  RAM_MODEL:
+    TEXT: Your RAM model here
+    X: 50
+    Y: 303
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+  DISK_USED:
+    TEXT: DISK USED
+    X: 43
+    Y: 346
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+  DISK_FREE:
+    TEXT: DISK FREE
+    X: 43
+    Y: 391
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:
@@ -71,25 +89,25 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: True
-        X: 250
-        Y: 13
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        X: 175
+        Y: 80
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       GRAPH:
         SHOW: True
-        X: 155
-        Y: 50
-        WIDTH: 150
-        HEIGHT: 15
+        X: 40
+        Y: 100
+        WIDTH: 130
+        HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        BAR_COLOR: 2, 216, 243
+        BAR_OUTLINE: True
+        # BACKGROUND_COLOR: 0, 255, 0
+        BACKGROUND_IMAGE: background.png
     FREQUENCY:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
@@ -97,13 +115,13 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
-        X: 154
-        Y: 70
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 30
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        X: 90
+        Y: 80
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 239, 8
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     LOAD:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
@@ -114,39 +132,39 @@ STATS:
           SHOW: False
           X: 110
           Y: 106
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT: roboto-mono/RobotoMono-Bold.ttf
           FONT_SIZE: 13
-          FONT_COLOR: 255, 255, 255
+          FONT_COLOR: 200, 200, 200
           BACKGROUND_COLOR: 50, 50, 50
       FIVE:
         TEXT:
           SHOW: False
           X: 183
           Y: 106
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT: roboto-mono/RobotoMono-Bold.ttf
           FONT_SIZE: 13
-          FONT_COLOR: 255, 255, 255
+          FONT_COLOR: 200, 200, 200
           BACKGROUND_COLOR: 50, 50, 50
       FIFTEEN:
         TEXT:
           SHOW: False
           X: 265
           Y: 106
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT: roboto-mono/RobotoMono-Bold.ttf
           FONT_SIZE: 13
-          FONT_COLOR: 255, 255, 255
+          FONT_COLOR: 200, 200, 200
           BACKGROUND_COLOR: 50, 50, 50
     TEMPERATURE:
       INTERVAL: 5
       TEXT:
         SHOW: True
-        X: 154
-        Y: 13
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        X: 28
+        Y: 80
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
   GPU:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
@@ -155,25 +173,25 @@ STATS:
     PERCENTAGE:
       GRAPH:
         SHOW: True
-        X: 155
-        Y: 175
-        WIDTH: 150
-        HEIGHT: 15
+        X: 40
+        Y: 188
+        WIDTH: 130
+        HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        BAR_COLOR: 2, 216, 243
+        BAR_OUTLINE: True
+        # BACKGROUND_COLOR: 0, 255, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
-        SHOW: TRUE
-        X: 250
-        Y: 140
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 175
+        Y: 168
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     MEMORY:
       GRAPH:
         SHOW: False
@@ -188,24 +206,24 @@ STATS:
         BACKGROUND_COLOR: 0, 0, 0
         # BACKGROUND_IMAGE: background.png
       TEXT:
-        SHOW: TRUE
-        X: 204
-        Y: 195
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 90
+        Y: 167
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 239, 8
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       TEXT:
-        SHOW: TRUE
-        X: 154
-        Y: 140
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 28
+        Y: 167
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
   MEMORY:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
@@ -227,61 +245,61 @@ STATS:
     VIRTUAL:
       GRAPH:
         SHOW: True
-        X: 155
-        Y: 270
-        WIDTH: 150
-        HEIGHT: 15
+        X: 40
+        Y: 276
+        WIDTH: 130
+        HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        BAR_COLOR: 2, 216, 243
+        BAR_OUTLINE: True
+        # BACKGROUND_COLOR: 0, 255, 0
+        BACKGROUND_IMAGE: background.png
       VALUE_TEXT:
-        SHOW: TRUE
-        X: 204
-        Y: 290
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 80
+        Y: 256
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 239, 8
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
-        SHOW: TRUE
-        X: 250
-        Y: 240
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 175
+        Y: 256
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
     USED:
       GRAPH:
-        SHOW: True
-        X: 155
-        Y: 345
-        WIDTH: 150
-        HEIGHT: 15
+        SHOW: False
+        X: 115
+        Y: 357
+        WIDTH: 178
+        HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
+        BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
         BACKGROUND_COLOR: 0, 0, 0
         # BACKGROUND_IMAGE: background.png
       TEXT:
-        SHOW: TRUE
-        X: 204
-        Y: 405
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 155
+        Y: 338
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     TOTAL:
       TEXT:
-        SHOW: TRUE
+        SHOW: False
         X: 204
         Y: 375
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -291,11 +309,11 @@ STATS:
         # BACKGROUND_IMAGE: background.png
     FREE:
       TEXT:
-        SHOW: TRUE
-        X: 204
-        Y: 435
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 155
+        Y: 383
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 2, 216, 243
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png

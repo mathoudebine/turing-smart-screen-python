@@ -1,7 +1,10 @@
+import os
 import queue
+import sys
 import threading
 from abc import ABC, abstractmethod
 from enum import IntEnum
+from typing import Tuple
 
 import serial
 from PIL import Image, ImageDraw, ImageFont
@@ -55,8 +58,14 @@ class LcdComm(ABC):
     def openSerial(self):
         if self.com_port == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+            if not lcd_com_port:
+                logger.error("Cannot find COM port automatically, please set it manually in config.yaml")
+                try:
+                    sys.exit(0)
+                except:
+                    os._exit(0)
             logger.debug(f"Auto detected COM port: {lcd_com_port}")
+            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
         else:
             lcd_com_port = self.com_port
             logger.debug(f"Static COM port: {lcd_com_port}")
@@ -120,7 +129,7 @@ class LcdComm(ABC):
         pass
 
     @abstractmethod
-    def SetBackplateLedColor(self, led_color: tuple[int, int, int]):
+    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 
     @abstractmethod
@@ -148,8 +157,8 @@ class LcdComm(ABC):
             y: int = 0,
             font: str = "roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
-            font_color: tuple[int, int, int] = (0, 0, 0),
-            background_color: tuple[int, int, int] = (255, 255, 255),
+            font_color: Tuple[int, int, int] = (0, 0, 0),
+            background_color: Tuple[int, int, int] = (255, 255, 255),
             background_image: str = None
     ):
         # Convert text to bitmap using PIL and display it
@@ -161,8 +170,10 @@ class LcdComm(ABC):
         if isinstance(background_color, str):
             background_color = tuple(map(int, background_color.split(', ')))
 
-        assert x <= self.get_width(), 'Text X coordinate must be <= display width'
-        assert y <= self.get_height(), 'Text Y coordinate must be <= display height'
+        assert x <= self.get_width(), 'Text X coordinate ' + str(x) + ' must be <= display width ' + str(
+            self.get_width())
+        assert y <= self.get_height(), 'Text Y coordinate ' + str(y) + ' must be <= display height ' + str(
+            self.get_height())
         assert len(text) > 0, 'Text must not be empty'
         assert font_size > 0, "Font size must be > 0"
 
@@ -194,9 +205,9 @@ class LcdComm(ABC):
 
     def DisplayProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                            value: int = 50,
-                           bar_color: tuple[int, int, int] = (0, 0, 0),
+                           bar_color: Tuple[int, int, int] = (0, 0, 0),
                            bar_outline: bool = True,
-                           background_color: tuple[int, int, int] = (255, 255, 255),
+                           background_color: Tuple[int, int, int] = (255, 255, 255),
                            background_image: str = None):
         # Generate a progress bar and display it
         # Provide the background image path to display progress bar with transparent background
