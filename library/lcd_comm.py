@@ -1,5 +1,4 @@
 import os
-import queue
 import sys
 import threading
 from abc import ABC, abstractmethod
@@ -83,14 +82,6 @@ class LcdComm(ABC):
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
             logger.warning("(Write data) Too fast! Slow down!")
-
-    def SendLine(self, line: bytes):
-        if self.update_queue:
-            # Queue the request. Mutex is locked by caller to queue multiple lines
-            self.update_queue.put((self.WriteLine, [line]))
-        else:
-            # If no queue for async requests: do request now
-            self.WriteLine(line)
 
     def WriteLine(self, line: bytes):
         try:

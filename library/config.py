@@ -1,5 +1,4 @@
 import os
-import queue
 import sys
 
 import yaml
@@ -28,5 +27,3 @@ except:
     except:
         os._exit(0)
 
-# Queue containing the serial requests to send to the screen
-update_queue = queue.Queue()

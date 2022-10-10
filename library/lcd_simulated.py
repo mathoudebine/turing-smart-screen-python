@@ -32,9 +32,8 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
 
 # Simulated display: write on a screencap.png file instead of serial port
 class LcdSimulated(LcdComm):
-    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
-        LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
+    def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480):
+        LcdComm.__init__(self, com_port, display_width, display_height)
         self.screen_image = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.screen_image.save("screencap.png", "PNG")
         self.orientation = Orientation.PORTRAIT

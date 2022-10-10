@@ -6,11 +6,8 @@ from functools import wraps
 
 import library.config as config
 import library.stats as stats
-from library.log import logger
 
 THEME_DATA = config.THEME_DATA
-
-STOPPING = False
 
 
 def async_job(threadname=None):
@@ -39,11 +36,8 @@ def schedule(interval):
 
         def periodic(scheduler, periodic_interval, action, actionargs=()):
             """ Wrap the scheduler with our periodic interval """
-            global STOPPING
-            if not STOPPING:
-                # If the program is not stopping: re-schedule the task for future execution
-                scheduler.enter(periodic_interval, 1, periodic,
-                                (scheduler, periodic_interval, action, actionargs))
+            scheduler.enter(periodic_interval, 1, periodic,
+                            (scheduler, periodic_interval, action, actionargs))
             action(*actionargs)
 
         @wraps(func)
@@ -121,24 +115,3 @@ def MemoryStats():
 def DiskStats():
     # logger.debug("Refresh disk stats")
     stats.Disk.stats()
-
-
-@async_job("Queue_Handler")
-@schedule(timedelta(milliseconds=1).total_seconds())
-def QueueHandler():
-    # Do next action waiting in the queue
-    global STOPPING
-    if STOPPING:
-        # Empty the action queue to allow program to exit cleanly
-        while not config.update_queue.empty():
-            f, args = config.update_queue.get()
-            f(*args)
-    else:
-        # Execute first action in the queue
-        f, args = config.update_queue.get()
-        if f:
-            f(*args)
-
-
-def is_queue_empty() -> bool:
-    return config.update_queue.empty()

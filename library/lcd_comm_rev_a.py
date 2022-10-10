@@ -65,8 +65,7 @@ class LcdCommRevA(LcdComm):
         with self.com_mutex:
             self.SendCommand(Command.RESET, 0, 0, 0, 0)
 
-            # NOTE: Shouldn't we close serial before we try to open it again ?
-
+            # NOTE: no need to close serial port, the device will disconnect on Reset
             # Wait for display reset then reconnect
             time.sleep(1)
             self.openSerial()

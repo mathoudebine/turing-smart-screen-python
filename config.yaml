@@ -25,4 +25,4 @@ display:
 
   # Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: A
+  REVISION: B
