@@ -139,6 +139,11 @@ def QueueHandler():
         if f:
             f(*args)
 
+@async_job("Net_Stats")
+@schedule(timedelta(seconds=THEME_DATA['STATS']['NET'].get("INTERVAL", None)).total_seconds())
+def NetStats():
+    # logger.debug("Refresh net stats")
+    stats.Net.stats()
 
 def is_queue_empty() -> bool:
     return config.update_queue.empty()

@@ -2,6 +2,8 @@ import math
 
 import GPUtil
 import psutil
+import os
+import pickle
 
 # AMD GPU on Linux
 try:
@@ -530,5 +532,153 @@ class Disk:
                 background_color=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
                                                THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+class Net:
+    @staticmethod
+    def stats():
+        tot_before_file = "/tmp/tot_before"
+        pnic_before_file = "/tmp/pnic_before"
+
+        tot_after = psutil.net_io_counters()
+        pnic_after = psutil.net_io_counters(pernic=True)
+        if os.path.exists(tot_before_file) and os.path.isfile(tot_before_file):
+            with open(tot_before_file, "rb") as file:
+                tot_before = pickle.load(file)
+        else:
+            tot_before = tot_after
+        if os.path.exists(pnic_before_file) and os.path.isfile(pnic_before_file):
+            with open(pnic_before_file, "rb") as file:
+                pnic_before = pickle.load(file)
+        else:
+            pnic_before = pnic_after
+
+        with open(tot_before_file, "wb") as file:
+            pickle.dump(tot_after, file)
+        with open(pnic_before_file, "wb") as file:
+            pickle.dump(pnic_after, file)
+
+        upload_wlo1 = pnic_after["wlo1"].bytes_sent - pnic_before["wlo1"].bytes_sent
+        uploaded_wlo1 = pnic_after["wlo1"].bytes_sent
+        download_wlo1 = pnic_after["wlo1"].bytes_recv - pnic_before["wlo1"].bytes_recv
+        downloaded_wlo1 = pnic_after["wlo1"].bytes_recv
+        upload_eth0 = pnic_after["eth0"].bytes_sent - pnic_before["eth0"].bytes_sent
+        uploaded_eth0 = pnic_after["eth0"].bytes_sent
+        download_eth0 = pnic_after["eth0"].bytes_recv - pnic_before["eth0"].bytes_recv
+        downloaded_eth0 = pnic_after["eth0"].bytes_recv
+
+
+        tdsn = THEME_DATA['STATS']['NET']
+
+        if tdsn['WLO1']['UPLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(upload_wlo1):>5} B/s",
+                x=tdsn['WLO1']['UPLOAD']['TEXT'].get("X", 0),
+                y=tdsn['WLO1']['UPLOAD']['TEXT'].get("Y", 0),
+                font=tdsn['WLO1']['UPLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['WLO1']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['WLO1']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['WLO1']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['WLO1']['UPLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['WLO1']['UPLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(uploaded_wlo1):>5}",
+                x=tdsn['WLO1']['UPLOADED']['TEXT'].get("X", 0),
+                y=tdsn['WLO1']['UPLOADED']['TEXT'].get("Y", 0),
+                font=tdsn['WLO1']['UPLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['WLO1']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['WLO1']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['WLO1']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['WLO1']['UPLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['WLO1']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(download_wlo1):>5} B/s",
+                x=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("X", 0),
+                y=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("Y", 0),
+                font=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['WLO1']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['WLO1']['DOWNLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['WLO1']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(downloaded_wlo1):>5}",
+                x=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("X", 0),
+                y=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("Y", 0),
+                font=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['WLO1']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['WLO1']['DOWNLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['ETH0']['UPLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(upload_eth0):>5} B/s",
+                x=tdsn['ETH0']['UPLOAD']['TEXT'].get("X", 0),
+                y=tdsn['ETH0']['UPLOAD']['TEXT'].get("Y", 0),
+                font=tdsn['ETH0']['UPLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['ETH0']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['ETH0']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['ETH0']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['ETH0']['UPLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['ETH0']['UPLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(uploaded_eth0):>5}",
+                x=tdsn['ETH0']['UPLOADED']['TEXT'].get("X", 0),
+                y=tdsn['ETH0']['UPLOADED']['TEXT'].get("Y", 0),
+                font=tdsn['ETH0']['UPLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['ETH0']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['ETH0']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['ETH0']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['ETH0']['UPLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['ETH0']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(download_eth0):>5} B/s",
+                x=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("X", 0),
+                y=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("Y", 0),
+                font=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['ETH0']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['ETH0']['DOWNLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if tdsn['ETH0']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{bytes2human(downloaded_eth0):>5}",
+                x=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("X", 0),
+                y=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("Y", 0),
+                font=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=tdsn['ETH0']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               tdsn['ETH0']['DOWNLOADED']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                None))
             )

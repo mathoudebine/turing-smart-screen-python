@@ -299,3 +299,88 @@ STATS:
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 132, 154, 165
         # BACKGROUND_IMAGE: background.png
+
+  NET:
+    INTERVAL: 1
+    WLO1:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 4
+          Y: 311
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      UPLOADED:
+        TEXT:
+          SHOW: True
+          X: 90
+          Y: 311
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 4
+          Y: 261
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      DOWNLOADED:
+        TEXT:
+          SHOW: True
+          X: 90
+          Y: 261
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+    ETH0:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 254
+          Y: 311
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      UPLOADED:
+        TEXT:
+          SHOW: True
+          X: 192
+          Y: 311
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 254
+          Y: 261
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      DOWNLOADED:
+        TEXT:
+          SHOW: True
+          X: 192
+          Y: 261
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png

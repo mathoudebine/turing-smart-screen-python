@@ -82,3 +82,5 @@ if __name__ == "__main__":
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.QueueHandler()
+    scheduler.NetStats()
+
