@@ -139,6 +139,12 @@ def QueueHandler():
         if f:
             f(*args)
 
+@async_job("Date_Stats")
+@schedule(timedelta(seconds=THEME_DATA['STATS']['DATE'].get("INTERVAL", None)).total_seconds())
+def DateStats():
+    # logger.debug("Refresh date stats")
+    stats.Date.stats()
+
 
 def is_queue_empty() -> bool:
     return config.update_queue.empty()

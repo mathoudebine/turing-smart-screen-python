@@ -10,6 +10,7 @@ config:
   # THEME: Terminal
   # THEME: Landscape6Grid
   # THEME: Cyberpunk
+  # THEME: DateTime
   THEME: 3.5inchTheme2
 
 display:

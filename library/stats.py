@@ -2,6 +2,7 @@ import math
 
 import GPUtil
 import psutil
+import datetime
 
 # AMD GPU on Linux
 try:
@@ -531,4 +532,37 @@ class Disk:
                 background_image=get_full_path(THEME_DATA['PATH'],
                                                THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                None))
+            )
+
+class Date:
+    @staticmethod
+    def stats():
+        date_now = datetime.datetime.now()
+
+        if THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{date_now.day}-{date_now.month}-{date_now.year}",
+                x=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{date_now.strftime('%H:%M:%S')}",
+                x=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                None))
             )

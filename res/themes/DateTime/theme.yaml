@@ -1,0 +1,36 @@
+display:
+  # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
+  DISPLAY_ORIENTATION: portrait
+
+  # Backplate RGB LED color (for HW revision 'flagship' devices only)
+  DISPLAY_RGB_LED: 0, 0, 255
+
+static_images:
+static_text:
+
+STATS:
+  DATE:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 4
+        Y: 4
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 53, 191, 92
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 160
+        Y: 4
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 53, 191, 92
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
