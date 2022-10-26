@@ -63,8 +63,9 @@ class LcdCommRevA(LcdComm):
         logger.info("Display reset (COM port may change)...")
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self.SendCommand(Command.RESET, 0, 0, 0, 0, bypass_queue=True)
+        self.closeSerial()
         # Wait for display reset then reconnect
-        time.sleep(1)
+        time.sleep(5)
         self.openSerial()
 
     def Clear(self):

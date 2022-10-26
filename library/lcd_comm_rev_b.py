@@ -92,6 +92,7 @@ class LcdCommRevB(LcdComm):
 
         if len(response) != 10:
             logger.warning("Device not recognised (short response to HELLO)")
+        assert response, "Device did not return anything"
         if response[0] != Command.HELLO or response[-1] != Command.HELLO:
             logger.warning("Device not recognised (bad framing)")
         if [x for x in response[1:6]] != hello:
