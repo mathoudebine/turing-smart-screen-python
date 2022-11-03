@@ -2,7 +2,7 @@
 Pillow~=9.2.0
 pyserial~=3.5
 PyYAML~=6.0
-psutil==5.9.2
+psutil~=5.9.2
 GPUtil~=1.4.0
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
