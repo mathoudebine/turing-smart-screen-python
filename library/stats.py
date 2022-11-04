@@ -5,8 +5,6 @@ import psutil
 from psutil._common import bytes2human
 
 import datetime
-import os.path
-import pickle
 
 # AMD GPU on Linux
 try:
