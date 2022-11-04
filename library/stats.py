@@ -576,27 +576,21 @@ class Disk:
 class Net:
     @staticmethod
     def stats():
-        pnic_before_file = "/tmp/pnic_before"
-
         pnic_after = psutil.net_io_counters(pernic=True)
-        if os.path.exists(pnic_before_file) and os.path.isfile(pnic_before_file):
-            with open(pnic_before_file, "rb") as file:
-                pnic_before = pickle.load(file)
+        if config.PNIC_BEFORE:
+            pnic_before = config.PNIC_BEFORE
         else:
             pnic_before = pnic_after
 
-        with open(pnic_before_file, "wb") as file:
-            pickle.dump(pnic_after, file)
-
         if WLO_CARD in pnic_after:
             upload_wlo = pnic_after[WLO_CARD].bytes_sent - pnic_before[WLO_CARD].bytes_sent
-            upload_wlo_text = f"{bytes2human(upload_wlo)}B/s"
+            upload_wlo_text = f"{bytes2human(upload_wlo)}/s"
             uploaded_wlo = pnic_after[WLO_CARD].bytes_sent
-            uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}B/s"
+            uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}"
             download_wlo = pnic_after[WLO_CARD].bytes_recv - pnic_before[WLO_CARD].bytes_recv
-            download_wlo_text = f"{bytes2human(download_wlo)}B/s"
+            download_wlo_text = f"{bytes2human(download_wlo)}/s"
             downloaded_wlo = pnic_after[WLO_CARD].bytes_recv
-            downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}B/s"
+            downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}"
         else:
             upload_wlo_text = f"N/A"
             uploaded_wlo_text = f"N/A"
@@ -605,13 +599,13 @@ class Net:
         
         if ETH_CARD in pnic_after:
             upload_eth = pnic_after[ETH_CARD].bytes_sent - pnic_before[ETH_CARD].bytes_sent
-            upload_eth_text = f"{bytes2human(upload_eth)}B/s"
+            upload_eth_text = f"{bytes2human(upload_eth)}/s"
             uploaded_eth = pnic_after[ETH_CARD].bytes_sent
-            uploaded_eth_text = f"{bytes2human(uploaded_eth)}B/s"
+            uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
             download_eth = pnic_after[ETH_CARD].bytes_recv - pnic_before[ETH_CARD].bytes_recv
-            download_eth_text = f"{bytes2human(download_eth)}B/s"
+            download_eth_text = f"{bytes2human(download_eth)}/s"
             downloaded_eth = pnic_after[ETH_CARD].bytes_recv
-            downloaded_eth_text = f"{bytes2human(downloaded_eth)}B/s"
+            downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
         else:
             upload_eth_text = f"N/A"
             uploaded_eth_text = f"N/A"
@@ -729,6 +723,8 @@ class Net:
                                                THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                None))
             )
+        
+        config.PNIC_BEFORE = psutil.net_io_counters(pernic=True)
 
 
 class Date:
