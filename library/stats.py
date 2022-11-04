@@ -2,6 +2,11 @@ import math
 
 import GPUtil
 import psutil
+from psutil._common import bytes2human
+
+import datetime
+import os.path
+import pickle
 
 # AMD GPU on Linux
 try:
@@ -20,7 +25,9 @@ from library.display import display
 from library.log import logger
 
 THEME_DATA = config.THEME_DATA
-
+CONFIG_DATA = config.CONFIG_DATA
+ETH_CARD = CONFIG_DATA["config"]["ETH"]
+WLO_CARD = CONFIG_DATA["config"]["WLO"]
 
 def get_full_path(path, name):
     if name:
@@ -452,19 +459,37 @@ class Memory:
 
         virtual_used = psutil.virtual_memory().used
 
-        if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("SHOW", False):
+        if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW", False):
             display.lcd.DisplayText(
                 text=f"{int(virtual_used / 1000000):>5} M",
-                x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("X", 0),
-                y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("Y", 0),
-                font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT",
+                x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("X", 0),
+                y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("Y", 0),
+                font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("FONT",
                                                                                 "roboto-mono/RobotoMono-Regular.ttf"),
-                font_size=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT_SIZE", 10),
-                font_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get("BACKGROUND_COLOR",
+                font_size=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("BACKGROUND_COLOR",
                                                                                             (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
-                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['VALUE_TEXT'].get(
+                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get(
+                                                   "BACKGROUND_IMAGE", None))
+            )
+
+        virtual_used = psutil.virtual_memory().free
+
+        if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{int(virtual_used / 1000000):>5} M",
+                x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("X", 0),
+                y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("Y", 0),
+                font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("FONT",
+                                                                                "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("BACKGROUND_COLOR",
+                                                                                            (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get(
                                                    "BACKGROUND_IMAGE", None))
             )
 
@@ -505,6 +530,20 @@ class Disk:
                                                                                                None))
             )
 
+        if THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{int(disk_usage.percent):>3}%",
+                x=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
         if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
                 text=f"{int(disk_usage.total / 1000000000):>5} G",
@@ -531,4 +570,192 @@ class Disk:
                 background_image=get_full_path(THEME_DATA['PATH'],
                                                THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                None))
+            )
+
+
+class Net:
+    @staticmethod
+    def stats():
+        pnic_after = psutil.net_io_counters(pernic=True)
+        if config.PNIC_BEFORE:
+            pnic_before = config.PNIC_BEFORE
+        else:
+            pnic_before = pnic_after
+
+        if WLO_CARD in pnic_after:
+            upload_wlo = pnic_after[WLO_CARD].bytes_sent - pnic_before[WLO_CARD].bytes_sent
+            upload_wlo_text = f"{bytes2human(upload_wlo)}/s"
+            uploaded_wlo = pnic_after[WLO_CARD].bytes_sent
+            uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}"
+            download_wlo = pnic_after[WLO_CARD].bytes_recv - pnic_before[WLO_CARD].bytes_recv
+            download_wlo_text = f"{bytes2human(download_wlo)}/s"
+            downloaded_wlo = pnic_after[WLO_CARD].bytes_recv
+            downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}"
+        else:
+            upload_wlo_text = f"N/A"
+            uploaded_wlo_text = f"N/A"
+            download_wlo_text = f"N/A"
+            downloaded_wlo_text = f"N/A"
+        
+        if ETH_CARD in pnic_after:
+            upload_eth = pnic_after[ETH_CARD].bytes_sent - pnic_before[ETH_CARD].bytes_sent
+            upload_eth_text = f"{bytes2human(upload_eth)}/s"
+            uploaded_eth = pnic_after[ETH_CARD].bytes_sent
+            uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
+            download_eth = pnic_after[ETH_CARD].bytes_recv - pnic_before[ETH_CARD].bytes_recv
+            download_eth_text = f"{bytes2human(download_eth)}/s"
+            downloaded_eth = pnic_after[ETH_CARD].bytes_recv
+            downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
+        else:
+            upload_eth_text = f"N/A"
+            uploaded_eth_text = f"N/A"
+            download_eth_text = f"N/A"
+            downloaded_eth_text = f"N/A"
+
+        if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{upload_wlo_text}",
+                x=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{uploaded_wlo_text}",
+                x=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{download_wlo_text}",
+                x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{downloaded_wlo_text}",
+                x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{upload_eth_text}",
+                x=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{uploaded_eth_text}",
+                x=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{download_eth_text}",
+                x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{downloaded_eth_text}",
+                x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+        
+        config.PNIC_BEFORE = psutil.net_io_counters(pernic=True)
+
+
+class Date:
+    @staticmethod
+    def stats():
+        date_now = datetime.datetime.now()
+
+        if THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{date_now.strftime('%d-%m-%Y')}",
+                x=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                               None))
+            )
+
+        if THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("SHOW", False):
+            display.lcd.DisplayText(
+                text=f"{date_now.strftime('%H:%M:%S')}",
+                x=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("X", 0),
+                y=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("Y", 0),
+                font=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                font_size=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT_SIZE", 10),
+                font_color=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                background_color=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("BACKGROUND_COLOR", (255, 255, 255)),
+                background_image=get_full_path(THEME_DATA['PATH'],
+                                               THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("BACKGROUND_IMAGE",
+                                                                                                None))
             )

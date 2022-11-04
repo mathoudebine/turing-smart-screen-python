@@ -123,6 +123,20 @@ def DiskStats():
     stats.Disk.stats()
 
 
+@async_job("Net_Stats")
+@schedule(timedelta(seconds=THEME_DATA['STATS']['NET'].get("INTERVAL", None)).total_seconds())
+def NetStats():
+    # logger.debug("Refresh net stats")
+    stats.Net.stats()
+
+
+@async_job("Date_Stats")
+@schedule(timedelta(seconds=THEME_DATA['STATS']['DATE'].get("INTERVAL", None)).total_seconds())
+def DateStats():
+    # logger.debug("Refresh date stats")
+    stats.Date.stats()
+
+
 @async_job("Queue_Handler")
 @schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():

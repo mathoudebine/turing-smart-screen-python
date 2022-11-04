@@ -1,10 +1,10 @@
 ---
 display:
   # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
-  DISPLAY_ORIENTATION: portrait
+  DISPLAY_ORIENTATION: reverse_portrait
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
-  DISPLAY_RGB_LED: 255, 255, 0
+  DISPLAY_RGB_LED: 53, 191, 92
 
 static_images:
   # Specify what static images we want to show on the display
@@ -35,51 +35,6 @@ static_text:
   #   FONT_COLOR: 0, 0, 0
   #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
   #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
-  CPU_MODEL:
-    TEXT: Your CPU model here
-    X: 50
-    Y: 127
-    FONT: generale-mono/GeneraleMonoA.ttf
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    # BACKGROUND_COLOR: 255, 255, 255
-    BACKGROUND_IMAGE: background.png
-  GPU_MODEL:
-    TEXT: Your GPU model here
-    X: 50
-    Y: 215
-    FONT: generale-mono/GeneraleMonoA.ttf
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    # BACKGROUND_COLOR: 255, 255, 255
-    BACKGROUND_IMAGE: background.png
-  RAM_MODEL:
-    TEXT: Your RAM model here
-    X: 50
-    Y: 303
-    FONT: generale-mono/GeneraleMonoA.ttf
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    # BACKGROUND_COLOR: 255, 255, 255
-    BACKGROUND_IMAGE: background.png
-  DISK_USED:
-    TEXT: DISK USED
-    X: 43
-    Y: 346
-    FONT: generale-mono/GeneraleMonoA.ttf
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    # BACKGROUND_COLOR: 255, 255, 255
-    BACKGROUND_IMAGE: background.png
-  DISK_FREE:
-    TEXT: DISK FREE
-    X: 43
-    Y: 391
-    FONT: generale-mono/GeneraleMonoA.ttf
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    # BACKGROUND_COLOR: 255, 255, 255
-    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:
@@ -89,23 +44,23 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: True
-        X: 175
-        Y: 80
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 40
-        FONT_COLOR: 2, 216, 243
+        X: 13
+        Y: 84
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       GRAPH:
         SHOW: True
-        X: 40
-        Y: 100
-        WIDTH: 130
+        X: 23
+        Y: 140
+        WIDTH: 98
         HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 2, 216, 243
-        BAR_OUTLINE: True
+        BAR_COLOR: 53, 191, 92
+        BAR_OUTLINE: False
         # BACKGROUND_COLOR: 0, 255, 0
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
@@ -115,11 +70,11 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
-        X: 90
-        Y: 80
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 255, 239, 8
+        X: 94
+        Y: 84
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     LOAD:
@@ -158,11 +113,11 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
-        X: 28
-        Y: 80
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 2, 216, 243
+        X: 87
+        Y: 118
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 132, 154, 165
         BACKGROUND_IMAGE: background.png
   GPU:
@@ -172,7 +127,7 @@ STATS:
     INTERVAL: 1
     PERCENTAGE:
       GRAPH:
-        SHOW: True
+        SHOW: False
         X: 40
         Y: 188
         WIDTH: 130
@@ -184,10 +139,10 @@ STATS:
         # BACKGROUND_COLOR: 0, 255, 0
         BACKGROUND_IMAGE: background.png
       TEXT:
-        SHOW: True
+        SHOW: False
         X: 175
         Y: 168
-        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 40
         FONT_COLOR: 2, 216, 243
         # BACKGROUND_COLOR: 0, 0, 0
@@ -206,20 +161,20 @@ STATS:
         BACKGROUND_COLOR: 0, 0, 0
         # BACKGROUND_IMAGE: background.png
       TEXT:
-        SHOW: True
+        SHOW: False
         X: 90
         Y: 167
-        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 16
         FONT_COLOR: 255, 239, 8
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       TEXT:
-        SHOW: True
+        SHOW: False
         X: 28
         Y: 167
-        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 16
         FONT_COLOR: 2, 216, 243
         # BACKGROUND_COLOR: 132, 154, 165
@@ -245,178 +200,178 @@ STATS:
     VIRTUAL:
       GRAPH:
         SHOW: True
-        X: 40
-        Y: 276
-        WIDTH: 130
+        X: 202
+        Y: 164
+        WIDTH: 98
         HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 2, 216, 243
-        BAR_OUTLINE: True
+        BAR_COLOR: 53, 191, 92
+        BAR_OUTLINE: False
         # BACKGROUND_COLOR: 0, 255, 0
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
-        X: 28
-        Y: 256
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 2, 216, 243
+        X: 182
+        Y: 95
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: True
-        X: 110
-        Y: 256
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 255, 239, 8
+        X: 182
+        Y: 129
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
-        X: 175
-        Y: 256
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 40
-        FONT_COLOR: 2, 216, 243
+        X: 240
+        Y: 105
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
     USED:
       GRAPH:
-        SHOW: False
-        X: 115
-        Y: 357
-        WIDTH: 178
+        SHOW: True
+        X: 33
+        Y: 455
+        WIDTH: 98
         HEIGHT: 13
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
+        BAR_COLOR: 53, 191, 92
         BAR_OUTLINE: False
         BACKGROUND_COLOR: 0, 0, 0
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
-        X: 155
-        Y: 338
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 26
-        FONT_COLOR: 2, 216, 243
+        X: 124
+        Y: 390
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 14
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
-        X: 170
-        Y: 430
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 30
-        FONT_COLOR: 2, 216, 243
+        X: 46
+        Y: 402
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     TOTAL:
       TEXT:
-        SHOW: False
-        X: 204
-        Y: 375
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        SHOW: True
+        X: 227
+        Y: 390
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 14
+        FONT_COLOR: 53, 191, 92
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     FREE:
       TEXT:
         SHOW: True
-        X: 155
-        Y: 383
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 26
-        FONT_COLOR: 2, 216, 243
+        X: 124
+        Y: 439
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 14
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
-    WLO:
+    WLO1:
       UPLOAD:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 4
           Y: 311
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 90
           Y: 311
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 4
           Y: 261
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 90
           Y: 261
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
-    ETH:
+    ECRANDOCK:
       UPLOAD:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 254
           Y: 311
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 192
           Y: 311
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 254
           Y: 261
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
-          SHOW: FALSE
+          SHOW: True
           X: 192
           Y: 261
-          FONT: generale-mono/GeneraleMonoA.ttf
-          FONT_SIZE: 26
-          FONT_COLOR: 2, 216, 243
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 12
+          FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
   DATE:
@@ -427,20 +382,20 @@ STATS:
     DAY:
       TEXT:
         SHOW: True
-        X: 10
-        Y: 455
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 18
-        FONT_COLOR: 255, 239, 8
+        X: 4
+        Y: 4
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     HOUR:
       TEXT:
         SHOW: True
-        X: 195
-        Y: 32
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 18
-        FONT_COLOR: 255, 239, 8
+        X: 160
+        Y: 4
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 53, 191, 92
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png

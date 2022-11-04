@@ -81,4 +81,6 @@ if __name__ == "__main__":
         logger.warning("Your GPU is not supported yet")
     scheduler.MemoryStats()
     scheduler.DiskStats()
+    scheduler.NetStats()
+    scheduler.DateStats()
     scheduler.QueueHandler()

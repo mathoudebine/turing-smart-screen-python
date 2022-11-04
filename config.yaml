@@ -12,6 +12,12 @@ config:
   # THEME: Cyberpunk
   THEME: 3.5inchTheme2
 
+  # Network metrics
+  # Put the interface name or let it blank if the card does not exist
+  # ETH: ""
+  ETH: "eth0" # Ethernet Card
+  WLO: "wlo1" # Wi-Fi Card
+
 display:
   # Display resolution in portrait orientation
   # Do not use this setting to rotate display! Display orientation is managed by themes
