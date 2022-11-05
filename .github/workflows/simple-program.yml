@@ -1,0 +1,68 @@
+name: Integration tests - simple program run
+
+on: [push, pull_request]
+
+jobs:
+  simple-program:
+
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Run simple-program.py during 20 seconds
+      run: |
+        sed -i 's/^REVISION.*$/REVISION=\"SIMU\"/g' simple-program.py
+        python3 simple-program.py > tests.log 2>&1 &
+        sleep 20
+        killall -9 python3
+
+    - name: View output
+      run: |
+        echo "######## Output : ########"
+        cat tests.log
+
+    - name: Check output for exceptions
+      run: |
+        if grep -q Exception tests.log; then
+          echo "Program failed to run, see output above"
+          false
+        fi
+        if grep -q Traceback tests.log; then
+          echo "Program failed to run, see output above"
+          false
+        fi
+
+    - name: Run default configuration
+      run: |
+        sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
+        timeout --preserve-status 20s python3 main.py > tests.log 2>&1
+
+    - name: View output
+      run: |
+        echo "######## Output : ########"
+        cat tests.log
+
+    - name: Check output for exceptions
+      run: |
+        if grep -q Exception tests.log; then
+          echo "Program failed to run, see output above"
+          false
+        fi
+        if grep -q Traceback tests.log; then
+          echo "Program failed to run, see output above"
+          false
+        fi

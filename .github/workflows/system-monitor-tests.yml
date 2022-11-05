@@ -1,0 +1,21 @@
+name: Integration tests - system monitor run
+
+on: [push, pull_request]
+
+jobs:
+  system-monitor-3_5inchTheme2:
+    uses: ./.github/workflows/system-monitor-generic.yml
+    with:
+      theme: 3.5inchTheme2
+  system-monitor-Cyberpunk:
+    uses: ./.github/workflows/system-monitor-generic.yml
+    with:
+      theme: Cyberpunk
+  system-monitor-Landscape6Grid:
+    uses: ./.github/workflows/system-monitor-generic.yml
+    with:
+      theme: Landscape6Grid
+  system-monitor-Terminal:
+    uses: ./.github/workflows/system-monitor-generic.yml
+    with:
+      theme: Terminal
