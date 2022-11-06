@@ -45,7 +45,7 @@ Some themes are already included for a quick start!
 * Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
 
 Screenshots from the latest version using included themes:  
-<img src="res/docs/Theme3.5Inch.jpg" height="400" /> <img src="res/docs/ThemeTerminal.jpg" height="400" /> <img src="res/docs/ThemeCyberpunk.png" height="400" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="400" />
+<img src="res/docs/Theme3.5Inch.jpg" height="400" /> <img src="res/docs/ThemeTerminal.jpg" height="400" /> <img src="res/docs/ThemeCyberpunk.png" height="400" /> <img src="res/docs/ThemeBashDarkGreen.png" height="400" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="400" />
 
 ### [> Themes creation/edition](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
 
