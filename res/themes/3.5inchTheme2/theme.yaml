@@ -289,7 +289,7 @@ STATS:
         BACKGROUND_COLOR: 132, 154, 165
         # BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
-        SHOW: True
+        SHOW: False
         X: 46
         Y: 402
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf

@@ -1,7 +1,7 @@
 ---
 display:
   # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
-  DISPLAY_ORIENTATION: reverse_portrait
+  DISPLAY_ORIENTATION: portrait
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
   DISPLAY_RGB_LED: 53, 191, 92
@@ -292,7 +292,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
-    WLO1:
+    WLO:
       UPLOAD:
         TEXT:
           SHOW: True
@@ -333,7 +333,7 @@ STATS:
           FONT_COLOR: 53, 191, 92
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
-    ECRANDOCK:
+    ETH:
       UPLOAD:
         TEXT:
           SHOW: True
