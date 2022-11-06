@@ -1,20 +1,17 @@
-name: System monitor generic run
+name: System monitor (Linux)
 
-on:
-  workflow_call:
-    inputs:
-      theme:
-        required: true
-        type: string
+on: [push, pull_request]
 
 jobs:
-  system-monitor-generic:
+  system-monitor:
 
     runs-on: ubuntu-latest
+
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10"]
+        theme: [ "3.5inchTheme2", "Cyberpunk", "Landscape6Grid", "Terminal" ]
 
     steps:
     - uses: actions/checkout@v3
@@ -30,26 +27,30 @@ jobs:
 
     - name: Configure system monitor
       run: |
+        # For tests there is no real HW: use simulated LCD mode
         sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
-        echo "Using theme ${{ inputs.theme }}"
-        sed -i "/THEME:/c\  THEME: ${{ inputs.theme }}" config.yaml
+        
+        # Setup selected theme in config.yaml
+        echo "Using theme ${{ matrix.theme }}"
+        sed -i "/THEME:/c\  THEME: ${{ matrix.theme }}" config.yaml
 
     - name: Run system monitor for 20 seconds
       run: |
-        timeout --preserve-status 20s python3 main.py > tests.log 2>&1
+        python3 main.py > output.log 2>&1 &
+        sleep 20
 
-    - name: View output
+    - name: Check output for errors
       run: |
         echo "######## Output : ########"
-        cat tests.log
-
-    - name: Check output for exceptions
-      run: |
-        if grep -q Exception tests.log; then
+        cat output.log
+        
+        if grep -qi "error" output.log; then
           echo "Program failed to run, see output above"
           false
-        fi
-        if grep -q Traceback tests.log; then
+        elif grep -qi "traceback" output.log; then
+          echo "Program failed to run, see output above"
+          false
+        elif grep -qi "exception" output.log; then
           echo "Program failed to run, see output above"
           false
         fi
