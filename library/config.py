@@ -6,7 +6,6 @@ import yaml
 
 from library.log import logger
 
-PNIC_BEFORE = ""
 
 def load_yaml(configfile):
     with open(configfile, "r") as stream:
