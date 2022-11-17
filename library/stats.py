@@ -65,7 +65,7 @@ class CPU:
 
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=str(f'{int(cpu_freq.current) / 1000:.2f}') + " GHz",
+                text=str(f'{int(cpu_freq) / 1000:.2f}') + " GHz",
                 x=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -385,15 +385,13 @@ class Memory:
 class Disk:
     @staticmethod
     def stats():
-        disk_usage = sensors.Disk.disk_usage()
-
         if THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("SHOW", False):
             display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("Y", 0),
                 width=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("WIDTH", 0),
                 height=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("HEIGHT", 0),
-                value=int(disk_usage.percent),
+                value=int(sensors.Disk.disk_usage_percent()),
                 min_value=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MIN_VALUE", 0),
                 max_value=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MAX_VALUE", 100),
                 bar_color=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
@@ -406,7 +404,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(disk_usage.used / 1000000000):>5} G",
+                text=f"{int(sensors.Disk.disk_used() / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -420,7 +418,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(disk_usage.percent):>3}%",
+                text=f"{int(sensors.Disk.disk_usage_percent()):>3}%",
                 x=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT",
@@ -437,7 +435,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(disk_usage.total / 1000000000):>5} G",
+                text=f"{int(sensors.Disk.disk_total() / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -451,7 +449,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(disk_usage.free / 1000000000):>5} G",
+                text=f"{int(sensors.Disk.disk_free() / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),

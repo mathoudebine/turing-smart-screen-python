@@ -1,4 +1,5 @@
 import math
+import sensors
 
 # CPU & disk sensors
 import psutil
@@ -21,21 +22,21 @@ except:
 PNIC_BEFORE = None
 
 
-class CPU:
+class CPU(sensors.CPU):
     @staticmethod
-    def percentage(interval):
+    def percentage(interval: float) -> float:
         return psutil.cpu_percent(interval=interval)
 
     @staticmethod
-    def frequency():
-        return psutil.cpu_freq()
+    def frequency() -> float:
+        return psutil.cpu_freq().current
 
     @staticmethod
-    def load():
+    def load() -> tuple[float, float, float]:  # 1 / 5 / 15min avg:
         return psutil.getloadavg()
 
     @staticmethod
-    def is_temperature_available():
+    def is_temperature_available() -> bool:
         try:
             if 'coretemp' in psutil.sensors_temperatures() or 'k10temp' in psutil.sensors_temperatures():
                 return True
@@ -46,7 +47,7 @@ class CPU:
             return False
 
     @staticmethod
-    def temperature():
+    def temperature() -> float:
         cpu_temp = 0
         if 'coretemp' in psutil.sensors_temperatures():
             # Intel CPU
@@ -57,9 +58,9 @@ class CPU:
         return cpu_temp
 
 
-class GpuNvidia:
+class GpuNvidia(sensors.GPU):
     @staticmethod
-    def stats():
+    def stats() -> tuple[float, float, float, float]:
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -91,13 +92,13 @@ class GpuNvidia:
         return load, memory_percentage, memory_used_mb, temperature
 
     @staticmethod
-    def is_available():
+    def is_available() -> bool:
         return len(GPUtil.getGPUs()) > 0
 
 
-class GpuAmd:
+class GpuAmd(sensors.GPU):
     @staticmethod
-    def stats():
+    def stats() -> tuple[float, float, float, float]:
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             i = 0
@@ -153,7 +154,7 @@ class GpuAmd:
             return load, math.nan, math.nan, temperature
 
     @staticmethod
-    def is_available():
+    def is_available() -> bool:
         if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
             return True
         elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
@@ -162,62 +163,64 @@ class GpuAmd:
             return False
 
 
-class Memory:
+class Memory(sensors.Memory):
     @staticmethod
-    def swap_percent():
+    def swap_percent() -> float:
         return psutil.swap_memory().percent
 
     @staticmethod
-    def virtual_percent():
+    def virtual_percent() -> float:
         return psutil.virtual_memory().percent
 
     @staticmethod
-    def virtual_used():
+    def virtual_used() -> int:
         return psutil.virtual_memory().used
 
     @staticmethod
-    def virtual_free():
+    def virtual_free() -> int:
         return psutil.virtual_memory().free
 
 
-class Disk:
+class Disk(sensors.Disk):
     @staticmethod
-    def disk_usage():
-        return psutil.disk_usage("/")
+    def disk_usage_percent() -> float:
+        return psutil.disk_usage("/").percent
+
+    @staticmethod
+    def disk_used() -> int:
+        return psutil.disk_usage("/").used
+
+    @staticmethod
+    def disk_total() -> int:
+        return psutil.disk_usage("/").total
+
+    @staticmethod
+    def disk_free() -> int:
+        return psutil.disk_usage("/").free
 
 
-class Net:
-    @staticmethod
-    def stats(wlo_card, eth_card):
+class Net(sensors.Net):
+    def __init__(self, interval: float, if_name: str):
+        self.pnic_before = None
+        self.interval = interval
+        self.if_name = if_name
+
+    def stats(self) -> tuple[float, float, float, float]:
+        # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)
-        global PNIC_BEFORE
-        if PNIC_BEFORE:
-            pnic_before = PNIC_BEFORE
-        else:
-            pnic_before = pnic_after
 
-        if wlo_card in pnic_after:
-            upload_wlo = pnic_after[wlo_card].bytes_sent - pnic_before[wlo_card].bytes_sent
-            uploaded_wlo = pnic_after[wlo_card].bytes_sent
-            download_wlo = pnic_after[wlo_card].bytes_recv - pnic_before[wlo_card].bytes_recv
-            downloaded_wlo = pnic_after[wlo_card].bytes_recv
-        else:
-            upload_wlo = math.nan
-            uploaded_wlo = math.nan
-            download_wlo = math.nan
-            downloaded_wlo = math.nan
+        upload_rate = math.nan
+        uploaded = math.nan
+        download_rate = math.nan
+        downloaded = math.nan
 
-        if eth_card in pnic_after:
-            upload_eth = pnic_after[eth_card].bytes_sent - pnic_before[eth_card].bytes_sent
-            uploaded_eth = pnic_after[eth_card].bytes_sent
-            download_eth = pnic_after[eth_card].bytes_recv - pnic_before[eth_card].bytes_recv
-            downloaded_eth = pnic_after[eth_card].bytes_recv
-        else:
-            upload_eth = math.nan
-            uploaded_eth = math.nan
-            download_eth = math.nan
-            downloaded_eth = math.nan
+        if self.pnic_before:
+            if self.if_name in pnic_after:
+                upload_rate = (pnic_after[self.if_name].bytes_sent - self.pnic_before[self.if_name].bytes_sent) / self.interval
+                uploaded = pnic_after[self.if_name].bytes_sent
+                download_rate = (pnic_after[self.if_name].bytes_recv - self.pnic_before[self.if_name].bytes_recv) / self.interval
+                downloaded = pnic_after[self.if_name].bytes_recv
 
-        PNIC_BEFORE = psutil.net_io_counters(pernic=True)
+        self.pnic_before = pnic_after
 
-        return upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo, upload_eth, uploaded_eth, download_eth, downloaded_eth
+        return upload_rate, uploaded, download_rate, downloaded
