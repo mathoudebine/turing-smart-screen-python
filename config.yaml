@@ -10,13 +10,15 @@ config:
   # THEME: Terminal
   # THEME: Landscape6Grid
   # THEME: Cyberpunk
+  # THEME: bash-dark-green
   THEME: 3.5inchTheme2
 
   # Network metrics
   # Put the interface name or let it blank if the card does not exist
-  # ETH: ""
+  # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
+  # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   ETH: "eth0" # Ethernet Card
-  WLO: "wlo1" # Wi-Fi Card
+  WLO: "wlan0" # Wi-Fi Card
 
 display:
   # Display resolution in portrait orientation

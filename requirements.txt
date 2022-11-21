@@ -1,12 +1,14 @@
 # Python packages requirements
-Pillow~=9.2.0
-pyserial~=3.5
-PyYAML~=6.0
-psutil==5.9.2
-GPUtil~=1.4.0
+Pillow~=9.2.0     # Image generation
+pyserial~=3.5     # Serial linl to communicate with the display
+PyYAML~=6.0       # For themes files
+psutil~=5.9.2     # CPU / disk / network metrics
+GPUtil~=1.4.0     # Nvidia GPU
+
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
-Cython~=0.29.32; os_name=='posix'
-pyamdgpuinfo~=2.1.3; os_name=='posix'
+Cython~=0.29.32; sys_platform=="linux"
+pyamdgpuinfo~=2.1.3; sys_platform=="linux"
+
 # Following packages are for AMD GPU on Windows
-pyadl~=0.1; os_name=='nt'
+pyadl~=0.1; sys_platform=="win32"

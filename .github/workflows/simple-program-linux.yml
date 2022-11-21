@@ -1,0 +1,50 @@
+name: Simple program (Linux)
+
+on: [push, pull_request]
+
+jobs:
+  simple-program:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Run simple-program.py during 20 seconds
+      run: |
+        # For tests there is no real HW: use simulated LCD mode
+        sed -i 's/^REVISION.*$/REVISION=\"SIMU\"/g' simple-program.py
+        
+        # Run the program for 20s
+        python3 simple-program.py > output.log 2>&1 &
+        sleep 20
+
+    - name: Check output for errors
+      run: |
+        echo "######## Output : ########"
+        cat output.log
+        
+        if grep -qi "error" output.log; then
+          echo "Program failed to run, see output above"
+          false
+        elif grep -qi "traceback" output.log; then
+          echo "Program failed to run, see output above"
+          false
+        elif grep -qi "exception" output.log; then
+          echo "Program failed to run, see output above"
+          false
+        fi
