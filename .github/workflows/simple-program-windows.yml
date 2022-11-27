@@ -55,8 +55,12 @@ jobs:
             throw "Program failed to run, see output above"
         }
 
+    - name: Prepare screenshot for archiving
+      run: |
+        cp screencap.png screenshot-py${{ matrix.python-version }}.png
+
     - name: Archive a screenshot
       uses: actions/upload-artifact@v3
       with:
-        name: screenshot
-        path: screencap.png
+        name: screenshot-py${{ matrix.python-version }}
+        path: screenshot-*.png
