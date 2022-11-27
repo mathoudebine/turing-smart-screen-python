@@ -7,6 +7,11 @@ assignees: ''
 
 ---
 
+<!---
+⚠️ Do not open bug reports for UsbMonitor.exe or ExtendScreen.exe here!
+Please read the disclaimer on the front page.
+-->
+
 **Describe the bug**  
 A clear and concise description of what the bug is.
 
@@ -25,9 +30,9 @@ Add screenshots or photos of the rendering on the Turing screen to help explain 
 You can drag and drop photos here to add them to the description.
 
 **Environment:**  
- - Release or branch of this project [e.g. 1.1.1, 2.0.0-alpha4, `feature/system-monitor` branch]
+ - Revision of this project [e.g. 1.1.1, `main` branch, specific commit]
  - OS with version [e.g. Windows 11, Ubuntu 22.04]
- - Python version [e.g. Python 3.8, to get it run `python3 --version`]
+ - Python version [e.g. Python 3.8]
  - Hardware [e.g. Intel CPU, Nvidia GPU, Raspberry Pi 3 B+ ...]
 
 **Additional context**  
