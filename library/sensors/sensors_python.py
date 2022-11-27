@@ -227,9 +227,8 @@ class Net(sensors.Net):
                 downloaded = pnic_after[if_name].bytes_recv
         except:
             # Interface might not be in PNIC_BEFORE for now
-            logger.debug("Ignored %s" % if_name)
             pass
 
-        PNIC_BEFORE[if_name] = pnic_after[if_name]
+        PNIC_BEFORE.update({if_name: pnic_after[if_name]})
 
         return upload_rate, uploaded, download_rate, downloaded
