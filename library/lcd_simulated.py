@@ -1,7 +1,10 @@
 import mimetypes
+import shutil
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from library.lcd_comm import *
+
+SCREENSHOT_FILE = "screencap.png"
 
 
 # This webserver offer a blank page displaying simulated screen with auto-refresh
@@ -22,8 +25,8 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
             self.wfile.write(bytes("}, 250);", "utf-8"))
             self.wfile.write(bytes("</script>", "utf-8"))
         elif self.path.startswith("/screencap.png"):
-            imgfile = open("screencap.png", 'rb').read()
-            mimetype = mimetypes.MimeTypes().guess_type("screencap.png")[0]
+            imgfile = open(SCREENSHOT_FILE, 'rb').read()
+            mimetype = mimetypes.MimeTypes().guess_type(SCREENSHOT_FILE)[0]
             self.send_response(200)
             self.send_header('Content-type', mimetype)
             self.end_headers()
@@ -36,7 +39,8 @@ class LcdSimulated(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.screen_image = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
-        self.screen_image.save("screencap.png", "PNG")
+        self.screen_image.save("tmp", "PNG")
+        shutil.copyfile("tmp", SCREENSHOT_FILE)
         self.orientation = Orientation.PORTRAIT
 
         webServer = HTTPServer(("localhost", 5678), SimulatedLcdWebServer)
@@ -74,7 +78,8 @@ class LcdSimulated(LcdComm):
         # Just draw the screen again with the new width/height based on orientation
         with self.update_queue_mutex:
             self.screen_image = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
-            self.screen_image.save("screencap.png", "PNG")
+            self.screen_image.save("tmp", "PNG")
+            shutil.copyfile("tmp", SCREENSHOT_FILE)
 
     def DisplayPILImage(
             self,
@@ -102,4 +107,5 @@ class LcdSimulated(LcdComm):
 
         with self.update_queue_mutex:
             self.screen_image.paste(image, (x, y))
-            self.screen_image.save("screencap.png", "PNG")
+            self.screen_image.save("tmp", "PNG")
+            shutil.copyfile("tmp", SCREENSHOT_FILE)
