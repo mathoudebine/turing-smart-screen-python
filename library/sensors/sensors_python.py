@@ -1,5 +1,6 @@
 import math
 import library.sensors.sensors as sensors
+from library.log import logger
 
 # CPU & disk sensors
 import psutil
@@ -207,6 +208,7 @@ class Disk(sensors.Disk):
 class Net(sensors.Net):
     @staticmethod
     def stats(if_name, interval) -> tuple[int, int, int, int]:
+        global PNIC_BEFORE
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)
 
@@ -223,8 +225,9 @@ class Net(sensors.Net):
                 downloaded = pnic_after[if_name].bytes_recv
         except:
             # Interface might not be in PNIC_BEFORE for now
+            logger.debug("Ignored %s" % if_name)
             pass
 
-        PNIC_BEFORE[if_name] = pnic_after
+        PNIC_BEFORE[if_name] = pnic_after[if_name]
 
         return upload_rate, uploaded, download_rate, downloaded
