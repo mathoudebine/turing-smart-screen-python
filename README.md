@@ -2,9 +2,9 @@
 
 ### ⚠️ DISCLAIMER - PLEASE READ ⚠️
 
-This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing brand**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing products. All product and company names are the registered trademarks of their original owners.
+This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing or XuanFang brands**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing / XuanFang products. All product and company names are the registered trademarks of their original owners.
 
-This project is an open-source alternative software, not the USBMonitor.exe original software for the Turing smart screen. There will be no support for the USBMonitor.exe software.
+This project is an open-source alternative software, NOT the USBMonitor.exe  or ExtendScreen.exe original software for the Turing/XuanFang smart screen (even if some themes have been reused from original software). **Please do not open issues for USBMonitor.exe/ExtendScreen.exe here**, instead you can use the official forum here: http://discuz.turzx.com/
 
 ---
 

@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -60,3 +60,13 @@ jobs:
         {
             throw "Program failed to run, see output above"
         }
+
+    - name: Prepare screenshot for archiving
+      run: |
+        cp screencap.png screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}.png
+
+    - name: Archive a screenshot
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}
+        path: screenshot-*.png
