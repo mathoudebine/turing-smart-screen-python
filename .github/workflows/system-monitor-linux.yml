@@ -54,3 +54,9 @@ jobs:
           echo "Program failed to run, see output above"
           false
         fi
+
+    - name: Archive a screenshot
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshot
+        path: screencap.png

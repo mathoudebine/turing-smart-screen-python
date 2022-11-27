@@ -60,3 +60,9 @@ jobs:
         {
             throw "Program failed to run, see output above"
         }
+
+    - name: Archive a screenshot
+      uses: actions/upload-artifact@v3
+      with:
+        name: screenshot
+        path: screencap.png
