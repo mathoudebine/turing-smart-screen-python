@@ -1,4 +1,6 @@
 import math
+from typing import Tuple
+
 import library.sensors.sensors as sensors
 from library.log import logger
 
@@ -33,7 +35,7 @@ class CPU(sensors.CPU):
         return psutil.cpu_freq().current
 
     @staticmethod
-    def load() -> tuple[float, float, float]:  # 1 / 5 / 15min avg:
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
         return psutil.getloadavg()
 
     @staticmethod
@@ -66,7 +68,7 @@ class CPU(sensors.CPU):
 
 class GpuNvidia(sensors.GPU):
     @staticmethod
-    def stats() -> tuple[float, float, float, float]:
+    def stats() -> Tuple[float, float, float, float]:
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -104,7 +106,7 @@ class GpuNvidia(sensors.GPU):
 
 class GpuAmd(sensors.GPU):
     @staticmethod
-    def stats() -> tuple[float, float, float, float]:
+    def stats() -> Tuple[float, float, float, float]:
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             i = 0
@@ -207,7 +209,7 @@ class Disk(sensors.Disk):
 
 class Net(sensors.Net):
     @staticmethod
-    def stats(if_name, interval) -> tuple[int, int, int, int]:
+    def stats(if_name, interval) -> Tuple[int, int, int, int]:
         global PNIC_BEFORE
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)

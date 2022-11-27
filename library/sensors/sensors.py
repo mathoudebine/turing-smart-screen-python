@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections import namedtuple
+from typing import Tuple
 
 
 class CPU(ABC):
@@ -15,7 +15,7 @@ class CPU(ABC):
 
     @staticmethod
     @abstractmethod
-    def load() -> tuple[float, float, float]:  # 1 / 5 / 15min avg
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg
         pass
 
     @staticmethod
@@ -32,7 +32,7 @@ class CPU(ABC):
 class GPU(ABC):
     @staticmethod
     @abstractmethod
-    def stats() -> tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         pass
 
     @staticmethod
@@ -88,5 +88,5 @@ class Disk(ABC):
 class Net(ABC):
     @staticmethod
     @abstractmethod
-    def stats(if_name, interval) -> tuple[int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+    def stats(if_name, interval) -> Tuple[int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
         pass
