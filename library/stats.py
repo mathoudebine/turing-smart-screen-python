@@ -1,11 +1,12 @@
 import datetime
 import math
+
 from psutil._common import bytes2human
 
 import library.config as config
+import library.sensors.sensors_python as sensors
 from library.display import display
 from library.log import logger
-import library.sensors.sensors_python as sensors
 
 THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
@@ -465,18 +466,13 @@ class Disk:
 class Net:
     @staticmethod
     def stats():
-        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo, upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(
-            WLO_CARD, ETH_CARD)
+        interval = THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)
+        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
 
         upload_wlo_text = f"{bytes2human(upload_wlo)}/s"
         uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}"
         download_wlo_text = f"{bytes2human(download_wlo)}/s"
         downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}"
-
-        upload_eth_text = f"{bytes2human(upload_eth)}/s"
-        uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
-        download_eth_text = f"{bytes2human(download_eth)}/s"
-        downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
@@ -545,6 +541,13 @@ class Net:
                                                    "BACKGROUND_IMAGE",
                                                    None))
             )
+
+        upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(ETH_CARD, interval)
+
+        upload_eth_text = f"{bytes2human(upload_eth)}/s"
+        uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
+        download_eth_text = f"{bytes2human(download_eth)}/s"
+        downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(

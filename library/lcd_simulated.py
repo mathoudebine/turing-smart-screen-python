@@ -39,8 +39,11 @@ class LcdSimulated(LcdComm):
         self.screen_image.save("screencap.png", "PNG")
         self.orientation = Orientation.PORTRAIT
 
-        webServer = HTTPServer(("localhost", 5678), SimulatedLcdWebServer)
-        logger.debug("To see your simulated screen, open http://%s:%s" % ("localhost", 5678))
+        try:
+            webServer = HTTPServer(("localhost", 5678), SimulatedLcdWebServer)
+            logger.debug("To see your simulated screen, open http://%s:%s" % ("localhost", 5678))
+        except:
+            logger.error("Error starting webserver! An instance might already be running.")
 
         threading.Thread(target=webServer.serve_forever).start()
 

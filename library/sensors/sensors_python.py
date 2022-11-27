@@ -1,5 +1,5 @@
 import math
-import sensors
+import library.sensors.sensors as sensors
 
 # CPU & disk sensors
 import psutil
@@ -19,7 +19,7 @@ try:
 except:
     pyadl = None
 
-PNIC_BEFORE = None
+PNIC_BEFORE = {}
 
 
 class CPU(sensors.CPU):
@@ -200,12 +200,8 @@ class Disk(sensors.Disk):
 
 
 class Net(sensors.Net):
-    def __init__(self, interval: float, if_name: str):
-        self.pnic_before = None
-        self.interval = interval
-        self.if_name = if_name
-
-    def stats(self) -> tuple[float, float, float, float]:
+    @staticmethod
+    def stats(if_name, interval) -> tuple[int, int, int, int]:
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)
 
@@ -214,13 +210,16 @@ class Net(sensors.Net):
         download_rate = math.nan
         downloaded = math.nan
 
-        if self.pnic_before:
-            if self.if_name in pnic_after:
-                upload_rate = (pnic_after[self.if_name].bytes_sent - self.pnic_before[self.if_name].bytes_sent) / self.interval
-                uploaded = pnic_after[self.if_name].bytes_sent
-                download_rate = (pnic_after[self.if_name].bytes_recv - self.pnic_before[self.if_name].bytes_recv) / self.interval
-                downloaded = pnic_after[self.if_name].bytes_recv
+        try:
+            if if_name in pnic_after:
+                upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                uploaded = pnic_after[if_name].bytes_sent
+                download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
+                downloaded = pnic_after[if_name].bytes_recv
+        except:
+            # Interface might not be in PNIC_BEFORE for now
+            pass
 
-        self.pnic_before = pnic_after
+        PNIC_BEFORE[if_name] = pnic_after
 
         return upload_rate, uploaded, download_rate, downloaded

@@ -86,6 +86,7 @@ class Disk(ABC):
 
 
 class Net(ABC):
+    @staticmethod
     @abstractmethod
-    def stats(self) -> tuple[float, float, float, float]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+    def stats(if_name, interval) -> tuple[int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
         pass
