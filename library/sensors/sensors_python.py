@@ -38,7 +38,8 @@ class CPU(sensors.CPU):
     @staticmethod
     def is_temperature_available() -> bool:
         try:
-            if 'coretemp' in psutil.sensors_temperatures() or 'k10temp' in psutil.sensors_temperatures():
+            sensors_temps = psutil.sensors_temperatures()
+            if 'coretemp' in sensors_temps or 'k10temp' in sensors_temps or 'cpu_thermal' in sensors_temps:
                 return True
             else:
                 return False
@@ -49,12 +50,16 @@ class CPU(sensors.CPU):
     @staticmethod
     def temperature() -> float:
         cpu_temp = 0
-        if 'coretemp' in psutil.sensors_temperatures():
+        sensors_temps = psutil.sensors_temperatures()
+        if 'coretemp' in sensors_temps:
             # Intel CPU
-            cpu_temp = psutil.sensors_temperatures()['coretemp'][0].current
-        elif 'k10temp' in psutil.sensors_temperatures():
+            cpu_temp = sensors_temps['coretemp'][0].current
+        elif 'k10temp' in sensors_temps:
             # AMD CPU
-            cpu_temp = psutil.sensors_temperatures()['k10temp'][0].current
+            cpu_temp = sensors_temps['k10temp'][0].current
+        elif 'cpu_thermal' in sensors_temps:
+            # ARM CPU
+            cpu_temp = sensors_temps['cpu_thermal'][0].current
         return cpu_temp
 
 

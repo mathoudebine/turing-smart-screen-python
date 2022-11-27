@@ -476,7 +476,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{upload_wlo_text}",
+                text=f"{upload_wlo_text:>8}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT",
@@ -493,7 +493,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{uploaded_wlo_text}",
+                text=f"{uploaded_wlo_text:>6}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT",
@@ -510,7 +510,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{download_wlo_text}",
+                text=f"{download_wlo_text:>8}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT",
@@ -527,7 +527,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{downloaded_wlo_text}",
+                text=f"{downloaded_wlo_text:>6}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT",
@@ -551,7 +551,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{upload_eth_text}",
+                text=f"{upload_eth_text:>8}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT",
@@ -568,7 +568,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{uploaded_eth_text}",
+                text=f"{uploaded_eth_text:>6}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT",
@@ -585,7 +585,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{download_eth_text}",
+                text=f"{download_eth_text:>8}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT",
@@ -602,7 +602,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{downloaded_eth_text}",
+                text=f"{downloaded_eth_text:>6}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT",
