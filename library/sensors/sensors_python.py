@@ -68,7 +68,7 @@ class CPU(sensors.CPU):
 
 class GpuNvidia(sensors.GPU):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:
+    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -106,7 +106,7 @@ class GpuNvidia(sensors.GPU):
 
 class GpuAmd(sensors.GPU):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:
+    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             i = 0
@@ -219,16 +219,16 @@ class Net(sensors.Net):
         download_rate = math.nan
         downloaded = math.nan
 
-        try:
-            if if_name in pnic_after:
+        if if_name in pnic_after:
+            try:
                 upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
                 uploaded = pnic_after[if_name].bytes_sent
                 download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
                 downloaded = pnic_after[if_name].bytes_recv
-        except:
-            # Interface might not be in PNIC_BEFORE for now
-            pass
+            except:
+                # Interface might not be in PNIC_BEFORE for now
+                pass
 
-        PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+            PNIC_BEFORE.update({if_name: pnic_after[if_name]})
 
         return upload_rate, uploaded, download_rate, downloaded
