@@ -47,11 +47,11 @@ class Memory(sensors.Memory):
 
     @staticmethod
     def virtual_used() -> int:
-        return random.randint(300, 16000)
+        return random.randint(300000000, 16000000000)
 
     @staticmethod
     def virtual_free() -> int:
-        return random.randint(300, 16000)
+        return random.randint(300000000, 16000000000)
 
 
 class Disk(sensors.Disk):
@@ -61,10 +61,6 @@ class Disk(sensors.Disk):
 
     @staticmethod
     def disk_used() -> int:
-        return random.randint(1000000000, 2000000000000)
-
-    @staticmethod
-    def disk_total() -> int:
         return random.randint(1000000000, 2000000000000)
 
     @staticmethod

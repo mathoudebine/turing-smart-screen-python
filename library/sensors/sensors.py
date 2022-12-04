@@ -76,11 +76,6 @@ class Disk(ABC):
 
     @staticmethod
     @abstractmethod
-    def disk_total() -> int:
-        pass
-
-    @staticmethod
-    @abstractmethod
     def disk_free() -> int:
         pass
 

@@ -242,10 +242,6 @@ class Disk(sensors.Disk):
         return psutil.disk_usage("/").used
 
     @staticmethod
-    def disk_total() -> int:
-        return psutil.disk_usage("/").total
-
-    @staticmethod
     def disk_free() -> int:
         return psutil.disk_usage("/").free
 

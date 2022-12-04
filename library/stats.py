@@ -1,10 +1,12 @@
 import datetime
 import math
+import os
+import platform
+import sys
 
 from psutil._common import bytes2human
 
 import library.config as config
-import library.sensors.sensors_python as sensors
 from library.display import display
 from library.log import logger
 
@@ -12,6 +14,25 @@ THEME_DATA = config.THEME_DATA
 CONFIG_DATA = config.CONFIG_DATA
 ETH_CARD = CONFIG_DATA["config"]["ETH"]
 WLO_CARD = CONFIG_DATA["config"]["WLO"]
+HW_SENSORS = CONFIG_DATA["config"]["HW_SENSORS"]
+
+if HW_SENSORS == "PYTHON":
+    import library.sensors.sensors_python as sensors
+elif HW_SENSORS == "LHM":
+    pass
+elif HW_SENSORS == "STUB":
+    import library.sensors.sensors_stub as sensors
+elif HW_SENSORS == "AUTO":
+    if platform.system() == 'Windows':
+        pass
+    else:
+        import library.sensors.sensors_python as sensors
+else:
+    logger.error("Unsupported SENSORS value in config.yaml")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 
 def get_full_path(path, name):
@@ -375,6 +396,8 @@ class Memory:
 class Disk:
     @staticmethod
     def stats():
+        used = sensors.Disk.disk_used()
+        free = sensors.Disk.disk_free()
         if THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("SHOW", False):
             display.lcd.DisplayProgressBar(
                 x=THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("X", 0),
@@ -394,7 +417,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(sensors.Disk.disk_used() / 1000000000):>5} G",
+                text=f"{int(used / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -425,7 +448,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(sensors.Disk.disk_total() / 1000000000):>5} G",
+                text=f"{int((free + used) / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -439,7 +462,7 @@ class Disk:
 
         if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{int(sensors.Disk.disk_free() / 1000000000):>5} G",
+                text=f"{int(free / 1000000000):>5} G",
                 x=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),

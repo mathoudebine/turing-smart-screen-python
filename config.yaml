@@ -13,10 +13,18 @@ config:
   # THEME: bash-dark-green
   THEME: 3.5inchTheme2
 
-  # Network metrics
-  # Put the interface name or let it blank if the card does not exist
+  # Hardware sensors reading
+  # Choose the appropriate method for reading your hardware sensors:
+  # - PYTHON use Python libraries (psutils, GPUtil...) to read hardware sensors (supports all OS but not all HW)
+  # - LHM    use LibreHardwareMonitor library to read hardware sensors (Windows only)
+  # - STUB   use fake random data instead of real hardware sensors
+  # - AUTO   use the best method based on your OS: Windows OS will use LHM, other OS will use Python libraries
+  HW_SENSORS: AUTO
+
+  # Network interfaces
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
+  # Leave the fields empty if the card does not exist on your setup
   ETH: "eth0" # Ethernet Card
   WLO: "wlan0" # Wi-Fi Card
 
