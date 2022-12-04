@@ -1,11 +1,10 @@
-import math
 from typing import Tuple
 import random
 
 import library.sensors.sensors as sensors
-from library.log import logger
 
-class CPU(sensors.CPU):
+
+class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
         return random.uniform(0, 100)
@@ -27,7 +26,7 @@ class CPU(sensors.CPU):
         return random.uniform(30, 90)
 
 
-class Gpu(sensors.GPU):
+class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         return random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), random.uniform(30, 90)
@@ -58,43 +57,24 @@ class Memory(sensors.Memory):
 class Disk(sensors.Disk):
     @staticmethod
     def disk_usage_percent() -> float:
-        return psutil.disk_usage("/").percent
+        return random.uniform(0, 100)
 
     @staticmethod
     def disk_used() -> int:
-        return psutil.disk_usage("/").used
+        return random.randint(1000000000, 2000000000000)
 
     @staticmethod
     def disk_total() -> int:
-        return psutil.disk_usage("/").total
+        return random.randint(1000000000, 2000000000000)
 
     @staticmethod
     def disk_free() -> int:
-        return psutil.disk_usage("/").free
+        return random.randint(1000000000, 2000000000000)
 
 
 class Net(sensors.Net):
     @staticmethod
-    def stats(if_name, interval) -> Tuple[int, int, int, int]:
-        global PNIC_BEFORE
-        # Get current counters
-        pnic_after = psutil.net_io_counters(pernic=True)
-
-        upload_rate = math.nan
-        uploaded = math.nan
-        download_rate = math.nan
-        downloaded = math.nan
-
-        try:
-            if if_name in pnic_after:
-                upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
-                uploaded = pnic_after[if_name].bytes_sent
-                download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
-                downloaded = pnic_after[if_name].bytes_recv
-        except:
-            # Interface might not be in PNIC_BEFORE for now
-            pass
-
-        PNIC_BEFORE.update({if_name: pnic_after[if_name]})
-
-        return upload_rate, uploaded, download_rate, downloaded
+    def stats(if_name, interval) -> Tuple[
+        int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+        return random.randint(1000000, 999000000), random.randint(1000000, 999000000), random.randint(
+            1000000, 999000000), random.randint(1000000, 999000000)

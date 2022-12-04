@@ -1,8 +1,8 @@
 from library import config
-from library.lcd_comm import Orientation
-from library.lcd_comm_rev_a import LcdCommRevA
-from library.lcd_comm_rev_b import LcdCommRevB
-from library.lcd_simulated import LcdSimulated
+from library.lcd.lcd_comm import Orientation
+from library.lcd.lcd_comm_rev_a import LcdCommRevA
+from library.lcd.lcd_comm_rev_b import LcdCommRevB
+from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
 THEME_DATA = config.THEME_DATA

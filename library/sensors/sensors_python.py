@@ -1,5 +1,6 @@
 import math
 from typing import Tuple
+from enum import IntEnum, auto
 
 import library.sensors.sensors as sensors
 from library.log import logger
@@ -25,7 +26,16 @@ except:
 PNIC_BEFORE = {}
 
 
-class CPU(sensors.CPU):
+class GpuType(IntEnum):
+    UNSUPPORTED = auto()
+    AMD = auto()
+    NVIDIA = auto()
+
+
+DETECTED_GPU = GpuType.UNSUPPORTED
+
+
+class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
         return psutil.cpu_percent(interval=interval)
@@ -66,7 +76,34 @@ class CPU(sensors.CPU):
         return cpu_temp
 
 
-class GpuNvidia(sensors.GPU):
+class Gpu(sensors.Gpu):
+    @staticmethod
+    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.stats()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.stats()
+        else:
+            return math.nan, math.nan, math.nan, math.nan
+
+    @staticmethod
+    def is_available() -> bool:
+        global DETECTED_GPU
+        if GpuAmd.is_available():
+            logger.info("Detected AMD GPU(s)")
+            DETECTED_GPU = GpuType.AMD
+        elif GpuNvidia.is_available():
+            logger.info("Detected Nvidia GPU(s)")
+            DETECTED_GPU = GpuType.NVIDIA
+        else:
+            logger.warning("Your GPU is not supported yet")
+            DETECTED_GPU = GpuType.UNSUPPORTED
+
+        return DETECTED_GPU != GpuType.UNSUPPORTED
+
+
+class GpuNvidia(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
@@ -101,10 +138,13 @@ class GpuNvidia(sensors.GPU):
 
     @staticmethod
     def is_available() -> bool:
-        return len(GPUtil.getGPUs()) > 0
+        try:
+            return len(GPUtil.getGPUs()) > 0
+        except:
+            return False
 
 
-class GpuAmd(sensors.GPU):
+class GpuAmd(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         if pyamdgpuinfo:
@@ -163,11 +203,14 @@ class GpuAmd(sensors.GPU):
 
     @staticmethod
     def is_available() -> bool:
-        if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
-            return True
-        elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
-            return True
-        else:
+        try:
+            if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
+                return True
+            elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
+                return True
+            else:
+                return False
+        except:
             return False
 
 
@@ -209,7 +252,8 @@ class Disk(sensors.Disk):
 
 class Net(sensors.Net):
     @staticmethod
-    def stats(if_name, interval) -> Tuple[int, int, int, int]:
+    def stats(if_name, interval) -> Tuple[
+        int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
         global PNIC_BEFORE
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)

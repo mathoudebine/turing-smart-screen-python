@@ -8,9 +8,9 @@ import sys
 from datetime import datetime
 
 # Import only the modules for LCD communication
-from library.lcd_comm_rev_a import LcdCommRevA, Orientation
-from library.lcd_comm_rev_b import LcdCommRevB
-from library.lcd_simulated import LcdSimulated
+from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
+from library.lcd.lcd_comm_rev_b import LcdCommRevB
+from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux, etc. or "AUTO" for auto-discovery

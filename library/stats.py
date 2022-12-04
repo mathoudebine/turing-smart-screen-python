@@ -24,7 +24,7 @@ def get_full_path(path, name):
 class CPU:
     @staticmethod
     def percentage():
-        cpu_percentage = sensors.CPU.percentage(interval=THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None))
+        cpu_percentage = sensors.Cpu.percentage(interval=THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None))
         # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
         if THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
@@ -62,7 +62,7 @@ class CPU:
 
     @staticmethod
     def frequency():
-        cpu_freq = sensors.CPU.frequency()
+        cpu_freq = sensors.Cpu.frequency()
 
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
@@ -81,7 +81,7 @@ class CPU:
 
     @staticmethod
     def load():
-        cpu_load = sensors.CPU.load()
+        cpu_load = sensors.Cpu.load()
         # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
 
         if THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("SHOW", False):
@@ -134,11 +134,11 @@ class CPU:
 
     @staticmethod
     def is_temperature_available():
-        return sensors.CPU.is_temperature_available()
+        return sensors.Cpu.is_temperature_available()
 
     @staticmethod
     def temperature():
-        cpu_temp = sensors.CPU.temperature()
+        cpu_temp = sensors.Cpu.temperature()
 
         if THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
@@ -265,26 +265,15 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
     pass
 
 
-class GpuNvidia:
+class Gpu:
     @staticmethod
     def stats():
-        load, memory_percentage, memory_used_mb, temperature = sensors.GpuNvidia.stats()
+        load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
         display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
 
     @staticmethod
     def is_available():
-        return sensors.GpuNvidia.is_available()
-
-
-class GpuAmd:
-    @staticmethod
-    def stats():
-        load, memory_percentage, memory_used_mb, temperature = sensors.GpuAmd.stats()
-        display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
-
-    @staticmethod
-    def is_available():
-        return sensors.GpuAmd.is_available()
+        return sensors.Gpu.is_available()
 
 
 class Memory:

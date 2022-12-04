@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 
-class CPU(ABC):
+class Cpu(ABC):
     @staticmethod
     @abstractmethod
     def percentage(interval: float) -> float:
@@ -29,7 +29,7 @@ class CPU(ABC):
         pass
 
 
-class GPU(ABC):
+class Gpu(ABC):
     @staticmethod
     @abstractmethod
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)

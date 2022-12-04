@@ -71,14 +71,8 @@ if __name__ == "__main__":
         scheduler.CPUTemperature()
     else:
         logger.warning("Your CPU temperature is not supported yet")
-    if stats.GpuNvidia.is_available():
-        logger.info("Detected Nvidia GPU(s)")
-        scheduler.GpuNvidiaStats()
-    elif stats.GpuAmd.is_available():
-        logger.info("Detected AMD GPU(s)")
-        scheduler.GpuAmdStats()
-    else:
-        logger.warning("Your GPU is not supported yet")
+    if stats.Gpu.is_available():
+        scheduler.GpuStats()
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.NetStats()
