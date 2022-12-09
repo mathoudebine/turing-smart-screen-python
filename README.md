@@ -8,6 +8,9 @@ This project is an open-source alternative software, NOT the USBMonitor.exe  or 
 
 ---
 
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![macOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![Licence](https://img.shields.io/github/license/mathoudebine/turing-smart-screen-python?style=for-the-badge)](./LICENSE)
+  
+
 A Python system monitor program and a library for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
 - Turing USB35INCHIPS / USB35INCHIPSV2 (revision A)
 - XuanFang display (revision B & flagship)
