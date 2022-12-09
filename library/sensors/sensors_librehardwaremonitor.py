@@ -1,6 +1,8 @@
 import clr  # from pythonnet package, not clr package !
+import ctypes
 import math
 import os
+import sys
 from typing import Tuple
 from statistics import mean
 from win32api import *
@@ -25,6 +27,15 @@ ls_file_version = File_information['FileVersionLS']
 logger.debug("Found LibreHardwareMonitorLib %s" % ".".join([str(HIWORD(ms_file_version)), str(LOWORD(ms_file_version)),
                                                             str(HIWORD(ls_file_version)),
                                                             str(LOWORD(ls_file_version))]))
+
+if ctypes.windll.shell32.IsUserAnAdmin() == 0:
+    logger.error(
+        "Program is not running as administrator. Please run with admin rights or choose another HW_SENSORS option in "
+        "config.yaml")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 handle = Hardware.Computer()
 handle.IsCpuEnabled = True
@@ -66,7 +77,7 @@ def get_net_interface_and_update(if_name: str) -> Hardware.Hardware:
             hardware.Update()
             return hardware
 
-    logger.error("Network interface '%s' not found. Check names in config.yaml." % if_name)
+    logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
     return None
 
 
@@ -86,7 +97,7 @@ class Cpu(sensors.Cpu):
         frequencies = []
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
         for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Clock and str(sensor.Name).startswith("CPU Core #"):
+            if sensor.SensorType == Hardware.SensorType.Clock and "Core #" in str(sensor.Name):
                 frequencies.append(float(sensor.Value))
         return mean(frequencies)
 
@@ -100,11 +111,9 @@ class Cpu(sensors.Cpu):
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
         for sensor in cpu.Sensors:
             if sensor.SensorType == Hardware.SensorType.Temperature:
-                if str(sensor.Name).startswith("Core Average") or str(sensor.Name).startswith("Core Max") or str(
-                        sensor.Name).startswith("CPU Package"):
+                if str(sensor.Name).startswith("Core") or str(sensor.Name).startswith("CPU Package"):
                     return True
 
-        logger.error("CPU temperature cannot be read")
         return False
 
     @staticmethod
@@ -118,9 +127,13 @@ class Cpu(sensors.Cpu):
         for sensor in cpu.Sensors:
             if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Max"):
                 return float(sensor.Value)
-        # Otherwise the CPU Package temperature (usually same as max core temperature) will be used
+        # If not available, the CPU Package temperature (usually same as max core temperature) will be used
         for sensor in cpu.Sensors:
             if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("CPU Package"):
+                return float(sensor.Value)
+        # Otherwise any sensor named "Core..." will be used
+        for sensor in cpu.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core"):
                 return float(sensor.Value)
 
         return math.nan
@@ -233,7 +246,8 @@ class Disk(sensors.Disk):
             if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("Used Space"):
                 return float(sensor.Value)
 
-        return math.nan
+        # Get this data from psutil if it is not available from LibreHardwareMonitor
+        return psutil.disk_usage("/").percent
 
     @staticmethod
     def disk_used() -> int:  # In bytes
@@ -251,25 +265,25 @@ class Net(sensors.Net):
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
 
-        dl_speed = 0
-        dl = 0
-        up_speed = 0
-        up = 0
+        upload_rate = 0
+        uploaded = 0
+        download_rate = 0
+        downloaded = 0
 
         if if_name != "":
             net_if = get_net_interface_and_update(if_name)
             if net_if is not None:
                 for sensor in net_if.Sensors:
                     if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Data Uploaded"):
-                        up = int(sensor.Value * 1000000000.0)
+                        uploaded = int(sensor.Value * 1000000000.0)
                     elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
                             "Data Downloaded"):
-                        dl = int(sensor.Value * 1000000000.0)
+                        downloaded = int(sensor.Value * 1000000000.0)
                     elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
                             "Upload Speed"):
-                        up_speed = int(sensor.Value)
+                        upload_rate = int(sensor.Value)
                     elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
                             "Download Speed"):
-                        dl_speed = int(sensor.Value)
+                        download_rate = int(sensor.Value)
 
-        return up_speed, up, dl_speed, dl
+        return upload_rate, uploaded, download_rate, downloaded

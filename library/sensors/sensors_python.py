@@ -254,10 +254,10 @@ class Net(sensors.Net):
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)
 
-        upload_rate = math.nan
-        uploaded = math.nan
-        download_rate = math.nan
-        downloaded = math.nan
+        upload_rate = 0
+        uploaded = 0
+        download_rate = 0
+        downloaded = 0
 
         if if_name in pnic_after:
             try:
@@ -270,5 +270,7 @@ class Net(sensors.Net):
                 pass
 
             PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+        else:
+            logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
 
         return upload_rate, uploaded, download_rate, downloaded
