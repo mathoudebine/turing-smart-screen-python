@@ -46,11 +46,11 @@ class Memory(sensors.Memory):
         return random.uniform(0, 100)
 
     @staticmethod
-    def virtual_used() -> int:
+    def virtual_used() -> int:  # In bytes
         return random.randint(300000000, 16000000000)
 
     @staticmethod
-    def virtual_free() -> int:
+    def virtual_free() -> int:  # In bytes
         return random.randint(300000000, 16000000000)
 
 
@@ -60,17 +60,17 @@ class Disk(sensors.Disk):
         return random.uniform(0, 100)
 
     @staticmethod
-    def disk_used() -> int:
+    def disk_used() -> int:  # In bytes
         return random.randint(1000000000, 2000000000000)
 
     @staticmethod
-    def disk_free() -> int:
+    def disk_free() -> int:  # In bytes
         return random.randint(1000000000, 2000000000000)
 
 
 class Net(sensors.Net):
     @staticmethod
     def stats(if_name, interval) -> Tuple[
-        int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+        int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         return random.randint(1000000, 999000000), random.randint(1000000, 999000000), random.randint(
             1000000, 999000000), random.randint(1000000, 999000000)

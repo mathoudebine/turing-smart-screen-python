@@ -12,3 +12,7 @@ pyamdgpuinfo~=2.1.3; sys_platform=="linux"
 
 # Following packages are for AMD GPU on Windows
 pyadl~=0.1; sys_platform=="win32"
+
+# Following packages are for LibreHardwareMonitor integration on Windows
+pythonnet~=3.0.1; sys_platform=="win32"
+pywin32>=305; sys_platform=="win32"

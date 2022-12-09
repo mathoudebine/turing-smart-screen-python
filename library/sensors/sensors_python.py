@@ -224,11 +224,11 @@ class Memory(sensors.Memory):
         return psutil.virtual_memory().percent
 
     @staticmethod
-    def virtual_used() -> int:
+    def virtual_used() -> int:  # In bytes
         return psutil.virtual_memory().used
 
     @staticmethod
-    def virtual_free() -> int:
+    def virtual_free() -> int:  # In bytes
         return psutil.virtual_memory().free
 
 
@@ -238,18 +238,18 @@ class Disk(sensors.Disk):
         return psutil.disk_usage("/").percent
 
     @staticmethod
-    def disk_used() -> int:
+    def disk_used() -> int:  # In bytes
         return psutil.disk_usage("/").used
 
     @staticmethod
-    def disk_free() -> int:
+    def disk_free() -> int:  # In bytes
         return psutil.disk_usage("/").free
 
 
 class Net(sensors.Net):
     @staticmethod
     def stats(if_name, interval) -> Tuple[
-        int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+        int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         global PNIC_BEFORE
         # Get current counters
         pnic_after = psutil.net_io_counters(pernic=True)

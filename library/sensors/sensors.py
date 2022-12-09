@@ -54,12 +54,12 @@ class Memory(ABC):
 
     @staticmethod
     @abstractmethod
-    def virtual_used() -> int:
+    def virtual_used() -> int:  # In bytes
         pass
 
     @staticmethod
     @abstractmethod
-    def virtual_free() -> int:
+    def virtual_free() -> int:  # In bytes
         pass
 
 
@@ -71,17 +71,17 @@ class Disk(ABC):
 
     @staticmethod
     @abstractmethod
-    def disk_used() -> int:
+    def disk_used() -> int:  # In bytes
         pass
 
     @staticmethod
     @abstractmethod
-    def disk_free() -> int:
+    def disk_free() -> int:  # In bytes
         pass
 
 
 class Net(ABC):
     @staticmethod
     @abstractmethod
-    def stats(if_name, interval) -> Tuple[int, int, int, int]:  # dl rate (B/s), downloaded (B), up rate (B/s), uploaded (B)
+    def stats(if_name, interval) -> Tuple[int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         pass

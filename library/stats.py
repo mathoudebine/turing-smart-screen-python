@@ -19,12 +19,12 @@ HW_SENSORS = CONFIG_DATA["config"]["HW_SENSORS"]
 if HW_SENSORS == "PYTHON":
     import library.sensors.sensors_python as sensors
 elif HW_SENSORS == "LHM":
-    pass
+    import library.sensors.sensors_librehardwaremonitor as sensors
 elif HW_SENSORS == "STUB":
     import library.sensors.sensors_stub as sensors
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
-        pass
+        import library.sensors.sensors_librehardwaremonitor as sensors
     else:
         import library.sensors.sensors_python as sensors
 else:
@@ -488,7 +488,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{upload_wlo_text:>8}",
+                text=f"{upload_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT",
@@ -522,7 +522,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{download_wlo_text:>8}",
+                text=f"{download_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT",
@@ -563,7 +563,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{upload_eth_text:>8}",
+                text=f"{upload_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT",
@@ -597,7 +597,7 @@ class Net:
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{download_eth_text:>8}",
+                text=f"{download_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT",
@@ -634,10 +634,9 @@ class Date:
     @staticmethod
     def stats():
         date_now = datetime.datetime.now()
-
         if THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{date_now.strftime('%d-%m-%Y')}",
+                text=f"{date_now.strftime('%x')}",
                 x=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -651,7 +650,7 @@ class Date:
 
         if THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("SHOW", False):
             display.lcd.DisplayText(
-                text=f"{date_now.strftime('%H:%M:%S')}",
+                text=f"{date_now.strftime('%X')}",
                 x=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
