@@ -17,6 +17,8 @@ lhm_dll = os.getcwd() + '\\external\\LibreHardwareMonitor\\LibreHardwareMonitorL
 # noinspection PyUnresolvedReferences
 clr.AddReference(lhm_dll)
 # noinspection PyUnresolvedReferences
+clr.AddReference(os.getcwd() + '\\external\\LibreHardwareMonitor\\HidSharp.dll')
+# noinspection PyUnresolvedReferences
 from LibreHardwareMonitor import Hardware
 
 File_information = GetFileVersionInfo(lhm_dll, "\\")
