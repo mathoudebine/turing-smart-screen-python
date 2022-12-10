@@ -42,12 +42,12 @@ if __name__ == "__main__":
     lcd_comm = None
     if REVISION == "A":
         logger.info("Selected Hardware Revision A (Turing Smart Screen)")
-        lcd_comm = LcdCommRevA(com_port="AUTO",
+        lcd_comm = LcdCommRevA(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "B":
         print("Selected Hardware Revision B (XuanFang screen version B / flagship)")
-        lcd_comm = LcdCommRevB(com_port="AUTO",
+        lcd_comm = LcdCommRevB(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "SIMU":
