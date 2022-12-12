@@ -1,9 +1,10 @@
 # Use this file to display all hardware & sensors available from LibreHardwareMonitor on your computer
 # Windows only - needs administrative rights
 import ctypes
-import sys
-import clr
 import os
+import sys
+
+import clr  # Clr is from pythonnet package. Do not install clr package
 from win32api import *
 
 if ctypes.windll.shell32.IsUserAnAdmin() == 0:
@@ -32,8 +33,8 @@ File_information = GetFileVersionInfo(os.getcwd() + '\\HidSharp.dll', "\\")
 ms_file_version = File_information['FileVersionMS']
 ls_file_version = File_information['FileVersionLS']
 print("Found HidSharp %s" % ".".join([str(HIWORD(ms_file_version)), str(LOWORD(ms_file_version)),
-                                                     str(HIWORD(ls_file_version)),
-                                                     str(LOWORD(ls_file_version))]))
+                                      str(HIWORD(ls_file_version)),
+                                      str(LOWORD(ls_file_version))]))
 
 handle = Hardware.Computer()
 handle.IsCpuEnabled = True

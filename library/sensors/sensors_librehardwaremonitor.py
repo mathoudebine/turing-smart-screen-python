@@ -1,13 +1,16 @@
-import clr  # from pythonnet package, not clr package !
+# This file will use LibreHardwareMonitor.dll library to get hardware sensors
+# Some metrics are still fetched by psutil when not available on LibreHardwareMonitor
+# For Windows platforms only
+
 import ctypes
 import math
 import os
 import sys
 from typing import Tuple
-from statistics import mean
-from win32api import *
 
+import clr  # Clr is from pythonnet package. Do not install clr package
 import psutil
+from win32api import *
 
 import library.sensors.sensors as sensors
 from library.log import logger
@@ -99,9 +102,12 @@ class Cpu(sensors.Cpu):
         frequencies = []
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
         for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Clock and "Core #" in str(sensor.Name):
-                frequencies.append(float(sensor.Value))
-        return mean(frequencies)
+            if sensor.SensorType == Hardware.SensorType.Clock:
+                # Keep only real core clocks, ignore effective core clocks
+                if "Core #" in str(sensor.Name) and "Effective" not in str(sensor.Name):
+                    frequencies.append(float(sensor.Value))
+        # Take the highest core clock as "CPU clock"
+        return max(frequencies)
 
     @staticmethod
     def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:

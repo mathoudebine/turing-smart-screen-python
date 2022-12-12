@@ -1,5 +1,8 @@
-from typing import Tuple
+# This file will use randomly generated data instead of real hardware sensors
+# For all platforms (Linux, Windows, macOS)
+
 import random
+from typing import Tuple
 
 import library.sensors.sensors as sensors
 

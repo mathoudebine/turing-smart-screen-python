@@ -1,3 +1,6 @@
+# This file defines all supported hardware in virtual classes and their abstract methods to access sensors
+# To be overriden by child sensors classes
+
 from abc import ABC, abstractmethod
 from typing import Tuple
 
@@ -83,5 +86,6 @@ class Disk(ABC):
 class Net(ABC):
     @staticmethod
     @abstractmethod
-    def stats(if_name, interval) -> Tuple[int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
+    def stats(if_name, interval) -> Tuple[
+        int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         pass

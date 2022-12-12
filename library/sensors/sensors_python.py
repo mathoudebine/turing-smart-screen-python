@@ -1,3 +1,6 @@
+# This file will use Python libraries (psutil, GPUtil, etc.) to get hardware sensors
+# For all platforms (Linux, Windows, macOS) but not all HW is supported
+
 import math
 from typing import Tuple
 from enum import IntEnum, auto

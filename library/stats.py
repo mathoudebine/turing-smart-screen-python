@@ -176,7 +176,6 @@ class CPU:
                                                THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                      None))
             )
-        # TODO: Built in function for *nix in psutil, for Windows can use WMI or a third party library
 
 
 def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
