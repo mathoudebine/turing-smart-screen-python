@@ -67,8 +67,8 @@ if __name__ == "__main__":
     # Send initialization commands
     lcd_comm.InitializeComm()
 
-    # Set brightness in % (warning: screen can get very hot at high brightness!)
-    lcd_comm.SetBrightness(level=25)
+    # Set brightness in % (warning: revision A display can get hot at high brightness!)
+    lcd_comm.SetBrightness(level=10)
 
     # Set backplate RGB LED color (for supported HW only)
     lcd_comm.SetBackplateLedColor(led_color=(255, 255, 255))

@@ -18,12 +18,22 @@ def _get_full_path(path, name):
 
 def _get_theme_orientation() -> Orientation:
     if THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return Orientation.PORTRAIT
+        if CONFIG_DATA["display"].get("DISPLAY_REVERSE", False):
+            return Orientation.REVERSE_PORTRAIT
+        else:
+            return Orientation.PORTRAIT
     elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'landscape':
-        return Orientation.LANDSCAPE
+        if CONFIG_DATA["display"].get("DISPLAY_REVERSE", False):
+            return Orientation.REVERSE_LANDSCAPE
+        else:
+            return Orientation.LANDSCAPE
     elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_portrait':
+        logger.warn("'reverse_portrait' is deprecated as DISPLAY_ORIENTATION value in the theme."
+                    "Use 'portrait' instead, and use DISPLAY_REVERSE in config.yaml to reverse orientation.")
         return Orientation.REVERSE_PORTRAIT
     elif THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
+        logger.warn("'reverse_landscape' is deprecated as DISPLAY_ORIENTATION value in the theme."
+                    "Use 'landscape' instead, and use DISPLAY_REVERSE in config.yaml to reverse orientation.")
         return Orientation.REVERSE_LANDSCAPE
     else:
         logger.warning("Orientation '", THEME_DATA["display"]["DISPLAY_ORIENTATION"], "' unknown, using portrait")

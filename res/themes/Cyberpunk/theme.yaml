@@ -1,6 +1,6 @@
 ---
 display:
-  # Specify the display orientation for this theme: portrait, landscape, reverse_portrait, reverse_landscape
+  # Specify the display orientation for this theme: portrait or landscape
   DISPLAY_ORIENTATION: portrait
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
