@@ -8,8 +8,7 @@ import clr  # Clr is from pythonnet package. Do not install clr package
 from win32api import *
 
 if ctypes.windll.shell32.IsUserAnAdmin() == 0:
-    print("Program is not running as administrator. Please run with admin rights or choose another HW_SENSORS option "
-          "in config.yaml")
+    print("Program is not running as administrator. Please run again with admin rights.")
     try:
         sys.exit(0)
     except:
