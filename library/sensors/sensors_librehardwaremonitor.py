@@ -6,6 +6,7 @@ import ctypes
 import math
 import os
 import sys
+from statistics import mean
 from typing import Tuple
 
 import clr  # Clr is from pythonnet package. Do not install clr package
@@ -106,8 +107,8 @@ class Cpu(sensors.Cpu):
                 # Keep only real core clocks, ignore effective core clocks
                 if "Core #" in str(sensor.Name) and "Effective" not in str(sensor.Name):
                     frequencies.append(float(sensor.Value))
-        # Take the highest core clock as "CPU clock"
-        return max(frequencies)
+        # Take mean of all core clock as "CPU clock"
+        return mean(frequencies)
 
     @staticmethod
     def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:

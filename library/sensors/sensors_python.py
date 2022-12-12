@@ -262,18 +262,19 @@ class Net(sensors.Net):
         download_rate = 0
         downloaded = 0
 
-        if if_name in pnic_after:
-            try:
-                upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
-                uploaded = pnic_after[if_name].bytes_sent
-                download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
-                downloaded = pnic_after[if_name].bytes_recv
-            except:
-                # Interface might not be in PNIC_BEFORE for now
-                pass
+        if if_name != "":
+            if if_name in pnic_after:
+                try:
+                    upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                    uploaded = pnic_after[if_name].bytes_sent
+                    download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
+                    downloaded = pnic_after[if_name].bytes_recv
+                except:
+                    # Interface might not be in PNIC_BEFORE for now
+                    pass
 
-            PNIC_BEFORE.update({if_name: pnic_after[if_name]})
-        else:
-            logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
+                PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+            else:
+                logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
 
         return upload_rate, uploaded, download_rate, downloaded
