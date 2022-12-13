@@ -8,9 +8,9 @@ import sys
 from datetime import datetime
 
 # Import only the modules for LCD communication
-from library.lcd_comm_rev_a import LcdCommRevA, Orientation
-from library.lcd_comm_rev_b import LcdCommRevB
-from library.lcd_simulated import LcdSimulated
+from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
+from library.lcd.lcd_comm_rev_b import LcdCommRevB
+from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux, etc. or "AUTO" for auto-discovery
@@ -42,12 +42,12 @@ if __name__ == "__main__":
     lcd_comm = None
     if REVISION == "A":
         logger.info("Selected Hardware Revision A (Turing Smart Screen)")
-        lcd_comm = LcdCommRevA(com_port="AUTO",
+        lcd_comm = LcdCommRevA(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "B":
         print("Selected Hardware Revision B (XuanFang screen version B / flagship)")
-        lcd_comm = LcdCommRevB(com_port="AUTO",
+        lcd_comm = LcdCommRevB(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "SIMU":
@@ -67,8 +67,8 @@ if __name__ == "__main__":
     # Send initialization commands
     lcd_comm.InitializeComm()
 
-    # Set brightness in % (warning: screen can get very hot at high brightness!)
-    lcd_comm.SetBrightness(level=25)
+    # Set brightness in % (warning: revision A display can get hot at high brightness!)
+    lcd_comm.SetBrightness(level=10)
 
     # Set backplate RGB LED color (for supported HW only)
     lcd_comm.SetBackplateLedColor(led_color=(255, 255, 255))

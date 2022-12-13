@@ -3,7 +3,7 @@ import time
 
 from serial.tools.list_ports import comports
 
-from library.lcd_comm import *
+from library.lcd.lcd_comm import *
 from library.log import logger
 
 

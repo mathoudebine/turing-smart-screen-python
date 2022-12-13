@@ -2,9 +2,10 @@ import mimetypes
 import shutil
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-from library.lcd_comm import *
+from library.lcd.lcd_comm import *
 
 SCREENSHOT_FILE = "screencap.png"
+WEBSERVER_PORT = 5678
 
 
 # This webserver offer a blank page displaying simulated screen with auto-refresh
@@ -17,14 +18,14 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
-            self.wfile.write(bytes("<img src=\"screencap.png\" id=\"myImage\" />", "utf-8"))
+            self.wfile.write(bytes("<img src=\"" + SCREENSHOT_FILE + "\" id=\"myImage\" />", "utf-8"))
             self.wfile.write(bytes("<script>", "utf-8"))
             self.wfile.write(bytes("setInterval(function() {", "utf-8"))
             self.wfile.write(bytes("    var myImageElement = document.getElementById('myImage');", "utf-8"))
-            self.wfile.write(bytes("    myImageElement.src = 'screencap.png?rand=' + Math.random();", "utf-8"))
+            self.wfile.write(bytes("    myImageElement.src = '" + SCREENSHOT_FILE + "?rand=' + Math.random();", "utf-8"))
             self.wfile.write(bytes("}, 250);", "utf-8"))
             self.wfile.write(bytes("</script>", "utf-8"))
-        elif self.path.startswith("/screencap.png"):
+        elif self.path.startswith("/" + SCREENSHOT_FILE):
             imgfile = open(SCREENSHOT_FILE, 'rb').read()
             mimetype = mimetypes.MimeTypes().guess_type(SCREENSHOT_FILE)[0]
             self.send_response(200)
@@ -33,7 +34,7 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
             self.wfile.write(imgfile)
 
 
-# Simulated display: write on a screencap.png file instead of serial port
+# Simulated display: write on a file instead of serial port
 class LcdSimulated(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
                  update_queue: queue.Queue = None):
@@ -43,10 +44,12 @@ class LcdSimulated(LcdComm):
         shutil.copyfile("tmp", SCREENSHOT_FILE)
         self.orientation = Orientation.PORTRAIT
 
-        webServer = HTTPServer(("localhost", 5678), SimulatedLcdWebServer)
-        logger.debug("To see your simulated screen, open http://%s:%s" % ("localhost", 5678))
-
-        threading.Thread(target=webServer.serve_forever).start()
+        try:
+            webServer = HTTPServer(("localhost", WEBSERVER_PORT), SimulatedLcdWebServer)
+            logger.debug("To see your simulated screen, open http://%s:%d in a browser" % ("localhost", WEBSERVER_PORT))
+            threading.Thread(target=webServer.serve_forever).start()
+        except OSError:
+            logger.error("Error starting webserver! An instance might already be running on port %d." % WEBSERVER_PORT)
 
     @staticmethod
     def auto_detect_com_port():

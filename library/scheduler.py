@@ -95,18 +95,10 @@ def CPUTemperature():
 
 @async_job("GPU_Stats")
 @schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
-def GpuNvidiaStats():
+def GpuStats():
     """ Refresh the GPU Stats """
     # logger.debug("Refresh GPU Stats")
-    stats.GpuNvidia.stats()
-
-
-@async_job("GPU_Stats")
-@schedule(timedelta(seconds=THEME_DATA['STATS']['GPU'].get("INTERVAL", None)).total_seconds())
-def GpuAmdStats():
-    """ Refresh the GPU Stats """
-    # logger.debug("Refresh GPU Stats")
-    stats.GpuAmd.stats()
+    stats.Gpu.stats()
 
 
 @async_job("Memory_Stats")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # A system monitor in Python for "Turing Smart Screen" 3.5" IPS USB-C display
 # https://github.com/mathoudebine/turing-smart-screen-python
-
+import locale
 import os
 import signal
 import sys
@@ -20,6 +20,9 @@ import library.scheduler as scheduler
 from library.display import display
 
 if __name__ == "__main__":
+
+    # Apply system locale to this program
+    locale.setlocale(locale.LC_ALL, '')
 
     def sighandler(signum, frame):
         logger.info(" Caught signal %d, exiting" % signum)
@@ -71,14 +74,8 @@ if __name__ == "__main__":
         scheduler.CPUTemperature()
     else:
         logger.warning("Your CPU temperature is not supported yet")
-    if stats.GpuNvidia.is_available():
-        logger.info("Detected Nvidia GPU(s)")
-        scheduler.GpuNvidiaStats()
-    elif stats.GpuAmd.is_available():
-        logger.info("Detected AMD GPU(s)")
-        scheduler.GpuAmdStats()
-    else:
-        logger.warning("Your GPU is not supported yet")
+    if stats.Gpu.is_available():
+        scheduler.GpuStats()
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.NetStats()
