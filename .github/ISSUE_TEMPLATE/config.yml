@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Existing issues
+    url: https://github.com/mathoudebine/turing-smart-screen-python/issues?q=is%3Aissue+
+    about: Please search for existing issues here first before opening a new one.
+  - name: FAQ / Troubleshooting
+    url: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting
+    about: Please check the FAQ before opening a new issue.
