@@ -4,6 +4,7 @@ pyserial~=3.5     # Serial linl to communicate with the display
 PyYAML~=6.0       # For themes files
 psutil~=5.9.4     # CPU / disk / network metrics
 GPUtil~=1.4.0     # Nvidia GPU
+pystray~=0.19.4   # Tray icon (all OS)
 
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first

@@ -3,6 +3,7 @@
 # https://github.com/mathoudebine/turing-smart-screen-python
 import locale
 import os
+import platform
 import signal
 import sys
 import time
@@ -15,6 +16,13 @@ if sys.version_info < MIN_PYTHON:
     except:
         os._exit(0)
 
+from PIL import Image
+
+try:
+    import pystray
+except:
+    pass
+
 from library.log import logger
 import library.scheduler as scheduler
 from library.display import display
@@ -24,9 +32,8 @@ if __name__ == "__main__":
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
-    def sighandler(signum, frame):
-        logger.info(" Caught signal %d, exiting" % signum)
 
+    def clean_stop(tray_icon=None):
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True
@@ -41,12 +48,46 @@ if __name__ == "__main__":
 
         logger.debug("(%.1fs)" % (5 - wait_time))
 
+        # Remove tray icon just before exit
+        if tray_icon:
+            tray_icon.visible = False
+
         # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
             sys.exit(0)
         except:
             os._exit(0)
 
+
+    def sighandler(signum, frame=None):
+        logger.info("Caught signal %d, exiting" % signum)
+        clean_stop()
+
+
+    def on_exit_tray(tray_icon, item):
+        logger.info("Exit from tray icon")
+        clean_stop(tray_icon)
+
+
+    # Create a tray icon for the program, with an Exit entry in menu
+    try:
+        tray_icon = pystray.Icon(
+            name='Turing System Monitor',
+            title='Turing System Monitor',
+            icon=Image.open("res/icons/monitor-icon-17865/64.png"),
+            menu=pystray.Menu(
+                pystray.MenuItem(
+                    'Exit',
+                    on_exit_tray))
+        )
+
+        # For platforms != macOS, display the tray icon now with non-blocking function
+        if platform.system() != "Darwin":
+            tray_icon.run_detached()
+            logger.info("Tray icon has been displayed")
+    except:
+        tray_icon = None
+        logger.warning("Tray icon is not supported on your platform")
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
@@ -81,3 +122,7 @@ if __name__ == "__main__":
     scheduler.NetStats()
     scheduler.DateStats()
     scheduler.QueueHandler()
+
+    if tray_icon and platform.system() == "Darwin":
+        # For macOS: display the tray icon now with blocking function
+        tray_icon.run()

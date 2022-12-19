@@ -47,7 +47,7 @@ display:
   DISPLAY_REVERSE: false
 
   # Display resolution in portrait orientation
-  # Do not use this setting to rotate display! Use DISPLAY_REVERSE
+  # Do not use this setting to rotate display! The selected theme handles landscape/portrait orientation
   DISPLAY_WIDTH: 320  # Do not change unless you have a good reason
   DISPLAY_HEIGHT: 480  # Do not change unless you have a good reason
 
