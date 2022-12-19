@@ -3,6 +3,7 @@
 # https://github.com/mathoudebine/turing-smart-screen-python
 import locale
 import os
+import platform
 import signal
 import sys
 import time
@@ -47,7 +48,7 @@ if __name__ == "__main__":
 
         logger.debug("(%.1fs)" % (5 - wait_time))
 
-        # Remove icon just before the exit
+        # Remove tray icon just before exit
         if tray_icon:
             tray_icon.visible = False
 
@@ -67,6 +68,26 @@ if __name__ == "__main__":
         logger.info("Exit from tray icon")
         clean_stop(tray_icon)
 
+
+    # Create a tray icon for the program, with an Exit entry in menu
+    try:
+        tray_icon = pystray.Icon(
+            name='Turing System Monitor',
+            title='Turing System Monitor',
+            icon=Image.open("res/icons/monitor-icon-17865/64.png"),
+            menu=pystray.Menu(
+                pystray.MenuItem(
+                    'Exit',
+                    on_exit_tray))
+        )
+
+        # For platforms != macOS, display the tray icon now with non-blocking function
+        if platform.system() != "Darwin":
+            tray_icon.run_detached()
+            logger.info("Tray icon has been displayed")
+    except:
+        tray_icon = None
+        logger.warning("Tray icon is not supported on your platform")
 
     # Set the signal handlers, to send a complete frame to the LCD before exit
     signal.signal(signal.SIGINT, sighandler)
@@ -102,16 +123,6 @@ if __name__ == "__main__":
     scheduler.DateStats()
     scheduler.QueueHandler()
 
-    # Create a tray icon for the program, with an Exit entry in menu
-    try:
-        tray_icon = pystray.Icon(
-            name='Turing System Monitor',
-            title='Turing System Monitor',
-            icon=Image.open("res/icons/724873501557740364-64.png"),
-            menu=pystray.Menu(
-                pystray.MenuItem(
-                    'Exit',
-                    on_exit_tray))
-        ).run()
-    except:
-        logger.warning("Tray icon is not supported on your platform")
+    if tray_icon and platform.system() == "Darwin":
+        # For macOS: display the tray icon now with blocking function
+        tray_icon.run()

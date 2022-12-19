@@ -19,7 +19,14 @@ HW_SENSORS = CONFIG_DATA["config"]["HW_SENSORS"]
 if HW_SENSORS == "PYTHON":
     import library.sensors.sensors_python as sensors
 elif HW_SENSORS == "LHM":
-    import library.sensors.sensors_librehardwaremonitor as sensors
+    if platform.system() == 'Windows':
+        import library.sensors.sensors_librehardwaremonitor as sensors
+    else:
+        logger.error("LibreHardwareMonitor integration is only available on Windows")
+        try:
+            sys.exit(0)
+        except:
+            os._exit(0)
 elif HW_SENSORS == "STUB":
     import library.sensors.sensors_stub as sensors
 elif HW_SENSORS == "AUTO":
