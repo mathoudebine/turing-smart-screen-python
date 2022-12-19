@@ -3,12 +3,9 @@
 # https://github.com/mathoudebine/turing-smart-screen-python
 import locale
 import os
-import pystray
 import signal
 import sys
 import time
-
-from PIL import Image
 
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:
@@ -17,6 +14,13 @@ if sys.version_info < MIN_PYTHON:
         sys.exit(0)
     except:
         os._exit(0)
+
+from PIL import Image
+
+try:
+    import pystray
+except:
+    pass
 
 from library.log import logger
 import library.scheduler as scheduler
@@ -99,12 +103,15 @@ if __name__ == "__main__":
     scheduler.QueueHandler()
 
     # Create a tray icon for the program, with an Exit entry in menu
-    tray_icon = pystray.Icon(
-        name='Turing System Monitor',
-        title='Turing System Monitor',
-        icon=Image.open("res/icons/724873501557740364-64.png"),
-        menu=pystray.Menu(
-            pystray.MenuItem(
-                'Exit',
-                on_exit_tray))
-    ).run()
+    try:
+        tray_icon = pystray.Icon(
+            name='Turing System Monitor',
+            title='Turing System Monitor',
+            icon=Image.open("res/icons/724873501557740364-64.png"),
+            menu=pystray.Menu(
+                pystray.MenuItem(
+                    'Exit',
+                    on_exit_tray))
+        ).run()
+    except:
+        logger.warning("Tray icon is not supported on your platform")
