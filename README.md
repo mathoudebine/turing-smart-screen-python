@@ -2,27 +2,33 @@
 
 ### ⚠️ DISCLAIMER - PLEASE READ ⚠️
 
-This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing or XuanFang brands**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing / XuanFang products. All product and company names are the registered trademarks of their original owners.
+This project is **not affiliated, associated, authorized, endorsed by, or in any way officially connected with Turing or XuanFang brands**, or any of its subsidiaries, affiliates, manufacturers or sellers of the Turing or XuanFang products. All product and company names are the registered trademarks of their original owners.
 
-This project is an open-source alternative software, NOT the USBMonitor.exe  or ExtendScreen.exe original software for the Turing/XuanFang smart screen (even if some themes have been reused from original software). **Please do not open issues for USBMonitor.exe/ExtendScreen.exe here**, instead you can use the official forum here: http://discuz.turzx.com/
-
+This project is an open-source alternative software, NOT the USBMonitor.exe / ExtendScreen.exe or any original software for the smart screens (even if some themes have been reused). **Please do not open issues for USBMonitor.exe/ExtendScreen.exe here**, instead you can use:
+* for Turing Smart Screen, the official forum here: http://discuz.turzx.com/
+* for XuanFang Smart screen, contact your reseller
 ---
 
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![macOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![Licence](https://img.shields.io/github/license/mathoudebine/turing-smart-screen-python?style=for-the-badge)](./LICENSE)
   
 
-A Python system monitor program and a library for "Turing Smart Screen" 3.5" IPS USB-C (UART) display, also known as :
-- Turing USB35INCHIPS / USB35INCHIPSV2 (revision A)
-- XuanFang display (revision B & flagship)
-- [3.5 Inch 320*480 Mini Capacitive Touch Screen IPS Module](https://www.aliexpress.com/item/1005003723773653.html)
+A Python system monitor program and a library for 3.5" IPS USB-C (UART) displays.  
 
-<img src="res/docs/smart-screen-2.webp" height="300" />
+Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.x  
 
-[**Display hardware revisions supported: A, B & flagship**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions).  
-Flagship backplate RGB LEDs are also supported!  
+Supported smart screens models:
+| **Turing Smart Screen** | **XuanFang** |
+|--------|----------|
+| <img src="https://ae01.alicdn.com/kf/S4cd5d420d8034c7e8ff1cb40fdad0bccR.jpg" height="300" /> |  <img src="https://ae01.alicdn.com/kf/S28f803263a05455e86c58fb8f2572815K.jpg" height="300" />        |
+| also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) |
+
+### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
+
+**Please note the Turing and the XuanFang screens are 2 different products** designed and produced by different companies, despite having a similar appearance. The communication protocol is also different.  
+This project support both products, including backplate RGB LEDs for available models!
+
 If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
-Operating systems supported : macOS, Windows, Linux (incl. Raspberry Pi) and all OS that support Python 3.x
 
 
 ## How to use
@@ -41,7 +47,7 @@ Some themes are already included for a quick start!
 ### [> Configure and start system monitor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start)
 * Fully functional multi-OS code base (operates out of the box, tested on Windows, Linux & MacOS).
 * Display configuration using `config.yaml` file: no Python code to edit.
-* Support for all [3 screen HW revisions: A, B & flagship](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Flagship backplate RGB LEDs are also supported!
+* Support for all [3.5" smart screen models (Turing and XuanFang)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Backplate RGB LEDs are also supported for available models!
 * Support [multiple hardware sensors and metrics (CPU/GPU usage, temperatures, memory, disks, etc)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes#stats-entry) with configurable refresh intervals.
 * Allow [creation of themes (see `res/themes`) with `theme.yaml` files](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be [shared with the community!](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
 * Easy to expand: additional code that pulls specific information can be written in a modular way without impacting existing code.
