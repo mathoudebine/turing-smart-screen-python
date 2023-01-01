@@ -34,6 +34,9 @@ if __name__ == "__main__":
 
 
     def clean_stop(tray_icon=None):
+        # Turn screen off before stopping
+        display.lcd.ScreenOff()
+
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True

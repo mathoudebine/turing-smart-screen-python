@@ -66,6 +66,9 @@ class Display:
         # Send initialization commands
         self.lcd.InitializeComm()
 
+        # Turn screen on in case it was turned off previously
+        self.lcd.ScreenOn()
+
         # Set brightness
         self.lcd.SetBrightness(CONFIG_DATA["display"]["BRIGHTNESS"])
 
