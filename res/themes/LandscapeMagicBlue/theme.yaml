@@ -1,0 +1,434 @@
+---
+display:
+  # Specify the display orientation for this theme: portrait or landscape
+  DISPLAY_ORIENTATION: landscape
+
+  # Backplate RGB LED color (for HW revision 'flagship' devices only)
+  DISPLAY_RGB_LED: 0, 0, 255
+
+static_images:
+  # Specify what static images we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Images are drawn in the order they are listed below, the top image will be drawn first (so places images back to front)
+  # IMAGE_NAME:
+  #   PATH:
+  #   X:
+  #   Y:
+  #   WIDTH:
+  #   HEIGHT:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+static_text:
+  # Specify what static text we want to show on the display
+  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
+  # Text are drawn in the order they are listed below, the top text will be drawn first (so places text back to front)
+  # TEXT_NAME:
+  #   TEXT:
+  #   X:
+  #   Y:
+  #   FONT:
+  #   FONT_SIZE:
+  #   FONT_COLOR: 0, 0, 0
+  #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
+  #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
+  DISK_LABEL:
+    TEXT: "DISK"
+    X: 420
+    Y: 32
+    FONT: roboto/Roboto-Bold.ttf
+    FONT_SIZE: 18
+    FONT_COLOR: 16, 223, 239
+    # BACKGROUND_COLOR: 132, 154, 165
+    BACKGROUND_IMAGE: background.png
+  DISK_USED_LABEL:
+    TEXT: "Used:"
+    X: 350
+    Y: 63
+    FONT: roboto/Roboto-Regular.ttf
+    FONT_SIZE: 16
+    FONT_COLOR: 16, 223, 239
+    # BACKGROUND_COLOR: 132, 154, 165
+    BACKGROUND_IMAGE: background.png
+STATS:
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 206
+        Y: 144
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 0, 173
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: False
+        X: 155
+        Y: 50
+        WIDTH: 150
+        HEIGHT: 15
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 200
+        Y: 260
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+    LOAD:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      ONE:
+        TEXT:
+          SHOW: False
+          SHOW_UNIT: True
+          X: 110
+          Y: 106
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 50, 50, 50
+      FIVE:
+        TEXT:
+          SHOW: False
+          SHOW_UNIT: True
+          X: 183
+          Y: 106
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 50, 50, 50
+      FIFTEEN:
+        TEXT:
+          SHOW: False
+          SHOW_UNIT: True
+          X: 265
+          Y: 106
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 50, 50, 50
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 86
+        Y: 148
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: False
+        X: 155
+        Y: 175
+        WIDTH: 150
+        HEIGHT: 15
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 344
+        Y: 150
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+    MEMORY:
+      GRAPH:
+        SHOW: True
+        X: 383
+        Y: 266
+        WIDTH: 78
+        HEIGHT: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 173
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 8, 20, 66
+        # BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 386
+        Y: 240
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 419
+        Y: 167
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 5
+    SWAP:
+      GRAPH:
+        SHOW: False
+        X: 115
+        Y: 285
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+        # BACKGROUND_IMAGE: background.png
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 19
+        Y: 266
+        WIDTH: 80
+        HEIGHT: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 82, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 8, 20, 66
+        # BACKGROUND_IMAGE: background.png
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 22
+        Y: 240
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+      FREE:
+        SHOW: FALSE
+        SHOW_UNIT: True
+        X: 182
+        Y: 129
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 115
+        Y: 243
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 352
+        Y: 93
+        WIDTH: 110
+        HEIGHT: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 82, 255, 255
+        BAR_OUTLINE: False
+        #BACKGROUND_COLOR: 255, 255, 66
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        X: 390
+        Y: 65
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 46
+        Y: 402
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    TOTAL:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 204
+        Y: 375
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+    FREE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 204
+        Y: 435
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        # BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    WLO:
+      UPLOAD:
+        TEXT:
+          SHOW: FALSE
+          X: 4
+          Y: 311
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+      UPLOADED:
+        TEXT:
+          SHOW: FALSE
+          X: 90
+          Y: 311
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: FALSE
+          X: 4
+          Y: 261
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+      DOWNLOADED:
+        TEXT:
+          SHOW: FALSE
+          X: 90
+          Y: 261
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 43
+          Y: 65
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 128, 255, 255
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+      UPLOADED:
+        TEXT:
+          SHOW: FALSE
+          X: 192
+          Y: 311
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 43
+          Y: 85
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 128, 255, 255
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+      DOWNLOADED:
+        TEXT:
+          SHOW: FALSE
+          X: 192
+          Y: 261
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_COLOR: 132, 154, 165
+          # BACKGROUND_IMAGE: background.png
+  DATE:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 58
+        Y: 10
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 334
+        Y: 10
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 12
+        FONT_COLOR: 128, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png

@@ -12,6 +12,7 @@ config:
   # - 3.5inchTheme2
   # - Terminal
   # - Landscape6Grid
+  # - LandscapeMagicBlue
   # - Cyberpunk
   # - bash-dark-green
   THEME: 3.5inchTheme2
