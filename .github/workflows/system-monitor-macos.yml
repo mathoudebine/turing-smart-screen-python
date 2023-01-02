@@ -1,6 +1,11 @@
 name: System monitor (MacOS)
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
 
 jobs:
   system-monitor:
