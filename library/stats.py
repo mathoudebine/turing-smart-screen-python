@@ -56,8 +56,13 @@ class CPU:
         # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
         if THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("SHOW", False):
+
+            cpu_percentage_text = f"{int(cpu_percentage):>3}"
+            if THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("SHOW_UNIT", True):
+                cpu_percentage_text += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(cpu_percentage):>3}%",
+                text=cpu_percentage_text,
                 x=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -90,11 +95,14 @@ class CPU:
 
     @staticmethod
     def frequency():
-        cpu_freq = sensors.Cpu.frequency()
-
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
+
+            cpu_freq = f'{int(sensors.Cpu.frequency()) / 1000:.2f}'
+            if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW_UNIT", True):
+                cpu_freq += " GHz"
+
             display.lcd.DisplayText(
-                text=str(f'{int(cpu_freq) / 1000:.2f}') + " GHz",
+                text=cpu_freq,
                 x=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -113,8 +121,13 @@ class CPU:
         # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
 
         if THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("SHOW", False):
+
+            cpu_load_one = f"{int(cpu_load[0]):>3}"
+            if THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("SHOW_UNIT", True):
+                cpu_load_one += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(cpu_load[0]):>3}%",
+                text=cpu_load_one,
                 x=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT",
@@ -129,8 +142,13 @@ class CPU:
             )
 
         if THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("SHOW", False):
+
+            cpu_load_five = f"{int(cpu_load[1]):>3}"
+            if THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("SHOW_UNIT", True):
+                cpu_load_five += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(cpu_load[1]):>3}%",
+                text=cpu_load_five,
                 x=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT",
@@ -145,8 +163,13 @@ class CPU:
             )
 
         if THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("SHOW", False):
+
+            cpu_load_fifteen = f"{int(cpu_load[2]):>3}"
+            if THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("SHOW_UNIT", True):
+                cpu_load_fifteen += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(cpu_load[2]):>3}%",
+                text=cpu_load_fifteen,
                 x=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['LOAD']['FIFTEEN']['TEXT'].get("FONT",
@@ -166,11 +189,14 @@ class CPU:
 
     @staticmethod
     def temperature():
-        cpu_temp = sensors.Cpu.temperature()
-
         if THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("SHOW", False):
+
+            cpu_temp = f"{int(sensors.Cpu.temperature()):>3}"
+            if THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("SHOW_UNIT", True):
+                cpu_temp += "°C"
+
             display.lcd.DisplayText(
-                text=f"{int(cpu_temp):>3}°C",
+                text=cpu_temp,
                 x=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'].get("FONT",
@@ -216,8 +242,12 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
             THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH']['SHOW'] = False
             THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT']['SHOW'] = False
         else:
+            load_text = f"{int(load):>3}"
+            if THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("SHOW_UNIT", True):
+                load_text += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(load):>3}%",
+                text=load_text,
                 x=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['GPU']['PERCENTAGE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -245,7 +275,7 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
                 max_value=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("MAX_VALUE", 100),
                 bar_color=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
                 bar_outline=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=THEME_DATA['STATS']['GPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR",
+                background_color=THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BACKGROUND_COLOR",
                                                                                        (255, 255, 255)),
                 background_image=get_full_path(THEME_DATA['PATH'],
                                                THEME_DATA['STATS']['GPU']['MEMORY']['GRAPH'].get("BACKGROUND_IMAGE",
@@ -257,8 +287,12 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
             logger.warning("Your GPU memory absolute usage (M) is not supported yet")
             THEME_DATA['STATS']['GPU']['MEMORY']['TEXT']['SHOW'] = False
         else:
+            mem_used_text = f"{int(memory_used_mb):>5}"
+            if THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("SHOW_UNIT", True):
+                mem_used_text += " M"
+
             display.lcd.DisplayText(
-                text=f"{int(memory_used_mb):>5} M",
+                text=mem_used_text,
                 x=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['GPU']['MEMORY']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -275,8 +309,12 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
             logger.warning("Your GPU temperature is not supported yet")
             THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT']['SHOW'] = False
         else:
+            temp_text = f"{int(temperature):>3}"
+            if THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("SHOW_UNIT", True):
+                temp_text += "°C"
+
             display.lcd.DisplayText(
-                text=f"{int(temperature):>3}°C",
+                text=temp_text,
                 x=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("FONT",
@@ -289,7 +327,6 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
                                                THEME_DATA['STATS']['GPU']['TEMPERATURE']['TEXT'].get("BACKGROUND_IMAGE",
                                                                                                      None))
             )
-    pass
 
 
 class Gpu:
@@ -347,8 +384,12 @@ class Memory:
             )
 
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("SHOW", False):
+            virtual_percent_text = f"{int(virtual_percent):>3}"
+            if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("SHOW_UNIT", True):
+                virtual_percent_text += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(virtual_percent):>3}%",
+                text=virtual_percent_text,
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['PERCENT_TEXT'].get("FONT",
@@ -362,11 +403,15 @@ class Memory:
                                                    "BACKGROUND_IMAGE", None))
             )
 
-        virtual_used = sensors.Memory.virtual_used()
-
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW", False):
+            virtual_used = sensors.Memory.virtual_used()
+
+            virtual_used_text = f"{int(virtual_used / 1000000):>5}"
+            if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW_UNIT", True):
+                virtual_used_text += " M"
+
             display.lcd.DisplayText(
-                text=f"{int(virtual_used / 1000000):>5} M",
+                text=virtual_used_text,
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("Y", 0),
                 font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("FONT",
@@ -380,11 +425,15 @@ class Memory:
                                                    "BACKGROUND_IMAGE", None))
             )
 
-        virtual_free = sensors.Memory.virtual_free()
-
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("SHOW", False):
+            virtual_free = sensors.Memory.virtual_free()
+
+            virtual_free_text = f"{int(virtual_free / 1000000):>5}"
+            if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("SHOW_UNIT", True):
+                virtual_free_text += " M"
+
             display.lcd.DisplayText(
-                text=f"{int(virtual_free / 1000000):>5} M",
+                text=virtual_free_text,
                 x=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("X", 0),
                 y=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("Y", 0),
                 font=THEME_DATA['STATS']['MEMORY']['VIRTUAL']['FREE'].get("FONT",
@@ -422,8 +471,12 @@ class Disk:
             )
 
         if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
+            used_text = f"{int(used / 1000000000):>5}"
+            if THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW_UNIT", True):
+                used_text += " G"
+
             display.lcd.DisplayText(
-                text=f"{int(used / 1000000000):>5} G",
+                text=used_text,
                 x=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -436,8 +489,12 @@ class Disk:
             )
 
         if THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW", False):
+            percent_text = f"{int(sensors.Disk.disk_usage_percent()):>3}"
+            if THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW_UNIT", True):
+                percent_text += "%"
+
             display.lcd.DisplayText(
-                text=f"{int(sensors.Disk.disk_usage_percent()):>3}%",
+                text=percent_text,
                 x=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT",
@@ -453,8 +510,12 @@ class Disk:
             )
 
         if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
+            total_text = f"{int((free + used) / 1000000000):>5}"
+            if THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW_UNIT", True):
+                total_text += " G"
+
             display.lcd.DisplayText(
-                text=f"{int((free + used) / 1000000000):>5} G",
+                text=total_text,
                 x=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -467,8 +528,12 @@ class Disk:
             )
 
         if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
+            free_text = f"{int(free / 1000000000):>5}"
+            if THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW_UNIT", True):
+                free_text += " G"
+
             display.lcd.DisplayText(
-                text=f"{int(free / 1000000000):>5} G",
+                text=free_text,
                 x=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
                 y=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
                 font=THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -487,12 +552,8 @@ class Net:
         interval = THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)
         upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
 
-        upload_wlo_text = f"{bytes2human(upload_wlo)}/s"
-        uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}"
-        download_wlo_text = f"{bytes2human(download_wlo)}/s"
-        downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}"
-
         if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
+            upload_wlo_text = f"{bytes2human(upload_wlo)}/s"
             display.lcd.DisplayText(
                 text=f"{upload_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
@@ -510,6 +571,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("SHOW", False):
+            uploaded_wlo_text = f"{bytes2human(uploaded_wlo)}"
             display.lcd.DisplayText(
                 text=f"{uploaded_wlo_text:>6}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("X", 0),
@@ -527,6 +589,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            download_wlo_text = f"{bytes2human(download_wlo)}/s"
             display.lcd.DisplayText(
                 text=f"{download_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
@@ -544,6 +607,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            downloaded_wlo_text = f"{bytes2human(downloaded_wlo)}"
             display.lcd.DisplayText(
                 text=f"{downloaded_wlo_text:>6}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("X", 0),
@@ -562,12 +626,8 @@ class Net:
 
         upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(ETH_CARD, interval)
 
-        upload_eth_text = f"{bytes2human(upload_eth)}/s"
-        uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
-        download_eth_text = f"{bytes2human(download_eth)}/s"
-        downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
-
         if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
+            upload_eth_text = f"{bytes2human(upload_eth)}/s"
             display.lcd.DisplayText(
                 text=f"{upload_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
@@ -585,6 +645,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("SHOW", False):
+            uploaded_eth_text = f"{bytes2human(uploaded_eth)}"
             display.lcd.DisplayText(
                 text=f"{uploaded_eth_text:>6}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("X", 0),
@@ -602,6 +663,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("SHOW", False):
+            download_eth_text = f"{bytes2human(download_eth)}/s"
             display.lcd.DisplayText(
                 text=f"{download_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
@@ -619,6 +681,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("SHOW", False):
+            downloaded_eth_text = f"{bytes2human(downloaded_eth)}"
             display.lcd.DisplayText(
                 text=f"{downloaded_eth_text:>6}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("X", 0),
