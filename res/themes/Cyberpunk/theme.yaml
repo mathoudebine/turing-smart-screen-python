@@ -89,6 +89,7 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 175
         Y: 80
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -115,6 +116,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 90
         Y: 80
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -130,6 +132,7 @@ STATS:
       ONE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 110
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -139,6 +142,7 @@ STATS:
       FIVE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 183
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -148,6 +152,7 @@ STATS:
       FIFTEEN:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 265
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -158,6 +163,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 28
         Y: 80
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -185,6 +191,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 175
         Y: 168
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -207,6 +214,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 90
         Y: 167
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -217,6 +225,7 @@ STATS:
     TEMPERATURE:
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 28
         Y: 167
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -257,6 +266,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
+        SHOW_UNIT: True
         X: 28
         Y: 256
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -266,6 +276,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: True
+        SHOW_UNIT: True
         X: 110
         Y: 256
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -275,6 +286,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 175
         Y: 256
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -299,6 +311,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 155
         Y: 338
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -308,6 +321,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 170
         Y: 430
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -318,6 +332,7 @@ STATS:
     TOTAL:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 375
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -328,6 +343,7 @@ STATS:
     FREE:
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 155
         Y: 383
         FONT: generale-mono/GeneraleMonoA.ttf

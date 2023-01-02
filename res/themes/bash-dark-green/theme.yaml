@@ -44,6 +44,7 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 13
         Y: 84
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -70,6 +71,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 94
         Y: 84
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -85,6 +87,7 @@ STATS:
       ONE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 110
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -94,6 +97,7 @@ STATS:
       FIVE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 183
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -103,6 +107,7 @@ STATS:
       FIFTEEN:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 265
           Y: 106
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -113,6 +118,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 87
         Y: 118
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -140,6 +146,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 175
         Y: 168
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -162,6 +169,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 90
         Y: 167
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -172,6 +180,7 @@ STATS:
     TEMPERATURE:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 28
         Y: 167
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -212,6 +221,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
+        SHOW_UNIT: True
         X: 182
         Y: 95
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -221,6 +231,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: True
+        SHOW_UNIT: True
         X: 182
         Y: 129
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -254,6 +265,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 124
         Y: 390
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -263,6 +275,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 46
         Y: 402
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -273,6 +286,7 @@ STATS:
     TOTAL:
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 227
         Y: 390
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -283,6 +297,7 @@ STATS:
     FREE:
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 124
         Y: 439
         FONT: roboto-mono/RobotoMono-Regular.ttf
