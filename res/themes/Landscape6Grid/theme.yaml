@@ -44,6 +44,7 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 35
         Y: 45
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -70,6 +71,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: False
         X: 355
         Y: 45
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -85,6 +87,7 @@ STATS:
       ONE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 110
           Y: 106
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -94,6 +97,7 @@ STATS:
       FIVE:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 183
           Y: 106
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -103,6 +107,7 @@ STATS:
       FIFTEEN:
         TEXT:
           SHOW: False
+          SHOW_UNIT: True
           X: 265
           Y: 106
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -113,6 +118,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 180
         Y: 45
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -140,6 +146,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 35
         Y: 190
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -162,6 +169,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 195
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -172,6 +180,7 @@ STATS:
     TEMPERATURE:
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 180
         Y: 190
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -212,6 +221,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       USED:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 290
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -221,6 +231,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: FALSE
+        SHOW_UNIT: True
         X: 182
         Y: 129
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -230,6 +241,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 350
         Y: 190
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -254,6 +266,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 405
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -263,6 +276,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 46
         Y: 402
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -273,6 +287,7 @@ STATS:
     TOTAL:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 375
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -283,6 +298,7 @@ STATS:
     FREE:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 435
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf

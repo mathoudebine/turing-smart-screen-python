@@ -53,6 +53,7 @@ STATS:
       INTERVAL: 1
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 100
         Y: 20
         FONT: roboto/Roboto-Bold.ttf
@@ -79,6 +80,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 100
         Y: 87
         FONT: roboto/Roboto-Bold.ttf
@@ -94,6 +96,7 @@ STATS:
       ONE:
         TEXT:
           SHOW: True
+          SHOW_UNIT: True
           X: 110
           Y: 106
           FONT: roboto/Roboto-Bold.ttf
@@ -103,6 +106,7 @@ STATS:
       FIVE:
         TEXT:
           SHOW: TRUE
+          SHOW_UNIT: True
           X: 183
           Y: 106
           FONT: roboto/Roboto-Bold.ttf
@@ -112,6 +116,7 @@ STATS:
       FIFTEEN:
         TEXT:
           SHOW: TRUE
+          SHOW_UNIT: True
           X: 265
           Y: 106
           FONT: roboto/Roboto-Bold.ttf
@@ -122,6 +127,7 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 154
         Y: 13
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -149,6 +155,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 250
         Y: 140
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -171,6 +178,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 195
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -181,6 +189,7 @@ STATS:
     TEMPERATURE:
       TEXT:
         SHOW: TRUE
+        SHOW_UNIT: True
         X: 115
         Y: 231
         FONT: roboto/Roboto-Bold.ttf
@@ -221,6 +230,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       USED:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 290
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -230,6 +240,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: FALSE
+        SHOW_UNIT: True
         X: 182
         Y: 129
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -239,6 +250,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 250
         Y: 240
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -263,6 +275,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 405
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -272,6 +285,7 @@ STATS:
         # BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 46
         Y: 402
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -282,6 +296,7 @@ STATS:
     TOTAL:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 375
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -292,6 +307,7 @@ STATS:
     FREE:
       TEXT:
         SHOW: False
+        SHOW_UNIT: True
         X: 204
         Y: 435
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf

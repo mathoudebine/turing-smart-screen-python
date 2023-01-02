@@ -4,7 +4,7 @@ display:
   DISPLAY_ORIENTATION: landscape
 
   # Backplate RGB LED color (for HW revision 'flagship' devices only)
-  DISPLAY_RGB_LED: 0, 0, 255
+  DISPLAY_RGB_LED: 16, 223, 239
 
 static_images:
   # Specify what static images we want to show on the display
@@ -284,6 +284,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 390
         Y: 65
         FONT: generale-mono/GeneraleMonoA.ttf
