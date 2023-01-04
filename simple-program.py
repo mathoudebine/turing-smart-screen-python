@@ -1,6 +1,22 @@
-#!/usr/bin/env python3
-# A simple Python manager for "Turing Smart Screen" 3.5" IPS USB-C display
-# https://github.com/mathoudebine/turing-smart-screen-python
+# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# https://github.com/mathoudebine/turing-smart-screen-python/
+
+# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# This file is a simple Python test program using the library code to display custom content on screen (see README)
 
 import os
 import signal
