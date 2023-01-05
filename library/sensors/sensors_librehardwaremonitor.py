@@ -265,25 +265,19 @@ class Memory(sensors.Memory):
         return 0
 
 
+# NOTE: all disk data are fetched from psutil Python library, because LHM does not have it.
+# This is because LHM is a hardware-oriented library, whereas used/free/total space is for partitions, not disks
 class Disk(sensors.Disk):
     @staticmethod
     def disk_usage_percent() -> float:
-        disk = get_hw_and_update(Hardware.HardwareType.Storage)
-        for sensor in disk.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("Used Space"):
-                return float(sensor.Value)
-
-        # Get this data from psutil if it is not available from LibreHardwareMonitor
         return psutil.disk_usage("/").percent
 
     @staticmethod
     def disk_used() -> int:  # In bytes
-        # Get this data from psutil because it is not available from LibreHardwareMonitor
         return psutil.disk_usage("/").used
 
     @staticmethod
     def disk_free() -> int:  # In bytes
-        # Get this data from psutil because it is not available from LibreHardwareMonitor
         return psutil.disk_usage("/").free
 
 
