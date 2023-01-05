@@ -15,6 +15,7 @@ config:
   # - LandscapeMagicBlue
   # - Cyberpunk
   # - bash-dark-green
+  # - bash-dark-green-gpu
   THEME: 3.5inchTheme2
 
   # Hardware sensors reading
