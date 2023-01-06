@@ -14,6 +14,7 @@ config:
   # - Landscape6Grid
   # - LandscapeMagicBlue
   # - Cyberpunk
+  # - Cyberpunk-net
   # - bash-dark-green
   # - bash-dark-green-gpu
   THEME: 3.5inchTheme2
