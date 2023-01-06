@@ -86,7 +86,7 @@ STATS:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
       # but may cause significant CPU usage or the display not to update properly
-      INTERVAL: 0.5
+      INTERVAL: 1
       TEXT:
         SHOW: True
         SHOW_UNIT: True
@@ -175,7 +175,7 @@ STATS:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
     # but may cause significant CPU usage or the display not to update properly
-    INTERVAL: 1
+    INTERVAL: 5
     PERCENTAGE:
       GRAPH:
         SHOW: True
@@ -237,7 +237,7 @@ STATS:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
     # but may cause significant CPU usage or the display not to update properly
-    INTERVAL: 0.5
+    INTERVAL: 2
     SWAP:
       GRAPH:
         SHOW: False
@@ -352,7 +352,7 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   NET:
-    INTERVAL: 0.5
+    INTERVAL: 1
     WLO:
       UPLOAD:
         TEXT:
