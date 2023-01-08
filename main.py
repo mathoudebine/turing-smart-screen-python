@@ -58,6 +58,9 @@ if __name__ == "__main__":
         # Turn screen off before stopping
         display.lcd.ScreenOff()
 
+        # Turn backplate LED off for supported devices
+        display.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
+
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True
