@@ -146,14 +146,15 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def temperature() -> float:
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
-        # By default, the average temperature of all CPU cores will be used
-        for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Average"):
-                return float(sensor.Value)
-        # If not available, the max core temperature will be used
+        # By default, the max core temperature will be used
         for sensor in cpu.Sensors:
             if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Max"):
                 return float(sensor.Value)
+        # If not available, the average temperature of all CPU cores will be used
+        for sensor in cpu.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Average"):
+                return float(sensor.Value)
+        
         # If not available, the CPU Package temperature (usually same as max core temperature) will be used
         for sensor in cpu.Sensors:
             if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("CPU Package"):
@@ -190,7 +191,7 @@ class Gpu(sensors.Gpu):
                 used_mem = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Total"):
                 total_mem = float(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("GPU Core"):
+            elif sensor.SensorType == Hardware.SensorType.Temperature and (str(sensor.Name).startswith("GPU Hot Spot") or str(sensor.Name).startswith("GPU Core")):
                 temp = float(sensor.Value)
 
         return load, (used_mem / total_mem * 100.0), used_mem, temp
