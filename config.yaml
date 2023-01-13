@@ -16,6 +16,7 @@ config:
   # - Cyberpunk
   # - bash-dark-green
   # - bash-dark-green-gpu
+  # - BigClock
   THEME: 3.5inchTheme2
 
   # Hardware sensors reading
