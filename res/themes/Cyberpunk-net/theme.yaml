@@ -398,11 +398,11 @@ STATS:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 150
+          X: 142
           Y: 330
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23
-          FONT_COLOR: 255, 255, 255
+          FONT_COLOR: 2, 216, 243
           # BACKGROUND_COLOR: 132, 154, 165
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
@@ -417,11 +417,11 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 150
+          X: 142
           Y: 375
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23
-          FONT_COLOR: 255, 255, 255
+          FONT_COLOR: 2, 216, 243
           # BACKGROUND_COLOR: 132, 154, 165
           BACKGROUND_IMAGE: background.png
       UPLOADED:
