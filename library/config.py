@@ -52,7 +52,6 @@ except:
 def copy_default(default, theme):
     "recursively supply default values into a dict of dicts of dicts ...."
     for k,v in default.items():
-        print(f"considering {k} for {v}")
         if k not in theme:
             theme[k] = v
         if type(v) == type({}):
@@ -60,10 +59,6 @@ def copy_default(default, theme):
 
 
 copy_default(THEME_DEFAULT, THEME_DATA)
-
-print(THEME_DATA)
-print(THEME_DATA['STATS'])
-print(THEME_DATA['STATS']['CPU'])
 
 # Queue containing the serial requests to send to the screen
 update_queue = queue.Queue()
