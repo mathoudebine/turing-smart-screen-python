@@ -428,7 +428,7 @@ class Memory:
         if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW", False):
             virtual_used = sensors.Memory.virtual_used()
 
-            virtual_used_text = f"{int(virtual_used / 1000000):>5}"
+            virtual_used_text = f"{int(virtual_used / 1000000)}"
             if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW_UNIT", True):
                 virtual_used_text += " M"
 

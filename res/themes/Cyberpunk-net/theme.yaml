@@ -267,7 +267,7 @@ STATS:
       USED:
         SHOW: True
         SHOW_UNIT: True
-        X: 28
+        X: 40
         Y: 256
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 16
