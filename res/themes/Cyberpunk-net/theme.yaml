@@ -399,7 +399,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 142
-          Y: 330
+          Y: 338
           FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23
           FONT_COLOR: 2, 216, 243
@@ -418,7 +418,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 142
-          Y: 375
+          Y: 383
           FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23
           FONT_COLOR: 2, 216, 243
