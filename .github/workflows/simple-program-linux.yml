@@ -28,6 +28,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        
+        # Fix for pyamdgpuinfo with Python 3.11
+        python -m pip install Cython         # Cython must be installed first manually
+        sudo apt-get install -y libdrm-dev   # For "xf86drm.h"
+        
         python -m pip install -r requirements.txt
 
     - name: Run simple-program.py during 20 seconds
