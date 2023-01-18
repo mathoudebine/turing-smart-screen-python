@@ -29,7 +29,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install Cython   # Because of a bug with Python 3.11, Cython must be installed first manually
         python -m pip install -r requirements.txt
 
     - name: Configure system monitor
