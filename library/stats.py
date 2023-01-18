@@ -50,7 +50,11 @@ elif HW_SENSORS == "LHM":
         except:
             os._exit(0)
 elif HW_SENSORS == "STUB":
-    import library.sensors.sensors_stub as sensors
+    logger.warning("Stub sensors, not real HW sensors")
+    import library.sensors.sensors_stub_random as sensors
+elif HW_SENSORS == "STATIC":
+    logger.warning("Stub sensors, not real HW sensors")
+    import library.sensors.sensors_stub_static as sensors
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
         import library.sensors.sensors_librehardwaremonitor as sensors
