@@ -123,7 +123,7 @@ class CPU:
     def frequency():
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
 
-            cpu_freq = f'{int(sensors.Cpu.frequency()) / 1000:.2f}'
+            cpu_freq = f'{sensors.Cpu.frequency() / 1000:.2f}'
             if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW_UNIT", True):
                 cpu_freq += " GHz"
 
