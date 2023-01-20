@@ -1,0 +1,135 @@
+STATS:
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+    FREQUENCY:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      TEXT:
+        SHOW: False
+    LOAD:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      ONE:
+        TEXT:
+          SHOW: False
+      FIVE:
+        TEXT:
+          SHOW: False
+      FIFTEEN:
+        TEXT:
+          SHOW: False
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: False
+  GPU:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: False
+      TEXT:
+        SHOW: False
+    MEMORY:
+      GRAPH:
+        SHOW: False
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+  MEMORY:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 5
+    SWAP:
+      GRAPH:
+        SHOW: False
+    VIRTUAL:
+      GRAPH:
+        SHOW: False
+      USED:
+        SHOW: False
+        SHOW_UNIT: False
+      FREE:
+        SHOW: False
+        SHOW_UNIT: False
+      PERCENT_TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: False
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      PERCENT_TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+    TOTAL:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+    FREE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+  NET:
+    INTERVAL: 1
+    WLO:
+      UPLOAD:
+        TEXT:
+          SHOW: False
+      UPLOADED:
+        TEXT:
+          SHOW: False
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+      DOWNLOADED:
+        TEXT:
+          SHOW: False
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: False
+      UPLOADED:
+        TEXT:
+          SHOW: False
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+      DOWNLOADED:
+        TEXT:
+          SHOW: False
+  DATE:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: False
+    HOUR:
+      TEXT:
+        SHOW: False
+

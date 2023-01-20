@@ -58,6 +58,9 @@ if __name__ == "__main__":
         # Turn screen off before stopping
         display.lcd.ScreenOff()
 
+        # Turn backplate LED off for supported devices
+        display.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
+
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True
@@ -148,5 +151,12 @@ if __name__ == "__main__":
     scheduler.QueueHandler()
 
     if tray_icon and platform.system() == "Darwin":
+        from AppKit import NSBundle, NSApp, NSAutoreleasePool, NSApplicationActivationPolicyRegular, NSApplicationActivationPolicyProhibited
+
+        # Hide Python Launcher icon from MacOS dock
+        info = NSBundle.mainBundle().infoDictionary()
+        info["LSUIElement"] = "1"
+        NSApp.setActivationPolicy_(NSApplicationActivationPolicyProhibited)
+
         # For macOS: display the tray icon now with blocking function
         tray_icon.run()

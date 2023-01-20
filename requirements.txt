@@ -9,7 +9,7 @@ pystray~=0.19.4   # Tray icon (all OS)
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
 Cython~=0.29.32; sys_platform=="linux"
-pyamdgpuinfo~=2.1.3; sys_platform=="linux"
+pyamdgpuinfo~=2.1.3; sys_platform=="linux" and python_version < "3.11" # Wheel package not yet available for Python 3.11+
 
 # Following packages are for AMD GPU on Windows
 pyadl~=0.1; sys_platform=="win32"

@@ -19,7 +19,7 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 Supported smart screens models:
 | **Turing Smart Screen** | **XuanFang** |
 |--------|----------|
-| <img src="https://ae01.alicdn.com/kf/S4cd5d420d8034c7e8ff1cb40fdad0bccR.jpg" height="300" /> |  <img src="https://ae01.alicdn.com/kf/S28f803263a05455e86c58fb8f2572815K.jpg" height="300" />        |
+| <img src="res/docs/turing.webp" height="300" /> |  <img src="res/docs/xuanfang.webp" height="300" />        |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
@@ -54,8 +54,8 @@ Some themes are already included for a quick start!
 * Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
 * Tray icon with Exit option, useful when the program is running in background
 
-Screenshots from the latest version using included themes:  
-<img src="res/docs/Theme3.5Inch.jpg" height="400" /> <img src="res/docs/ThemeTerminal.jpg" height="400" /> <img src="res/docs/ThemeCyberpunk.png" height="400" /> <img src="res/docs/ThemeBashDarkGreen.png" height="400" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="400" /> <img src="res/docs/ThemeLandscapeMagicBlue.png" width="400" />
+Screenshots from the latest version using included themes (click on the thumbnails to see a bigger preview):  
+<img src="res/docs/Theme3.5Inch.jpg" height="300" /> <img src="res/docs/ThemeTerminal.jpg" height="300" /> <img src="res/docs/ThemeCyberpunk.png" height="300" /> <img src="res/docs/ThemeBashDarkGreenGpu.png" height="300" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="300" /> <img src="res/docs/ThemeLandscapeMagicBlue.png" width="300" />
 
 ### [> Themes creation/edition](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
 ### [> Themes shared by the community](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)

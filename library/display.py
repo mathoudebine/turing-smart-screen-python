@@ -97,7 +97,7 @@ class Display:
         self.lcd.SetOrientation(_get_theme_orientation())
 
     def display_static_images(self):
-        if THEME_DATA['static_images']:
+        if THEME_DATA.get('static_images', False):
             for image in THEME_DATA['static_images']:
                 logger.debug(f"Drawing Image: {image}")
                 self.lcd.DisplayBitmap(
@@ -109,7 +109,7 @@ class Display:
                 )
 
     def display_static_text(self):
-        if THEME_DATA['static_text']:
+        if THEME_DATA.get('static_text', False):
             for text in THEME_DATA['static_text']:
                 logger.debug(f"Drawing Text: {text}")
                 self.lcd.DisplayText(
