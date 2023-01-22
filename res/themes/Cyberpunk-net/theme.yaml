@@ -398,7 +398,7 @@ STATS:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 142
+          X: 128
           Y: 338
           FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23
@@ -417,7 +417,7 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 142
+          X: 128
           Y: 383
           FONT: generale-mono/GeneraleMonoA.ttf
           FONT_SIZE: 23

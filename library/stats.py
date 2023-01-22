@@ -576,7 +576,7 @@ class Net:
         upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
 
         if THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("SHOW", False):
-            upload_wlo_text = f"{bytes2human(upload_wlo, '%(value).1f %(symbol)s/s'):>7}"
+            upload_wlo_text = f"{bytes2human(upload_wlo, '%(value).1f %(symbol)s/s'):>10}"
             display.lcd.DisplayText(
                 text=f"{upload_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
@@ -612,7 +612,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("SHOW", False):
-            download_wlo_text = f"{bytes2human(download_wlo, '%(value).1f %(symbol)s/s'):>7}"
+            download_wlo_text = f"{bytes2human(download_wlo, '%(value).1f %(symbol)s/s'):>10}"
             display.lcd.DisplayText(
                 text=f"{download_wlo_text:>9}",
                 x=THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
@@ -650,7 +650,7 @@ class Net:
         upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(ETH_CARD, interval)
 
         if THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("SHOW", False):
-            upload_eth_text = f"{bytes2human(upload_eth, '%(value).1f %(symbol)s/s'):>7}"
+            upload_eth_text = f"{bytes2human(upload_eth, '%(value).1f %(symbol)s/s'):>10}"
             display.lcd.DisplayText(
                 text=f"{upload_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
@@ -686,7 +686,7 @@ class Net:
             )
 
         if THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("SHOW", False):
-            download_eth_text = f"{bytes2human(download_eth, '%(value).1f %(symbol)s/s'):>7}"
+            download_eth_text = f"{bytes2human(download_eth, '%(value).1f %(symbol)s/s'):>10}"
             display.lcd.DisplayText(
                 text=f"{download_eth_text:>9}",
                 x=THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
