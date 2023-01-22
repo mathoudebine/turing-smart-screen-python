@@ -431,7 +431,7 @@ class Memory:
             virtual_used_text = f"{int(virtual_used / 1000000)}"
             if THEME_DATA['STATS']['MEMORY']['VIRTUAL']['USED'].get("SHOW_UNIT", True):
                 virtual_used_text += " M"
-            virtual_used_text = f"{virtual_used_text:<6}"
+            virtual_used_text = f"{virtual_used_text:<8}"
 
             display.lcd.DisplayText(
                 text=virtual_used_text,
