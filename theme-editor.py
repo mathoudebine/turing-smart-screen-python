@@ -124,9 +124,10 @@ if __name__ == "__main__":
     logger.debug("Opening theme preview window with static data")
     viewer = tkinter.Tk()
     viewer.title("Turing System Monitor")
-    viewer.iconbitmap("res/icons/monitor-icon-17865/monitor-icon-17865.ico")
+    viewer.iconphoto(True, tkinter.PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
     viewer.geometry(str(display.lcd.get_width() + 24) + "x" + str(display.lcd.get_height() + 24))
     viewer.protocol("WM_DELETE_WINDOW", on_closing)
+    viewer.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
 
     # Display RGB backplate LEDs color as background color
     led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
