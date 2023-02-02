@@ -50,7 +50,11 @@ elif HW_SENSORS == "LHM":
         except:
             os._exit(0)
 elif HW_SENSORS == "STUB":
-    import library.sensors.sensors_stub as sensors
+    logger.warning("Stub sensors, not real HW sensors")
+    import library.sensors.sensors_stub_random as sensors
+elif HW_SENSORS == "STATIC":
+    logger.warning("Stub sensors, not real HW sensors")
+    import library.sensors.sensors_stub_static as sensors
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
         import library.sensors.sensors_librehardwaremonitor as sensors
@@ -119,7 +123,7 @@ class CPU:
     def frequency():
         if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW", False):
 
-            cpu_freq = f'{int(sensors.Cpu.frequency()) / 1000:.2f}'
+            cpu_freq = f'{sensors.Cpu.frequency() / 1000:.2f}'
             if THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("SHOW_UNIT", True):
                 cpu_freq += " GHz"
 

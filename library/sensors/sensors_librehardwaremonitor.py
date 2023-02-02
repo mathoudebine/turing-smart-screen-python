@@ -124,9 +124,15 @@ class Cpu(sensors.Cpu):
             if sensor.SensorType == Hardware.SensorType.Clock:
                 # Keep only real core clocks, ignore effective core clocks
                 if "Core #" in str(sensor.Name) and "Effective" not in str(sensor.Name):
-                    frequencies.append(float(sensor.Value))
-        # Take mean of all core clock as "CPU clock"
-        return mean(frequencies)
+                    if sensor.Value:
+                        frequencies.append(float(sensor.Value))
+
+        if frequencies:
+            # Take mean of all core clock as "CPU clock" (as it is done in Windows Task Manager Performance tab)
+            return mean(frequencies)
+        else:
+            # Frequencies reading is not supported on this CPU
+            return math.nan
 
     @staticmethod
     def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
@@ -201,8 +207,8 @@ class Gpu(sensors.Gpu):
         found_nvidia = (get_hw_and_update(Hardware.HardwareType.GpuNvidia) is not None)
         found_intel = (get_hw_and_update(Hardware.HardwareType.GpuIntel) is not None)
 
-        if found_amd and (found_nvidia or found_intel) or (found_nvidia and found_intel):
-            logger.warning(
+        if (found_amd and (found_nvidia or found_intel)) or (found_nvidia and found_intel):
+            logger.info(
                 "Found multiple GPUs on your system. Will use dedicated GPU (AMD/Nvidia) for stats if possible.")
 
         return found_amd or found_nvidia or found_intel

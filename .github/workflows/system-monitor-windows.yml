@@ -40,9 +40,6 @@ jobs:
         echo "Using theme ${{ matrix.theme }}"
         (Get-Content config.yaml) -replace "^  THEME.*$","  THEME: ${{ matrix.theme }}" | Set-Content  config.yaml
 
-        # For tests do not use LibreHardwareMonitor as it needs admin rights
-        (Get-Content config.yaml) -replace "^  HW_SENSORS.*$","  HW_SENSORS: PYTHON" | Set-Content  config.yaml
-
     - name: Run system monitor for 20 seconds
       run: |
         Start-Process -NoNewWindow python3 main.py -RedirectStandardOutput output.log -RedirectStandardError error.log
