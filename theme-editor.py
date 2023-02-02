@@ -1,4 +1,4 @@
-# theme-viewer
+# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -15,6 +15,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# theme-editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
+# The preview window is refreshed as soon as the theme file is modified
 
 import locale
 import logging

@@ -95,11 +95,11 @@ class CPU:
                 font_size=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                      (255, 255, 255)),
+                                                                                             (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
-                                                                                                    None))
+                                                   None))
             )
 
         if config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("SHOW", False):
@@ -114,11 +114,11 @@ class CPU:
                 bar_color=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
                 bar_outline=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BAR_OUTLINE", False),
                 background_color=config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get("BACKGROUND_COLOR",
-                                                                                       (255, 255, 255)),
+                                                                                              (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['CPU']['PERCENTAGE']['GRAPH'].get(
                                                    "BACKGROUND_IMAGE",
-                                                                                                     None))
+                                                   None))
             )
 
     @staticmethod
@@ -138,11 +138,11 @@ class CPU:
                 font_size=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                     (255, 255, 255)),
+                                                                                            (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
-                                                                                                   None))
+                                                   None))
             )
 
     @staticmethod
@@ -161,15 +161,15 @@ class CPU:
                 x=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT",
-                                                                           "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                  "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                       (255, 255, 255)),
+                                                                                              (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['CPU']['LOAD']['ONE']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
-                                                                                                     None))
+                                                   None))
             )
 
         if config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("SHOW", False):
@@ -183,11 +183,11 @@ class CPU:
                 x=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT",
-                                                                            "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                   "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                        (255, 255, 255)),
+                                                                                               (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['CPU']['LOAD']['FIVE']['TEXT'].get(
                                                    "BACKGROUND_IMAGE", None))
@@ -612,11 +612,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT",
-                                                                             "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                    "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                         (255, 255, 255)),
+                                                                                                (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['WLO']['UPLOAD']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -630,11 +630,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT",
-                                                                               "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                      "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                           (255, 255, 255)),
+                                                                                                  (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['WLO']['UPLOADED']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -648,11 +648,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT",
-                                                                               "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                      "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                           (255, 255, 255)),
+                                                                                                  (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOAD']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -666,11 +666,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT",
-                                                                                 "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                        "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                             (255, 255, 255)),
+                                                                                                    (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['WLO']['DOWNLOADED']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -686,11 +686,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT",
-                                                                             "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                    "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                         (255, 255, 255)),
+                                                                                                (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['ETH']['UPLOAD']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -704,11 +704,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT",
-                                                                               "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                      "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                           (255, 255, 255)),
+                                                                                                  (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['ETH']['UPLOADED']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -722,11 +722,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT",
-                                                                               "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                      "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                           (255, 255, 255)),
+                                                                                                  (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOAD']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -740,11 +740,11 @@ class Net:
                 x=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT",
-                                                                                 "roboto-mono/RobotoMono-Regular.ttf"),
+                                                                                        "roboto-mono/RobotoMono-Regular.ttf"),
                 font_size=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT_SIZE", 10),
                 font_color=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
                 background_color=config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                             (255, 255, 255)),
+                                                                                                    (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['NET']['ETH']['DOWNLOADED']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
@@ -769,7 +769,7 @@ class Date:
                                                                                        (255, 255, 255)),
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("BACKGROUND_IMAGE",
-                                                                                              None))
+                                                                                                     None))
             )
 
         if config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("SHOW", False):
@@ -786,5 +786,5 @@ class Date:
                 background_image=get_full_path(config.THEME_DATA['PATH'],
                                                config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get(
                                                    "BACKGROUND_IMAGE",
-                                                                                               None))
+                                                   None))
             )
