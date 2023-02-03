@@ -8,22 +8,19 @@ on:
   pull_request:
 
 jobs:
-  system-monitor:
+  system-monitor-theme-screenshot:
 
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
-      matrix:
-        theme: [ "3.5inchTheme2", "Cyberpunk", "Cyberpunk-net", "Landscape6Grid", "Terminal", "bash-dark-green", "bash-dark-green-gpu",
-                 "LandscapeMagicBlue", "BigClock" ]
 
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.10
       uses: actions/setup-python@v4
       with:
-        python-version: 3.10
+        python-version: "3.10"
 
     - name: Install dependencies
       run: |
@@ -42,8 +39,8 @@ jobs:
       run: |
         for dir in res/themes/*/
         do
-          # Remove the trailing "/"
-          theme=${dir%*/}
+          # Keep only folder name
+          theme=`basename ${dir%*/}`
         
           # Setup selected theme in config.yaml
           echo "Using theme $theme"
