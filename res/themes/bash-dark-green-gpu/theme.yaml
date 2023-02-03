@@ -241,6 +241,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 240
         Y: 276
         FONT: roboto-mono/RobotoMono-Regular.ttf

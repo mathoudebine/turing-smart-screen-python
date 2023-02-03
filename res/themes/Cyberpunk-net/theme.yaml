@@ -80,6 +80,15 @@ static_text:
     FONT_COLOR: 255, 239, 8
     # BACKGROUND_COLOR: 255, 255, 255
     BACKGROUND_IMAGE: background.png
+  DISK_USAGE:
+    TEXT: DISK USAGE
+    X: 66
+    Y: 429
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    # BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:
@@ -275,9 +284,9 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       FREE:
-        SHOW: False
-        SHOW_UNIT: False
-        X: 110
+        SHOW: True
+        SHOW_UNIT: True
+        X: 122
         Y: 256
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 16
@@ -320,8 +329,8 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
-        SHOW: False
-        SHOW_UNIT: False
+        SHOW: True
+        SHOW_UNIT: True
         X: 170
         Y: 430
         FONT: generale-mono/GeneraleMonoA.ttf
@@ -452,10 +461,10 @@ STATS:
     HOUR:
       TEXT:
         SHOW: True
-        X: 195
+        X: 193
         Y: 32
         FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 18
+        FONT_SIZE: 15
         FONT_COLOR: 255, 239, 8
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png

@@ -36,7 +36,7 @@ class Cpu(ABC):
 
     @staticmethod
     @abstractmethod
-    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%)
         pass
 
     @staticmethod

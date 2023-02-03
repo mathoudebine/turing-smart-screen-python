@@ -135,7 +135,7 @@ class Cpu(sensors.Cpu):
             return math.nan
 
     @staticmethod
-    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
         # Get this data from psutil because it is not available from LibreHardwareMonitor
         return psutil.getloadavg()
 

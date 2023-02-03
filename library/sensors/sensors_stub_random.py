@@ -35,7 +35,7 @@ class Cpu(sensors.Cpu):
         return random.uniform(800, 3400)
 
     @staticmethod
-    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
         return random.uniform(0, 100), random.uniform(0, 100), random.uniform(0, 100)
 
     @staticmethod

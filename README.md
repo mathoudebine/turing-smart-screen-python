@@ -49,7 +49,7 @@ Some themes are already included for a quick start!
 * Display configuration using `config.yaml` file: no Python code to edit.
 * Support for all [3.5" smart screen models (Turing and XuanFang)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Backplate RGB LEDs are also supported for available models!
 * Support [multiple hardware sensors and metrics (CPU/GPU usage, temperatures, memory, disks, etc)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes#stats-entry) with configurable refresh intervals.
-* Allow [creation of themes (see `res/themes`) with `theme.yaml` files](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be [shared with the community!](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
+* Allow [creation of themes (see `res/themes`) with `theme.yaml` files using theme editor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be [shared with the community!](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
 * Easy to expand: additional code that pulls specific information can be written in a modular way without impacting existing code.
 * Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
 * Tray icon with Exit option, useful when the program is running in background
@@ -57,7 +57,7 @@ Some themes are already included for a quick start!
 Screenshots from the latest version using included themes (click on the thumbnails to see a bigger preview):  
 <img src="res/docs/Theme3.5Inch.jpg" height="300" /> <img src="res/docs/ThemeTerminal.jpg" height="300" /> <img src="res/docs/ThemeCyberpunk.png" height="300" /> <img src="res/docs/ThemeBashDarkGreenGpu.png" height="300" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="300" /> <img src="res/docs/ThemeLandscapeMagicBlue.png" width="300" />
 
-### [> Themes creation/edition](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
+### [> Themes creation/edition (using theme editor)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
 ### [> Themes shared by the community](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
 
 ## Control the display from your Python projects

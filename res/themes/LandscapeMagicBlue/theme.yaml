@@ -53,6 +53,15 @@ static_text:
     FONT_COLOR: 16, 223, 239
     # BACKGROUND_COLOR: 132, 154, 165
     BACKGROUND_IMAGE: background.png
+  GPU_TEMP_UNIT:
+    TEXT: "°C"
+    X: 458
+    Y: 167
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 12
+    FONT_COLOR: 128, 255, 255
+    # BACKGROUND_COLOR: 132, 154, 165
+    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:

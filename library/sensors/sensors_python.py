@@ -66,7 +66,7 @@ class Cpu(sensors.Cpu):
         return psutil.cpu_freq().current
 
     @staticmethod
-    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
         return psutil.getloadavg()
 
     @staticmethod

@@ -17,26 +17,36 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # This file will use static data instead of real hardware sensors
-# Used for screenshots and tests
+# Useful for theme editor
 # For all platforms (Linux, Windows, macOS)
 
 from typing import Tuple
 
 import library.sensors.sensors as sensors
 
+# Define here global static values that will be applied to all sensors of the same type
+PERCENTAGE_SENSOR_VALUE = 50.0
+TEMPERATURE_SENSOR_VALUE = 67.3
+
+# Define other sensors
+CPU_FREQ_MHZ = 2400.0
+DISK_TOTAL_SIZE_GB = 1000
+MEMORY_TOTAL_SIZE_GB = 64
+GPU_MEM_TOTAL_SIZE_GB = 32
+NETWORK_SPEED_BYTES = 1061000000
 
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
-        return 18.3
+        return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def frequency() -> float:
-        return 2400.0
+        return CPU_FREQ_MHZ
 
     @staticmethod
-    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg:
-        return 25.0, 37.8, 75.6
+    def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
+        return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def is_temperature_available() -> bool:
@@ -44,13 +54,14 @@ class Cpu(sensors.Cpu):
 
     @staticmethod
     def temperature() -> float:
-        return 68.9
+        return TEMPERATURE_SENSOR_VALUE
 
 
 class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
-        return 75.8, 22.7, 1480, 52.3
+        return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, \
+            GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1000, TEMPERATURE_SENSOR_VALUE
 
     @staticmethod
     def is_available() -> bool:
@@ -60,37 +71,37 @@ class Gpu(sensors.Gpu):
 class Memory(sensors.Memory):
     @staticmethod
     def swap_percent() -> float:
-        return 12.4
+        return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def virtual_percent() -> float:
-        return 37.0
+        return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def virtual_used() -> int:  # In bytes
-        return 5920000000
+        return int(MEMORY_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE) * 1000000000
 
     @staticmethod
     def virtual_free() -> int:  # In bytes
-        return 10080000000
+        return int(MEMORY_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
 
 
 class Disk(sensors.Disk):
     @staticmethod
     def disk_usage_percent() -> float:
-        return 59.0
+        return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def disk_used() -> int:  # In bytes
-        return 1180000000000
+        return int(DISK_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE) * 1000000000
 
     @staticmethod
     def disk_free() -> int:  # In bytes
-        return 820000000000
+        return int(DISK_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
 
 
 class Net(sensors.Net):
     @staticmethod
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
-        return 2000000, 4857000, 839000000, 5623000000
+        return NETWORK_SPEED_BYTES, NETWORK_SPEED_BYTES, NETWORK_SPEED_BYTES, NETWORK_SPEED_BYTES
