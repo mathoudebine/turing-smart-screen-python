@@ -126,9 +126,9 @@ if __name__ == "__main__":
     # Create preview window
     logger.debug("Opening theme preview window with static data")
     viewer = tkinter.Tk()
-    viewer.title("Turing System Monitor")
+    viewer.title("Turing SysMon Theme Editor")
     viewer.iconphoto(True, tkinter.PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
-    viewer.geometry(str(display.lcd.get_width() + 24) + "x" + str(display.lcd.get_height() + 24))
+    viewer.geometry(str(display.lcd.get_width() + 24) + "x" + str(display.lcd.get_height() + 44))
     viewer.protocol("WM_DELETE_WINDOW", on_closing)
     viewer.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
 
@@ -142,6 +142,9 @@ if __name__ == "__main__":
     display_image = ImageTk.PhotoImage(display.lcd.screen_image)
     viewer_picture = tkinter.Label(viewer, image=display_image)
     viewer_picture.place(x=10, y=10)
+
+    label = tkinter.Label(viewer, text="This preview will reload when theme file is updated")
+    label.place(x=0, y=display.lcd.get_height() + 24, width=display.lcd.get_width() + 24)
 
     viewer.update()
 
