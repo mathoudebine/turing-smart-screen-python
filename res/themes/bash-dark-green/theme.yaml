@@ -241,6 +241,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
+        SHOW_UNIT: True
         X: 240
         Y: 105
         FONT: roboto-mono/RobotoMono-Regular.ttf
@@ -352,7 +353,7 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 254
+          X: 244
           Y: 311
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
@@ -362,7 +363,7 @@ STATS:
       UPLOADED:
         TEXT:
           SHOW: True
-          X: 192
+          X: 182
           Y: 311
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
@@ -372,7 +373,7 @@ STATS:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 254
+          X: 244
           Y: 261
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
@@ -382,7 +383,7 @@ STATS:
       DOWNLOADED:
         TEXT:
           SHOW: True
-          X: 192
+          X: 182
           Y: 261
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
