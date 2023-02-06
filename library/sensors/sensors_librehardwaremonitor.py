@@ -194,6 +194,11 @@ class Gpu(sensors.Gpu):
                 load = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Used"):
                 used_mem = float(sensor.Value)
+            elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith(
+                    "D3D Dedicated Memory Used") and math.isnan(used_mem):
+                # Only use D3D memory usage if global "GPU Memory Used" sensor is not available, because it is less
+                # precise and does not cover the entire GPU
+                used_mem = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Total"):
                 total_mem = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("GPU Core"):
