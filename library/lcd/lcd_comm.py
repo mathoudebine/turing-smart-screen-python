@@ -320,5 +320,4 @@ class LcdComm(ABC):
                  angle_start + (value - min_value)/(max_value - min_value) * 360,
                  fill=bar_color, width=linewidth)
 
-        # margin = 1 (see above)
         self.DisplayPILImage(bar_image, xc - radius, yc - radius)
