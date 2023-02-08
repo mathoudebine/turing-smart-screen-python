@@ -58,7 +58,9 @@ Screenshots from the latest version using included themes (click on the thumbnai
 <img src="res/docs/Theme3.5Inch.jpg" height="300" /> <img src="res/docs/ThemeTerminal.jpg" height="300" /> <img src="res/docs/ThemeCyberpunk.png" height="300" /> <img src="res/docs/ThemeBashDarkGreenGpu.png" height="300" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="300" /> <img src="res/docs/ThemeLandscapeMagicBlue.png" width="300" />
 
 ### [> Themes creation/edition (using theme editor)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
-### [> Themes shared by the community](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
+### [> Themes shared by the community:](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
+<img src="https://user-images.githubusercontent.com/79225820/203648707-6f043068-5c9d-454d-9c0a-3d9ea02ece77.jpg" height="150" /> <img src="https://user-images.githubusercontent.com/121983479/210663324-994c987a-6489-4482-8883-db74ef566014.jpg" height="150" />
+<img src="https://user-images.githubusercontent.com/120036534/208128675-897f60cd-5647-40b7-b074-b56b67e775dd.png" height="150" /> <img src="https://user-images.githubusercontent.com/65172896/217549510-149913ac-ef4e-4f61-8f5e-6d768483a02c.png" height="150" /> and more... Share yours!
 
 ## Control the display from your Python projects
 
