@@ -24,7 +24,7 @@ import os
 import sys
 
 PNG_SIGNATURE = b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'
-PNG_IEND = b'IEND'
+PNG_IEND = b'\x49\x45\x4E\x44\xAE\x42\x60\x82'
 
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:
@@ -65,7 +65,7 @@ with open(sys.argv[1], "r+b") as theme_file:
         # Extract PNG data to a file
         theme_file.seek(header_found)
         png_file = open('theme_res_' + str(header_found) + '.png', 'wb')
-        png_file.write(theme_file.read(iend_found-header_found))
+        png_file.write(theme_file.read(iend_found - header_found + len(PNG_IEND)))
         png_file.close()
 
         print("PNG extracted to theme_res_%s.png" % str(header_found))
