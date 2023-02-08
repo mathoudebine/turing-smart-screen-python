@@ -140,6 +140,16 @@ if __name__ == "__main__":
                                     bar_color=(0, 255, 0), bar_outline=False,
                                     background_image=background)
 
+        lcd_comm.DisplayRadialProgressBar(160, 400,
+                                          radius=20, linewidth=5,
+                                          min_value=0,
+                                          max_value=100,
+                                          value=bar_value,
+                                          angle_start=-90,
+                                          bar_color=(255, 255, 0),
+                                          background_image=background)
+
+
         bar_value = (bar_value + 2) % 101
 
     # Close serial connection at exit
