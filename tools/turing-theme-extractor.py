@@ -36,11 +36,11 @@ if sys.version_info < MIN_PYTHON:
 
 if len(sys.argv) != 2:
     print("Usage :")
-    print("        turing theme-extractor.py path/to/theme-file.data")
+    print("        turing-theme-extractor.py path/to/theme-file.data")
     print("Examples : ")
-    print("        turing theme-extractor.py \"Dragon Ball.data\"")
-    print("        turing theme-extractor.py \"Pikachu theme.data\"")
-    print("        turing theme-extractor.py NZXT_BLUR.data")
+    print("        turing-theme-extractor.py \"Dragon Ball.data\"")
+    print("        turing-theme-extractor.py \"Pikachu theme.data\"")
+    print("        turing-theme-extractor.py NZXT_BLUR.data")
     try:
         sys.exit(0)
     except:
@@ -60,7 +60,7 @@ with open(sys.argv[1], "r+b") as theme_file:
 
         # Find PNG IEND chunk (= end of file)
         iend_found = mm.find(PNG_IEND, header_found)
-        print("Found PNG IEND at 0x%06x" % iend_found)
+        print("Found PNG end-of-file at 0x%06x" % iend_found)
 
         # Extract PNG data to a file
         theme_file.seek(header_found)
