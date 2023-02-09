@@ -208,14 +208,15 @@ class LcdComm(ABC):
         # Draw text with specified color & font
         font = ImageFont.truetype("./res/fonts/" + font, font_size)
         d = ImageDraw.Draw(text_image)
+        left, top, right, bot = font.getbbox(text)
+        
         d.text((x, y), text, font=font, fill=font_color)
-
+        
         # Crop text bitmap to keep only the text (also crop if text overflows display)
-        left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
         text_image = text_image.crop(box=(
-            x, y,
-            min(x + text_width, self.get_width()),
-            min(y + text_height, self.get_height())
+            x + left, y + top,
+            min(x + right, self.get_width()),
+            min(y + bot, self.get_height())
         ))
 
         self.DisplayPILImage(text_image, x, y)
