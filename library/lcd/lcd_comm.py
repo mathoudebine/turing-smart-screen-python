@@ -213,7 +213,7 @@ class LcdComm(ABC):
         # Crop text bitmap to keep only the text (also crop if text overflows display)
         left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
         text_image = text_image.crop(box=(
-            x, y,
+            x + left, y + top,
             min(x + text_width, self.get_width()),
             min(y + text_height, self.get_height())
         ))
