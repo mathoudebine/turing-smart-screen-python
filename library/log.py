@@ -18,11 +18,13 @@
 
 # Configure logging format
 import logging
+from datetime import datetime
+date = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
 
 logging.basicConfig(# format='%(asctime)s [%(levelname)s] %(message)s in %(pathname)s:%(lineno)d',
                     format="%(asctime)s [%(levelname)s] %(message)s",
                     handlers=[
-                        # logging.FileHandler("log.log", mode='w'),  # Log in textfile (erased at each start)
+                        # logging.FileHandler("log_"+date+".log", mode='w'),  # Log in textfile
                         logging.StreamHandler()  # Log also in console
                     ],
                     datefmt='%H:%M:%S')
