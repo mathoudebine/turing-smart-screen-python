@@ -205,18 +205,19 @@ class LcdComm(ABC):
             # The text bitmap is created from provided background image : text with transparent background
             text_image = Image.open(background_image)
 
-        # Draw text with specified color & font
+        # Get text bounding box
         font = ImageFont.truetype("./res/fonts/" + font, font_size)
         d = ImageDraw.Draw(text_image)
+        left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
+
+        # Draw text with specified color & font, remove left/top margins
+        d.text((x - left, y - top), text, font=font, fill=font_color)
 
         # Crop text bitmap to keep only the text (also crop if text overflows display)
-        left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
-        d.text((x-left, y-top), text, font=font, fill=font_color)
-        
         text_image = text_image.crop(box=(
             x, y,
-            min(x + text_width, self.get_width()),
-            min(y + text_height, self.get_height())
+            min(x + text_width - left, self.get_width()),
+            min(y + text_height - top, self.get_height())
         ))
 
         self.DisplayPILImage(text_image, x, y)
