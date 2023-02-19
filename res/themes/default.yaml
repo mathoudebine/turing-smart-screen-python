@@ -1,25 +1,18 @@
+# This file is used to add mandatory sections to a theme file in case they are missing
+# This is not a theme! Do not use this file to create a new theme, as a lot of content is missing: use theme_example.yaml
 STATS:
   CPU:
     PERCENTAGE:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 1
       TEXT:
         SHOW: False
       GRAPH:
         SHOW: False
     FREQUENCY:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 5
       TEXT:
         SHOW: False
     LOAD:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 5
       ONE:
         TEXT:
@@ -35,9 +28,6 @@ STATS:
       TEXT:
         SHOW: False
   GPU:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 1
     PERCENTAGE:
       GRAPH:
@@ -55,9 +45,6 @@ STATS:
         SHOW: False
         SHOW_UNIT: False
   MEMORY:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 5
     SWAP:
       GRAPH:
@@ -122,9 +109,6 @@ STATS:
         TEXT:
           SHOW: False
   DATE:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 1
     DAY:
       TEXT:

@@ -1,18 +1,9 @@
 ---
 display:
-  # Specify the display orientation for this theme: portrait or landscape
   DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 0, 0
 
 static_images:
-  # Specify what static images we want to show on the display
-  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
-  # Images are drawn in the order they are listed below, the top image will be drawn first (so places images back to front)
-  # IMAGE_NAME:
-  #   PATH:
-  #   X:
-  #   Y:
-  #   WIDTH:
-  #   HEIGHT:
   BACKGROUND:
     PATH: blackground-landscape.png
     X: 0
@@ -21,12 +12,7 @@ static_images:
     HEIGHT: 320
 
 STATS:
-  # Backplate RGB LED color (for HW revision 'flagship' devices only)
-  DISPLAY_RGB_LED: 255, 0, 0
   DATE:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 1
     DAY:
       TEXT:
