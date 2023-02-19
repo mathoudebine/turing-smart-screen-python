@@ -38,7 +38,7 @@ static_text:
   DISK_LABEL:
     TEXT: "DISK"
     X: 420
-    Y: 32
+    Y: 36
     FONT: roboto/Roboto-Bold.ttf
     FONT_SIZE: 18
     FONT_COLOR: 16, 223, 239
@@ -47,7 +47,7 @@ static_text:
   DISK_USED_LABEL:
     TEXT: "Used:"
     X: 350
-    Y: 63
+    Y: 67
     FONT: roboto/Roboto-Regular.ttf
     FONT_SIZE: 16
     FONT_COLOR: 16, 223, 239
