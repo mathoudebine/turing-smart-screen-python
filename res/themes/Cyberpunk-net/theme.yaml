@@ -201,6 +201,27 @@ STATS:
         FONT_SIZE: 30
         FONT_COLOR: 2, 216, 243
         BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    ETH:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 128
+          Y: 338
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 128
+          Y: 383
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 23
+          FONT_COLOR: 2, 216, 243
+          BACKGROUND_IMAGE: background.png
   DATE:
     INTERVAL: 1
     DAY:
