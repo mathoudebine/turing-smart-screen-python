@@ -28,7 +28,7 @@ from library.log import logger
 
 
 def load_yaml(configfile):
-    with open(configfile, "r") as stream:
+    with open(configfile, "rt", encoding='utf8') as stream:
         yamlconfig = yaml.safe_load(stream)
         return yamlconfig
 
