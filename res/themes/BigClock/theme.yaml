@@ -32,7 +32,7 @@ STATS:
       TEXT:
         SHOW: True
         X: 10
-        Y: 16
+        Y: 32
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 80
         FONT_COLOR: 200, 200, 200
@@ -41,7 +41,7 @@ STATS:
       TEXT:
         SHOW: True
         X: 10
-        Y: 160
+        Y: 176
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 80
         FONT_COLOR: 200, 200, 200

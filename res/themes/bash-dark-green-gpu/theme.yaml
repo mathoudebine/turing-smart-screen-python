@@ -46,7 +46,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 13
-        Y: 64
+        Y: 72
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 22
         FONT_COLOR: 53, 191, 92
@@ -73,7 +73,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 94
-        Y: 67
+        Y: 71
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 12
         FONT_COLOR: 53, 191, 92
@@ -120,7 +120,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 87
-        Y: 100
+        Y: 104
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 12
         FONT_COLOR: 53, 191, 92
@@ -148,7 +148,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 240
-        Y: 105
+        Y: 113
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 22
         FONT_COLOR: 53, 191, 92
@@ -171,7 +171,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 182
-        Y: 95
+        Y: 99
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 11
         FONT_COLOR: 53, 191, 92
@@ -182,7 +182,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 182
-        Y: 145
+        Y: 149
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 11
         FONT_COLOR: 53, 191, 92
@@ -223,7 +223,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 182
-        Y: 275
+        Y: 279
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 11
         FONT_COLOR: 53, 191, 92
@@ -233,7 +233,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 182
-        Y: 308
+        Y: 312
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 11
         FONT_COLOR: 53, 191, 92
@@ -243,7 +243,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 240
-        Y: 276
+        Y: 282
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 22
         FONT_COLOR: 53, 191, 92
@@ -268,7 +268,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 144
-        Y: 414
+        Y: 418
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 12
         FONT_COLOR: 53, 191, 92
@@ -278,7 +278,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 46
-        Y: 402
+        Y: 410
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 22
         FONT_COLOR: 53, 191, 92
@@ -289,7 +289,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 229
-        Y: 414
+        Y: 418
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 12
         FONT_COLOR: 53, 191, 92
@@ -300,7 +300,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 144
-        Y: 455
+        Y: 459
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 12
         FONT_COLOR: 53, 191, 92
@@ -313,7 +313,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 54
-          Y: 208
+          Y: 211
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -323,7 +323,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 120
-          Y: 208
+          Y: 211
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -333,7 +333,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 54
-          Y: 235
+          Y: 238
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -343,7 +343,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 120
-          Y: 235
+          Y: 238
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -354,7 +354,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 54
-          Y: 281
+          Y: 284
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -364,7 +364,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 120
-          Y: 281
+          Y: 284
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -374,7 +374,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 54
-          Y: 308
+          Y: 311
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -384,7 +384,7 @@ STATS:
         TEXT:
           SHOW: True
           X: 120
-          Y: 308
+          Y: 311
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 10
           FONT_COLOR: 53, 191, 92
@@ -399,7 +399,7 @@ STATS:
       TEXT:
         SHOW: True
         X: 6
-        Y: 4
+        Y: 8
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
@@ -409,7 +409,7 @@ STATS:
       TEXT:
         SHOW: True
         X: 195
-        Y: 4
+        Y: 8
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92

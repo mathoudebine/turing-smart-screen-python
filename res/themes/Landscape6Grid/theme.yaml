@@ -46,7 +46,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 35
-        Y: 45
+        Y: 56
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -73,7 +73,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: False
         X: 355
-        Y: 45
+        Y: 56
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -120,7 +120,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 180
-        Y: 45
+        Y: 56
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -148,7 +148,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 35
-        Y: 190
+        Y: 201
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -182,7 +182,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 180
-        Y: 190
+        Y: 201
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -243,7 +243,7 @@ STATS:
         SHOW: True
         SHOW_UNIT: True
         X: 350
-        Y: 190
+        Y: 201
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
