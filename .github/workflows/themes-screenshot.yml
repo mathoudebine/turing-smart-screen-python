@@ -39,20 +39,22 @@ jobs:
       run: |
         for dir in res/themes/*/
         do
-          # Keep only folder name
-          theme=`basename ${dir%*/}`
-        
-          # Setup selected theme in config.yaml
-          echo "Using theme $theme"
-          sed -i "/THEME:/c\  THEME: $theme" config.yaml
-  
-          # Run system-monitor for 5 seconds
-          python3 main.py > output.log 2>&1 &
-          sleep 5
-          killall -9 python3
-        
-          # Rename screen capture
-          cp screencap.png screenshot-$theme.png
+          if test -f "$dir/theme.yaml"; then        
+            # Keep only folder name
+            theme=`basename ${dir%*/}`
+          
+            # Setup selected theme in config.yaml
+            echo "Using theme $theme"
+            sed -i "/THEME:/c\  THEME: $theme" config.yaml
+    
+            # Run system-monitor for 5 seconds
+            python3 main.py > output.log 2>&1 &
+            sleep 5
+            killall -9 python3
+          
+            # Rename screen capture
+            cp screencap.png screenshot-$theme.png
+          fi
         done
 
     - name: Archive screenshots
