@@ -1,16 +1,20 @@
-name: System monitor - themes screenshot
+name: System monitor - themes screenshot (on push)
 
 on:
   push:
     branches:
       - main
       - 'releases/**'
-  pull_request:
 
 jobs:
   system-monitor-theme-screenshot:
 
     runs-on: ubuntu-latest
+
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
 
     strategy:
       fail-fast: false
@@ -52,13 +56,13 @@ jobs:
             sleep 5
             killall -9 python3
           
-            # Rename screen capture
-            cp screencap.png screenshot-$theme.png
+            # Copy screen capture on theme folder
+            cp screencap.png "$dir/preview.png"
           fi
         done
 
-    - name: Archive screenshots
-      uses: actions/upload-artifact@v3
+    - name: Commit theme previews
+      uses: stefanzweifel/git-auto-commit-action@v4
       with:
-        name: themes-screenshots
-        path: screenshot-*.png
+        commit_message: "[GitHub Actions Bot] Update theme previews"
+        file_pattern: 'res/themes/*/preview.png'

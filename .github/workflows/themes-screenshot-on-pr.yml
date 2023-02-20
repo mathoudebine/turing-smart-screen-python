@@ -1,0 +1,60 @@
+name: System monitor - themes screenshot (on PR)
+
+on:
+  pull_request:
+
+jobs:
+  system-monitor-theme-screenshot:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Configure system monitor for screenshot
+      run: |
+        # For tests there is no real HW: use simulated LCD mode
+        sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
+        
+        # Use static data
+        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STATIC" config.yaml
+
+    - name: Run system monitor for 5 seconds on all themes
+      run: |
+        for dir in res/themes/*/
+        do
+          if test -f "$dir/theme.yaml"; then        
+            # Keep only folder name
+            theme=`basename ${dir%*/}`
+          
+            # Setup selected theme in config.yaml
+            echo "Using theme $theme"
+            sed -i "/THEME:/c\  THEME: $theme" config.yaml
+    
+            # Run system-monitor for 5 seconds
+            python3 main.py > output.log 2>&1 &
+            sleep 5
+            killall -9 python3
+          
+            # Rename screen capture
+            cp screencap.png "screenshot-$theme.png"
+          fi
+        done
+
+    - name: Archive screenshots
+      uses: actions/upload-artifact@v3
+      with:
+        name: themes-screenshots
+        path: screenshot-*.png
