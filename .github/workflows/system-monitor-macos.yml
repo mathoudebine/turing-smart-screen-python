@@ -17,7 +17,7 @@ jobs:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
         theme: [ "3.5inchTheme2", "Cyberpunk", "Cyberpunk-net", "Landscape6Grid", "Terminal", "bash-dark-green", "bash-dark-green-gpu",
-                 "LandscapeMagicBlue", "BigClock" ]
+                 "LandscapeMagicBlue", "BigClock", "LandscapeEarth" ]
 
     steps:
     - uses: actions/checkout@v3
