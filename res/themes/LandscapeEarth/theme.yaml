@@ -39,7 +39,7 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 50
+        X: 48
         Y: 281
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 16
@@ -106,6 +106,7 @@ STATS:
     INTERVAL: 1
     DAY:
       TEXT:
+        FORMAT: medium
         SHOW: True
         X: 14
         Y: 64
@@ -115,10 +116,11 @@ STATS:
         BACKGROUND_IMAGE: background.png
     HOUR:
       TEXT:
+        FORMAT: short
         SHOW: True
         X: 14
         Y: 30
         FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 20
+        FONT_SIZE: 26
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 16, 28, 57

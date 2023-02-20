@@ -26,6 +26,7 @@ import os
 import platform
 import sys
 
+from babel.dates import format_time, format_date
 from psutil._common import bytes2human
 
 import library.config as config
@@ -756,9 +757,11 @@ class Date:
     @staticmethod
     def stats():
         date_now = datetime.datetime.now()
+
         if config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("SHOW", False):
+            date_format = config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FORMAT", 'medium')
             display.lcd.DisplayText(
-                text=f"{date_now.strftime('%x')}",
+                text=f"{format_date(date_now, format=date_format)}",
                 x=config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['DATE']['DAY']['TEXT'].get("FONT",
@@ -773,8 +776,9 @@ class Date:
             )
 
         if config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("SHOW", False):
+            time_format = config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FORMAT", 'medium')
             display.lcd.DisplayText(
-                text=f"{date_now.strftime('%X')}",
+                text=f"{format_time(date_now, format=time_format)}",
                 x=config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("X", 0),
                 y=config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("Y", 0),
                 font=config.THEME_DATA['STATS']['DATE']['HOUR']['TEXT'].get("FONT",
