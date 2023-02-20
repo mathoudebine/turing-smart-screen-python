@@ -123,8 +123,8 @@ class LcdSimulated(LcdComm):
 
         assert x <= self.get_width(), 'Image X coordinate must be <= display width'
         assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
-        assert image_height > 0, 'Image width must be > 0'
-        assert image_width > 0, 'Image height must be > 0'
+        assert image_height > 0, 'Image height must be > 0'
+        assert image_width > 0, 'Image width must be > 0'
 
         with self.update_queue_mutex:
             self.screen_image.paste(image, (x, y))

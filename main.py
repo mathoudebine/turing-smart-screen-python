@@ -59,6 +59,7 @@ if __name__ == "__main__":
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
+    logger.debug("Using Python %s" % sys.version)
 
     def clean_stop(tray_icon=None):
         # Turn screen off before stopping
