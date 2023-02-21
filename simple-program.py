@@ -141,6 +141,30 @@ if __name__ == "__main__":
                                     bar_color=(0, 255, 0), bar_outline=False,
                                     background_image=background)
 
+        lcd_comm.DisplayRadialProgressBar(98, 320, 25,
+                                          barwidth=4,
+                                          min_value=0,
+                                          max_value=100,
+                                          value=bar_value,
+                                          bar_color=(0, 255, 0),
+                                          font_color=(255, 255, 255),
+                                          background_image=background)
+
+        lcd_comm.DisplayRadialProgressBar(222, 320, 40,
+                                          barwidth=13,
+                                          min_value=0,
+                                          max_value=100,
+                                          angle_start=405,
+                                          angle_end=135,
+                                          clockwise=False,
+                                          value=bar_value,
+                                          bar_color=(255, 255, 0),
+                                          text=f"{5 * int(bar_value / 5)}°C",
+                                          font="geforce/GeForce-Bold.ttf",
+                                          font_size=20,
+                                          font_color=(255, 255, 0),
+                                          background_image=background)
+
         bar_value = (bar_value + 2) % 101
 
     # Close serial connection at exit
