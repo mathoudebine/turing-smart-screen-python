@@ -5,10 +5,10 @@
 # NOTE: Every HW sensor is hidden in this example, to show a sensor change 'SHOW: False' to 'SHOW: True'
 ---
 display:
-  # Specify the display orientation for this theme: portrait or landscape
+  # Specify the display orientation for this theme: portrait or landscape (reverse orientation is managed in config.yaml)
   DISPLAY_ORIENTATION: portrait
 
-  # Backplate RGB LED color (for HW revision 'flagship' devices only)
+  # Backplate RGB LED color (for HW revision 'flagship' devices only), set one that match your theme dominant color
   DISPLAY_RGB_LED: 255, 0, 0
 
 static_images:
@@ -38,7 +38,7 @@ static_text:
   #   FONT:
   #   FONT_SIZE:
   #   FONT_COLOR: 0, 0, 0
-  #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
+  #   # BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
   #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
   TEXT_EXAMPLE:
    TEXT: Add your custom text here!
@@ -76,8 +76,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     FREQUENCY:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
@@ -91,8 +91,8 @@ STATS:
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
-        BACKGROUND_COLOR: 50, 50, 50
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
     LOAD:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
@@ -107,7 +107,8 @@ STATS:
           FONT: roboto/Roboto-Bold.ttf
           FONT_SIZE: 13
           FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
+          # BACKGROUND_COLOR: 50, 50, 50
+          BACKGROUND_IMAGE: background.png
       FIVE:
         TEXT:
           SHOW: False
@@ -117,7 +118,8 @@ STATS:
           FONT: roboto/Roboto-Bold.ttf
           FONT_SIZE: 13
           FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
+          # BACKGROUND_COLOR: 50, 50, 50
+          BACKGROUND_IMAGE: background.png
       FIFTEEN:
         TEXT:
           SHOW: False
@@ -127,7 +129,8 @@ STATS:
           FONT: roboto/Roboto-Bold.ttf
           FONT_SIZE: 13
           FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
+          # BACKGROUND_COLOR: 50, 50, 50
+          BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       INTERVAL: 5
       TEXT:
@@ -138,8 +141,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
   GPU:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
@@ -156,8 +159,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -166,8 +169,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
     MEMORY:
       GRAPH:
         SHOW: False
@@ -179,8 +182,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -189,8 +192,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       TEXT:
         SHOW: False
@@ -200,8 +203,8 @@ STATS:
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
-        BACKGROUND_COLOR: 50, 50, 50
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
   MEMORY:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
@@ -218,8 +221,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     VIRTUAL:
       GRAPH:
         SHOW: False
@@ -231,8 +234,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       USED:
         SHOW: False
         SHOW_UNIT: True
@@ -241,8 +244,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: FALSE
         SHOW_UNIT: True
@@ -251,8 +254,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -261,8 +264,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
     USED:
@@ -276,8 +279,8 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 255, 0, 0
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -286,8 +289,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -296,8 +299,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
     TOTAL:
       TEXT:
         SHOW: False
@@ -307,8 +310,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
     FREE:
       TEXT:
         SHOW: False
@@ -318,8 +321,8 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     WLO:
@@ -331,8 +334,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: FALSE
@@ -341,8 +344,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
           SHOW: FALSE
@@ -351,8 +354,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
           SHOW: FALSE
@@ -361,8 +364,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
     ETH:
       UPLOAD:
         TEXT:
@@ -372,8 +375,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: FALSE
@@ -382,8 +385,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
           SHOW: FALSE
@@ -392,8 +395,8 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
           SHOW: FALSE
@@ -402,30 +405,30 @@ STATS:
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
-          BACKGROUND_COLOR: 132, 154, 165
-          # BACKGROUND_IMAGE: background.png
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
   DATE:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
+    # For time display, it is recommended not to change the interval: keep to 1
     INTERVAL: 1
-    DAY:
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
       TEXT:
+        FORMAT: medium # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
         SHOW: False
         X: 10
         Y: 16
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
-        BACKGROUND_COLOR: 50, 50, 50
-        # BACKGROUND_IMAGE: background.png
-    HOUR:
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
         SHOW: False
         X: 205
         Y: 13
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 18
         FONT_COLOR: 200, 200, 200
-        BACKGROUND_COLOR: 50, 50, 50
-        # BACKGROUND_IMAGE: background.png
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
