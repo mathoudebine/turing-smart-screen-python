@@ -176,7 +176,8 @@ class LcdComm(ABC):
             font_size: int = 20,
             font_color: Tuple[int, int, int] = (0, 0, 0),
             background_color: Tuple[int, int, int] = (255, 255, 255),
-            background_image: str = None
+            background_image: str = None,
+            align: str = 'left'
     ):
         # Convert text to bitmap using PIL and display it
         # Provide the background image path to display text with transparent background
@@ -211,7 +212,7 @@ class LcdComm(ABC):
         left, top, text_width, text_height = d.textbbox((0, 0), text, font=font)
 
         # Draw text with specified color & font, remove left/top margins
-        d.text((x - left, y - top), text, font=font, fill=font_color)
+        d.text((x - left, y - top), text, font=font, fill=font_color, align=align)
 
         # Crop text bitmap to keep only the text (also crop if text overflows display)
         text_image = text_image.crop(box=(

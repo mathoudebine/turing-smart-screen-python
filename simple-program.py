@@ -106,11 +106,12 @@ if __name__ == "__main__":
     lcd_comm.DisplayText("Basic text", 50, 100)
 
     # Display custom text with solid background
-    lcd_comm.DisplayText("Custom italic text", 5, 150,
+    lcd_comm.DisplayText("Custom italic multiline text\nright-aligned", 5, 150,
                          font="roboto/Roboto-Italic.ttf",
-                         font_size=30,
+                         font_size=20,
                          font_color=(0, 0, 255),
-                         background_color=(255, 255, 0))
+                         background_color=(255, 255, 0),
+                         align='right')
 
     # Display custom text with transparent background
     lcd_comm.DisplayText("Transparent bold text", 5, 250,
