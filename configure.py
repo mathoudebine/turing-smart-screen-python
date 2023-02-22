@@ -86,17 +86,17 @@ class TuringConfigWindow:
 
         self.hwlib_label = Label(self.window, text='Hardware Monitoring library')
         self.hwlib_label.place(x=320, y=70)
-        self.hwlib_cb = Combobox(self.window, values=list(hw_lib_map.values()))
+        self.hwlib_cb = Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=500, y=70, width=170)
 
         self.eth_label = Label(self.window, text='Ethernet interface')
         self.eth_label.place(x=320, y=100)
-        self.eth_cb = Combobox(self.window, values=get_net_if())
+        self.eth_cb = Combobox(self.window, values=get_net_if(), state='readonly')
         self.eth_cb.place(x=500, y=100, width=170)
 
         self.wl_label = Label(self.window, text='Wi-Fi interface')
         self.wl_label.place(x=320, y=130)
-        self.wl_cb = Combobox(self.window, values=get_net_if())
+        self.wl_cb = Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=500, y=130, width=170)
 
         sysmon_label = Label(self.window, text='Display configuration', font='bold')
@@ -104,17 +104,17 @@ class TuringConfigWindow:
 
         self.com_label = Label(self.window, text='COM port')
         self.com_label.place(x=320, y=220)
-        self.com_cb = Combobox(self.window, values=get_com_ports())
+        self.com_cb = Combobox(self.window, values=get_com_ports(), state='readonly')
         self.com_cb.place(x=500, y=220, width=170)
 
         self.model_label = Label(self.window, text='Smart screen model')
         self.model_label.place(x=320, y=250)
-        self.model_cb = Combobox(self.window, values=list(revision_map.values()))
+        self.model_cb = Combobox(self.window, values=list(revision_map.values()), state='readonly')
         self.model_cb.place(x=500, y=250, width=170)
 
         self.orient_label = Label(self.window, text='Orientation')
         self.orient_label.place(x=320, y=280)
-        self.orient_cb = Combobox(self.window, values=list(reverse_map.values()))
+        self.orient_cb = Combobox(self.window, values=list(reverse_map.values()), state='readonly')
         self.orient_cb.place(x=500, y=280, width=170)
 
         self.brightness_label = Label(self.window, text='Brightness')
