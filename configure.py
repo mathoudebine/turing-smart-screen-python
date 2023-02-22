@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
@@ -84,7 +85,7 @@ class TuringConfigWindow:
         self.theme_cb.place(x=500, y=40, width=170)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
-        self.hwlib_label = Label(self.window, text='Hardware Monitoring library')
+        self.hwlib_label = Label(self.window, text='Hardware monitoring')
         self.hwlib_label.place(x=320, y=70)
         self.hwlib_cb = Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=500, y=70, width=170)
@@ -199,14 +200,14 @@ class TuringConfigWindow:
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
-        subprocess.Popen("theme-editor.py " + self.theme_cb.get(), shell=True)
+        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " " + self.theme_cb.get(), shell=True)
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen("main.py", shell=True)
+        subprocess.Popen(os.path.join(os.getcwd(), "main.py"), shell=True)
         self.window.destroy()
 
 
