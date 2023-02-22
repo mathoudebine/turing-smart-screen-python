@@ -68,6 +68,8 @@ class TuringConfigWindow:
         self.window.title('Turing System Monitor configuration')
         self.window.geometry("680x450")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
+        # When window gets focus again, reload theme preview in case it has been updated by theme editor
+        self.window.bind("<FocusIn>", self.on_theme_change)
 
         self.theme_preview_img = None
         self.theme_preview = Label(self.window)
@@ -120,7 +122,7 @@ class TuringConfigWindow:
         self.brightness_slider = Scale(self.window, from_=0, to=100, orient=HORIZONTAL)
         self.brightness_slider.place(x=500, y=305, width=170)
 
-        self.edit_theme_btn = Button(self.window, text="Theme Editor", command=lambda: self.on_theme_editor_click())
+        self.edit_theme_btn = Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=320, y=380, height=50, width=100)
 
         self.save_btn = Button(self.window, text="Save settings", command=lambda: self.on_save_click())
