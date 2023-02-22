@@ -277,6 +277,8 @@ class LcdComm(ABC):
                                  max_value: int = 100,
                                  angle_start: int = 0,
                                  angle_end: int = 360,
+                                 angle_sep: int = 5,
+                                 angle_steps: int = 10,
                                  clockwise: bool = True,
                                  value: int = 50,
                                  text: str = None,
@@ -304,7 +306,11 @@ class LcdComm(ABC):
         assert xc + radius <= self.get_width(), 'Progress bar width exceeds display width'
         assert yc + radius <= self.get_height(), 'Progress bar height exceeds display height'
         assert 0 < bar_width <= radius, 'Progress bar linewidth must be > 0 and <= radius'
-        assert angle_end % 361 != angle_start % 361, 'Change angles values'
+        assert angle_end % 361 != angle_start % 361, 'Change your angles values'
+        assert isinstance(angle_steps, int), 'angle_steps value must be an integer'
+        assert angle_sep >= 0, 'Provide an angle_sep value >= 0'
+        assert angle_steps > 0, 'Provide an angle_step value > 0'
+        assert angle_sep * angle_steps < 360, 'Given angle_sep and angle_steps values are not correctly set'
 
         # Don't let the set value exceed our min or max value, this is bad :)
         if value < min_value:
@@ -336,24 +342,72 @@ class LcdComm(ABC):
         #  . clockwise from angle start to angle end
         angle_start %= 361
         angle_end %= 361
-        ecart = abs(angle_end - angle_start)
-        if angle_end < angle_start:
-            if clockwise:
-                angleE = angle_start + pct * (360 - ecart)
-                angleS = angle_start
+        #
+        if clockwise:
+            if angle_end < angle_start:
+                ecart = 360 - angle_start + angle_end
             else:
-                angleE = angle_start
-                angleS = angle_start - pct * ecart
-        elif angle_end > angle_start:
-            if clockwise:
-                angleS = angle_start
+                ecart = angle_end - angle_start
+            #
+            # solid bar case
+            if angle_sep == 0:
+                if angle_end < angle_start:
+                    angleE = angle_start + pct * ecart
+                    angleS = angle_start
+                else:
+                    angleS = angle_start
+                    angleE = angle_start + pct * ecart
+                draw.arc([0, 0, diameter - 1, diameter - 1], angleS, angleE,
+                         fill=bar_color, width=bar_width)
+            # discontinued bar case
+            else:
                 angleE = angle_start + pct * ecart
-            else:
-                angleS = angle_start - pct * (360 - ecart)
-                angleE = angle_start
+                angle_complet = ecart / angle_steps
+                etapes = int((angleE - angle_start) / angle_complet)
+                for i in range(etapes):
+                    draw.arc([0, 0, diameter - 1, diameter - 1],
+                             angle_start + i * angle_complet,
+                             angle_start + (i + 1) * angle_complet - angle_sep,
+                             fill=bar_color,
+                             width=bar_width)
 
-        draw.arc([0, 0, diameter - 1, diameter - 1], angleS, angleE,
-                 fill=bar_color, width=bar_width)
+                draw.arc([0, 0, diameter - 1, diameter - 1],
+                         angle_start + etapes * angle_complet,
+                         angleE,
+                         fill=bar_color,
+                         width=bar_width)
+        else:
+            if angle_end < angle_start:
+                ecart = angle_start - angle_end
+            else:
+                ecart = 360 - angle_end + angle_start
+            # solid bar case
+            if angle_sep == 0:
+                if angle_end < angle_start:
+                    angleE = angle_start
+                    angleS = angle_start - pct * ecart
+                else:
+                    angleS = angle_start - pct * ecart
+                    angleE = angle_start
+                draw.arc([0, 0, diameter - 1, diameter - 1], angleS, angleE,
+                         fill=bar_color, width=bar_width)
+            # discontinued bar case
+            else:
+                angleS = angle_start - pct * ecart
+                angle_complet = ecart / angle_steps
+                etapes = int((angle_start - angleS) / angle_complet)
+                for i in range(etapes):
+                    draw.arc([0, 0, diameter - 1, diameter - 1],
+                             angle_start - (i + 1) * angle_complet + angle_sep,
+                             angle_start - i * angle_complet,
+                             fill=bar_color,
+                             width=bar_width)
+
+                draw.arc([0, 0, diameter - 1, diameter - 1],
+                         angleS,
+                         angle_start - etapes * angle_complet,
+                         fill=bar_color,
+                         width=bar_width)
 
         # Draw text
         if with_text:
