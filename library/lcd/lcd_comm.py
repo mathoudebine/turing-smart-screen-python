@@ -304,11 +304,7 @@ class LcdComm(ABC):
         assert xc + radius <= self.get_width(), 'Progress bar width exceeds display width'
         assert yc + radius <= self.get_height(), 'Progress bar height exceeds display height'
         assert barwidth > 0, 'Progress bar linewidth must be > 0'
-        assert angle_start >= 0 and angle_end >= 0, 'Angles have to be positive integers'
-        if clockwise:
-            assert angle_end > angle_start, 'Angle end has to be greater than angle start'
-        else:
-            assert angle_end < angle_start, 'Angle end has to be lesser than angle start'
+        assert angle_end % 361 != angle_start % 361, 'Change angles values'
 
         # Don't let the set value exceed our min or max value, this is bad :)
         if value < min_value:
@@ -334,12 +330,27 @@ class LcdComm(ABC):
         # Draw progress bar
         pct = (value - min_value)/(max_value - min_value)
         draw = ImageDraw.Draw(bar_image)
-        if clockwise:
-            angleS = angle_start
-            angleE = angle_start + pct * (angle_end - angle_start)
-        else:
-            angleS = angle_end - (1 - pct) * (angle_end - angle_start)
-            angleE = angle_start
+
+        # PIL arc method uses angles with
+        #  . 3 o'clock for 0
+        #  . clockwise from angle start to angle end
+        angle_start %= 361
+        angle_end %= 361
+        ecart = abs(angle_end - angle_start)
+        if angle_end < angle_start:
+            if clockwise:
+                angleE = angle_start + pct * (360 - ecart)
+                angleS = angle_start
+            else:
+                angleE = angle_start
+                angleS = angle_start - pct * ecart
+        elif angle_end > angle_start:
+            if clockwise:
+                angleS = angle_start
+                angleE = angle_start + pct * ecart
+            else:
+                angleS = angle_start - pct * (360 - ecart)
+                angleE = angle_start
 
         draw.arc([0, 0, diameter - 1, diameter - 1], angleS, angleE,
                  fill=bar_color, width=barwidth)
