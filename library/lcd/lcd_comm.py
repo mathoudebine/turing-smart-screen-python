@@ -272,7 +272,7 @@ class LcdComm(ABC):
 
         self.DisplayPILImage(bar_image, x, y)
 
-    def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, barwidth: int,
+    def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
                                  min_value: int = 0,
                                  max_value: int = 100,
                                  angle_start: int = 0,
@@ -303,7 +303,7 @@ class LcdComm(ABC):
         assert yc <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
         assert xc + radius <= self.get_width(), 'Progress bar width exceeds display width'
         assert yc + radius <= self.get_height(), 'Progress bar height exceeds display height'
-        assert barwidth > 0, 'Progress bar linewidth must be > 0'
+        assert 0 < bar_width <= radius, 'Progress bar linewidth must be > 0 and <= radius'
         assert angle_end % 361 != angle_start % 361, 'Change angles values'
 
         # Don't let the set value exceed our min or max value, this is bad :)
@@ -353,7 +353,7 @@ class LcdComm(ABC):
                 angleE = angle_start
 
         draw.arc([0, 0, diameter - 1, diameter - 1], angleS, angleE,
-                 fill=bar_color, width=barwidth)
+                 fill=bar_color, width=bar_width)
 
         # Draw text
         if with_text:
