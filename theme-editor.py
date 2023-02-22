@@ -157,6 +157,9 @@ if __name__ == "__main__":
             refresh_theme()
             last_edit_time = os.path.getmtime(theme_file)
 
+            # Update the preview.png that is in the theme folder
+            display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
+
             # Display new picture
             display_image = ImageTk.PhotoImage(display.lcd.screen_image)
             viewer_picture.config(image=display_image)
