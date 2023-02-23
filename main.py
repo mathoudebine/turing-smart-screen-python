@@ -38,6 +38,7 @@ import atexit
 import locale
 import platform
 import signal
+import subprocess
 import time
 from PIL import Image
 
@@ -61,6 +62,7 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, '')
 
     logger.debug("Using Python %s" % sys.version)
+
 
     def clean_stop(tray_icon=None):
         # Turn screen off before stopping
@@ -99,6 +101,12 @@ if __name__ == "__main__":
         clean_stop()
 
 
+    def on_configure_tray(tray_icon, item):
+        logger.info("Configure from tray icon")
+        subprocess.Popen(os.path.join(os.getcwd(), "configure.py"), shell=True)
+        clean_stop(tray_icon)
+
+
     def on_exit_tray(tray_icon, item):
         logger.info("Exit from tray icon")
         clean_stop(tray_icon)
@@ -131,8 +139,13 @@ if __name__ == "__main__":
             icon=Image.open("res/icons/monitor-icon-17865/64.png"),
             menu=pystray.Menu(
                 pystray.MenuItem(
-                    'Exit',
-                    on_exit_tray))
+                    text='Configure',
+                    action=on_configure_tray),
+                pystray.Menu.SEPARATOR,
+                pystray.MenuItem(
+                    text='Exit',
+                    action=on_exit_tray)
+            )
         )
 
         # For platforms != macOS, display the tray icon now with non-blocking function
