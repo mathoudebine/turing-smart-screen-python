@@ -21,6 +21,7 @@
 
 import os
 import subprocess
+import sys
 import tkinter.ttk as ttk
 from tkinter import *
 
@@ -46,7 +47,7 @@ def get_themes():
             theme = os.path.join(f, 'theme.yaml')
             if os.path.isfile(theme):
                 themes.append(filename)
-    return themes
+    return sorted(themes, key=str.casefold)
 
 
 def get_com_ports():
@@ -67,22 +68,15 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("680x450")
+        self.window.geometry("720x450")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
 
-        # Make TK look less ugly... https://tkdocs.com/tutorial/styles.html
-        style = ttk.Style(self.window)
-        available_styles = style.theme_names()
-        if 'vista' in available_styles:
-            style.theme_use('vista')  # Native theme for Windows
-        elif 'xpnative' in available_styles:
-            style.theme_use('xpnative')  # Fallback theme for Windows
-        elif 'aqua' in available_styles:
-            style.theme_use('aqua')  # Native theme for macOS X
-        elif 'clam' in available_styles:
-            style.theme_use('clam')  # "Least worst" built-in theme
+        # Make TK look better on Linux platforms with Sun Valley ttk theme
+        if sys.platform == "linux":
+            import sv_ttk
+            sv_ttk.set_theme("light")
 
         self.theme_preview_img = None
         self.theme_preview = Label(self.window)
@@ -92,68 +86,67 @@ class TuringConfigWindow:
         sysmon_label.place(x=320, y=0)
 
         self.theme_label = Label(self.window, text='Theme')
-        self.theme_label.place(x=320, y=40)
+        self.theme_label.place(x=320, y=30)
         self.theme_cb = ttk.Combobox(self.window, values=get_themes(), state='readonly')
-        self.theme_cb.place(x=500, y=40, width=170)
+        self.theme_cb.place(x=500, y=30, width=210)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
         self.hwlib_label = Label(self.window, text='Hardware monitoring')
         self.hwlib_label.place(x=320, y=70)
         self.hwlib_cb = ttk.Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
-        self.hwlib_cb.place(x=500, y=70, width=170)
+        self.hwlib_cb.place(x=500, y=70, width=210)
 
         self.eth_label = Label(self.window, text='Ethernet interface')
-        self.eth_label.place(x=320, y=100)
+        self.eth_label.place(x=320, y=110)
         self.eth_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
-        self.eth_cb.place(x=500, y=100, width=170)
+        self.eth_cb.place(x=500, y=110, width=210)
 
         self.wl_label = Label(self.window, text='Wi-Fi interface')
-        self.wl_label.place(x=320, y=130)
+        self.wl_label.place(x=320, y=150)
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
-        self.wl_cb.place(x=500, y=130, width=170)
+        self.wl_cb.place(x=500, y=150, width=210)
 
         sysmon_label = Label(self.window, text='Display configuration', font='bold')
-        sysmon_label.place(x=320, y=180)
+        sysmon_label.place(x=320, y=190)
 
         self.com_label = Label(self.window, text='COM port')
-        self.com_label.place(x=320, y=220)
+        self.com_label.place(x=320, y=230)
         self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
-        self.com_cb.place(x=500, y=220, width=170)
+        self.com_cb.place(x=500, y=230, width=210)
 
         self.model_label = Label(self.window, text='Smart screen model')
-        self.model_label.place(x=320, y=250)
+        self.model_label.place(x=320, y=270)
         self.model_cb = ttk.Combobox(self.window, values=list(revision_map.values()), state='readonly')
-        self.model_cb.place(x=500, y=250, width=170)
+        self.model_cb.place(x=500, y=270, width=210)
 
         self.orient_label = Label(self.window, text='Orientation')
-        self.orient_label.place(x=320, y=280)
+        self.orient_label.place(x=320, y=310)
         self.orient_cb = ttk.Combobox(self.window, values=list(reverse_map.values()), state='readonly')
-        self.orient_cb.place(x=500, y=280, width=170)
+        self.orient_cb.place(x=500, y=310, width=210)
 
-        self.brightness = IntVar()
+        self.brightness_string = StringVar()
         self.brightness_label = Label(self.window, text='Brightness')
-        self.brightness_label.place(x=320, y=310)
-        self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL, variable=self.brightness,
-                                           command=self.accept_whole_number_only)
-        self.brightness_slider.place(x=500, y=310, width=120, height=30)
-        self.brightness_spinbox = Spinbox(self.window, from_=0, to=100, width=5, justify=RIGHT, increment=1,
-                                          textvariable=self.brightness)
-        self.brightness_spinbox.place(x=630, y=310, width=40, height=30)
+        self.brightness_label.place(x=320, y=350)
+        self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL,
+                                           command=self.update_brightness_label)
+        self.brightness_slider.place(x=550, y=350, width=160)
+        self.brightness_val_label = Label(self.window, textvariable=self.brightness_string)
+        self.brightness_val_label.place(x=500, y=350)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=320, y=380, height=50, width=100)
+        self.edit_theme_btn.place(x=310, y=390, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=440, y=380, height=50, width=100)
+        self.save_btn.place(x=450, y=390, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=560, y=380, height=50, width=100)
+        self.save_run_btn.place(x=590, y=390, height=50, width=130)
 
         self.config = None
         self.load_config_values()
 
-    def accept_whole_number_only(self, e=None):
-        self.brightness.set(int(self.brightness_slider.get()))
+    def update_brightness_label(self, e=None):
+        self.brightness_string.set(str(int(self.brightness_slider.get())) + "%")
 
     def run(self):
         self.window.mainloop()
@@ -211,7 +204,7 @@ class TuringConfigWindow:
             self.config['config']['COM_PORT'] = self.com_cb.get()
         self.config['display']['REVISION'] = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
-        self.config['display']['BRIGHTNESS'] = self.brightness_slider.get()
+        self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
         with open("config.yaml", "w") as file:
             ruamel.yaml.YAML().dump(self.config, file)
