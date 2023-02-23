@@ -21,10 +21,10 @@
 
 import os
 import subprocess
-import sys
 import tkinter.ttk as ttk
 from tkinter import *
 
+import sv_ttk
 import psutil
 import ruamel.yaml
 from PIL import Image, ImageTk
@@ -73,10 +73,8 @@ class TuringConfigWindow:
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
 
-        # Make TK look better on Linux platforms with Sun Valley ttk theme
-        if sys.platform == "linux":
-            import sv_ttk
-            sv_ttk.set_theme("light")
+        # Make TK look better with Sun Valley ttk theme
+        sv_ttk.set_theme("light")
 
         self.theme_preview_img = None
         self.theme_preview = Label(self.window)
