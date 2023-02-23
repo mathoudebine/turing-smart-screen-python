@@ -72,6 +72,18 @@ class TuringConfigWindow:
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
 
+        # Make TK look less ugly... https://tkdocs.com/tutorial/styles.html
+        style = ttk.Style(self.window)
+        available_styles = style.theme_names()
+        if 'vista' in available_styles:
+            style.theme_use('vista')  # Native theme for Windows
+        elif 'xpnative' in available_styles:
+            style.theme_use('xpnative')  # Fallback theme for Windows
+        elif 'aqua' in available_styles:
+            style.theme_use('aqua')  # Native theme for macOS X
+        elif 'clam' in available_styles:
+            style.theme_use('clam')  # "Least worst" built-in theme
+
         self.theme_preview_img = None
         self.theme_preview = Label(self.window)
         self.theme_preview.place(x=10, y=10)
