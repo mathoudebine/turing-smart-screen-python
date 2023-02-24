@@ -68,7 +68,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("720x450")
+        self.window.geometry("730x480")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -77,74 +77,75 @@ class TuringConfigWindow:
         sv_ttk.set_theme("light")
 
         self.theme_preview_img = None
-        self.theme_preview = Label(self.window)
+        self.theme_preview = ttk.Label(self.window)
         self.theme_preview.place(x=10, y=10)
 
-        sysmon_label = Label(self.window, text='System Monitor configuration', font='bold')
+        sysmon_label = ttk.Label(self.window, text='System Monitor configuration', font='bold')
         sysmon_label.place(x=320, y=0)
 
-        self.theme_label = Label(self.window, text='Theme')
-        self.theme_label.place(x=320, y=30)
+        self.theme_label = ttk.Label(self.window, text='Theme')
+        self.theme_label.place(x=320, y=35)
         self.theme_cb = ttk.Combobox(self.window, values=get_themes(), state='readonly')
         self.theme_cb.place(x=500, y=30, width=210)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
-        self.hwlib_label = Label(self.window, text='Hardware monitoring')
-        self.hwlib_label.place(x=320, y=70)
+        self.hwlib_label = ttk.Label(self.window, text='Hardware monitoring')
+        self.hwlib_label.place(x=320, y=75)
         self.hwlib_cb = ttk.Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=500, y=70, width=210)
+        self.hwlib_cb.bind('<<ComboboxSelected>>', self.on_hwlib_change)
 
-        self.eth_label = Label(self.window, text='Ethernet interface')
-        self.eth_label.place(x=320, y=110)
+        self.eth_label = ttk.Label(self.window, text='Ethernet interface')
+        self.eth_label.place(x=320, y=115)
         self.eth_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.eth_cb.place(x=500, y=110, width=210)
 
-        self.wl_label = Label(self.window, text='Wi-Fi interface')
-        self.wl_label.place(x=320, y=150)
+        self.wl_label = ttk.Label(self.window, text='Wi-Fi interface')
+        self.wl_label.place(x=320, y=155)
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=500, y=150, width=210)
 
-        sysmon_label = Label(self.window, text='Display configuration', font='bold')
+        sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
         sysmon_label.place(x=320, y=190)
 
-        self.com_label = Label(self.window, text='COM port')
-        self.com_label.place(x=320, y=230)
+        self.com_label = ttk.Label(self.window, text='COM port')
+        self.com_label.place(x=320, y=235)
         self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
         self.com_cb.place(x=500, y=230, width=210)
 
-        self.model_label = Label(self.window, text='Smart screen model')
-        self.model_label.place(x=320, y=270)
+        self.model_label = ttk.Label(self.window, text='Smart screen model')
+        self.model_label.place(x=320, y=275)
         self.model_cb = ttk.Combobox(self.window, values=list(revision_map.values()), state='readonly')
+        self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
         self.model_cb.place(x=500, y=270, width=210)
 
-        self.orient_label = Label(self.window, text='Orientation')
-        self.orient_label.place(x=320, y=310)
+        self.orient_label = ttk.Label(self.window, text='Orientation')
+        self.orient_label.place(x=320, y=315)
         self.orient_cb = ttk.Combobox(self.window, values=list(reverse_map.values()), state='readonly')
         self.orient_cb.place(x=500, y=310, width=210)
 
         self.brightness_string = StringVar()
-        self.brightness_label = Label(self.window, text='Brightness')
-        self.brightness_label.place(x=320, y=350)
+        self.brightness_label = ttk.Label(self.window, text='Brightness')
+        self.brightness_label.place(x=320, y=355)
         self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL,
-                                           command=self.update_brightness_label)
+                                           command=self.on_brightness_change)
         self.brightness_slider.place(x=550, y=350, width=160)
-        self.brightness_val_label = Label(self.window, textvariable=self.brightness_string)
-        self.brightness_val_label.place(x=500, y=350)
+        self.brightness_val_label = ttk.Label(self.window, textvariable=self.brightness_string)
+        self.brightness_val_label.place(x=500, y=355)
+        self.brightness_warning_label = ttk.Label(self.window, text="⚠ Turing / rev. A displays can get hot at high brightness!", foreground='#f00')
+        self.brightness_warning_label.place(x=320, y=390)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=310, y=390, height=50, width=130)
+        self.edit_theme_btn.place(x=310, y=420, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=450, y=390, height=50, width=130)
+        self.save_btn.place(x=450, y=420, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=590, y=390, height=50, width=130)
+        self.save_run_btn.place(x=590, y=420, height=50, width=130)
 
         self.config = None
         self.load_config_values()
-
-    def update_brightness_label(self, e=None):
-        self.brightness_string.set(str(int(self.brightness_slider.get())) + "%")
 
     def run(self):
         self.window.mainloop()
@@ -185,6 +186,12 @@ class TuringConfigWindow:
         self.orient_cb.set(reverse_map[self.config['display']['DISPLAY_REVERSE']])
         self.brightness_slider.set(int(self.config['display']['BRIGHTNESS']))
 
+        # Reload content on screen
+        self.on_model_change()
+        self.on_theme_change()
+        self.on_brightness_change()
+        self.on_hwlib_change()
+
     def save_config_values(self):
         self.config['config']['THEME'] = self.theme_cb.get()
         self.config['config']['HW_SENSORS'] = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
@@ -207,7 +214,7 @@ class TuringConfigWindow:
         with open("config.yaml", "w") as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
-    def on_theme_change(self, event):
+    def on_theme_change(self, e=None):
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
@@ -220,6 +227,39 @@ class TuringConfigWindow:
         self.save_config_values()
         subprocess.Popen(os.path.join(os.getcwd(), "main.py"), shell=True)
         self.window.destroy()
+
+    def on_brightness_change(self, e=None):
+        self.brightness_string.set(str(int(self.brightness_slider.get())) + "%")
+        self.show_hide_brightness_warning()
+
+    def on_model_change(self, e=None):
+        self.show_hide_brightness_warning()
+        if [k for k, v in revision_map.items() if v == self.model_cb.get()][0] == "SIMU":
+            self.com_cb.configure(state="disabled", foreground="#C0C0C0")
+            self.orient_cb.configure(state="disabled", foreground="#C0C0C0")
+            self.brightness_slider.configure(state="disabled")
+            self.brightness_val_label.configure(foreground="#C0C0C0")
+        else:
+            self.com_cb.configure(state="readonly", foreground="#000")
+            self.orient_cb.configure(state="readonly", foreground="#000")
+            self.brightness_slider.configure(state="normal")
+            self.brightness_val_label.configure(foreground="#000")
+
+    def on_hwlib_change(self, e=None):
+        hwlib = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
+        if hwlib == "STUB" or hwlib == "STATIC":
+            self.eth_cb.configure(state="disabled", foreground="#C0C0C0")
+            self.wl_cb.configure(state="disabled", foreground="#C0C0C0")
+        else:
+            self.eth_cb.configure(state="readonly", foreground="#000")
+            self.wl_cb.configure(state="readonly", foreground="#000")
+
+    def show_hide_brightness_warning(self, e=None):
+        if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][0] == "A":
+            # Show warning for Turing Smart screen with high brightness
+            self.brightness_warning_label.place(x=320, y=390)
+        else:
+            self.brightness_warning_label.place_forget()
 
 
 if __name__ == "__main__":
