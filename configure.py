@@ -21,6 +21,7 @@
 
 import os
 import subprocess
+import sys
 import tkinter.ttk as ttk
 from tkinter import *
 
@@ -68,7 +69,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("730x480")
+        self.window.geometry("730x510")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -105,44 +106,47 @@ class TuringConfigWindow:
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=500, y=150, width=210)
 
+        self.lhm_admin_warning = ttk.Label(self.window, text="Admin rights needed, or select another Hardware monitoring", foreground='#00f')
+        self.lhm_admin_warning.place(x=320, y=190)
+
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
-        sysmon_label.place(x=320, y=190)
+        sysmon_label.place(x=320, y=220)
 
         self.model_label = ttk.Label(self.window, text='Smart screen model')
-        self.model_label.place(x=320, y=235)
+        self.model_label.place(x=320, y=265)
         self.model_cb = ttk.Combobox(self.window, values=list(revision_map.values()), state='readonly')
         self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
-        self.model_cb.place(x=500, y=230, width=210)
+        self.model_cb.place(x=500, y=260, width=210)
 
         self.com_label = ttk.Label(self.window, text='COM port')
-        self.com_label.place(x=320, y=275)
+        self.com_label.place(x=320, y=305)
         self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
-        self.com_cb.place(x=500, y=270, width=210)
+        self.com_cb.place(x=500, y=300, width=210)
 
         self.orient_label = ttk.Label(self.window, text='Orientation')
-        self.orient_label.place(x=320, y=315)
+        self.orient_label.place(x=320, y=345)
         self.orient_cb = ttk.Combobox(self.window, values=list(reverse_map.values()), state='readonly')
-        self.orient_cb.place(x=500, y=310, width=210)
+        self.orient_cb.place(x=500, y=340, width=210)
 
         self.brightness_string = StringVar()
         self.brightness_label = ttk.Label(self.window, text='Brightness')
-        self.brightness_label.place(x=320, y=355)
+        self.brightness_label.place(x=320, y=385)
         self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL,
                                            command=self.on_brightness_change)
-        self.brightness_slider.place(x=550, y=350, width=160)
+        self.brightness_slider.place(x=550, y=380, width=160)
         self.brightness_val_label = ttk.Label(self.window, textvariable=self.brightness_string)
-        self.brightness_val_label.place(x=500, y=355)
+        self.brightness_val_label.place(x=500, y=385)
         self.brightness_warning_label = ttk.Label(self.window, text="⚠ Turing / rev. A displays can get hot at high brightness!", foreground='#f00')
-        self.brightness_warning_label.place(x=320, y=390)
+        self.brightness_warning_label.place(x=320, y=420)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=310, y=420, height=50, width=130)
+        self.edit_theme_btn.place(x=310, y=450, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=450, y=420, height=50, width=130)
+        self.save_btn.place(x=450, y=450, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=590, y=420, height=50, width=130)
+        self.save_run_btn.place(x=590, y=450, height=50, width=130)
 
         self.config = None
         self.load_config_values()
@@ -254,10 +258,17 @@ class TuringConfigWindow:
             self.eth_cb.configure(state="readonly", foreground="#000")
             self.wl_cb.configure(state="readonly", foreground="#000")
 
+        if hwlib == "LHM":
+            self.lhm_admin_warning.place(x=320, y=190)
+        elif hwlib == "AUTO" and sys.platform == "win32":
+            self.lhm_admin_warning.place(x=320, y=190)
+        else:
+            self.lhm_admin_warning.place_forget()
+
     def show_hide_brightness_warning(self, e=None):
         if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][0] == "A":
             # Show warning for Turing Smart screen with high brightness
-            self.brightness_warning_label.place(x=320, y=390)
+            self.brightness_warning_label.place(x=320, y=420)
         else:
             self.brightness_warning_label.place_forget()
 
