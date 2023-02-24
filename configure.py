@@ -108,16 +108,16 @@ class TuringConfigWindow:
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
         sysmon_label.place(x=320, y=190)
 
-        self.com_label = ttk.Label(self.window, text='COM port')
-        self.com_label.place(x=320, y=235)
-        self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
-        self.com_cb.place(x=500, y=230, width=210)
-
         self.model_label = ttk.Label(self.window, text='Smart screen model')
-        self.model_label.place(x=320, y=275)
+        self.model_label.place(x=320, y=235)
         self.model_cb = ttk.Combobox(self.window, values=list(revision_map.values()), state='readonly')
         self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
-        self.model_cb.place(x=500, y=270, width=210)
+        self.model_cb.place(x=500, y=230, width=210)
+
+        self.com_label = ttk.Label(self.window, text='COM port')
+        self.com_label.place(x=320, y=275)
+        self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
+        self.com_cb.place(x=500, y=270, width=210)
 
         self.orient_label = ttk.Label(self.window, text='Orientation')
         self.orient_label.place(x=320, y=315)
@@ -211,7 +211,7 @@ class TuringConfigWindow:
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
-        with open("config.yaml", "w") as file:
+        with open("config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
