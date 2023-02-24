@@ -25,15 +25,15 @@ import sys
 import tkinter.ttk as ttk
 from tkinter import *
 
-import sv_ttk
 import psutil
 import ruamel.yaml
+import sv_ttk
 from PIL import Image, ImageTk
 from serial.tools.list_ports import comports
 
 # Maps between config.yaml values and GUI description
 revision_map = {'A': "Turing / rev. A", 'B': "XuanFang / rev. B / flagship", 'SIMU': "Simulated screen"}
-hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (Win.)", "PYTHON": "Python libraries (all OS)",
+hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
 
@@ -92,6 +92,8 @@ class TuringConfigWindow:
 
         self.hwlib_label = ttk.Label(self.window, text='Hardware monitoring')
         self.hwlib_label.place(x=320, y=75)
+        if sys.platform != "win32":
+            del hw_lib_map["LHM"]  # LHM is for Windows platforms only
         self.hwlib_cb = ttk.Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=500, y=70, width=210)
         self.hwlib_cb.bind('<<ComboboxSelected>>', self.on_hwlib_change)
@@ -106,7 +108,9 @@ class TuringConfigWindow:
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=500, y=150, width=210)
 
-        self.lhm_admin_warning = ttk.Label(self.window, text="Admin rights needed, or select another Hardware monitoring", foreground='#00f')
+        self.lhm_admin_warning = ttk.Label(self.window,
+                                           text="Admin rights needed, or select another Hardware monitoring",
+                                           foreground='#00f')
         self.lhm_admin_warning.place(x=320, y=190)
 
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
@@ -136,7 +140,9 @@ class TuringConfigWindow:
         self.brightness_slider.place(x=550, y=380, width=160)
         self.brightness_val_label = ttk.Label(self.window, textvariable=self.brightness_string)
         self.brightness_val_label.place(x=500, y=385)
-        self.brightness_warning_label = ttk.Label(self.window, text="⚠ Turing / rev. A displays can get hot at high brightness!", foreground='#f00')
+        self.brightness_warning_label = ttk.Label(self.window,
+                                                  text="⚠ Turing / rev. A displays can get hot at high brightness!",
+                                                  foreground='#f00')
         self.brightness_warning_label.place(x=320, y=420)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
@@ -171,24 +177,55 @@ class TuringConfigWindow:
         with open("config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
-        self.theme_cb.set(self.config['config']['THEME'])
+        try:
+            self.theme_cb.set(self.config['config']['THEME'])
+        except:
+            self.theme_cb.current(0)
         self.load_theme_preview()
-        self.hwlib_cb.set(hw_lib_map[self.config['config']['HW_SENSORS']])
-        if self.config['config']['ETH'] == "":
+
+        try:
+            self.hwlib_cb.set(hw_lib_map[self.config['config']['HW_SENSORS']])
+        except:
+            self.hwlib_cb.current(0)
+
+        try:
+            if self.config['config']['ETH'] == "":
+                self.eth_cb.current(0)
+            else:
+                self.eth_cb.set(self.config['config']['ETH'])
+        except:
             self.eth_cb.current(0)
-        else:
-            self.eth_cb.set(self.config['config']['ETH'])
-        if self.config['config']['WLO'] == "":
+
+        try:
+            if self.config['config']['WLO'] == "":
+                self.wl_cb.current(0)
+            else:
+                self.wl_cb.set(self.config['config']['WLO'])
+        except:
             self.wl_cb.current(0)
-        else:
-            self.wl_cb.set(self.config['config']['WLO'])
-        if self.config['config']['COM_PORT'] == "AUTO":
+
+        try:
+            if self.config['config']['COM_PORT'] == "AUTO":
+                self.com_cb.current(0)
+            else:
+                self.com_cb.set(self.config['config']['COM_PORT'])
+        except:
             self.com_cb.current(0)
-        else:
-            self.com_cb.set(self.config['config']['COM_PORT'])
-        self.model_cb.set(revision_map[self.config['display']['REVISION']])
-        self.orient_cb.set(reverse_map[self.config['display']['DISPLAY_REVERSE']])
-        self.brightness_slider.set(int(self.config['display']['BRIGHTNESS']))
+
+        try:
+            self.model_cb.set(revision_map[self.config['display']['REVISION']])
+        except:
+            self.model_cb.current(0)
+
+        try:
+            self.orient_cb.set(reverse_map[self.config['display']['DISPLAY_REVERSE']])
+        except:
+            self.orient_cb.current(0)
+
+        try:
+            self.brightness_slider.set(int(self.config['display']['BRIGHTNESS']))
+        except:
+            self.brightness_slider.set(50)
 
         # Reload content on screen
         self.on_model_change()
@@ -266,7 +303,8 @@ class TuringConfigWindow:
             self.lhm_admin_warning.place_forget()
 
     def show_hide_brightness_warning(self, e=None):
-        if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][0] == "A":
+        if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][
+            0] == "A":
             # Show warning for Turing Smart screen with high brightness
             self.brightness_warning_label.place(x=320, y=420)
         else:
