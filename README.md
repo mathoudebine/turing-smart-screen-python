@@ -43,10 +43,12 @@ There are 2 possible uses of this project Python code:
 ## System monitor
 
 This project is mainly a complete standalone program to use your screen as a system monitor, like the original vendor app.  
-Some themes are already included for a quick start!
+Some themes are already included for a quick start!  
 ### [> Configure and start system monitor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start)
+<img src="https://user-images.githubusercontent.com/38615348/221564385-737d0b01-d439-4e24-9bb6-cce205958dc9.png" height="400" />
+
 * Fully functional multi-OS code base (operates out of the box, tested on Windows, Linux & MacOS).
-* Display configuration using `config.yaml` file: no Python code to edit.
+* Display configuration using GUI configuration wizard or `config.yaml` file: no Python code to edit.
 * Support for all [3.5" smart screen models (Turing and XuanFang)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Backplate RGB LEDs are also supported for available models!
 * Support [multiple hardware sensors and metrics (CPU/GPU usage, temperatures, memory, disks, etc)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes#stats-entry) with configurable refresh intervals.
 * Allow [creation of themes (see `res/themes`) with `theme.yaml` files using theme editor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be [shared with the community!](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
