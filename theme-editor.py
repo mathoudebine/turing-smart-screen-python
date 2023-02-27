@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
@@ -156,6 +157,9 @@ if __name__ == "__main__":
             logger.debug("The theme file has been updated, the preview window will refresh")
             refresh_theme()
             last_edit_time = os.path.getmtime(theme_file)
+
+            # Update the preview.png that is in the theme folder
+            display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
 
             # Display new picture
             display_image = ImageTk.PhotoImage(display.lcd.screen_image)

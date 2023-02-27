@@ -65,7 +65,7 @@ class LcdCommRevB(LcdComm):
 
     @staticmethod
     def auto_detect_com_port():
-        com_ports = serial.tools.list_ports.comports()
+        com_ports = comports()
         auto_com_port = None
 
         for com_port in com_ports:
