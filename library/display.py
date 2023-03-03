@@ -82,6 +82,13 @@ class Display:
         # Send initialization commands
         self.lcd.InitializeComm()
 
+        # Turn on display, set brightness and LEDs for supported HW
+        self.turn_on()
+
+        # Set orientation
+        self.lcd.SetOrientation(_get_theme_orientation())
+
+    def turn_on(self):
         # Turn screen on in case it was turned off previously
         self.lcd.ScreenOn()
 
@@ -91,8 +98,12 @@ class Display:
         # Set backplate RGB LED color (for supported HW only)
         self.lcd.SetBackplateLedColor(config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
 
-        # Set orientation
-        self.lcd.SetOrientation(_get_theme_orientation())
+    def turn_off(self):
+        # Turn screen off
+        self.lcd.ScreenOff()
+
+        # Turn off backplate RGB LED
+        self.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
 
     def display_static_images(self):
         if config.THEME_DATA.get('static_images', False):

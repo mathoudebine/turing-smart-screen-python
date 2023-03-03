@@ -65,11 +65,8 @@ if __name__ == "__main__":
 
 
     def clean_stop(tray_icon=None):
-        # Turn screen off before stopping
-        display.lcd.ScreenOff()
-
-        # Turn backplate LED off for supported devices
-        display.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
+        # Turn screen and LEDs off before stopping
+        display.turn_off()
 
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
@@ -121,15 +118,26 @@ if __name__ == "__main__":
         def on_win32_ctrl_event(event):
             """Handle Windows console control events (like Ctrl-C)."""
             if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT):
-                logger.info("Caught Windows control event %s, exiting" % event)
+                logger.debug("Caught Windows control event %s, exiting" % event)
                 clean_stop()
             return 0
 
 
         def on_win32_wm_event(hWnd, msg, wParam, lParam):
             """Handle Windows window message events (like ENDSESSION, CLOSE, DESTROY)."""
-            logger.debug("Caught Windows window message event %s, exiting" % msg)
-            clean_stop()
+            logger.debug("Caught Windows window message event %s" % msg)
+            if msg == win32con.WM_POWERBROADCAST:
+                # WM_POWERBROADCAST is used to detect computer going to/resuming from sleep
+                if wParam == win32con.PBT_APMSUSPEND:
+                    logger.info("Computer is going to sleep, display will turn off")
+                    display.turn_off()
+                elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
+                    logger.info("Computer is resuming from sleep, display will turn on")
+                    display.turn_on()
+            else:
+                # For any other events, the program will stop
+                logger.info("Program will now exit")
+                clean_stop()
 
     # Create a tray icon for the program, with an Exit entry in menu
     try:
@@ -214,7 +222,8 @@ if __name__ == "__main__":
                       win32con.WM_ENDSESSION: on_win32_wm_event,
                       win32con.WM_QUIT: on_win32_wm_event,
                       win32con.WM_DESTROY: on_win32_wm_event,
-                      win32con.WM_CLOSE: on_win32_wm_event}
+                      win32con.WM_CLOSE: on_win32_wm_event,
+                      win32con.WM_POWERBROADCAST: on_win32_wm_event}
 
         wndclass.lpfnWndProc = messageMap
 

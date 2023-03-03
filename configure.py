@@ -109,8 +109,8 @@ class TuringConfigWindow:
         self.wl_cb.place(x=500, y=150, width=210)
 
         self.lhm_admin_warning = ttk.Label(self.window,
-                                           text="Admin rights needed, or select another Hardware monitoring",
-                                           foreground='#00f')
+                                           text="❌ Restart as admin. or select another Hardware monitoring",
+                                           foreground='#f00')
         self.lhm_admin_warning.place(x=320, y=190)
 
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
@@ -142,7 +142,7 @@ class TuringConfigWindow:
         self.brightness_val_label.place(x=500, y=385)
         self.brightness_warning_label = ttk.Label(self.window,
                                                   text="⚠ Turing / rev. A displays can get hot at high brightness!",
-                                                  foreground='#f00')
+                                                  foreground='#ff8c00')
         self.brightness_warning_label.place(x=320, y=420)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
@@ -295,12 +295,15 @@ class TuringConfigWindow:
             self.eth_cb.configure(state="readonly", foreground="#000")
             self.wl_cb.configure(state="readonly", foreground="#000")
 
-        if hwlib == "LHM":
-            self.lhm_admin_warning.place(x=320, y=190)
-        elif hwlib == "AUTO" and sys.platform == "win32":
-            self.lhm_admin_warning.place(x=320, y=190)
-        else:
-            self.lhm_admin_warning.place_forget()
+        if sys.platform == "win32":
+            import ctypes
+            is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+            if (hwlib == "LHM" or hwlib == "AUTO") and not is_admin:
+                self.lhm_admin_warning.place(x=320, y=190)
+                self.save_run_btn.state(["disabled"])
+            else:
+                self.lhm_admin_warning.place_forget()
+                self.save_run_btn.state(["!disabled"])
 
     def show_hide_brightness_warning(self, e=None):
         if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][
