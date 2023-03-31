@@ -242,16 +242,11 @@ class LcdCommRevB(LcdComm):
                         G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
                         B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
 
-                    # Revision A: 0bRRRRRGGGGGGBBBBB
-                    #               fedcba9876543210
-                    # Revision B: 0bgggBBBBBRRRRRGGG
-                    # That is...
-                    #   High 3 bits of green in b0-b2
-                    #   Low 3 bits of green in b13-b15
-                    #   Red 5 bits in b3-b7
-                    #   Blue 5 bits in b8-b12
-                    rgb = (B << 8) | (G >> 3) | ((G & 7) << 13) | (R << 3)
-                    line += struct.pack('H', rgb)
+                    # Color information is 0bRRRRRGGGGGGBBBBB
+                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
+                    # Revition B: Encode in Big-Endian
+                    rgb = (R << 11) | (G << 5) | B
+                    line += struct.pack('>H', rgb)
 
                     # Send image data by multiple of DISPLAY_WIDTH bytes
                     if len(line) >= self.get_width() * 8:
