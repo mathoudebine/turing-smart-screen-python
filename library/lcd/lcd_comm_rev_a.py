@@ -174,7 +174,7 @@ class LcdCommRevA(LcdComm):
                     B = pix[w, h][2] >> 3
 
                     rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('H', rgb)
+                    line += struct.pack('<H', rgb)
 
                     # Send image data by multiple of DISPLAY_WIDTH bytes
                     if len(line) >= self.get_width() * 8:
