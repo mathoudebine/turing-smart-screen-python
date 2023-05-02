@@ -238,6 +238,7 @@ class LcdCommRevB(LcdComm):
                         G = pix[w, h][1] >> 2
                         B = pix[w, h][2] >> 3
                     else:
+                        # Manage reverse orientations from software, because display does not manage it
                         R = pix[image_width - w - 1, image_height - h - 1][0] >> 3
                         G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
                         B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
