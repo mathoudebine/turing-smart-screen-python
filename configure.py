@@ -19,17 +19,35 @@
 
 # This file is the system monitor configuration GUI
 
+
 import os
 import subprocess
 import sys
-import tkinter.ttk as ttk
-from tkinter import *
 
-import psutil
-import ruamel.yaml
-import sv_ttk
-from PIL import Image, ImageTk
-from serial.tools.list_ports import comports
+MIN_PYTHON = (3, 7)
+if sys.version_info < MIN_PYTHON:
+    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
+
+try:
+    import tkinter.ttk as ttk
+    from tkinter import *
+
+    import psutil
+    import ruamel.yaml
+    import sv_ttk
+    from PIL import Image, ImageTk
+    from serial.tools.list_ports import comports
+except:
+    print(
+        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 # Maps between config.yaml values and GUI description
 revision_map = {'A': "Turing / rev. A", 'B': "XuanFang / rev. B / flagship", 'SIMU': "Simulated screen"}

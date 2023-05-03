@@ -34,23 +34,31 @@ if sys.version_info < MIN_PYTHON:
     except:
         os._exit(0)
 
-import atexit
-import locale
-import platform
-import signal
-import subprocess
-import time
-from PIL import Image
-
-if platform.system() == 'Windows':
-    import win32api
-    import win32con
-    import win32gui
-
 try:
-    import pystray
+    import atexit
+    import locale
+    import platform
+    import signal
+    import subprocess
+    import time
+    from PIL import Image
+
+    if platform.system() == 'Windows':
+        import win32api
+        import win32con
+        import win32gui
+
+    try:
+        import pystray
+    except:
+        pass
 except:
-    pass
+    print(
+        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 from library.log import logger
 import library.scheduler as scheduler
