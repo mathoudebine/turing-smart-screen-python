@@ -107,7 +107,7 @@ def get_gpu_name() -> str:
 
     if len(hw_gpus) == 0:
         # No supported GPU found on the system
-        logger.debug("No supported GPU found")
+        logger.warning("No supported GPU found")
         return ""
     elif len(hw_gpus) == 1:
         # Found one supported GPU
@@ -115,13 +115,11 @@ def get_gpu_name() -> str:
         return str(hw_gpus[0].Name)
     else:
         # Found multiple GPUs, try to determine which one to use
-        logger.warning(
-            "Found multiple GPUs on your system. Will use dedicated GPU (AMD/Nvidia) for stats if possible.")
         amd_gpus = 0
         intel_gpus = 0
         nvidia_gpus = 0
 
-        gpu_to_use = None
+        gpu_to_use = ""
 
         # Count GPUs by manufacturer
         for gpu in hw_gpus:
@@ -131,6 +129,10 @@ def get_gpu_name() -> str:
                 intel_gpus += 1
             elif gpu.HardwareType == Hardware.HardwareType.GpuNvidia:
                 nvidia_gpus += 1
+
+        logger.warning(
+            "Found %d GPUs on your system (%d AMD/%d Nvidia/%d Intel). Try to identify which GPU to use." % (
+            len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
 
         if nvidia_gpus >= 1:
             # One (or more) Nvidia GPU: use first available for stats
@@ -153,7 +155,7 @@ def get_gpu_name() -> str:
         if gpu_to_use:
             logger.debug("This GPU will be used for stats: %s" % gpu_to_use)
         else:
-            logger.debug("No supported GPU found (no GPU with load sensor)")
+            logger.warning("No supported GPU found (no GPU with load sensor)")
 
         return gpu_to_use
 
