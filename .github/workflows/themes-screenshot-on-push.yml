@@ -8,7 +8,10 @@ on:
 
 jobs:
   system-monitor-theme-screenshot:
-
+  
+    # Don't run this action on forked repositories to avoid conflicts in PR...
+    if: github.repository == 'mathoudebine/turing-smart-screen-python'
+    
     runs-on: ubuntu-latest
 
     permissions:

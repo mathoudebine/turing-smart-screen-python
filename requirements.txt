@@ -1,11 +1,13 @@
 # Python packages requirements
-Pillow~=9.3.0     # Image generation
-pyserial~=3.5     # Serial linl to communicate with the display
-PyYAML~=6.0       # For themes files
-psutil~=5.9.4     # CPU / disk / network metrics
-GPUtil~=1.4.0     # Nvidia GPU
-pystray~=0.19.4   # Tray icon (all OS)
-babel~=2.11.0     # Date/time formatting
+Pillow~=9.3.0         # Image generation
+pyserial~=3.5         # Serial linl to communicate with the display
+PyYAML~=6.0           # For themes files
+psutil~=5.9.4         # CPU / disk / network metrics
+GPUtil~=1.4.0         # Nvidia GPU
+pystray~=0.19.4       # Tray icon (all OS)
+babel~=2.11.0         # Date/time formatting
+ruamel.yaml~=0.17.21  # For configuration editor
+sv-ttk~=2.4           # Tk Sun Valley theme for configuration editor
 
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
