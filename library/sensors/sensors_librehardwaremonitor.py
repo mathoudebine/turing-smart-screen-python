@@ -131,7 +131,7 @@ def get_gpu_name() -> str:
                 nvidia_gpus += 1
 
         logger.warning(
-            "Found %d GPUs on your system (%d AMD/%d Nvidia/%d Intel). Try to identify which GPU to use." % (
+            "Found %d GPUs on your system (%d AMD / %d Nvidia / %d Intel). Auto identify which GPU to use." % (
             len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
 
         if nvidia_gpus >= 1:
@@ -238,6 +238,7 @@ class Cpu(sensors.Cpu):
 
 
 class Gpu(sensors.Gpu):
+    # GPU to use is detected once, and its name is saved for future sensors readings
     gpu_name = ""
 
     @classmethod
