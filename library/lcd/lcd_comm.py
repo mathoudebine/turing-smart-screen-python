@@ -76,7 +76,7 @@ class LcdComm(ABC):
         if self.com_port == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
             if not lcd_com_port:
-                logger.error("Cannot find COM port automatically, please set it manually in config.yaml")
+                logger.error("Cannot find COM port automatically, please run Configuration again and select COM port manually")
                 try:
                     sys.exit(0)
                 except:

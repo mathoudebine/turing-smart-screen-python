@@ -43,6 +43,7 @@ handle.IsMotherboardEnabled = True
 handle.IsControllerEnabled = True
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
+handle.IsPsuEnabled = True
 handle.Open()
 
 for hw in handle.Hardware:
