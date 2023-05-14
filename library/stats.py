@@ -495,110 +495,116 @@ class Memory:
 class Disk:
     @staticmethod
     def stats():
-        used = sensors.Disk.disk_used()
-        free = sensors.Disk.disk_free()
-        if config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("SHOW", False):
-            display.lcd.DisplayProgressBar(
-                x=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("X", 0),
-                y=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("Y", 0),
-                width=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("WIDTH", 0),
-                height=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("HEIGHT", 0),
-                value=int(sensors.Disk.disk_usage_percent()),
-                min_value=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MIN_VALUE", 0),
-                max_value=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("MAX_VALUE", 100),
-                bar_color=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
-                bar_outline=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BAR_OUTLINE", False),
-                background_color=config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get("BACKGROUND_COLOR",
-                                                                                         (255, 255, 255)),
-                background_image=get_full_path(config.THEME_DATA['PATH'],
-                                               config.THEME_DATA['STATS']['DISK']['USED']['GRAPH'].get(
-                                                   "BACKGROUND_IMAGE",
-                                                   None))
-            )
+        if config.THEME_DATA['STATS']['DISK'].get("MOUNTS", False):
+            for mount in config.THEME_DATA['STATS']['DISK']['MOUNTS']:
+                mountpoint = [k for k, v in mount.items()][0]
+                if not os.path.exists(mountpoint):
+                    logger.warning('Invalid mount point in config: "%s"' % mountpoint)
+                else:
+                    used = sensors.Disk.disk_used(mountpoint)
+                    free = sensors.Disk.disk_free(mountpoint)
+                    if mount[mountpoint]['USED']['GRAPH'].get("SHOW", False):
+                        display.lcd.DisplayProgressBar(
+                            x=mount[mountpoint]['USED']['GRAPH'].get("X", 0),
+                            y=mount[mountpoint]['USED']['GRAPH'].get("Y", 0),
+                            width=mount[mountpoint]['USED']['GRAPH'].get("WIDTH", 0),
+                            height=mount[mountpoint]['USED']['GRAPH'].get("HEIGHT", 0),
+                            value=int(sensors.Disk.disk_usage_percent(mountpoint)),
+                            min_value=mount[mountpoint]['USED']['GRAPH'].get("MIN_VALUE", 0),
+                            max_value=mount[mountpoint]['USED']['GRAPH'].get("MAX_VALUE", 100),
+                            bar_color=mount[mountpoint]['USED']['GRAPH'].get("BAR_COLOR", (0, 0, 0)),
+                            bar_outline=mount[mountpoint]['USED']['GRAPH'].get("BAR_OUTLINE", False),
+                            background_color=mount[mountpoint]['USED']['GRAPH'].get("BACKGROUND_COLOR",
+                                                                                                     (255, 255, 255)),
+                            background_image=get_full_path(config.THEME_DATA['PATH'],
+                                                           mount[mountpoint]['USED']['GRAPH'].get(
+                                                               "BACKGROUND_IMAGE",
+                                                               None))
+                        )
 
-        if config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW", False):
-            used_text = f"{int(used / 1000000000):>5}"
-            if config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("SHOW_UNIT", True):
-                used_text += " G"
+                    if mount[mountpoint]['USED']['TEXT'].get("SHOW", False):
+                        used_text = f"{int(used / 1000000000):>5}"
+                        if mount[mountpoint]['USED']['TEXT'].get("SHOW_UNIT", True):
+                            used_text += " G"
 
-            display.lcd.DisplayText(
-                text=used_text,
-                x=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("X", 0),
-                y=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("Y", 0),
-                font=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT",
-                                                                            "roboto-mono/RobotoMono-Regular.ttf"),
-                font_size=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT_SIZE", 10),
-                font_color=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                        (255, 255, 255)),
-                background_image=get_full_path(config.THEME_DATA['PATH'],
-                                               config.THEME_DATA['STATS']['DISK']['USED']['TEXT'].get(
-                                                   "BACKGROUND_IMAGE",
-                                                   None))
-            )
+                        display.lcd.DisplayText(
+                            text=used_text,
+                            x=mount[mountpoint]['USED']['TEXT'].get("X", 0),
+                            y=mount[mountpoint]['USED']['TEXT'].get("Y", 0),
+                            font=mount[mountpoint]['USED']['TEXT'].get("FONT",
+                                                                                        "roboto-mono/RobotoMono-Regular.ttf"),
+                            font_size=mount[mountpoint]['USED']['TEXT'].get("FONT_SIZE", 10),
+                            font_color=mount[mountpoint]['USED']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                            background_color=mount[mountpoint]['USED']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                                    (255, 255, 255)),
+                            background_image=get_full_path(config.THEME_DATA['PATH'],
+                                                           mount[mountpoint]['USED']['TEXT'].get(
+                                                               "BACKGROUND_IMAGE",
+                                                               None))
+                        )
 
-        if config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW", False):
-            percent_text = f"{int(sensors.Disk.disk_usage_percent()):>3}"
-            if config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("SHOW_UNIT", True):
-                percent_text += "%"
+                    if mount[mountpoint]['USED']['PERCENT_TEXT'].get("SHOW", False):
+                        percent_text = f"{int(sensors.Disk.disk_usage_percent(mountpoint)):>3}"
+                        if mount[mountpoint]['USED']['PERCENT_TEXT'].get("SHOW_UNIT", True):
+                            percent_text += "%"
 
-            display.lcd.DisplayText(
-                text=percent_text,
-                x=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("X", 0),
-                y=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("Y", 0),
-                font=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT",
-                                                                                    "roboto-mono/RobotoMono-Regular.ttf"),
-                font_size=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT_SIZE", 10),
-                font_color=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get("BACKGROUND_COLOR",
-                                                                                                (255, 255, 255)),
-                background_image=get_full_path(config.THEME_DATA['PATH'],
-                                               config.THEME_DATA['STATS']['DISK']['USED']['PERCENT_TEXT'].get(
-                                                   "BACKGROUND_IMAGE",
-                                                   None))
-            )
+                        display.lcd.DisplayText(
+                            text=percent_text,
+                            x=mount[mountpoint]['USED']['PERCENT_TEXT'].get("X", 0),
+                            y=mount[mountpoint]['USED']['PERCENT_TEXT'].get("Y", 0),
+                            font=mount[mountpoint]['USED']['PERCENT_TEXT'].get("FONT",
+                                                                                                "roboto-mono/RobotoMono-Regular.ttf"),
+                            font_size=mount[mountpoint]['USED']['PERCENT_TEXT'].get("FONT_SIZE", 10),
+                            font_color=mount[mountpoint]['USED']['PERCENT_TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                            background_color=mount[mountpoint]['USED']['PERCENT_TEXT'].get("BACKGROUND_COLOR",
+                                                                                                            (255, 255, 255)),
+                            background_image=get_full_path(config.THEME_DATA['PATH'],
+                                                           mount[mountpoint]['USED']['PERCENT_TEXT'].get(
+                                                               "BACKGROUND_IMAGE",
+                                                               None))
+                        )
 
-        if config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW", False):
-            total_text = f"{int((free + used) / 1000000000):>5}"
-            if config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("SHOW_UNIT", True):
-                total_text += " G"
+                    if mount[mountpoint]['TOTAL']['TEXT'].get("SHOW", False):
+                        total_text = f"{int((free + used) / 1000000000):>5}"
+                        if mount[mountpoint]['TOTAL']['TEXT'].get("SHOW_UNIT", True):
+                            total_text += " G"
 
-            display.lcd.DisplayText(
-                text=total_text,
-                x=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("X", 0),
-                y=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("Y", 0),
-                font=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT",
-                                                                             "roboto-mono/RobotoMono-Regular.ttf"),
-                font_size=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT_SIZE", 10),
-                font_color=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                         (255, 255, 255)),
-                background_image=get_full_path(config.THEME_DATA['PATH'],
-                                               config.THEME_DATA['STATS']['DISK']['TOTAL']['TEXT'].get(
-                                                   "BACKGROUND_IMAGE",
-                                                   None))
-            )
+                        display.lcd.DisplayText(
+                            text=total_text,
+                            x=mount[mountpoint]['TOTAL']['TEXT'].get("X", 0),
+                            y=mount[mountpoint]['TOTAL']['TEXT'].get("Y", 0),
+                            font=mount[mountpoint]['TOTAL']['TEXT'].get("FONT",
+                                                                                         "roboto-mono/RobotoMono-Regular.ttf"),
+                            font_size=mount[mountpoint]['TOTAL']['TEXT'].get("FONT_SIZE", 10),
+                            font_color=mount[mountpoint]['TOTAL']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                            background_color=mount[mountpoint]['TOTAL']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                                     (255, 255, 255)),
+                            background_image=get_full_path(config.THEME_DATA['PATH'],
+                                                           mount[mountpoint]['TOTAL']['TEXT'].get(
+                                                               "BACKGROUND_IMAGE",
+                                                               None))
+                        )
 
-        if config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW", False):
-            free_text = f"{int(free / 1000000000):>5}"
-            if config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("SHOW_UNIT", True):
-                free_text += " G"
+                    if mount[mountpoint]['FREE']['TEXT'].get("SHOW", False):
+                        free_text = f"{int(free / 1000000000):>5}"
+                        if mount[mountpoint]['FREE']['TEXT'].get("SHOW_UNIT", True):
+                            free_text += " G"
 
-            display.lcd.DisplayText(
-                text=free_text,
-                x=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("X", 0),
-                y=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("Y", 0),
-                font=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT",
-                                                                            "roboto-mono/RobotoMono-Regular.ttf"),
-                font_size=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT_SIZE", 10),
-                font_color=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
-                background_color=config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get("BACKGROUND_COLOR",
-                                                                                        (255, 255, 255)),
-                background_image=get_full_path(config.THEME_DATA['PATH'],
-                                               config.THEME_DATA['STATS']['DISK']['FREE']['TEXT'].get(
-                                                   "BACKGROUND_IMAGE",
-                                                   None))
-            )
+                        display.lcd.DisplayText(
+                            text=free_text,
+                            x=mount[mountpoint]['FREE']['TEXT'].get("X", 0),
+                            y=mount[mountpoint]['FREE']['TEXT'].get("Y", 0),
+                            font=mount[mountpoint]['FREE']['TEXT'].get("FONT",
+                                                                                        "roboto-mono/RobotoMono-Regular.ttf"),
+                            font_size=mount[mountpoint]['FREE']['TEXT'].get("FONT_SIZE", 10),
+                            font_color=mount[mountpoint]['FREE']['TEXT'].get("FONT_COLOR", (0, 0, 0)),
+                            background_color=mount[mountpoint]['FREE']['TEXT'].get("BACKGROUND_COLOR",
+                                                                                                    (255, 255, 255)),
+                            background_image=get_full_path(config.THEME_DATA['PATH'],
+                                                           mount[mountpoint]['FREE']['TEXT'].get(
+                                                               "BACKGROUND_IMAGE",
+                                                               None))
+                        )
 
 
 class Net:

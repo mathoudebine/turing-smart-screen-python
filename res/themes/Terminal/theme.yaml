@@ -141,18 +141,20 @@ STATS:
         BACKGROUND_COLOR: 0, 0, 0
   DISK:
     INTERVAL: 10
-    USED:
-      GRAPH:
-        SHOW: True
-        X: 115
-        Y: 357
-        WIDTH: 178
-        HEIGHT: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
+    MOUNTS:
+      - "/":
+          USED:
+            GRAPH:
+              SHOW: True
+              X: 115
+              Y: 357
+              WIDTH: 178
+              HEIGHT: 13
+              MIN_VALUE: 0
+              MAX_VALUE: 100
+              BAR_COLOR: 255, 0, 0
+              BAR_OUTLINE: False
+              BACKGROUND_COLOR: 0, 0, 0
   DATE:
     INTERVAL: 1
     DAY:

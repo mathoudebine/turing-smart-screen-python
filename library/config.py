@@ -36,6 +36,7 @@ def load_yaml(configfile):
 PATH = sys.path[0]
 CONFIG_DATA = load_yaml("config.yaml")
 THEME_DEFAULT = load_yaml("res/themes/default.yaml")
+THEME_DISK_DEFAULT = load_yaml("res/themes/default_disk.yaml")
 THEME_DATA = None
 
 
@@ -64,6 +65,11 @@ def load_theme():
 
     copy_default(THEME_DEFAULT, THEME_DATA)
 
+    if THEME_DATA['STATS']['DISK'].get("MOUNTS", False):
+        for mount in THEME_DATA['STATS']['DISK']['MOUNTS']:
+            mountpoint = [k for k, v in mount.items()][0]
+            print(mountpoint)
+            copy_default(THEME_DISK_DEFAULT, mount[mountpoint])
 
 # Load theme on import
 load_theme()
