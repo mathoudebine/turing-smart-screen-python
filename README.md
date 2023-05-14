@@ -17,7 +17,7 @@ A Python system monitor program and a library for 3.5" IPS USB-C (UART) displays
 Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.x  
 
 Supported smart screens models:
-| **Turing Smart Screen** | **XuanFang** |
+| **Turing Smart Screen 3.5"** | **XuanFang 3.5"** |
 |--------|----------|
 | <img src="res/docs/turing.webp" height="300" /> |  <img src="res/docs/xuanfang.webp" height="300" />        |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) |
