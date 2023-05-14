@@ -380,8 +380,12 @@ class Gpu:
         load_values = []
         for i in range(100):
             load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
-            load_values.append(load)
-        load = mean(load_values)
+            if load != math.nan:
+                load_values.append(load)
+            else:
+                break
+        if load_values:
+            load = mean(load_values)
         display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
 
     @staticmethod
