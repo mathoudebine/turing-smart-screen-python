@@ -68,7 +68,6 @@ def load_theme():
     if THEME_DATA['STATS']['DISK'].get("MOUNTS", False):
         for mount in THEME_DATA['STATS']['DISK']['MOUNTS']:
             mountpoint = [k for k, v in mount.items()][0]
-            print(mountpoint)
             copy_default(THEME_DISK_DEFAULT, mount[mountpoint])
 
 # Load theme on import
