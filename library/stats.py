@@ -39,6 +39,9 @@ WLO_CARD = config.CONFIG_DATA["config"]["WLO"]
 HW_SENSORS = config.CONFIG_DATA["config"]["HW_SENSORS"]
 
 if HW_SENSORS == "PYTHON":
+    if platform.system() == 'Windows':
+        logger.warning("It is recommended to use LibreHardwareMonitor integration for Windows instead of Python "
+                       "libraries (require admin. rights)")
     import library.sensors.sensors_python as sensors
 elif HW_SENSORS == "LHM":
     if platform.system() == 'Windows':
@@ -61,7 +64,7 @@ elif HW_SENSORS == "AUTO":
     else:
         import library.sensors.sensors_python as sensors
 else:
-    logger.error("Unsupported SENSORS value in config.yaml")
+    logger.error("Unsupported HW_SENSORS value in config.yaml")
     try:
         sys.exit(0)
     except:

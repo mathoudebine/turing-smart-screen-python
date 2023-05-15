@@ -129,7 +129,6 @@ class TuringConfigWindow:
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
-        self.lhm_admin_warning.place(x=320, y=190)
 
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
         sysmon_label.place(x=320, y=220)
@@ -161,7 +160,6 @@ class TuringConfigWindow:
         self.brightness_warning_label = ttk.Label(self.window,
                                                   text="⚠ Turing / rev. A displays can get hot at high brightness!",
                                                   foreground='#ff8c00')
-        self.brightness_warning_label.place(x=320, y=420)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=310, y=450, height=50, width=130)

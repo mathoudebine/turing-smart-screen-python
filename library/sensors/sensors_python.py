@@ -20,17 +20,18 @@
 # For all platforms (Linux, Windows, macOS) but not all HW is supported
 
 import math
-from typing import Tuple
+import platform
+import sys
 from enum import IntEnum, auto
-
-import library.sensors.sensors as sensors
-from library.log import logger
-
-# CPU & disk sensors
-import psutil
+from typing import Tuple
 
 # Nvidia GPU
 import GPUtil
+# CPU & disk sensors
+import psutil
+
+import library.sensors.sensors as sensors
+from library.log import logger
 
 # AMD GPU on Linux
 try:
@@ -118,8 +119,11 @@ class Gpu(sensors.Gpu):
             logger.info("Detected Nvidia GPU(s)")
             DETECTED_GPU = GpuType.NVIDIA
         else:
-            logger.warning("Your GPU is not supported yet")
+            logger.warning("No supported GPU found")
             DETECTED_GPU = GpuType.UNSUPPORTED
+            if sys.version_info >= (3, 11) and (platform.system() == "Linux" or platform.system() == "Darwin"):
+                logger.warning("If you have an AMD GPU, you may need to install some  libraries manually: see "
+                               "https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#linux--macos-no-supported-gpu-found-with-an-amd-gpu-and-python-311")
 
         return DETECTED_GPU != GpuType.UNSUPPORTED
 
