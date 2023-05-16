@@ -12,8 +12,8 @@ sv-ttk~=2.4           # Tk Sun Valley theme for configuration editor
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
 Cython~=0.29.32; sys_platform=="linux"
-pyamdgpuinfo~=2.1.3; sys_platform=="linux" and python_version < "3.11" # Wheel package not yet available for Python 3.11+
-# For Python 3.11+, you need to install pyamdgpuinfo manually: see https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#linux--macos-no-supported-gpu-found-with-an-amd-gpu-and-python-311
+pyamdgpuinfo~=2.1.3; sys_platform=="linux" and python_version <= "3.11" # Wheel package not yet available for Python > 3.11
+# For Python > 3.11, you need to install pyamdgpuinfo manually: see https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#linux--macos-no-supported-gpu-found-with-an-amd-gpu-and-python-311
 
 # Following packages are for AMD GPU on Windows
 pyadl~=0.1; sys_platform=="win32"
