@@ -262,9 +262,11 @@ class LcdComm(ABC):
             bar_image = bar_image.crop(box=(x, y, x + width, y + height))
 
         # Draw progress bar
-        bar_filled_width = value / (max_value - min_value) * width
+        bar_filled_width = (value / (max_value - min_value) * width) - 1
+        if bar_filled_width < 0:
+            bar_filled_width = 0
         draw = ImageDraw.Draw(bar_image)
-        draw.rectangle([0, 0, bar_filled_width - 1, height - 1], fill=bar_color, outline=bar_color)
+        draw.rectangle([0, 0, bar_filled_width, height - 1], fill=bar_color, outline=bar_color)
 
         if bar_outline:
             # Draw outline

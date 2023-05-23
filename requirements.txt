@@ -1,17 +1,17 @@
 # Python packages requirements
-Pillow~=9.3.0         # Image generation
+Pillow~=9.5.0         # Image generation
 pyserial~=3.5         # Serial linl to communicate with the display
 PyYAML~=6.0           # For themes files
-psutil~=5.9.4         # CPU / disk / network metrics
+psutil~=5.9.5         # CPU / disk / network metrics
 GPUtil~=1.4.0         # Nvidia GPU
 pystray~=0.19.4       # Tray icon (all OS)
-babel~=2.11.0         # Date/time formatting
-ruamel.yaml~=0.17.21  # For configuration editor
-sv-ttk~=2.4           # Tk Sun Valley theme for configuration editor
+babel~=2.12.1         # Date/time formatting
+ruamel.yaml~=0.17.26  # For configuration editor
+sv-ttk~=2.4.5         # Tk Sun Valley theme for configuration editor
 
 # Following packages are for AMD GPU on Linux
 # Note: you may need to manually install Cython first
-Cython~=0.29.32; sys_platform=="linux"
+Cython~=0.29.34; sys_platform=="linux"
 pyamdgpuinfo~=2.1.3; sys_platform=="linux" and python_version <= "3.11" # Wheel package not yet available for Python > 3.11
 # For Python > 3.11, you need to install pyamdgpuinfo manually: see https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#linux--macos-no-supported-gpu-found-with-an-amd-gpu-and-python-311
 
@@ -20,4 +20,4 @@ pyadl~=0.1; sys_platform=="win32"
 
 # Following packages are for LibreHardwareMonitor integration on Windows
 pythonnet~=3.0.1; sys_platform=="win32"
-pywin32>=305; sys_platform=="win32"
+pywin32>=306; sys_platform=="win32"
