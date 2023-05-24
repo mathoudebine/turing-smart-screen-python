@@ -27,7 +27,16 @@ import platform
 import subprocess
 import sys
 import time
-import tkinter
+
+try:
+    import tkinter
+except:
+    print(
+        "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 MIN_PYTHON = (3, 7)
 if sys.version_info < MIN_PYTHON:

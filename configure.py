@@ -35,7 +35,15 @@ if sys.version_info < MIN_PYTHON:
 try:
     import tkinter.ttk as ttk
     from tkinter import *
+except:
+    print(
+        "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
+try:
     import psutil
     import ruamel.yaml
     import sv_ttk
