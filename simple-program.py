@@ -69,7 +69,7 @@ if __name__ == "__main__":
                                display_width=320,
                                display_height=480)
     elif REVISION == "C":
-        print("Selected Hardware Revision C (5 Inch device)")
+        print("Selected Hardware Revision C (5 inch device)")
         lcd_comm = LcdCommRevC(com_port=COM_PORT,
                                display_width=480,
                                display_height=800)
@@ -102,9 +102,9 @@ if __name__ == "__main__":
 
     # Define background picture
     if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
-        background = "res/backgrounds/example.png"
+        background = f"res/backgrounds/{REVISION}/example.png"
     else:
-        background = "res/backgrounds/example_landscape.png"
+        background = f"res/backgrounds/{REVISION}/example_landscape.png"
 
     # Display sample picture
     lcd_comm.DisplayBitmap(background)
