@@ -194,10 +194,14 @@ class LcdCommRevC(LcdComm):
 
         # If no queue for async requests, or if asked explicitly to do the request sequentially: do request now
         if not self.update_queue or bypass_queue:
-            self.WriteData(message, readsize)
+            self.WriteData(message)
+            if readsize:
+                self.ReadData(readsize)
         else:
             # Lock queue mutex then queue the request
-            self.update_queue.put((self.WriteData, [message], readsize))
+            self.update_queue.put((self.WriteData, [message]))
+            if readsize:
+                self.update_queue.put((self.ReadData, readsize))
 
     def Hello(self):
         # logger.info("Call Hello")
@@ -358,15 +362,15 @@ class LcdCommRevC(LcdComm):
 
 
 def _generateFullImage(image):
-    #if image.shape[2] < 4:
-    #    print("Fix Colors...")
-    #    image = cv2.cvtColor(image, cv2.COLOR_BGR2BGRA)
+    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
     image = bytearray(numpy.array(image))
     image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
     return image
 
 
 def _generateUpdateImage(image, x, y, count, cmd: Command = None):
+    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
+
     width = image.shape[1]
     height = image.shape[0]
     payload = bytearray()
