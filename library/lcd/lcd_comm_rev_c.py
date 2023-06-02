@@ -348,9 +348,9 @@ class LcdCommRevC(LcdComm):
         print(f"{width} == {self.get_width()}")
         print(f"{height} == {self.get_height()}")
 
-        y1 = y
-        x = self.get_width() - x
-        y = self.get_height() - y1
+        #y1 = y
+        #x = self.get_width() - x
+        #y = self.get_height() - y1
 
         image_msg = ''
         for h in range(height):
