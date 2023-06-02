@@ -8,8 +8,8 @@ static_images:
     PATH: background.png
     X: 0
     Y: 0
-    WIDTH: 320
-    HEIGHT: 480
+    WIDTH: 480
+    HEIGHT: 800
 static_text:
   POS:
     TEXT: "0"

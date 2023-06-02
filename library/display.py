@@ -1,5 +1,7 @@
 # turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
+import os
+import sys
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
 #
@@ -82,6 +84,35 @@ class Display:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
 
     def initialize_display(self):
+        # Check if the Theme is for this device.
+        # get the WIDTH and HEIGHT of Device and compare with the Theme.
+
+        try:
+
+            device_width = config.CONFIG_DATA["display"]["DISPLAY_WIDTH"]
+            device_height = config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
+
+            theme_width = config.THEME_DATA["static_images"]["BACKGROUND"]["WIDTH"]
+            theme_height = config.THEME_DATA["static_images"]["BACKGROUND"]["HEIGHT"]
+
+            theme_name = os.path.basename(os.path.dirname(config.THEME_DATA["PATH"]))
+
+            if config.THEME_DATA['display'].get("DISPLAY_ORIENTATION", "portrait") == "portrait":
+                if device_width != theme_width or device_height != theme_height:
+                    raise ValueError(f"The theme '{theme_name}' sizes is imcompatible with this Device - "
+                                     f"Device sizes: ({device_width}x{device_height}) - "
+                                     f"Theme sizes: ({theme_width}x{theme_height})")
+            else:
+                if device_width != theme_height or device_height != theme_width:
+                    raise ValueError(f"The theme '{theme_name}' sizes is imcompatible with this Device - "
+                                     f"Device sizes: ({device_height}x{device_width}) - "
+                                     f"Theme sizes: ({theme_width}x{theme_height})")
+        except ValueError as error:
+            logger.error(error)
+            try:
+                sys.exit(0)
+            except:
+                os._exit(0)
         # Reset screen in case it was in an unstable state (screen is also cleared)
         self.lcd.Reset()
 
