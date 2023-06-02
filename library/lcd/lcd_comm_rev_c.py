@@ -248,25 +248,16 @@ class LcdCommRevC(LcdComm):
         # logger.info("Call SetBackplateLedColor")
         pass
 
-    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 480,
-                       new_height: int = 800):
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         self.orientation = orientation
         logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
-        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-        self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
-
-        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-        self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
-
-    '''
         if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
             self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
         else:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
             self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
-    '''
 
     def DisplayPILImage(
             self,
@@ -300,14 +291,14 @@ class LcdCommRevC(LcdComm):
                 self.SendCommand(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.DISPLAY_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.SEND_PAYLOAD, payload=bytearray(self.__generateFullImage(image)),
+                self.SendCommand(Command.SEND_PAYLOAD, payload=bytearray(self.__generateFullImage(image, self.orientation )),
                                  bypass_queue=False,
                                  readsize=1024)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
         else:
             image.save("images/UPDATE_BITMAP-{}-{}-{}-{}-{}.png".format(Count.Start, x, y, image_width, image_height))
             with self.update_queue_mutex:
-                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP)
+                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP, self.orientation )
                 self.SendCommand(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
                 self.SendCommand(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
@@ -319,9 +310,19 @@ class LcdCommRevC(LcdComm):
 
         match orientation:
             case Orientation.PORTRAIT:
+                logger.debug(f"{orientation.name}")
                 image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
             case Orientation.REVERSE_PORTRAIT:
+                logger.debug(f"{orientation.name}")
+                image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+            case Orientation.REVERSE_LANDSCAPE:
                 image = cv2.rotate(image, cv2.ROTATE_180)
+
+        height = image.shape[0]
+        width = image.shape[1]
+
+        print(f"{width} == {self.get_width()}")
+        print(f"{height} == {self.get_height()}")
 
         image = bytearray(numpy.array(image))
         image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
@@ -335,18 +336,33 @@ class LcdCommRevC(LcdComm):
             case Orientation.PORTRAIT:
                 image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
             case Orientation.REVERSE_PORTRAIT:
+                image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+            case Orientation.REVERSE_LANDSCAPE:
                 image = cv2.rotate(image, cv2.ROTATE_180)
 
         # Why here is inverted ? Because the image is genereted in PORTRAIT Orientation.
-        width = image.shape[1]
         height = image.shape[0]
+        width = image.shape[1]
         payload = bytearray()
+
+        print(f"{width} == {self.get_width()}")
+        print(f"{height} == {self.get_height()}")
+
+        y1 = y
+        x = self.get_width() - x
+        y = self.get_height() - y1
 
         image_msg = ''
         for h in range(height):
             image_msg += f'{((x + h) * 800) + y:06x}' + f'{width:04x}'
             for w in range(width):
                 image_msg += f'{image[h][w][0]:02x}' + f'{image[h][w][1]:02x}' + f'{image[h][w][2]:02x}'
+
+        #for w in range(width):
+        #    image_msg += f'{((x + w) * 800) + y:06x}' + f'{height:04x}'
+        #    for h in range(height):
+        #        image_msg += f'{image[w][h][0]:02x}' + f'{image[w][h][1]:02x}' + f'{image[w][h][2]:02x}'
+
 
         image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 

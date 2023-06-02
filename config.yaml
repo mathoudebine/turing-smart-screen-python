@@ -17,7 +17,7 @@ config:
   # - bash-dark-green
   # - bash-dark-green-gpu
   # - BigClock
-  THEME: 5-inchTheme2
+  THEME: 5-inchLandscape6Grid
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -47,7 +47,7 @@ display:
   # Display reverse: true/false
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
   # Note: Display basic orientation (portrait or landscape) is defined by the theme you have selected
-  DISPLAY_REVERSE: false
+  DISPLAY_REVERSE: true
 
   # Display resolution in portrait orientation
   # Do not use this setting to rotate display! The selected theme handles landscape/portrait orientation

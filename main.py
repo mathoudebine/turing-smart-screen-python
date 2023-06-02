@@ -191,6 +191,8 @@ if __name__ == "__main__":
     # Create all static texts
     display.display_static_text()
 
+    #exit(1)
+
     # Run our jobs that update data
     import library.stats as stats
 
