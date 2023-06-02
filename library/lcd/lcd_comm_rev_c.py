@@ -285,7 +285,6 @@ class LcdCommRevC(LcdComm):
         assert image_width > 0, 'Image width must be > 0'
 
         if x == 0 and y == 0:
-            image.save("images/DISPLAY_BITMAP-{}-{}-{}-{}.png".format(x, y, image_width, image_height))
             with self.update_queue_mutex:
 
                 self.SendCommand(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
@@ -296,7 +295,6 @@ class LcdCommRevC(LcdComm):
                                  readsize=1024)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
         else:
-            image.save("images/UPDATE_BITMAP-{}-{}-{}-{}-{}.png".format(Count.Start, x, y, image_width, image_height))
             with self.update_queue_mutex:
                 img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP, self.orientation )
                 self.SendCommand(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
@@ -306,7 +304,6 @@ class LcdCommRevC(LcdComm):
 
     def __generateFullImage(self, image, orientation: Orientation = Orientation.PORTRAIT):
         image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
-        cv2.imwrite("images-cv2/DISPLAY_BITMAP-{}-{}x{}.png".format(orientation.name,image.shape[0],image.shape[1]), image)
 
         match orientation:
             case Orientation.PORTRAIT:
@@ -330,7 +327,6 @@ class LcdCommRevC(LcdComm):
 
     def __generateUpdateImage(self, image, x, y, count, cmd: Command = None, orientation: Orientation = Orientation.PORTRAIT):
         image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
-        cv2.imwrite("images-cv2/UPDATE_BITMAP-{}-{}x{}.png".format(orientation.name,image.shape[0],image.shape[1]), image)
 
         match orientation:
             case Orientation.PORTRAIT:
@@ -347,8 +343,11 @@ class LcdCommRevC(LcdComm):
 
         print(f"{width} == {self.get_width()}")
         print(f"{height} == {self.get_height()}")
+        print(f"{x} x {y}")
 
         #y1 = y
+        #x = x + 20
+
         #x = self.get_width() - x
         #y = self.get_height() - y1
 
