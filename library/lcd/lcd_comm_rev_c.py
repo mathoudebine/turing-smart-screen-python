@@ -220,14 +220,13 @@ class LcdCommRevC(LcdComm):
         logger.info("Calling ScreenOff")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        #self.SendCommand(Command.TURNOFF, bypass_queue=False)
+        # self.SendCommand(Command.TURNOFF, bypass_queue=False)
 
     def ScreenOn(self):
         logger.info("Calling ScreenOn")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        #self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
-
+        # self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
 
     def SetBrightness(self, level: int = 25):
         # logger.info("Call SetBrightness")
@@ -272,7 +271,6 @@ class LcdCommRevC(LcdComm):
         if not image_width:
             image_width = image.size[0]
 
-
         # If our image is bigger than our display, resize it to fit our screen
         if image.size[1] > self.get_height():
             image_height = self.get_height()
@@ -284,19 +282,19 @@ class LcdCommRevC(LcdComm):
         assert image_height > 0, 'Image height must be > 0'
         assert image_width > 0, 'Image width must be > 0'
 
-        if x == 0 and y == 0:
+        if x == 0 and y == 0 and (image_width == self.get_width()) and (image_height == self.get_height()):
             with self.update_queue_mutex:
-
                 self.SendCommand(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.DISPLAY_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.SEND_PAYLOAD, payload=bytearray(self.__generateFullImage(image, self.orientation )),
+                self.SendCommand(Command.SEND_PAYLOAD,
+                                 payload=bytearray(self.__generateFullImage(image, self.orientation)),
                                  bypass_queue=False,
                                  readsize=1024)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
         else:
             with self.update_queue_mutex:
-                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP, self.orientation )
+                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP, self.orientation)
                 self.SendCommand(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
                 self.SendCommand(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
@@ -318,54 +316,44 @@ class LcdCommRevC(LcdComm):
         height = image.shape[0]
         width = image.shape[1]
 
-        print(f"{width} == {self.get_width()}")
-        print(f"{height} == {self.get_height()}")
-
         image = bytearray(numpy.array(image))
         image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
         return image
 
-    def __generateUpdateImage(self, image, x, y, count, cmd: Command = None, orientation: Orientation = Orientation.PORTRAIT):
+    def __generateUpdateImage(self, image, x, y, count, cmd: Command = None,
+                              orientation: Orientation = Orientation.PORTRAIT):
         image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
+        payload = bytearray()
+
+        x0, y0 = x, y
 
         match orientation:
             case Orientation.PORTRAIT:
                 image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                x0 = self.get_width() - x - image.shape[0]
             case Orientation.REVERSE_PORTRAIT:
                 image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+                y0 = self.get_height() - y - image.shape[1]
             case Orientation.REVERSE_LANDSCAPE:
                 image = cv2.rotate(image, cv2.ROTATE_180)
+                y0 = self.get_width() - x - image.shape[1]
+                x0 = self.get_height() - y - image.shape[0]
+            case Orientation.LANDSCAPE:
+                x0, y0 = y, x
 
         # Why here is inverted ? Because the image is genereted in PORTRAIT Orientation.
         height = image.shape[0]
         width = image.shape[1]
-        payload = bytearray()
-
-        print(f"{width} == {self.get_width()}")
-        print(f"{height} == {self.get_height()}")
-        print(f"{x} x {y}")
-
-        #y1 = y
-        #x = x + 20
-
-        #x = self.get_width() - x
-        #y = self.get_height() - y1
 
         image_msg = ''
         for h in range(height):
-            image_msg += f'{((x + h) * 800) + y:06x}' + f'{width:04x}'
+            image_msg += f'{((x0 + h) * 800) + y0:06x}' + f'{width:04x}'
             for w in range(width):
                 image_msg += f'{image[h][w][0]:02x}' + f'{image[h][w][1]:02x}' + f'{image[h][w][2]:02x}'
 
-        #for w in range(width):
-        #    image_msg += f'{((x + w) * 800) + y:06x}' + f'{height:04x}'
-        #    for h in range(height):
-        #        image_msg += f'{image[w][h][0]:02x}' + f'{image[w][h][1]:02x}' + f'{image[w][h][2]:02x}'
-
-
         image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 
-        logger.info("Render Count: {}".format(count))
+        logger.debug("Render Count: {}".format(count))
         if cmd:
             payload.extend(cmd.value)
         payload.extend(bytearray.fromhex(image_size))

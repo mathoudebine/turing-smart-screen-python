@@ -11,14 +11,20 @@ static_images:
     WIDTH: 800
     HEIGHT: 480
 static_text:
-  POS:
+  CPU_MODEL:
     TEXT: "0"
-    X: 1
-    Y: 1
-    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-    FONT_SIZE: 23
-    FONT_COLOR: 0, 0, 0
-    BACKGROUND_COLOR: 132, 154, 165  
+    X: 0
+    Y: 0
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    BACKGROUND_IMAGE: background.png
+  ZERO:
+    TEXT: "8"
+    X: 791
+    Y: 468
+    FONT_SIZE: 15
+    FONT_COLOR: 255, 239, 8
+    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:

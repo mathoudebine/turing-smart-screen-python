@@ -109,7 +109,6 @@ if __name__ == "__main__":
     # Display sample picture
     lcd_comm.DisplayBitmap(background)
 
-    # Display sample text
     lcd_comm.DisplayText("Basic text", 50, 100)
 
     # Display custom text with solid background
