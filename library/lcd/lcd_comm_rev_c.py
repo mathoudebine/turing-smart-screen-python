@@ -24,7 +24,6 @@ from serial.tools.list_ports import comports
 from library.lcd.lcd_comm import *
 from library.log import logger
 from enum import Enum
-import sys
 
 
 class Count:
@@ -49,23 +48,19 @@ class Count:
 # SEND QUERY_STATUS
 # READ STATUS (1024)
 # WHILE:
-# SEND UPDATE_BITMAP
-# SEND QUERY_STATUS
-# READ STATUS(1024)
-
-
-# 1705ff251705ff 251705ff251705ff25
-# 1705ff251705ff 261805ff251705ff23
-
+#   SEND UPDATE_BITMAP
+#   SEND QUERY_STATUS
+#   READ STATUS(1024)
 
 class Command(Enum):
     # COMMANDS
     HELLO = bytearray([0x01, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc5, 0xd3])
     OPTIONS = bytearray([0x7d, 0xef, 0x69, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x2d])
+    RESTART = bytearray([0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
     TURNOFF = bytearray([0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
     TURNON = bytearray([0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x00])
-    SET_BRIGHTNESS = bytearray(
-        [0x7b, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00])  # Sets the screen brightness
+
+    SET_BRIGHTNESS = bytearray([0x7b, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00])
 
     # STOP COMMANDS
     STOP_VIDEO = bytearray([0x79, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
@@ -80,15 +75,13 @@ class Command(Enum):
     UPDATE_BITMAP = bytearray([0xcc, 0xef, 0x69, 0x00, 0x00])
 
     RESTARTSCREEN = bytearray([0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    DISPLAY_BITMAP = bytearray([0xc8, 0xef, 0x69, 0x00, 0x17, 0x70])  # Displays an image on the screen
+    DISPLAY_BITMAP = bytearray([0xc8, 0xef, 0x69, 0x00, 0x17, 0x70])
 
     STARTMODE_DEFAULT = bytearray([0x00])
     STARTMODE_IMAGE = bytearray([0x01])
     STARTMODE_VIDEO = bytearray([0x02])
-    ORIENTATION_PORTRAIT = bytearray([0x00])
-    ORIENTATION_LANDSCAPE = bytearray([0x01])
-    ORIENTATION_REVERSE_PORTRAIT = bytearray([0x00])
-    ORIENTATION_REVERSE_LANDSCAPE = bytearray([0x01])
+    FLIP_180 = bytearray([0x01])
+    NO_FLIP = bytearray([0x00])
     SEND_PAYLOAD = bytearray([0xFF])
 
     def __init__(self, command):
@@ -170,9 +163,7 @@ class LcdCommRevC(LcdComm):
         if cmd != Command.SEND_PAYLOAD:
             message = cmd.value
 
-        logger.info("Command: {}".format(cmd.name))
-
-        # logger.info("Original Size: {}".format(len(message)))
+        logger.debug("Command: {}".format(cmd.name))
 
         if not padding:
             padding = Padding.NULL
@@ -181,12 +172,6 @@ class LcdCommRevC(LcdComm):
             message.extend(payload)
 
         msg_size = len(message)
-
-        logger.info("Payloaded Size: {}".format(len(message)))
-
-        if cmd == Command.UPDATE_BITMAP:
-            logger.info("Command: {}".format(cmd.value))
-            logger.info("Payload: {}".format(payload))
 
         if not (msg_size / 250).is_integer():
             pad_size = (250 * ceil(msg_size / 250) - msg_size)
@@ -201,18 +186,14 @@ class LcdCommRevC(LcdComm):
             # Lock queue mutex then queue the request
             self.update_queue.put((self.WriteData, [message]))
             if readsize:
-                self.update_queue.put((self.ReadData, readsize))
+                self.update_queue.put((self.ReadData, [readsize]))
 
     def Hello(self):
-        # logger.info("Call Hello")
-        self.sub_revision = SubRevision.UNKNOWN
         # This command reads LCD answer on serial link, so it bypasses the queue
-        self.SendCommand(Command.HELLO, bypass_queue=False)
+        self.sub_revision = SubRevision.UNKNOWN
+        self.SendCommand(Command.HELLO, bypass_queue=True)
         response = self.lcd_serial.read(23)
-        msg_size = len(response)
         self.lcd_serial.flushInput()
-        sys.stdout.write("0x01\t{}\t{}\r\n".format(msg_size, ''.join(format(x, '02x') for x in response)))
-        logger.info(response)
         if response == SubRevision.FIVEINCH.value:
             self.sub_revision = SubRevision.FIVEINCH
         else:
@@ -221,37 +202,32 @@ class LcdCommRevC(LcdComm):
         logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
 
     def InitializeComm(self):
-        # logger.info("Call InitializeComm")
         self.Hello()
 
     def Reset(self):
-        # logger.info("Calling RESET")
-        return
+        pass
+        # logger.info("Display reset (COM port may change)...")
+        # self.SendCommand(Command.RESTART, bypass_queue=True)
+        # self.closeSerial()
+        # Wait for display reset then reconnect
+        # time.sleep(15)
+        # self.openSerial()
 
     def Clear(self):
-        # logger.info("Calling CLEAR")
-        # HW revision B does not implement a Clear command: display a blank image on the whole screen
-        # Force an orientation in case the screen is currently configured with one different from the theme3
-
-        return
-        backup_orientation = self.orientation
-        self.SetOrientation(orientation=Orientation.PORTRAIT)
-
-        blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
-        self.DisplayPILImage(blank)
-
-        # Restore orientation
-        self.SetOrientation(orientation=backup_orientation)
+        pass
 
     def ScreenOff(self):
         logger.info("Calling ScreenOff")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
+        #self.SendCommand(Command.TURNOFF, bypass_queue=False)
 
     def ScreenOn(self):
         logger.info("Calling ScreenOn")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
+        #self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
+
 
     def SetBrightness(self, level: int = 25):
         # logger.info("Call SetBrightness")
@@ -266,7 +242,7 @@ class LcdCommRevC(LcdComm):
             # logger.info("Your display does not support custom brightness level")
             converted_level = 1 if level == 0 else 0
 
-        self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([converted_level]), bypass_queue=False)
+        self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([converted_level]), bypass_queue=True)
 
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         # logger.info("Call SetBackplateLedColor")
@@ -274,16 +250,23 @@ class LcdCommRevC(LcdComm):
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 480,
                        new_height: int = 800):
-        logger.info("Call SetOrientation")
-        return
         self.orientation = orientation
-        logger.info(self.orientation)
-        if self.orientation.name == Orientation.PORTRAIT.name or self.orientation.name == Orientation.REVERSE_PORTRAIT.name:
-            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.ORIENTATION_PORTRAIT.value + SleepInterval.OFF.value
+        logger.info(f"Call SetOrientation to: {self.orientation.name}")
+
+        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
+
+        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
+
+    '''
+        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
             self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
         else:
-            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.ORIENTATION_LANDSCAPE.value + SleepInterval.OFF.value
+            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
             self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
+    '''
 
     def DisplayPILImage(
             self,
@@ -298,9 +281,6 @@ class LcdCommRevC(LcdComm):
         if not image_width:
             image_width = image.size[0]
 
-        logger.info(
-            "Call DisplayPILImage {} {} {} {}={} {}={}".format(image, x, y, image_width, self.get_width(), image_height,
-                                                               self.get_height()))
 
         # If our image is bigger than our display, resize it to fit our screen
         if image.size[1] > self.get_height():
@@ -313,85 +293,72 @@ class LcdCommRevC(LcdComm):
         assert image_height > 0, 'Image height must be > 0'
         assert image_width > 0, 'Image width must be > 0'
 
-        device_height = self.get_height()
-        device_width = self.get_width()
-
-        #if self.orientation == Orientation.LANDSCAPE:
-        #    (x, y) = y, x
-
-
-        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
-            (x0, y0) = (x, y)
-            (x1, y1) = (x + image_width - 1, y + image_height - 1)
-        else:
-            (x, y) = y, x
-            (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
-            (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
-
-        # logger.info("Calling DisplayPILImage {} {} {} {}={} {}={}".format(image, x, y, image_width, device_width, image_height, device_height))
-
-
-
-        #opencvImage = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGR)
-        opencvImage = image
-
-
         if x == 0 and y == 0:
-            logger.info("Call DisplayPILImage DISPLAY_BITMAP x={} y={} width={} height={}".format(x, y, image_width, image_height))
             image.save("images/DISPLAY_BITMAP-{}-{}-{}-{}.png".format(x, y, image_width, image_height))
-            #cv2.imwrite("images-cv2/DISPLAY_BITMAP-{}-{}-{}-{}.png".format(x, y, image_width, image_height), opencvImage)
             with self.update_queue_mutex:
 
                 self.SendCommand(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP, bypass_queue=False)
                 self.SendCommand(Command.DISPLAY_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.SEND_PAYLOAD, payload=bytearray(_generateFullImage(opencvImage)), bypass_queue=False, readsize=1024)
+                self.SendCommand(Command.SEND_PAYLOAD, payload=bytearray(self.__generateFullImage(image)),
+                                 bypass_queue=False,
+                                 readsize=1024)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
         else:
-            logger.info("Call DisplayPILImage UPDATE_BITMAP x={} y={} width={} height={}".format(x, y, image_width, image_height))
             image.save("images/UPDATE_BITMAP-{}-{}-{}-{}-{}.png".format(Count.Start, x, y, image_width, image_height))
-            #cv2.imwrite("images-cv2/UPDATE_BITMAP-{}-{}-{}-{}-{}.png".format(Count.Start, 30, 50, image_width, image_height), opencvImage)
             with self.update_queue_mutex:
-
-                img, pyd = _generateUpdateImage(opencvImage, x, y, Count.Start, Command.UPDATE_BITMAP)
+                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP)
                 self.SendCommand(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
                 self.SendCommand(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
                 self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
             Count.Start += 1
 
+    def __generateFullImage(self, image, orientation: Orientation = Orientation.PORTRAIT):
+        image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
+        cv2.imwrite("images-cv2/DISPLAY_BITMAP-{}-{}x{}.png".format(orientation.name,image.shape[0],image.shape[1]), image)
 
+        match orientation:
+            case Orientation.PORTRAIT:
+                image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            case Orientation.REVERSE_PORTRAIT:
+                image = cv2.rotate(image, cv2.ROTATE_180)
 
-def _generateFullImage(image):
-    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
-    image = bytearray(numpy.array(image))
-    image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
-    return image
+        image = bytearray(numpy.array(image))
+        image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
+        return image
 
+    def __generateUpdateImage(self, image, x, y, count, cmd: Command = None, orientation: Orientation = Orientation.PORTRAIT):
+        image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
+        cv2.imwrite("images-cv2/UPDATE_BITMAP-{}-{}x{}.png".format(orientation.name,image.shape[0],image.shape[1]), image)
 
-def _generateUpdateImage(image, x, y, count, cmd: Command = None):
-    image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
+        match orientation:
+            case Orientation.PORTRAIT:
+                image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+            case Orientation.REVERSE_PORTRAIT:
+                image = cv2.rotate(image, cv2.ROTATE_180)
 
-    width = image.shape[1]
-    height = image.shape[0]
-    payload = bytearray()
+        # Why here is inverted ? Because the image is genereted in PORTRAIT Orientation.
+        width = image.shape[1]
+        height = image.shape[0]
+        payload = bytearray()
 
-    image_msg = ''
-    for h in range(height):
-        image_msg += f'{((x + h) * 800) + y:06x}' + f'{width:04x}'
-        for w in range(width):
-            # #logger.info("h: {} - w: {}".format(h, w))
-            image_msg += f'{image[h][w][0]:02x}' + f'{image[h][w][1]:02x}' + f'{image[h][w][2]:02x}'
+        image_msg = ''
+        for h in range(height):
+            image_msg += f'{((x + h) * 800) + y:06x}' + f'{width:04x}'
+            for w in range(width):
+                image_msg += f'{image[h][w][0]:02x}' + f'{image[h][w][1]:02x}' + f'{image[h][w][2]:02x}'
 
-    image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
+        image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 
-    logger.info("Render Count: {}".format(count))
-    payload.extend(cmd.value)
-    payload.extend(bytearray.fromhex(image_size))
-    payload.extend(Padding.NULL.value * 3)
-    payload.extend(count.to_bytes(4, 'big'))
+        logger.info("Render Count: {}".format(count))
+        if cmd:
+            payload.extend(cmd.value)
+        payload.extend(bytearray.fromhex(image_size))
+        payload.extend(Padding.NULL.value * 3)
+        payload.extend(count.to_bytes(4, 'big'))
 
-    if len(image_msg) > 500:
-        image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
-    image_msg += 'ef69'
+        if len(image_msg) > 500:
+            image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
+        image_msg += 'ef69'
 
-    return bytearray.fromhex(image_msg), payload
+        return bytearray.fromhex(image_msg), payload

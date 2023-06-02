@@ -1,11 +1,10 @@
----
 config:
   # Configuration values to set up basic communication
   # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: "/dev/ttyACM0"
+  COM_PORT: /dev/ttyACM0
 
   # Theme to use (located in res/themes)
   # Available themes:
@@ -18,7 +17,7 @@ config:
   # - bash-dark-green
   # - bash-dark-green-gpu
   # - BigClock
-  THEME: 5-inch-theme
+  THEME: 5-inchTheme2
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -32,8 +31,8 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: "" # Ethernet Card
-  WLO: "" # Wi-Fi Card
+  ETH: enp4s0 # Ethernet Card
+  WLO: '' # Wi-Fi Card
 
 display:
   # Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
@@ -43,7 +42,7 @@ display:
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
   # Warning: revision A display can get hot at high brightness!
-  BRIGHTNESS: 25
+  BRIGHTNESS: 20
 
   # Display reverse: true/false
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
