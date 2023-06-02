@@ -11,14 +11,6 @@ static_images:
     WIDTH: 480
     HEIGHT: 800
 static_text:
-  POS:
-    TEXT: "0"
-    X: 1
-    Y: 1
-    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-    FONT_SIZE: 23
-    FONT_COLOR: 0, 0, 0
-    BACKGROUND_COLOR: 132, 154, 165  
   DISK_USED_LABEL:
     TEXT: "Used:"
     X: 124
@@ -50,7 +42,7 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 20
+        X: 285
         Y: 40
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
@@ -58,7 +50,7 @@ STATS:
         BACKGROUND_COLOR: 132, 154, 165
       GRAPH:
         SHOW: True
-        X: 20
+        X: 300
         Y: 70
         WIDTH: 150
         HEIGHT: 15
@@ -72,8 +64,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 20
-        Y: 92
+        X: 300
+        Y: 100
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 30
         FONT_COLOR: 255, 255, 255
@@ -83,8 +75,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 20
-        Y: 100
+        X: 200
+        Y: 70
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -94,8 +86,8 @@ STATS:
     PERCENTAGE:
       GRAPH:
         SHOW: True
-        X: 20
-        Y: 280
+        X: 300
+        Y: 260
         WIDTH: 150
         HEIGHT: 15
         MIN_VALUE: 0
@@ -106,8 +98,8 @@ STATS:
       TEXT:
         SHOW: TRUE
         SHOW_UNIT: True
-        X: 20
-        Y: 260
+        X: 285
+        Y: 230
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -116,8 +108,8 @@ STATS:
       TEXT:
         SHOW: TRUE
         SHOW_UNIT: True
-        X: 20
-        Y: 300
+        X: 300
+        Y: 290
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -126,7 +118,7 @@ STATS:
       TEXT:
         SHOW: TRUE
         SHOW_UNIT: True
-        X: 110
+        X: 200
         Y: 260
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
@@ -137,8 +129,8 @@ STATS:
     VIRTUAL:
       GRAPH:
         SHOW: True
-        X: 20
-        Y: 470
+        X: 300
+        Y: 450
         WIDTH: 150
         HEIGHT: 15
         MIN_VALUE: 0
@@ -149,8 +141,8 @@ STATS:
       USED:
         SHOW: TRUE
         SHOW_UNIT: True
-        X: 20
-        Y: 490
+        X: 300
+        Y: 480
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -158,8 +150,8 @@ STATS:
       PERCENT_TEXT:
         SHOW: TRUE
         SHOW_UNIT: True
-        X: 20
-        Y: 445
+        X: 285
+        Y: 420
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255

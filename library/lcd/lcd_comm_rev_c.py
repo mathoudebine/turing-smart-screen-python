@@ -197,7 +197,7 @@ class LcdCommRevC(LcdComm):
         if response == SubRevision.FIVEINCH.value:
             self.sub_revision = SubRevision.FIVEINCH
         else:
-            logger.warning("Display returned unknown sub-revision on Hello answer")
+            logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
 
         logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
 

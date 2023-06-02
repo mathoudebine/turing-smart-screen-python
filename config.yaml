@@ -20,7 +20,7 @@ config:
   # For 5 Inch Devices
   # - 5-inchLandscape6Grid
   # - 5-inchTheme2
-  THEME: 5-inchLandscape6Grid
+  THEME: 5-inchTheme2
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
