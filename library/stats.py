@@ -760,7 +760,11 @@ class Net:
 class Date:
     @staticmethod
     def stats():
-        date_now = datetime.datetime.now()
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined date/time
+            date_now = datetime.datetime.fromtimestamp(1685974760)
+        else:
+            date_now = datetime.datetime.now()
 
         if platform.system() == "Windows":
             # Windows does not have LC_TIME environment variable, use deprecated getdefaultlocale() that returns language code following RFC 1766

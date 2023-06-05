@@ -4,7 +4,7 @@ config:
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: /dev/ttyACM0
+  COM_PORT: AUTO
 
   # Theme to use (located in res/themes)
   # Available themes:
@@ -34,7 +34,7 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: enp4s0 # Ethernet Card
+  ETH: ''     # Ethernet Card
   WLO: '' # Wi-Fi Card
 
 display:
@@ -56,5 +56,3 @@ display:
   # Do not use this setting to rotate display! The selected theme handles landscape/portrait orientation
   DISPLAY_WIDTH: 480  # Do not change unless you have a good reason
   DISPLAY_HEIGHT: 800  # Do not change unless you have a good reason
-
-
