@@ -1,6 +1,5 @@
 # turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-import time
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
 #
@@ -17,13 +16,18 @@ import time
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import numpy
-import cv2
-from math import ceil
-from serial.tools.list_ports import comports
-from library.lcd.lcd_comm import *
-from library.log import logger
+import queue
 from enum import Enum
+from math import ceil
+import time
+
+import serial
+from PIL import Image
+from serial.tools.list_ports import comports
+from typing import Tuple
+
+from library.lcd.lcd_comm import Orientation, LcdComm
+from library.log import logger
 
 
 class Count:
@@ -54,35 +58,35 @@ class Count:
 
 class Command(Enum):
     # COMMANDS
-    HELLO = bytearray([0x01, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc5, 0xd3])
-    OPTIONS = bytearray([0x7d, 0xef, 0x69, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x2d])
-    RESTART = bytearray([0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    TURNOFF = bytearray([0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    TURNON = bytearray([0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x00])
+    HELLO = bytearray((0x01, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0xc5, 0xd3))
+    OPTIONS = bytearray((0x7d, 0xef, 0x69, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x2d))
+    RESTART = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    TURNOFF = bytearray((0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    TURNON = bytearray((0x83, 0xef, 0x69, 0x00, 0x00, 0x00, 0x00))
 
-    SET_BRIGHTNESS = bytearray([0x7b, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00])
+    SET_BRIGHTNESS = bytearray((0x7b, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00))
 
     # STOP COMMANDS
-    STOP_VIDEO = bytearray([0x79, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    STOP_MEDIA = bytearray([0x96, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
+    STOP_VIDEO = bytearray((0x79, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    STOP_MEDIA = bytearray((0x96, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
 
     # IMAGE QUERY STATUS
-    QUERY_STATUS = bytearray([0xcf, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
+    QUERY_STATUS = bytearray((0xcf, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
 
     # STATIC IMAGE
-    START_DISPLAY_BITMAP = bytearray([0x2c])
-    PRE_UPDATE_BITMAP = bytearray([0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    UPDATE_BITMAP = bytearray([0xcc, 0xef, 0x69, 0x00, 0x00])
+    START_DISPLAY_BITMAP = bytearray((0x2c,))
+    PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00, 0x00))
 
-    RESTARTSCREEN = bytearray([0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01])
-    DISPLAY_BITMAP = bytearray([0xc8, 0xef, 0x69, 0x00, 0x17, 0x70])
+    RESTARTSCREEN = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00, 0x17, 0x70))
 
-    STARTMODE_DEFAULT = bytearray([0x00])
-    STARTMODE_IMAGE = bytearray([0x01])
-    STARTMODE_VIDEO = bytearray([0x02])
-    FLIP_180 = bytearray([0x01])
-    NO_FLIP = bytearray([0x00])
-    SEND_PAYLOAD = bytearray([0xFF])
+    STARTMODE_DEFAULT = bytearray((0x00,))
+    STARTMODE_IMAGE = bytearray((0x01,))
+    STARTMODE_VIDEO = bytearray((0x02,))
+    FLIP_180 = bytearray((0x01,))
+    NO_FLIP = bytearray((0x00,))
+    SEND_PAYLOAD = bytearray((0xFF,))
 
     def __init__(self, command):
         self.command = command
@@ -96,35 +100,29 @@ class Padding(Enum):
         self.command = command
 
 
-class Orientation(IntEnum):
-    PORTRAIT = 0
-    LANDSCAPE = 2
-    REVERSE_PORTRAIT = 1
-    REVERSE_LANDSCAPE = 3
-
-
 class SleepInterval(Enum):
-    OFF = bytearray([0x00])
-    ONE = bytearray([0x01])
-    TWO = bytearray([0x02])
-    THREE = bytearray([0x03])
-    FOUR = bytearray([0x04])
-    FIVE = bytearray([0x05])
-    SIX = bytearray([0x06])
-    SEVEN = bytearray([0x07])
-    EIGHT = bytearray([0x08])
-    NINE = bytearray([0x09])
-    TEN = bytearray([0x0a])
+    OFF = bytearray((0x00,))
+    ONE = bytearray((0x01,))
+    TWO = bytearray((0x02,))
+    THREE = bytearray((0x03,))
+    FOUR = bytearray((0x04,))
+    FIVE = bytearray((0x05,))
+    SIX = bytearray((0x06,))
+    SEVEN = bytearray((0x07,))
+    EIGHT = bytearray((0x08,))
+    NINE = bytearray((0x09,))
+    TEN = bytearray((0x0a,))
 
     def __init__(self, command):
         self.command = command
 
 
 class SubRevision(Enum):
-    UNKNOWN = bytearray([0x00])
+    UNKNOWN = bytearray((0x00,))
     FIVEINCH = bytearray(
-        [0x63, 0x68, 0x73, 0x5f, 0x35, 0x69, 0x6e, 0x63, 0x68, 0x2e, 0x64, 0x65, 0x76, 0x31, 0x5f, 0x72, 0x6f, 0x6d,
-         0x31, 0x2e, 0x38, 0x37, 0x00])
+        (0x63, 0x68, 0x73, 0x5f, 0x35, 0x69, 0x6e, 0x63, 0x68, 0x2e, 0x64, 0x65, 0x76, 0x31, 0x5f, 0x72, 0x6f, 0x6d,
+         0x31, 0x2e, 0x38, 0x37, 0x00)
+    )
 
     def __init__(self, command):
         self.command = command
@@ -139,25 +137,30 @@ class LcdCommRevC(LcdComm):
     def __del__(self):
         self.closeSerial()
 
-    def is_flagship(self):
-        return False
-
-    def is_brightness_range(self):
-        return True
-
     @staticmethod
     def auto_detect_com_port():
         com_ports = comports()
-        auto_com_port = None
 
         for com_port in com_ports:
-            if com_port.serial_number == "2017-2-25":
-                auto_com_port = com_port.device
+            if com_port.serial_number == 'USB7INCH':
+                LcdCommRevC._connect_to_reset_device_name(com_port)
+                return LcdCommRevC.auto_detect_com_port()
+            if com_port.serial_number == '20080411':
+                return com_port.device
 
-        return auto_com_port
+        return None
 
-    def SendCommand(self, cmd: Command, payload: bytearray = None, padding: Padding = None, bypass_queue: bool = False,
-                    readsize: int = None):
+    @staticmethod
+    def _connect_to_reset_device_name(com_port):
+        # this device enumerates differently when off, we need to connect once to reset it to correct COM device
+        try:
+            serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
+        except serial.serialutil.SerialException:
+            pass
+        time.sleep(10)
+
+    def _send_command(self, cmd: Command, payload: bytearray = None, padding: Padding = None,
+                      bypass_queue: bool = False, readsize: int = None):
         message = bytearray()
 
         if cmd != Command.SEND_PAYLOAD:
@@ -188,10 +191,10 @@ class LcdCommRevC(LcdComm):
             if readsize:
                 self.update_queue.put((self.ReadData, [readsize]))
 
-    def Hello(self):
+    def _hello(self):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
-        self.SendCommand(Command.HELLO, bypass_queue=True)
+        self._send_command(Command.HELLO, bypass_queue=True)
         response = self.lcd_serial.read(23)
         self.lcd_serial.flushInput()
         if response == SubRevision.FIVEINCH.value:
@@ -202,46 +205,40 @@ class LcdCommRevC(LcdComm):
         logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
 
     def InitializeComm(self):
-        self.Hello()
+        self._hello()
 
     def Reset(self):
-        pass
-        # logger.info("Display reset (COM port may change)...")
-        # self.SendCommand(Command.RESTART, bypass_queue=True)
-        # self.closeSerial()
+        logger.info("Display reset (COM port may change)...")
+        self._send_command(Command.RESTART, bypass_queue=True)
+        self.closeSerial()
         # Wait for display reset then reconnect
-        # time.sleep(15)
-        # self.openSerial()
+        time.sleep(15)
+        self.openSerial()
 
     def Clear(self):
         pass
 
     def ScreenOff(self):
-        #logger.info("Calling ScreenOff")
-        self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
-        self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        # self.SendCommand(Command.TURNOFF, bypass_queue=False)
+        logger.info("Calling ScreenOff")
+        self._send_command(Command.STOP_VIDEO, bypass_queue=False)
+        self._send_command(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
+        self._send_command(Command.TURNOFF, bypass_queue=False)
 
     def ScreenOn(self):
-        #logger.info("Calling ScreenOn")
-        self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
-        self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        # self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
+        logger.info("Calling ScreenOn")
+        self._send_command(Command.STOP_VIDEO, bypass_queue=False)
+        self._send_command(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
+        # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
 
     def SetBrightness(self, level: int = 25):
         # logger.info("Call SetBrightness")
         assert 0 <= level <= 100, 'Brightness level must be [0-100]'
 
-        if self.is_brightness_range():
-            # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
-            # Convert our brightness % to an absolute value.
-            converted_level = int((level / 100) * 255)
-        else:
-            # Brightness is 1 (off) or 0 (full brightness)
-            # logger.info("Your display does not support custom brightness level")
-            converted_level = 1 if level == 0 else 0
+        # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
+        # Convert our brightness % to an absolute value.
+        converted_level = int((level / 100) * 255)
 
-        self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([converted_level]), bypass_queue=True)
+        self._send_command(Command.SET_BRIGHTNESS, payload=bytearray((converted_level,)), bypass_queue=True)
 
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         # logger.info("Call SetBackplateLedColor")
@@ -253,10 +250,10 @@ class LcdCommRevC(LcdComm):
 
         if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
-            self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
+            self._send_command(Command.OPTIONS, payload=b, bypass_queue=False)
         else:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-            self.SendCommand(Command.OPTIONS, payload=b, bypass_queue=False)
+            self._send_command(Command.OPTIONS, payload=b, bypass_queue=False)
 
     def DisplayPILImage(
             self,
@@ -284,76 +281,78 @@ class LcdCommRevC(LcdComm):
 
         if x == 0 and y == 0 and (image_width == self.get_width()) and (image_height == self.get_height()):
             with self.update_queue_mutex:
-                self.SendCommand(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.DISPLAY_BITMAP, bypass_queue=False)
-                self.SendCommand(Command.SEND_PAYLOAD,
-                                 payload=bytearray(self.__generateFullImage(image, self.orientation)),
-                                 bypass_queue=False,
-                                 readsize=1024)
-                self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
+                self._send_command(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
+                self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP,
+                                   bypass_queue=False)
+                self._send_command(Command.DISPLAY_BITMAP, bypass_queue=False)
+                self._send_command(Command.SEND_PAYLOAD,
+                                   payload=bytearray(self._generate_full_image(image, self.orientation)),
+                                   bypass_queue=False,
+                                   readsize=1024)
+                self._send_command(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
         else:
             with self.update_queue_mutex:
-                img, pyd = self.__generateUpdateImage(image, x, y, Count.Start, Command.UPDATE_BITMAP, self.orientation)
-                self.SendCommand(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
-                self.SendCommand(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
-                self.SendCommand(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
+                img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP,
+                                                       self.orientation)
+                self._send_command(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
+                self._send_command(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
+                self._send_command(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
             Count.Start += 1
 
-    def __generateFullImage(self, image, orientation: Orientation = Orientation.PORTRAIT):
-        image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
-
+    @staticmethod
+    def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
         match orientation:
             case Orientation.PORTRAIT:
-                #logger.debug(f"{orientation.name}")
-                image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                image = image.rotate(90, expand=True)
+                logger.debug(f"{orientation.name}")
             case Orientation.REVERSE_PORTRAIT:
-                #logger.debug(f"{orientation.name}")
-                image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
+                image = image.rotate(270, expand=True)
+                logger.debug(f"{orientation.name}")
             case Orientation.REVERSE_LANDSCAPE:
-                image = cv2.rotate(image, cv2.ROTATE_180)
+                image = image.rotate(180)
 
-        height = image.shape[0]
-        width = image.shape[1]
+        image_data = image.convert("RGBA").load()
+        image_ret = ''
+        for y in range(image.height):
+            for x in range(image.width):
+                pixel = image_data[x, y]
+                image_ret += f'{pixel[2]:02x}{pixel[1]:02x}{pixel[0]:02x}{pixel[3]:02x}'
 
-        image = bytearray(numpy.array(image))
-        image = b'\x00'.join(image[i:i + 249] for i in range(0, len(image), 249))
-        return image
+        hex_data = bytearray.fromhex(image_ret)
+        return b'\x00'.join(hex_data[i:i + 249] for i in range(0, len(hex_data), 249))
 
-    def __generateUpdateImage(self, image, x, y, count, cmd: Command = None,
-                              orientation: Orientation = Orientation.PORTRAIT):
-        image = cv2.cvtColor(numpy.array(image), cv2.COLOR_RGB2BGRA)
-        payload = bytearray()
-
+    def _generate_update_image(self, image, x, y, count, cmd: Command = None,
+                               orientation: Orientation = Orientation.PORTRAIT):
         x0, y0 = x, y
 
         match orientation:
             case Orientation.PORTRAIT:
-                image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                x0 = self.get_width() - x - image.shape[0]
+                image = image.rotate(90, expand=True)
+                x0 = self.get_width() - x - image.height
             case Orientation.REVERSE_PORTRAIT:
-                image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
-                y0 = self.get_height() - y - image.shape[1]
+                image = image.rotate(270, expand=True)
+                y0 = self.get_height() - y - image.width
             case Orientation.REVERSE_LANDSCAPE:
-                image = cv2.rotate(image, cv2.ROTATE_180)
-                y0 = self.get_width() - x - image.shape[1]
-                x0 = self.get_height() - y - image.shape[0]
+                image = image.rotate(180, expand=True)
+                y0 = self.get_width() - x - image.width
+                x0 = self.get_height() - y - image.height
             case Orientation.LANDSCAPE:
                 x0, y0 = y, x
 
-        # Why here is inverted ? Because the image is genereted in PORTRAIT Orientation.
-        height = image.shape[0]
-        width = image.shape[1]
+        img_raw_data = []
+        image_data = image.convert("RGBA").load()
+        for h in range(image.height):
+            img_raw_data.append(f'{((x0 + h) * self.display_height) + y0:06x}{image.width:04x}')
+            for w in range(image.width):
+                current_pixel = image_data[w, h]
+                img_raw_data.append(f'{current_pixel[2]:02x}{current_pixel[1]:02x}{current_pixel[0]:02x}')
 
-        image_msg = ''
-        for h in range(height):
-            image_msg += f'{((x0 + h) * 800) + y0:06x}' + f'{width:04x}'
-            for w in range(width):
-                image_msg += f'{image[h][w][0]:02x}' + f'{image[h][w][1]:02x}' + f'{image[h][w][2]:02x}'
-
+        image_msg = ''.join(img_raw_data)
         image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 
         #logger.debug("Render Count: {}".format(count))
+        payload = bytearray()
+
         if cmd:
             payload.extend(cmd.value)
         payload.extend(bytearray.fromhex(image_size))

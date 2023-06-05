@@ -4,7 +4,7 @@ config:
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: /dev/ttyACM0
+  COM_PORT: AUTO
 
   # Theme to use (located in res/themes)
   # Available themes:
@@ -56,5 +56,3 @@ display:
   # Do not use this setting to rotate display! The selected theme handles landscape/portrait orientation
   DISPLAY_WIDTH: 480  # Do not change unless you have a good reason
   DISPLAY_HEIGHT: 800  # Do not change unless you have a good reason
-
-
