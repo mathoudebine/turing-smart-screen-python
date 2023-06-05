@@ -69,3 +69,12 @@ jobs:
       with:
         commit_message: "[GitHub Actions Bot] Update theme previews"
         file_pattern: 'res/themes/*/preview.png'
+        status_options: '--untracked-files=no'
+
+    - name: Run if changes have been detected
+      if: steps.auto-commit-action.outputs.changes_detected == 'true'
+      run: echo "Changes!"
+
+    - name: Run if no changes have been detected
+      if: steps.auto-commit-action.outputs.changes_detected == 'false'
+      run: echo "No Changes!"
