@@ -154,7 +154,6 @@ class LcdComm(ABC):
     def SetBrightness(self, level: int):
         pass
 
-    @abstractmethod
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 

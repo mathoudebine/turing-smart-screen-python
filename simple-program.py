@@ -34,11 +34,12 @@ from library.log import logger
 # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux, etc. or "AUTO" for auto-discovery
 # COM_PORT = "/dev/ttyACM0"
 # COM_PORT = "COM5"
-COM_PORT = "/dev/ttyACM0"
+COM_PORT = "AUTO"
 
-# Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
+# Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
+# Use SIMU for 3.5" simulated LCD (image written in screencap.png) or SIMU5 for 5" simulated LCD
 # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-REVISION = "C"
+REVISION = "A"
 
 stop = False
 
@@ -59,24 +60,28 @@ if __name__ == "__main__":
     # Build your LcdComm object based on the HW revision
     lcd_comm = None
     if REVISION == "A":
-        logger.info("Selected Hardware Revision A (Turing Smart Screen)")
+        logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\")")
         lcd_comm = LcdCommRevA(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "B":
-        print("Selected Hardware Revision B (XuanFang screen version B / flagship)")
+        print("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
         lcd_comm = LcdCommRevB(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "C":
-        print("Selected Hardware Revision C (5 inch device)")
+        print("Selected Hardware Revision C (Turing Smart Screen 5\")")
         lcd_comm = LcdCommRevC(com_port=COM_PORT,
                                display_width=480,
                                display_height=800)
     elif REVISION == "SIMU":
-        print("Selected Simulated LCD")
+        print("Selected 3.5\" Simulated LCD")
         lcd_comm = LcdSimulated(display_width=320,
                                 display_height=480)
+    elif REVISION == "SIMU5":
+        print("Selected 5\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=480,
+                                display_height=800)
     else:
         print("ERROR: Unknown revision")
         try:
@@ -101,14 +106,20 @@ if __name__ == "__main__":
     lcd_comm.SetOrientation(orientation=orientation)
 
     # Define background picture
-    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
-        background = f"res/backgrounds/{REVISION}/example.png"
+    if REVISION == "C" or REVISION == "SIMU5":
+        size = "5inch"
     else:
-        background = f"res/backgrounds/{REVISION}/example_landscape.png"
+        size = ""
+
+    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
+        background = f"res/backgrounds/example{size}.png"
+    else:
+        background = f"res/backgrounds/{REVISION}/example{size}_landscape.png"
 
     # Display sample picture
     lcd_comm.DisplayBitmap(background)
 
+    # Display sample text
     lcd_comm.DisplayText("Basic text", 50, 100)
 
     # Display custom text with solid background
