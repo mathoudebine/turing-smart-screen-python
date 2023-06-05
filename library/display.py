@@ -64,18 +64,12 @@ class Display:
         self.lcd = None
         if config.CONFIG_DATA["display"]["REVISION"] == "A":
             self.lcd = LcdCommRevA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   display_width=320,
-                                   display_height=480,
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "B":
             self.lcd = LcdCommRevB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   display_width=320,
-                                   display_height=480,
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "C":
             self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   display_width=480,
-                                   display_height=800,
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             self.lcd = LcdSimulated(display_width=320,

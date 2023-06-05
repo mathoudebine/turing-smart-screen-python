@@ -71,9 +71,18 @@ logger.setLevel(logging.DEBUG)
 # Hardcode specific configuration for theme editor
 from library import config
 
-config.CONFIG_DATA["display"]["REVISION"] = "SIMU"  # For theme editor, always use simulated LCD
 config.CONFIG_DATA["config"]["HW_SENSORS"] = "STATIC"  # For theme editor always use stub data
 config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argument
+
+config.load_theme()
+
+# For theme editor, always use simulated LCD
+if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '5"':
+    config.CONFIG_DATA["display"]["REVISION"] = "SIMU5"
+    print("SIMU5")
+else:
+    config.CONFIG_DATA["display"]["REVISION"] = "SIMU"
+    print("SIMU")
 
 from library.display import display  # Only import display after hardcoded config is set
 

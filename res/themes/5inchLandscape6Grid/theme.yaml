@@ -1,5 +1,6 @@
 ---
 display:
+  DISPLAY_SIZE: 5"
   DISPLAY_ORIENTATION: landscape
   DISPLAY_RGB_LED: 0, 0, 255
 

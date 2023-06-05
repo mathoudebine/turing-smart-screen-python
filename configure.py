@@ -75,18 +75,13 @@ def get_themes(is5inch: bool = False):
             # Check if a theme.yaml file exists
             theme = os.path.join(dir, 'theme.yaml')
             if os.path.isfile(theme):
-                # Check if a previw is available
-                preview_file = os.path.join(dir, 'preview.png')
-                if os.path.isfile(preview_file):
-                    # Get width and height of the preview
-                    preview = Image.open(os.path.join(dir, 'preview.png'))
-                    if not is5inch and (preview.size == (320, 480) or preview.size == (480, 320)):
+                # Get display size from theme.yaml
+                with open(theme, "rt", encoding='utf8') as stream:
+                    theme_data, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
+                    if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '5"' and is5inch:
                         themes.append(filename)
-                    elif is5inch and (preview.size == (800, 480) or preview.size == (480, 800)):
+                    elif theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '3.5"' and not is5inch:
                         themes.append(filename)
-                else:
-                    # No preview, cannot know theme size: add it to the list
-                    themes.append(filename)
     return sorted(themes, key=str.casefold)
 
 
@@ -332,7 +327,7 @@ class TuringConfigWindow:
         self.theme_cb.config(values=themes)
 
         if not self.theme_cb.get() in themes:
-            # The selected theme does not exist anymore / is not allowed for this screen model
+            # The selected theme does not exist anymore / is not allowed for this screen model : select 1st theme avail.
             self.theme_cb.set(themes[0])
 
     def on_hwlib_change(self, e=None):

@@ -5,6 +5,9 @@
 # NOTE: Every HW sensor is hidden in this example, to show a sensor change 'SHOW: False' to 'SHOW: True'
 ---
 display:
+  # Specify the display size in inch for this theme: 3.5" (default) or 5"
+  DISPLAY_SIZE: 3.5"
+
   # Specify the display orientation for this theme: portrait or landscape (reverse orientation is managed in config.yaml)
   DISPLAY_ORIENTATION: portrait
 
