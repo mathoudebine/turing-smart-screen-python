@@ -302,15 +302,12 @@ class LcdCommRevC(LcdComm):
 
     @staticmethod
     def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
-        match orientation:
-            case Orientation.PORTRAIT:
-                image = image.rotate(90, expand=True)
-                logger.debug(f"{orientation.name}")
-            case Orientation.REVERSE_PORTRAIT:
-                image = image.rotate(270, expand=True)
-                logger.debug(f"{orientation.name}")
-            case Orientation.REVERSE_LANDSCAPE:
-                image = image.rotate(180)
+        if orientation == Orientation.PORTRAIT:
+            image = image.rotate(90, expand=True)
+        elif orientation == Orientation.REVERSE_PORTRAIT:
+            image = image.rotate(270, expand=True)
+        elif orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180)
 
         image_data = image.convert("RGBA").load()
         image_ret = ''
@@ -326,19 +323,18 @@ class LcdCommRevC(LcdComm):
                                orientation: Orientation = Orientation.PORTRAIT):
         x0, y0 = x, y
 
-        match orientation:
-            case Orientation.PORTRAIT:
-                image = image.rotate(90, expand=True)
-                x0 = self.get_width() - x - image.height
-            case Orientation.REVERSE_PORTRAIT:
-                image = image.rotate(270, expand=True)
-                y0 = self.get_height() - y - image.width
-            case Orientation.REVERSE_LANDSCAPE:
-                image = image.rotate(180, expand=True)
-                y0 = self.get_width() - x - image.width
-                x0 = self.get_height() - y - image.height
-            case Orientation.LANDSCAPE:
-                x0, y0 = y, x
+        if orientation == Orientation.PORTRAIT:
+            image = image.rotate(90, expand=True)
+            x0 = self.get_width() - x - image.height
+        elif orientation == Orientation.REVERSE_PORTRAIT:
+            image = image.rotate(270, expand=True)
+            y0 = self.get_height() - y - image.width
+        elif orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180, expand=True)
+            y0 = self.get_width() - x - image.width
+            x0 = self.get_height() - y - image.height
+        elif orientation == Orientation.LANDSCAPE:
+            x0, y0 = y, x
 
         img_raw_data = []
         image_data = image.convert("RGBA").load()
