@@ -58,7 +58,7 @@ except:
         os._exit(0)
 
 # Maps between config.yaml values and GUI description
-revision_map = {'A': "Turing / rev. A", 'B': "XuanFang / rev. B / flagship", 'SIMU': "Simulated screen"}
+revision_map = {'A': "Turing / rev. A", 'B': "XuanFang / rev. B / flagship", 'C': "5 inch Device", 'SIMU': "Simulated screen"}
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
