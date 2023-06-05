@@ -63,9 +63,10 @@ revision_map = {'A': "Turing 3.5\" / rev. A", 'B': "XuanFang / rev. B / flagship
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
+revision_size = {'A': '3.5"', 'B': '3.5"', 'C': '5"', 'SIMU': '3.5"', 'SIMU5': '5"'}
 
 
-def get_themes(is5inch: bool = False):
+def get_themes(revision: str):
     themes = []
     directory = 'res/themes/'
     for filename in os.listdir('res/themes'):
@@ -78,9 +79,7 @@ def get_themes(is5inch: bool = False):
                 # Get display size from theme.yaml
                 with open(theme, "rt", encoding='utf8') as stream:
                     theme_data, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
-                    if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '5"' and is5inch:
-                        themes.append(filename)
-                    elif theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '3.5"' and not is5inch:
+                    if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == revision_size[revision]:
                         themes.append(filename)
     return sorted(themes, key=str.casefold)
 
@@ -307,8 +306,8 @@ class TuringConfigWindow:
 
     def on_model_change(self, e=None):
         self.show_hide_brightness_warning()
-        model_code = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
-        if model_code == "SIMU" or model_code == "SIMU5":
+        revision = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
+        if revision == "SIMU" or revision == "SIMU5":
             self.com_cb.configure(state="disabled", foreground="#C0C0C0")
             self.orient_cb.configure(state="disabled", foreground="#C0C0C0")
             self.brightness_slider.configure(state="disabled")
@@ -319,11 +318,7 @@ class TuringConfigWindow:
             self.brightness_slider.configure(state="normal")
             self.brightness_val_label.configure(foreground="#000")
 
-        if model_code == "C" or model_code == "SIMU5":
-            themes = get_themes(is5inch=True)
-        else:
-            themes = get_themes(is5inch=False)
-
+        themes = get_themes(revision)
         self.theme_cb.config(values=themes)
 
         if not self.theme_cb.get() in themes:
