@@ -154,6 +154,7 @@ class LcdCommRevC(LcdComm):
     def _connect_to_reset_device_name(com_port):
         # this device enumerates differently when off, we need to connect once to reset it to correct COM device
         try:
+            logger.debug(f"Device {com_port} needs to be resetted in order to work correctly.")
             serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
         except serial.serialutil.SerialException:
             pass
