@@ -8,16 +8,7 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  # Available themes:
-  # - 3.5inchTheme2
-  # - Terminal
-  # - Landscape6Grid
-  # - LandscapeMagicBlue
-  # - Cyberpunk
-  # - Cyberpunk-net
-  # - bash-dark-green
-  # - bash-dark-green-gpu
-  # - BigClock
+  # Use the name of the folder as value
   THEME: 3.5inchTheme2
 
   # Hardware sensors reading
@@ -36,7 +27,8 @@ config:
   WLO: "" # Wi-Fi Card
 
 display:
-  # Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
+  # Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
+  # Use SIMU for simulated LCD (image written in screencap.png)
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
   REVISION: A
 
