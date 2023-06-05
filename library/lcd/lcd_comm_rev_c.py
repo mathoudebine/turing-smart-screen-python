@@ -1,7 +1,9 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2023-2023  Alex W. Baulé  (alexwbaule)
+# Copyright (C) 2023-2023  Arthur Ferrai  (arthurferrai)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -217,7 +219,16 @@ class LcdCommRevC(LcdComm):
         self.openSerial()
 
     def Clear(self):
-        pass
+        # This hardware does not implement a Clear command: display a blank image on the whole screen
+        # Force an orientation in case the screen is currently configured with one different from the theme
+        backup_orientation = self.orientation
+        self.SetOrientation(orientation=Orientation.PORTRAIT)
+
+        blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
+        self.DisplayPILImage(blank)
+
+        # Restore orientation
+        self.SetOrientation(orientation=backup_orientation)
 
     def ScreenOff(self):
         logger.info("Calling ScreenOff")
@@ -240,10 +251,6 @@ class LcdCommRevC(LcdComm):
         converted_level = int((level / 100) * 255)
 
         self._send_command(Command.SET_BRIGHTNESS, payload=bytearray((converted_level,)), bypass_queue=True)
-
-    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
-        # logger.info("Call SetBackplateLedColor")
-        pass
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         self.orientation = orientation
