@@ -105,20 +105,6 @@ def refresh_theme():
     stats.Date.stats()
 
 
-def get_width(self) -> int:
-    if config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return config.CONFIG_DATA["display"]["DISPLAY_WIDTH"]
-    else:
-        return config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-
-
-def get_height(self) -> int:
-    if config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-    else:
-        return config.CONFIG_DATA["display"]["DISPLAY_WIDTH"]
-
-
 if __name__ == "__main__":
     def on_closing():
         logger.debug("Exit Theme Editor...")
