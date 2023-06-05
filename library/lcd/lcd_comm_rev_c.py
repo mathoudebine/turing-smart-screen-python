@@ -2,8 +2,8 @@
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
-# Copyright (C) 2023-2023  Alex W. Baulé  (alexwbaule)
-# Copyright (C) 2023-2023  Arthur Ferrai  (arthurferrai)
+# Copyright (C) 2023-2023  Alex W. Baulé (alexwbaule)
+# Copyright (C) 2023-2023  Arthur Ferrai (arthurferrai)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

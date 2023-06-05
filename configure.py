@@ -58,22 +58,35 @@ except:
         os._exit(0)
 
 # Maps between config.yaml values and GUI description
-revision_map = {'A': "Turing / rev. A", 'B': "XuanFang / rev. B / flagship", 'C': "5 inch Device", 'SIMU': "Simulated screen"}
+revision_map = {'A': "Turing 3.5\" / rev. A", 'B': "XuanFang / rev. B / flagship", 'C': "Turing 5\"",
+                'SIMU': "Simulated 3.5\" screen", 'SIMU5': "Simulated 5\" screen"}
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
 
 
-def get_themes():
+def get_themes(is5inch: bool = False):
     themes = []
     directory = 'res/themes/'
     for filename in os.listdir('res/themes'):
-        f = os.path.join(directory, filename)
-        # checking if it is a file
-        if os.path.isdir(f):
-            theme = os.path.join(f, 'theme.yaml')
+        dir = os.path.join(directory, filename)
+        # checking if it is a directory
+        if os.path.isdir(dir):
+            # Check if a theme.yaml file exists
+            theme = os.path.join(dir, 'theme.yaml')
             if os.path.isfile(theme):
-                themes.append(filename)
+                # Check if a previw is available
+                preview_file = os.path.join(dir, 'preview.png')
+                if os.path.isfile(preview_file):
+                    # Get width and height of the preview
+                    preview = Image.open(os.path.join(dir, 'preview.png'))
+                    if not is5inch and (preview.size == (320, 480) or preview.size == (480, 320)):
+                        themes.append(filename)
+                    elif is5inch and (preview.size == (800, 480) or preview.size == (480, 800)):
+                        themes.append(filename)
+                else:
+                    # No preview, cannot know theme size: add it to the list
+                    themes.append(filename)
     return sorted(themes, key=str.casefold)
 
 
@@ -112,7 +125,7 @@ class TuringConfigWindow:
 
         self.theme_label = ttk.Label(self.window, text='Theme')
         self.theme_label.place(x=320, y=35)
-        self.theme_cb = ttk.Combobox(self.window, values=get_themes(), state='readonly')
+        self.theme_cb = ttk.Combobox(self.window, state='readonly')
         self.theme_cb.place(x=500, y=30, width=210)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
@@ -299,7 +312,8 @@ class TuringConfigWindow:
 
     def on_model_change(self, e=None):
         self.show_hide_brightness_warning()
-        if [k for k, v in revision_map.items() if v == self.model_cb.get()][0] == "SIMU":
+        model_code = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
+        if model_code == "SIMU" or model_code == "SIMU5":
             self.com_cb.configure(state="disabled", foreground="#C0C0C0")
             self.orient_cb.configure(state="disabled", foreground="#C0C0C0")
             self.brightness_slider.configure(state="disabled")
@@ -309,6 +323,17 @@ class TuringConfigWindow:
             self.orient_cb.configure(state="readonly", foreground="#000")
             self.brightness_slider.configure(state="normal")
             self.brightness_val_label.configure(foreground="#000")
+
+        if model_code == "C" or model_code == "SIMU5":
+            themes = get_themes(is5inch=True)
+        else:
+            themes = get_themes(is5inch=False)
+
+        self.theme_cb.config(values=themes)
+
+        if not self.theme_cb.get() in themes:
+            # The selected theme does not exist anymore / is not allowed for this screen model
+            self.theme_cb.set(themes[0])
 
     def on_hwlib_change(self, e=None):
         hwlib = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
