@@ -163,7 +163,7 @@ class LcdCommRevC(LcdComm):
         if cmd != Command.SEND_PAYLOAD:
             message = cmd.value
 
-        logger.debug("Command: {}".format(cmd.name))
+        #logger.debug("Command: {}".format(cmd.name))
 
         if not padding:
             padding = Padding.NULL
@@ -217,13 +217,13 @@ class LcdCommRevC(LcdComm):
         pass
 
     def ScreenOff(self):
-        logger.info("Calling ScreenOff")
+        #logger.info("Calling ScreenOff")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
         # self.SendCommand(Command.TURNOFF, bypass_queue=False)
 
     def ScreenOn(self):
-        logger.info("Calling ScreenOn")
+        #logger.info("Calling ScreenOn")
         self.SendCommand(Command.STOP_VIDEO, bypass_queue=False)
         self.SendCommand(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
         # self.SendCommand(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
@@ -249,7 +249,7 @@ class LcdCommRevC(LcdComm):
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         self.orientation = orientation
-        logger.info(f"Call SetOrientation to: {self.orientation.name}")
+        #logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
         if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
@@ -305,10 +305,10 @@ class LcdCommRevC(LcdComm):
 
         match orientation:
             case Orientation.PORTRAIT:
-                logger.debug(f"{orientation.name}")
+                #logger.debug(f"{orientation.name}")
                 image = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
             case Orientation.REVERSE_PORTRAIT:
-                logger.debug(f"{orientation.name}")
+                #logger.debug(f"{orientation.name}")
                 image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
             case Orientation.REVERSE_LANDSCAPE:
                 image = cv2.rotate(image, cv2.ROTATE_180)
@@ -353,7 +353,7 @@ class LcdCommRevC(LcdComm):
 
         image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 
-        logger.debug("Render Count: {}".format(count))
+        #logger.debug("Render Count: {}".format(count))
         if cmd:
             payload.extend(cmd.value)
         payload.extend(bytearray.fromhex(image_size))
