@@ -36,9 +36,6 @@ jobs:
 
     - name: Configure system monitor for screenshot
       run: |
-        # For tests there is no real HW: use simulated LCD mode
-        sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
-        
         # Use static data
         sed -i "/HW_SENSORS:/c\  HW_SENSORS: STATIC" config.yaml
 
@@ -54,6 +51,15 @@ jobs:
             echo "Using theme $theme"
             sed -i "/THEME:/c\  THEME: $theme" config.yaml
     
+            # For tests there is no real HW: use simulated LCD mode
+            # Check if theme is for 5"
+            orientation=$(grep 'DISPLAY_SIZE' $dir/theme.yaml | sed 's/ //g')
+            if [ $orientation == "DISPLAY_SIZE:5\"" ]; then
+              sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
+            else
+              sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
+            fi
+        
             # Run system-monitor for 5 seconds
             python3 main.py > output.log 2>&1 &
             sleep 5
@@ -73,8 +79,4 @@ jobs:
 
     - name: Run if changes have been detected
       if: steps.auto-commit-action.outputs.changes_detected == 'true'
-      run: echo "Changes!"
-
-    - name: Run if no changes have been detected
-      if: steps.auto-commit-action.outputs.changes_detected == 'false'
-      run: echo "No Changes!"
+      run: echo "Theme previews have changed!"
