@@ -140,7 +140,7 @@ STATS:
         BACKGROUND_IMAGE: background.png
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
-        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
         SHOW: True
         X: 560
         Y: 372
