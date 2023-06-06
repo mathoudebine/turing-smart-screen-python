@@ -65,6 +65,11 @@ def load_theme():
         except:
             os._exit(0)
 
+    copy_default(THEME_DEFAULT, THEME_DATA)
+
+
+def check_theme_compatible():
+    global THEME_DATA
     # Check if theme is compatible with hardware revision
     if revision_size[CONFIG_DATA["display"]["REVISION"]] != THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
         logger.error("The selected theme " + CONFIG_DATA['config'][
@@ -73,8 +78,6 @@ def load_theme():
             sys.exit(0)
         except:
             os._exit(0)
-
-    copy_default(THEME_DEFAULT, THEME_DATA)
 
 
 # Load theme on import

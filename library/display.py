@@ -80,6 +80,9 @@ class Display:
         else:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
 
+        # Check if selected theme is compatible with hardware revision
+        config.check_theme_compatible()
+
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)
         self.lcd.Reset()
