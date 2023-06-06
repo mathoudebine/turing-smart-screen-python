@@ -4,28 +4,70 @@ display:
   DISPLAY_ORIENTATION: landscape
   DISPLAY_RGB_LED: 0, 0, 255
 
+static_text:
+  CPULOAD:
+   TEXT: CPU Load
+   X: 38
+   Y: 130
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  CPUTEMP:
+   TEXT: CPU Temp°
+   X: 188
+   Y: 130
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  CPUCLOCK:
+   TEXT: CPU Clock
+   X: 344
+   Y: 130
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  GPULOAD:
+   TEXT: GPU Load
+   X: 38
+   Y: 280
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  GPUTEMP:
+   TEXT: GPU Temp°
+   X: 188
+   Y: 280
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  GPURAM:
+   TEXT: GPU RAM
+   X: 348
+   Y: 280
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  RAMLOAD:
+   TEXT: RAM Load
+   X: 36
+   Y: 430
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 24
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
 static_images:
   BACKGROUND:
-    PATH: background.png
+    PATH: background_grid.png
     X: 0
     Y: 0
     WIDTH: 800
     HEIGHT: 480
-static_text:
-  CPU_MODEL:
-    TEXT: "0"
-    X: 0
-    Y: 0
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    BACKGROUND_IMAGE: background.png
-  ZERO:
-    TEXT: "8"
-    X: 791
-    Y: 468
-    FONT_SIZE: 15
-    FONT_COLOR: 255, 239, 8
-    BACKGROUND_IMAGE: background.png
 STATS:
   CPU:
     PERCENTAGE:
@@ -33,8 +75,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 35
-        Y: 56
+        X: 40
+        Y: 66
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -44,8 +86,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: False
-        X: 355
-        Y: 56
+        X: 360
+        Y: 66
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -55,8 +97,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 180
-        Y: 56
+        X: 185
+        Y: 66
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -67,8 +109,8 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 35
-        Y: 201
+        X: 40
+        Y: 211
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -77,8 +119,18 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 180
-        Y: 201
+        X: 185
+        Y: 211
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    MEMORY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 340
+        Y: 211
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -89,8 +141,8 @@ STATS:
       PERCENT_TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 350
-        Y: 201
+        X: 40
+        Y: 361
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255

@@ -79,10 +79,8 @@ config.load_theme()
 # For theme editor, always use simulated LCD
 if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '5"':
     config.CONFIG_DATA["display"]["REVISION"] = "SIMU5"
-    print("SIMU5")
 else:
     config.CONFIG_DATA["display"]["REVISION"] = "SIMU"
-    print("SIMU")
 
 from library.display import display  # Only import display after hardcoded config is set
 

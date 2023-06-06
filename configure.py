@@ -290,7 +290,7 @@ class TuringConfigWindow:
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
-        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " " + self.theme_cb.get(), shell=True)
+        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " \"" + self.theme_cb.get() + "\"", shell=True)
 
     def on_save_click(self):
         self.save_config_values()

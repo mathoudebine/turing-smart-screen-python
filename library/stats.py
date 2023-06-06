@@ -762,7 +762,7 @@ class Date:
     def stats():
         if HW_SENSORS == "STATIC":
             # For static sensors, use predefined date/time
-            date_now = datetime.datetime.fromtimestamp(1685974760)
+            date_now = datetime.datetime.fromtimestamp(1694014609)
         else:
             date_now = datetime.datetime.now()
 
