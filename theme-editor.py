@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -71,9 +71,16 @@ logger.setLevel(logging.DEBUG)
 # Hardcode specific configuration for theme editor
 from library import config
 
-config.CONFIG_DATA["display"]["REVISION"] = "SIMU"  # For theme editor, always use simulated LCD
 config.CONFIG_DATA["config"]["HW_SENSORS"] = "STATIC"  # For theme editor always use stub data
 config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argument
+
+config.load_theme()
+
+# For theme editor, always use simulated LCD
+if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '5"':
+    config.CONFIG_DATA["display"]["REVISION"] = "SIMU5"
+else:
+    config.CONFIG_DATA["display"]["REVISION"] = "SIMU"
 
 from library.display import display  # Only import display after hardcoded config is set
 
@@ -103,20 +110,6 @@ def refresh_theme():
     stats.Disk.stats()
     stats.Net.stats()
     stats.Date.stats()
-
-
-def get_width(self) -> int:
-    if config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return config.CONFIG_DATA["display"]["DISPLAY_WIDTH"]
-    else:
-        return config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-
-
-def get_height(self) -> int:
-    if config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'portrait':
-        return config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"]
-    else:
-        return config.CONFIG_DATA["display"]["DISPLAY_WIDTH"]
 
 
 if __name__ == "__main__":

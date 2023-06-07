@@ -1,4 +1,4 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -154,7 +154,6 @@ class LcdComm(ABC):
     def SetBrightness(self, level: int):
         pass
 
-    @abstractmethod
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 

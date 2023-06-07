@@ -5,6 +5,9 @@
 # NOTE: Every HW sensor is hidden in this example, to show a sensor change 'SHOW: False' to 'SHOW: True'
 ---
 display:
+  # Specify the display size in inch for this theme: 3.5" (default) or 5"
+  DISPLAY_SIZE: 3.5"
+
   # Specify the display orientation for this theme: portrait or landscape (reverse orientation is managed in config.yaml)
   DISPLAY_ORIENTATION: portrait
 
@@ -27,6 +30,7 @@ static_images:
     Y: 0
     WIDTH: 320
     HEIGHT: 480
+
 static_text:
   # Specify what static text we want to show on the display
   # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
@@ -49,6 +53,7 @@ static_text:
    FONT_COLOR: 0, 0, 0
    # BACKGROUND_COLOR: 255, 255, 255
    BACKGROUND_IMAGE: background.png
+
 STATS:
   CPU:
     PERCENTAGE:

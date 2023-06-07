@@ -1,7 +1,9 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2023-2023  Alex W. Baulé (alexwbaule)
+# Copyright (C) 2023-2023  Arthur Ferrai (arthurferrai)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -17,14 +19,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import queue
+import time
 from enum import Enum
 from math import ceil
-import time
 
 import serial
 from PIL import Image
 from serial.tools.list_ports import comports
-from typing import Tuple
 
 from library.lcd.lcd_comm import Orientation, LcdComm
 from library.log import logger
@@ -154,7 +155,7 @@ class LcdCommRevC(LcdComm):
     def _connect_to_reset_device_name(com_port):
         # this device enumerates differently when off, we need to connect once to reset it to correct COM device
         try:
-            logger.debug(f"Device {com_port} needs to be resetted in order to work correctly.")
+            logger.debug(f"Waiting for device {com_port} to be turned ON...")
             serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
         except serial.serialutil.SerialException:
             pass
@@ -167,7 +168,7 @@ class LcdCommRevC(LcdComm):
         if cmd != Command.SEND_PAYLOAD:
             message = cmd.value
 
-        #logger.debug("Command: {}".format(cmd.name))
+        # logger.debug("Command: {}".format(cmd.name))
 
         if not padding:
             padding = Padding.NULL
@@ -217,19 +218,28 @@ class LcdCommRevC(LcdComm):
         self.openSerial()
 
     def Clear(self):
-        pass
+        # This hardware does not implement a Clear command: display a blank image on the whole screen
+        # Force an orientation in case the screen is currently configured with one different from the theme
+        backup_orientation = self.orientation
+        self.SetOrientation(orientation=Orientation.PORTRAIT)
+
+        blank = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
+        self.DisplayPILImage(blank)
+
+        # Restore orientation
+        self.SetOrientation(orientation=backup_orientation)
 
     def ScreenOff(self):
         logger.info("Calling ScreenOff")
-        self._send_command(Command.STOP_VIDEO, bypass_queue=False)
-        self._send_command(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        self._send_command(Command.TURNOFF, bypass_queue=False)
+        self._send_command(Command.STOP_VIDEO)
+        self._send_command(Command.STOP_MEDIA, readsize=1024)
+        self._send_command(Command.TURNOFF)
 
     def ScreenOn(self):
         logger.info("Calling ScreenOn")
-        self._send_command(Command.STOP_VIDEO, bypass_queue=False)
-        self._send_command(Command.STOP_MEDIA, bypass_queue=False, readsize=1024)
-        # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]), bypass_queue=False)
+        self._send_command(Command.STOP_VIDEO)
+        self._send_command(Command.STOP_MEDIA, readsize=1024)
+        # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]))
 
     def SetBrightness(self, level: int = 25):
         # logger.info("Call SetBrightness")
@@ -241,20 +251,16 @@ class LcdCommRevC(LcdComm):
 
         self._send_command(Command.SET_BRIGHTNESS, payload=bytearray((converted_level,)), bypass_queue=True)
 
-    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
-        # logger.info("Call SetBackplateLedColor")
-        pass
-
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         self.orientation = orientation
-        #logger.info(f"Call SetOrientation to: {self.orientation.name}")
+        # logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
         if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
-            self._send_command(Command.OPTIONS, payload=b, bypass_queue=False)
+            self._send_command(Command.OPTIONS, payload=b)
         else:
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-            self._send_command(Command.OPTIONS, payload=b, bypass_queue=False)
+            self._send_command(Command.OPTIONS, payload=b)
 
     def DisplayPILImage(
             self,
@@ -282,35 +288,30 @@ class LcdCommRevC(LcdComm):
 
         if x == 0 and y == 0 and (image_width == self.get_width()) and (image_height == self.get_height()):
             with self.update_queue_mutex:
-                self._send_command(Command.PRE_UPDATE_BITMAP, bypass_queue=False)
-                self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP,
-                                   bypass_queue=False)
-                self._send_command(Command.DISPLAY_BITMAP, bypass_queue=False)
+                self._send_command(Command.PRE_UPDATE_BITMAP)
+                self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
+                self._send_command(Command.DISPLAY_BITMAP)
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image, self.orientation)),
-                                   bypass_queue=False,
                                    readsize=1024)
-                self._send_command(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
+                self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
             with self.update_queue_mutex:
                 img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP,
                                                        self.orientation)
-                self._send_command(Command.SEND_PAYLOAD, payload=pyd, bypass_queue=False)
-                self._send_command(Command.SEND_PAYLOAD, payload=img, bypass_queue=False)
-                self._send_command(Command.QUERY_STATUS, bypass_queue=False, readsize=1024)
+                self._send_command(Command.SEND_PAYLOAD, payload=pyd)
+                self._send_command(Command.SEND_PAYLOAD, payload=img)
+                self._send_command(Command.QUERY_STATUS, readsize=1024)
             Count.Start += 1
 
     @staticmethod
     def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
-        match orientation:
-            case Orientation.PORTRAIT:
-                image = image.rotate(90, expand=True)
-                logger.debug(f"{orientation.name}")
-            case Orientation.REVERSE_PORTRAIT:
-                image = image.rotate(270, expand=True)
-                logger.debug(f"{orientation.name}")
-            case Orientation.REVERSE_LANDSCAPE:
-                image = image.rotate(180)
+        if orientation == Orientation.PORTRAIT:
+            image = image.rotate(90, expand=True)
+        elif orientation == Orientation.REVERSE_PORTRAIT:
+            image = image.rotate(270, expand=True)
+        elif orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180)
 
         image_data = image.convert("RGBA").load()
         image_ret = ''
@@ -326,19 +327,18 @@ class LcdCommRevC(LcdComm):
                                orientation: Orientation = Orientation.PORTRAIT):
         x0, y0 = x, y
 
-        match orientation:
-            case Orientation.PORTRAIT:
-                image = image.rotate(90, expand=True)
-                x0 = self.get_width() - x - image.height
-            case Orientation.REVERSE_PORTRAIT:
-                image = image.rotate(270, expand=True)
-                y0 = self.get_height() - y - image.width
-            case Orientation.REVERSE_LANDSCAPE:
-                image = image.rotate(180, expand=True)
-                y0 = self.get_width() - x - image.width
-                x0 = self.get_height() - y - image.height
-            case Orientation.LANDSCAPE:
-                x0, y0 = y, x
+        if orientation == Orientation.PORTRAIT:
+            image = image.rotate(90, expand=True)
+            x0 = self.get_width() - x - image.height
+        elif orientation == Orientation.REVERSE_PORTRAIT:
+            image = image.rotate(270, expand=True)
+            y0 = self.get_height() - y - image.width
+        elif orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180, expand=True)
+            y0 = self.get_width() - x - image.width
+            x0 = self.get_height() - y - image.height
+        elif orientation == Orientation.LANDSCAPE:
+            x0, y0 = y, x
 
         img_raw_data = []
         image_data = image.convert("RGBA").load()
@@ -351,7 +351,7 @@ class LcdCommRevC(LcdComm):
         image_msg = ''.join(img_raw_data)
         image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
 
-        #logger.debug("Render Count: {}".format(count))
+        # logger.debug("Render Count: {}".format(count))
         payload = bytearray()
 
         if cmd:

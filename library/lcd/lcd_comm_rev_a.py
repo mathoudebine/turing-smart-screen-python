@@ -1,4 +1,4 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -107,10 +107,6 @@ class LcdCommRevA(LcdComm):
         # Level : 0 (brightest) - 255 (darkest)
         self.SendCommand(Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
-    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
-        logger.info("HW revision A does not support backplate LED color setting")
-        pass
-
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         self.orientation = orientation
         width = self.get_width()
@@ -176,7 +172,7 @@ class LcdCommRevA(LcdComm):
                     rgb = (R << 11) | (G << 5) | B
                     line += struct.pack('<H', rgb)
 
-                    # Send image data by multiple of DISPLAY_WIDTH bytes
+                    # Send image data by multiple of "display width" bytes
                     if len(line) >= self.get_width() * 8:
                         self.SendLine(line)
                         line = bytes()

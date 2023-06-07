@@ -1,0 +1,137 @@
+---
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 71, 127, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background_en.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 480
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      GRAPH:
+        SHOW: True
+        X: 55
+        Y: 224
+        WIDTH: 220
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 249, 217, 2315
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 105, 101, 98
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 486
+        Y: 200
+        FONT: jetbrains-mono/JetBrainsMono-Light.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_en.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 55
+        Y: 283
+        WIDTH: 220
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 211, 173
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 105, 101, 98
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 55
+        Y: 164
+        WIDTH: 220
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 203, 118, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 105, 101, 98
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 486
+        Y: 71
+        FONT: jetbrains-mono/JetBrainsMono-Light.ttf
+        FONT_SIZE: 24
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_en.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 55
+        Y: 343
+        WIDTH: 220
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 218, 115
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 105, 101, 98
+  NET:
+    INTERVAL: 1
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 472
+          Y: 445
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_en.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 690
+          Y: 445
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_en.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: long # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        SHOW: True
+        X: 30
+        Y: 445
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_en.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 265
+        Y: 445
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_en.png
+
