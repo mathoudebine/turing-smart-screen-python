@@ -40,15 +40,15 @@ def get_themes():
 if __name__ == "__main__":
     themes = get_themes()
 
-    with open("res/themes/themes.html", "w", encoding='utf-8') as file:
-        file.write("<!--- This file is generated automatically bi GitHub Actions, do not edit it! --->\n")
+    with open("res/themes/themes.md", "w", encoding='utf-8') as file:
+        file.write("<!--- This file is generated automatically by GitHub Actions, do not edit it! --->\n")
         file.write("\n")
-        file.write("<table style=\"border: none;\">")
+        file.write("<table>")
         i = 0
         for theme in themes:
-            file.write(f"<td><table style=\"border: none;\"><tr><th>{theme}</th></tr><tr><td><img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td></tr></table></td>")
+            file.write(f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
             i = i + 1
             if i >= 5:
-                file.write("</table><table style=\"border: none;\">")
+                file.write("</table><table>")
                 i = 0
         file.write("</table>\n")
