@@ -51,8 +51,8 @@ if __name__ == "__main__":
         file.write("\n")
         file.write("# Turing Smart Screen themes\n")
         file.write("\n")
-        file.write("[3.5\" themes](#35-themes)")
-        file.write("[5\" themes](#5-themes)")
+        file.write("[3.5\" themes](#35-themes)\n")
+        file.write("[5\" themes](#5-themes)\n")
 
         file.write("\n## 3.5\" themes\n")
         file.write("<table>")
