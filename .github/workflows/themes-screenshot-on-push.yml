@@ -60,9 +60,9 @@ jobs:
               sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
             fi
         
-            # Run system-monitor for 5 seconds
+            # Run system-monitor for 10 seconds
             python3 main.py > output.log 2>&1 &
-            sleep 5
+            sleep 10
             killall -9 python3
           
             # Copy screen capture on theme folder
