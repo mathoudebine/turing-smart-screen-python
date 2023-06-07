@@ -40,7 +40,7 @@ jobs:
             # For tests there is no real HW: use simulated LCD mode
             # Check if theme is for 5"
             orientation=$(grep 'DISPLAY_SIZE' $dir/theme.yaml | sed 's/ //g')
-            if [ $orientation == "DISPLAY_SIZE:5\"" ]; then
+            if [ "$orientation" == "DISPLAY_SIZE:5\"" ]; then
               sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
             else
               sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
