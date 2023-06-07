@@ -21,7 +21,7 @@ Supported smart screens models:
 | **Turing Smart Screen 3.5"**                         | **XuanFang 3.5"**                                 | **Turing Smart Screen 5"**                          |
 |------------------------------------------------------|---------------------------------------------------|-----------------------------------------------------|
 | <img src="res/docs/turing.webp" height="300" />      | <img src="res/docs/xuanfang.webp" height="300" /> | <img src="res/docs/turing5inch.png" height="300" /> |
-| also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | experimental support (no video or storage for now)  |
+| also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now)         |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
