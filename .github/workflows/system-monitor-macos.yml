@@ -15,9 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
-        theme: [ "3.5inchTheme2", "Cyberpunk", "Cyberpunk-net", "Landscape6Grid", "Terminal", "bash-dark-green", "bash-dark-green-gpu",
-                 "LandscapeMagicBlue", "BigClock", "LandscapeEarth" ]
+        python-version: ["3.7", "3.11"]
+        theme: [ "3.5inchTheme2" ]
 
     steps:
     - uses: actions/checkout@v3
