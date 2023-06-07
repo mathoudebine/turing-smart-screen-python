@@ -1,5 +1,7 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
+import os
+import sys
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
 #
@@ -20,6 +22,7 @@ from library import config
 from library.lcd.lcd_comm import Orientation
 from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
+from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -61,19 +64,24 @@ class Display:
         self.lcd = None
         if config.CONFIG_DATA["display"]["REVISION"] == "A":
             self.lcd = LcdCommRevA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   display_width=config.CONFIG_DATA["display"]["DISPLAY_WIDTH"],
-                                   display_height=config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "B":
             self.lcd = LcdCommRevB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   display_width=config.CONFIG_DATA["display"]["DISPLAY_WIDTH"],
-                                   display_height=config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "C":
+            self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
-            self.lcd = LcdSimulated(display_width=config.CONFIG_DATA["display"]["DISPLAY_WIDTH"],
-                                    display_height=config.CONFIG_DATA["display"]["DISPLAY_HEIGHT"])
+            self.lcd = LcdSimulated(display_width=320,
+                                    display_height=480)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU5":
+            self.lcd = LcdSimulated(display_width=480,
+                                    display_height=800)
         else:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
+
+        # Check if selected theme is compatible with hardware revision
+        config.check_theme_compatible()
 
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)

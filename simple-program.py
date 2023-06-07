@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -27,6 +27,7 @@ from datetime import datetime
 # Import only the modules for LCD communication
 from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
+from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -35,7 +36,8 @@ from library.log import logger
 # COM_PORT = "COM5"
 COM_PORT = "AUTO"
 
-# Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
+# Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
+# Use SIMU for 3.5" simulated LCD (image written in screencap.png) or SIMU5 for 5" simulated LCD
 # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
 REVISION = "A"
 
@@ -58,19 +60,28 @@ if __name__ == "__main__":
     # Build your LcdComm object based on the HW revision
     lcd_comm = None
     if REVISION == "A":
-        logger.info("Selected Hardware Revision A (Turing Smart Screen)")
+        logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\")")
         lcd_comm = LcdCommRevA(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
     elif REVISION == "B":
-        print("Selected Hardware Revision B (XuanFang screen version B / flagship)")
+        print("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
         lcd_comm = LcdCommRevB(com_port=COM_PORT,
                                display_width=320,
                                display_height=480)
+    elif REVISION == "C":
+        print("Selected Hardware Revision C (Turing Smart Screen 5\")")
+        lcd_comm = LcdCommRevC(com_port=COM_PORT,
+                               display_width=480,
+                               display_height=800)
     elif REVISION == "SIMU":
-        print("Selected Simulated LCD")
+        print("Selected 3.5\" Simulated LCD")
         lcd_comm = LcdSimulated(display_width=320,
                                 display_height=480)
+    elif REVISION == "SIMU5":
+        print("Selected 5\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=480,
+                                display_height=800)
     else:
         print("ERROR: Unknown revision")
         try:
@@ -95,10 +106,15 @@ if __name__ == "__main__":
     lcd_comm.SetOrientation(orientation=orientation)
 
     # Define background picture
-    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
-        background = "res/backgrounds/example.png"
+    if REVISION == "C" or REVISION == "SIMU5":
+        size = "5inch"
     else:
-        background = "res/backgrounds/example_landscape.png"
+        size = ""
+
+    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
+        background = f"res/backgrounds/example{size}.png"
+    else:
+        background = f"res/backgrounds/{REVISION}/example{size}_landscape.png"
 
     # Display sample picture
     lcd_comm.DisplayBitmap(background)

@@ -1,4 +1,4 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -762,7 +762,7 @@ class Date:
     def stats():
         if HW_SENSORS == "STATIC":
             # For static sensors, use predefined date/time
-            date_now = datetime.datetime.fromtimestamp(1685974760)
+            date_now = datetime.datetime.fromtimestamp(1694014609)
         else:
             date_now = datetime.datetime.now()
 

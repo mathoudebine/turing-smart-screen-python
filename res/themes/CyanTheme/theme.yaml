@@ -1,0 +1,202 @@
+---
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 0, 0, 255
+static_text:
+  GPU_MODEL:
+   TEXT: RTX3080TI
+   X: 124
+   Y: 209
+   FONT: roboto-mono/RobotoMono-Regular.ttf
+   FONT_SIZE: 25
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  CPU_MODEL:
+   TEXT: I9 10900K
+   X: 124
+   Y: 375
+   FONT: roboto-mono/RobotoMono-Regular.ttf
+   FONT_SIZE: 25
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+  RAM_MODEL:
+   TEXT: DDR4-2400
+   X: 124
+   Y: 550
+   FONT: roboto-mono/RobotoMono-Regular.ttf
+   FONT_SIZE: 25
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 800
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 384
+        Y: 418
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 267
+        Y: 379
+        WIDTH: 147
+        HEIGHT: 17
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 235
+        Y: 418
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 96
+        Y: 418
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 267
+        Y: 213
+        WIDTH: 147
+        HEIGHT: 17
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 380
+        Y: 249
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    MEMORY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 199
+        Y: 249
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 96
+        Y: 249
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 267
+        Y: 553
+        WIDTH: 147
+        HEIGHT: 17
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      USED:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 155
+        Y: 590
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 305
+        Y: 590
+        FONT: roboto-mono/RobotoMono-Medium.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 374
+          Y: 61
+          FONT: roboto-mono/RobotoMono-Medium.ttf
+          FONT_SIZE: 17
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 348
+          Y: 92
+          FONT: roboto-mono/RobotoMono-Medium.ttf
+          FONT_SIZE: 17
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: long # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        SHOW: True
+        X: 132
+        Y: 720
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 132
+        Y: 690
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png

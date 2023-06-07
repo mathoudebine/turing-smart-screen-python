@@ -12,20 +12,21 @@ This project is an open-source alternative software, NOT the USBMonitor.exe / Ex
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![macOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![Licence](https://img.shields.io/github/license/mathoudebine/turing-smart-screen-python?style=for-the-badge)](./LICENSE)
   
 
-A Python system monitor program and a library for 3.5" IPS USB-C (UART) displays.  
+A Python system monitor program and a library for **3.5" & 5" IPS USB-C (UART) displays.**    
 
-Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.x  
+Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.7+  
 
 Supported smart screens models:
-| **Turing Smart Screen 3.5"** | **XuanFang 3.5"** |
-|--------|----------|
-| <img src="res/docs/turing.webp" height="300" /> |  <img src="res/docs/xuanfang.webp" height="300" />        |
-| also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) |
+
+| **Turing Smart Screen 3.5"**                         | **XuanFang 3.5"**                                 | **Turing Smart Screen 5"**                          |
+|------------------------------------------------------|---------------------------------------------------|-----------------------------------------------------|
+| <img src="res/docs/turing.webp" height="300" />      | <img src="res/docs/xuanfang.webp" height="300" /> | <img src="res/docs/turing5inch.png" height="300" /> |
+| also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | experimental support (no video or storage for now)  |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
-**Please note the Turing and the XuanFang screens are 2 different products** designed and produced by different companies, despite having a similar appearance. The communication protocol is also different.  
-This project support both products, including backplate RGB LEDs for available models!
+**Please note the Turing and the XuanFang screens are different products** designed and produced by different companies, despite having a similar appearance. The communication protocol is also different.  
+This project support products from both manufacturers, including backplate RGB LEDs for available models!
 
 If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
@@ -49,7 +50,7 @@ Some themes are already included for a quick start!
 
 * Fully functional multi-OS code base (operates out of the box, tested on Windows, Linux & MacOS).
 * Display configuration using GUI configuration wizard or `config.yaml` file: no Python code to edit.
-* Support for all [3.5" smart screen models (Turing and XuanFang)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Backplate RGB LEDs are also supported for available models!
+* Support for [3.5" & 5" smart screen models (Turing and XuanFang)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions). Backplate RGB LEDs are also supported for available models!
 * Support [multiple hardware sensors and metrics (CPU/GPU usage, temperatures, memory, disks, etc)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes#stats-entry) with configurable refresh intervals.
 * Allow [creation of themes (see `res/themes`) with `theme.yaml` files using theme editor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes) to be [shared with the community!](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
 * Easy to expand: additional code that pulls specific information can be written in a modular way without impacting existing code.
@@ -57,7 +58,7 @@ Some themes are already included for a quick start!
 * Tray icon with Exit option, useful when the program is running in background
 
 Screenshots from the latest version using included themes (click on the thumbnails to see a bigger preview):  
-<img src="res/docs/Theme3.5Inch.jpg" height="300" /> <img src="res/docs/ThemeTerminal.jpg" height="300" /> <img src="res/docs/ThemeCyberpunk.png" height="300" /> <img src="res/docs/ThemeBashDarkGreenGpu.png" height="300" /> <img src="res/docs/ThemeLandscape6Grid.jpg" width="300" /> <img src="res/docs/ThemeLandscapeMagicBlue.png" width="300" />
+<img src="res/themes/3.5inchTheme2/preview.png" height="300" /> <img src="res/themes/Terminal/preview.png" height="300" /> <img src="res/themes/Cyberpunk-net/preview.png" height="300" /> <img src="res/themes/bash-dark-green-gpu/preview.png" height="300" /> <img src="res/themes/Landscape6Grid/preview.png" width="300" /> <img src="res/themes/LandscapeMagicBlue/preview.png" width="300" /> <img src="res/themes/LandscapeEarth/preview.png" width="300" />
 
 ### [> Themes creation/edition (using theme editor)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
 ### [> Themes shared by the community:](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)

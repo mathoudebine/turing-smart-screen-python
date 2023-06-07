@@ -1,4 +1,4 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -101,6 +101,7 @@ class LcdComm(ABC):
             # We timed-out trying to write to our device, slow things down.
             logger.warning("(Write data) Too fast! Slow down!")
 
+
     def SendLine(self, line: bytes):
         if self.update_queue:
             # Queue the request. Mutex is locked by caller to queue multiple lines
@@ -115,6 +116,14 @@ class LcdComm(ABC):
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
             logger.warning("(Write line) Too fast! Slow down!")
+
+    def ReadData(self, readSize: int):
+        try:
+            response = self.lcd_serial.read(readSize)
+            #logger.debug("Received: [{}]".format(str(response, 'utf-8')))
+        except serial.serialutil.SerialException:
+            # We timed-out trying to read to our device, slow things down.
+            logger.warning("(Read data) Too fast! Slow down!")
 
     @staticmethod
     @abstractmethod
@@ -145,7 +154,6 @@ class LcdComm(ABC):
     def SetBrightness(self, level: int):
         pass
 
-    @abstractmethod
     def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
         pass
 

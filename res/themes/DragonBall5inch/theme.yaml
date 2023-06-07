@@ -1,0 +1,145 @@
+---
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 125, 12
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 480
+
+static_text:
+  NETWORK:
+   TEXT: NETWORK
+   X: 177
+   Y: 17
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 21
+   FONT_COLOR: 255, 224, 139
+   BACKGROUND_COLOR: 255, 125, 12
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      GRAPH:
+        SHOW: True
+        X: 24
+        Y: 185
+        WIDTH: 173
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 14, 170, 129
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 7
+        Y: 84
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 58
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 280
+        Y: 452
+        WIDTH: 160
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 252, 60, 13
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 264
+        Y: 360
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 58
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 637
+        Y: 306
+        WIDTH: 143
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 14, 170, 129
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 590
+        Y: 344
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 58
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 255
+        Y: 124
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 50
+        FONT_COLOR: 255, 224, 139
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 168
+          Y: 40
+          FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+          FONT_SIZE: 28
+          FONT_COLOR: 255, 224, 139
+          BACKGROUND_IMAGE: background.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        SHOW: True
+        X: 367
+        Y: 46
+        FONT: jetbrains-mono/JetBrainsMono-Regular.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 346
+        Y: 13
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 28
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+

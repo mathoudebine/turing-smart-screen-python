@@ -1,7 +1,8 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2022-2023  Charles Ferguson (gerph)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,7 +102,7 @@ class LcdCommRevB(LcdComm):
             with self.update_queue_mutex:
                 self.update_queue.put((self.WriteData, [byteBuffer]))
 
-    def Hello(self):
+    def _hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
 
         # This command reads LCD answer on serial link, so it bypasses the queue
@@ -133,14 +134,14 @@ class LcdCommRevB(LcdComm):
         logger.debug("HW sub-revision: %s" % (hex(self.sub_revision)))
 
     def InitializeComm(self):
-        self.Hello()
+        self._hello()
 
     def Reset(self):
         # HW revision B does not implement a command to reset it
         pass
 
     def Clear(self):
-        # HW revision B does not implement a Clear command: display a blank image on the whole screen
+        # This hardware does not implement a Clear command: display a blank image on the whole screen
         # Force an orientation in case the screen is currently configured with one different from the theme
         backup_orientation = self.orientation
         self.SetOrientation(orientation=Orientation.PORTRAIT)
@@ -249,7 +250,7 @@ class LcdCommRevB(LcdComm):
                     rgb = (R << 11) | (G << 5) | B
                     line += struct.pack('>H', rgb)
 
-                    # Send image data by multiple of DISPLAY_WIDTH bytes
+                    # Send image data by multiple of "display width" bytes
                     if len(line) >= self.get_width() * 8:
                         self.SendLine(line)
                         line = bytes()
