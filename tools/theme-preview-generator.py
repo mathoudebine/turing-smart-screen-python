@@ -21,9 +21,10 @@
 # and their associated preview
 
 import os
+import yaml
 
 
-def get_themes():
+def get_themes(display_size: str):
     themes = []
     directory = 'res/themes/'
     for filename in os.listdir('res/themes'):
@@ -33,22 +34,45 @@ def get_themes():
             # Check if a theme.yaml file exists
             theme = os.path.join(dir, 'theme.yaml')
             if os.path.isfile(theme):
-                themes.append(filename)
+                # Get display size from theme.yaml
+                with open(theme, "rt", encoding='utf8') as stream:
+                    theme_data = yaml.safe_load(stream)
+                    if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == display_size:
+                        themes.append(filename)
     return sorted(themes, key=str.casefold)
 
 
 if __name__ == "__main__":
-    themes = get_themes()
+    themes3inch = get_themes('3.5"')
+    themes5inch = get_themes('5"')
 
     with open("res/themes/themes.md", "w", encoding='utf-8') as file:
         file.write("<!--- This file is generated automatically by GitHub Actions, do not edit it! --->\n")
         file.write("\n")
+        file.write("# Turing Smart Screen themes\n")
+        file.write("\n")
+        file.write("[Custom foo description](#foo)")
+        file.write("[Custom foo description](#foo)")
+
+        file.write("\n## 3.5\" themes\n")
         file.write("<table>")
         i = 0
-        for theme in themes:
+        for theme in themes3inch:
             file.write(f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
             i = i + 1
             if i >= 5:
                 file.write("</table><table>")
                 i = 0
         file.write("</table>\n")
+
+        file.write("\n## 5\" themes\n")
+        file.write("<table>")
+        i = 0
+        for theme in themes5inch:
+            file.write(f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
+            i = i + 1
+            if i >= 5:
+                file.write("</table><table>")
+                i = 0
+        file.write("</table>\n")
+
