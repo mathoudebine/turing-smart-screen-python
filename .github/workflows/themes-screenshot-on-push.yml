@@ -72,7 +72,7 @@ jobs:
 
     - name: Generate theme list Markdown page
       run: |
-        python3 tools\theme-preview-generator.py
+        python3 tools/theme-preview-generator.py
 
     - name: Commit theme previews
       uses: stefanzweifel/git-auto-commit-action@v4
