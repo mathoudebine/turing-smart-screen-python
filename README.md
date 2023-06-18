@@ -16,12 +16,18 @@ A Python system monitor program and a library for **3.5" & 5" IPS USB-C (UART) d
 
 Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.7+  
 
-Supported smart screens models:
+**Supported smart screens models:**
 
 | **Turing Smart Screen 3.5"**                         | **XuanFang 3.5"**                                 | **Turing Smart Screen 5"**                          |
 |------------------------------------------------------|---------------------------------------------------|-----------------------------------------------------|
-| <img src="res/docs/turing.webp" height="300" />      | <img src="res/docs/xuanfang.webp" height="300" /> | <img src="res/docs/turing5inch.png" height="300" /> |
+| <img src="res/docs/turing.webp" height="250" />      | <img src="res/docs/xuanfang.webp" height="250" /> | <img src="res/docs/turing5inch.png" height="250" /> |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now)         |
+
+**Not supported (for now) or not tested:**
+
+| _Turing Smart Screen 8.8"_                          | _Turing Smart Screen 2.1"_                           |
+|-----------------------------------------------------|------------------------------------------------------|
+| <img src="res/docs/turing8inch.jpg" height="150" /> | <img src="res/docs/turing2inch.webp" height="150" /> |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
