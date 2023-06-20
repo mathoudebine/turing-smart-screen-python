@@ -115,7 +115,7 @@ class LcdCommRevA(LcdComm):
         y = 0
         ex = 0
         ey = 0
-        byteBuffer = bytearray(11)
+        byteBuffer = bytearray(16)
         byteBuffer[0] = (x >> 2)
         byteBuffer[1] = (((x & 3) << 6) + (y >> 4))
         byteBuffer[2] = (((y & 15) << 4) + (ex >> 6))
