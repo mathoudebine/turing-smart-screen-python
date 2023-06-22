@@ -16,18 +16,12 @@ A Python system monitor program and a library for **3.5" & 5" IPS USB-C (UART) d
 
 Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.7+  
 
-**Supported smart screens models:**
+### Supported smart screens models:
 
 | Turing Smart Screen 3.5"                             | XuanFang 3.5"                                     | Turing Smart Screen 5"                              |
 |------------------------------------------------------|---------------------------------------------------|-----------------------------------------------------|
 | <img src="res/docs/turing.webp" height="250" />      | <img src="res/docs/xuanfang.webp" height="250" /> | <img src="res/docs/turing5inch.png" height="250" /> |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now)         |
-
-**Not supported (for now) or not tested:**
-
-| _Turing Smart Screen 8.8"_                          | _Turing Smart Screen 2.1"_                           | _AX206_                                       |
-|-----------------------------------------------------|------------------------------------------------------|-----------------------------------------------|
-| <img src="res/docs/turing8inch.jpg" height="150" /> | <img src="res/docs/turing2inch.webp" height="150" /> | <img src="res/docs/ax206.jpg" height="150" /> |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
@@ -36,9 +30,19 @@ This project support products from both manufacturers, including backplate RGB L
 
 If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
+### Not supported yet or not tested smart screen models:
 
+| _Turing Smart Screen 8.8"_                          | _Turing Smart Screen 2.1"_                           | _[(Fuldho?) 3.5" IPS Screen](https://aliexpress.com/item/1005005632018367.html)_                                          |
+|-----------------------------------------------------|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
+| <img src="res/docs/turing8inch.jpg" height="150" /> | <img src="res/docs/turing2inch.webp" height="150" /> | <img src="res/docs/fuldho_3.5.jpg" height="150" />                                                                        |
+| Not tested, may use the same protocol as 5"         | Not tested, may use the same protocol as 5"          | Not supported, managed with [proprietary Windows software `SmartMonitor.exe`](https://smartdisplay.lanzouo.com/b04jvavkb) |
 
-## How to use
+| _[SmartCool Lcd](https://aliexpress.com/item/1005005443609423.html) / [GeekTeches AD35](https://aliexpress.com/item/1005004858688084.html) / AIDA64 / AX206_                               | _[(Unknown manufacturer) UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html)_                                                                                          |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="res/docs/ax206.jpg" height="150" /> <img src="res/docs/geekteches_ad35.jpg" height="150" /> <img src="res/docs/smartcool_lcd.webp" height="150" />                               | <img src="res/docs/UsbPCMonitor.jpg" height="150" />                                                                                                                                          |
+| Not supported. Produced by multiple manufacturers, all use the same [Appotech AX206 hacked photo frame firmware](https://github.com/dreamlayers/dpf-ax). Supported by AIDA64 and lcd4linux | Not tested. Visually identical to Turing 3.5" / 5" but managed by [proprietary Windows software `UsbPCMonitor.exe`](https://www.adrive.com/public/rpZfpm/0128200%20USBPCMonitorENG_2_1_4.rar) |
+
+## How to start
 
 ### [> Follow instructions on the wiki to configure and start this project.](https://github.com/mathoudebine/turing-smart-screen-python/wiki)
 
