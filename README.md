@@ -67,11 +67,10 @@ Some themes are already included for a quick start!
 * Auto detect comm port. No longer need to hard set it, or if it changes on you then the config is wrong.
 * Tray icon with Exit option, useful when the program is running in background
 
-Screenshots from the latest version using included themes (click on the thumbnails to see a bigger preview):  
-<img src="res/themes/3.5inchTheme2/preview.png" height="300" /> <img src="res/themes/Terminal/preview.png" height="300" /> <img src="res/themes/Cyberpunk-net/preview.png" height="300" /> <img src="res/themes/bash-dark-green-gpu/preview.png" height="300" /> <img src="res/themes/Landscape6Grid/preview.png" width="300" /> <img src="res/themes/LandscapeMagicBlue/preview.png" width="300" /> <img src="res/themes/LandscapeEarth/preview.png" width="300" />
-
+### [> List and preview of included themes](res/themes/themes.md)
+<img src="res/themes/3.5inchTheme2/preview.png" height="150" /> <img src="res/themes/Terminal/preview.png" height="150" /> <img src="res/themes/Cyberpunk-net/preview.png" height="150" /> <img src="res/themes/bash-dark-green-gpu/preview.png" height="150" /> <img src="res/themes/Landscape6Grid/preview.png" width="150" /> <img src="res/themes/LandscapeMagicBlue/preview.png" width="150" /> <img src="res/themes/LandscapeEarth/preview.png" width="150" /> ... [view full list](res/themes/themes.md)
 ### [> Themes creation/edition (using theme editor)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)
-### [> Themes shared by the community:](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
+### [> Themes shared by the community](https://github.com/mathoudebine/turing-smart-screen-python/discussions/categories/themes)
 <img src="https://user-images.githubusercontent.com/79225820/203648707-6f043068-5c9d-454d-9c0a-3d9ea02ece77.jpg" height="150" /> <img src="https://user-images.githubusercontent.com/121983479/210663324-994c987a-6489-4482-8883-db74ef566014.jpg" height="150" />
 <img src="https://user-images.githubusercontent.com/120036534/208128675-897f60cd-5647-40b7-b074-b56b67e775dd.png" height="150" /> <img src="https://user-images.githubusercontent.com/65172896/217549510-149913ac-ef4e-4f61-8f5e-6d768483a02c.png" height="150" /> and more... Share yours!
 
