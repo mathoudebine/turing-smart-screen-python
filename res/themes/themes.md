@@ -2,7 +2,10 @@
 
 # Turing Smart Screen themes
 
+ℹ️ Click on a preview to view full size
+
 [3.5" themes](#35-themes)
+
 [5" themes](#5-themes)
 
 ## 3.5" themes
