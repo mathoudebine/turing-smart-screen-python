@@ -6,7 +6,7 @@ psutil~=5.9.5         # CPU / disk / network metrics
 GPUtil~=1.4.0         # Nvidia GPU
 pystray~=0.19.4       # Tray icon (all OS)
 babel~=2.12.1         # Date/time formatting
-ruamel.yaml~=0.17.31  # For configuration editor
+ruamel.yaml~=0.17.32  # For configuration editor
 sv-ttk~=2.4.5         # Tk Sun Valley theme for configuration editor
 
 # Following packages are for AMD GPU on Linux
