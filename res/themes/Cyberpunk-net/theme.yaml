@@ -191,16 +191,18 @@ STATS:
         BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
-    USED:
-      PERCENT_TEXT:
-        SHOW: True
-        SHOW_UNIT: True
-        X: 170
-        Y: 430
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 30
-        FONT_COLOR: 2, 216, 243
-        BACKGROUND_IMAGE: background.png
+    MOUNTS:
+      - "/":
+          USED:
+            PERCENT_TEXT:
+              SHOW: True
+              SHOW_UNIT: True
+              X: 170
+              Y: 430
+              FONT: generale-mono/GeneraleMonoA.ttf
+              FONT_SIZE: 30
+              FONT_COLOR: 2, 216, 243
+              BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     ETH:

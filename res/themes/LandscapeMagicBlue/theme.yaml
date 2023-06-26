@@ -147,27 +147,29 @@ STATS:
         BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
-    USED:
-      GRAPH:
-        SHOW: True
-        X: 352
-        Y: 93
-        WIDTH: 110
-        HEIGHT: 7
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 82, 255, 255
-        BAR_OUTLINE: False
-        BACKGROUND_IMAGE: background.png
-      TEXT:
-        SHOW: True
-        SHOW_UNIT: True
-        X: 390
-        Y: 65
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 128, 255, 255
-        BACKGROUND_IMAGE: background.png
+    MOUNTS:
+      - "/":
+          USED:
+            GRAPH:
+              SHOW: True
+              X: 352
+              Y: 93
+              WIDTH: 110
+              HEIGHT: 7
+              MIN_VALUE: 0
+              MAX_VALUE: 100
+              BAR_COLOR: 82, 255, 255
+              BAR_OUTLINE: False
+              BACKGROUND_IMAGE: background.png
+            TEXT:
+              SHOW: True
+              SHOW_UNIT: True
+              X: 390
+              Y: 65
+              FONT: generale-mono/GeneraleMonoA.ttf
+              FONT_SIZE: 16
+              FONT_COLOR: 128, 255, 255
+              BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     ETH:

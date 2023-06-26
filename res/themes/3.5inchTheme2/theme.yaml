@@ -158,47 +158,49 @@ STATS:
         BACKGROUND_COLOR: 132, 154, 165
   DISK:
     INTERVAL: 10
-    USED:
-      GRAPH:
-        SHOW: True
-        X: 155
-        Y: 345
-        WIDTH: 150
-        HEIGHT: 15
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-      TEXT:
-        SHOW: TRUE
-        SHOW_UNIT: True
-        X: 204
-        Y: 411
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-    TOTAL:
-      TEXT:
-        SHOW: TRUE
-        SHOW_UNIT: True
-        X: 204
-        Y: 381
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-    FREE:
-      TEXT:
-        SHOW: TRUE
-        SHOW_UNIT: True
-        X: 204
-        Y: 441
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
+    MOUNTS:
+      - "/":
+          USED:
+            GRAPH:
+              SHOW: True
+              X: 155
+              Y: 345
+              WIDTH: 150
+              HEIGHT: 15
+              MIN_VALUE: 0
+              MAX_VALUE: 100
+              BAR_COLOR: 0, 0, 255
+              BAR_OUTLINE: False
+              BACKGROUND_COLOR: 0, 0, 0
+            TEXT:
+              SHOW: TRUE
+              SHOW_UNIT: True
+              X: 204
+              Y: 411
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              BACKGROUND_COLOR: 132, 154, 165
+          TOTAL:
+            TEXT:
+              SHOW: TRUE
+              SHOW_UNIT: True
+              X: 204
+              Y: 381
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              BACKGROUND_COLOR: 132, 154, 165
+          FREE:
+            TEXT:
+              SHOW: TRUE
+              SHOW_UNIT: True
+              X: 204
+              Y: 441
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              BACKGROUND_COLOR: 132, 154, 165
 
   DATE:
     INTERVAL: 1

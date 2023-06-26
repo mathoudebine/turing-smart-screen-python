@@ -273,61 +273,63 @@ STATS:
         BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
-    USED:
-      GRAPH:
-        SHOW: False
-        X: 115
-        Y: 357
-        WIDTH: 178
-        HEIGHT: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
-        BAR_OUTLINE: False
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 204
-        Y: 405
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
-      PERCENT_TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 46
-        Y: 402
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
-    TOTAL:
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 204
-        Y: 375
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
-    FREE:
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 204
-        Y: 435
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 23
-        FONT_COLOR: 255, 255, 255
-        # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
+    MOUNTS:
+      - "/":
+          USED:
+            GRAPH:
+              SHOW: False
+              X: 115
+              Y: 357
+              WIDTH: 178
+              HEIGHT: 13
+              MIN_VALUE: 0
+              MAX_VALUE: 100
+              BAR_COLOR: 255, 0, 0
+              BAR_OUTLINE: False
+              # BACKGROUND_COLOR: 0, 0, 0
+              BACKGROUND_IMAGE: background.png
+            TEXT:
+              SHOW: False
+              SHOW_UNIT: True
+              X: 204
+              Y: 405
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              # BACKGROUND_COLOR: 132, 154, 165
+              BACKGROUND_IMAGE: background.png
+            PERCENT_TEXT:
+              SHOW: False
+              SHOW_UNIT: True
+              X: 46
+              Y: 402
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              # BACKGROUND_COLOR: 132, 154, 165
+              BACKGROUND_IMAGE: background.png
+          TOTAL:
+            TEXT:
+              SHOW: False
+              SHOW_UNIT: True
+              X: 204
+              Y: 375
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              # BACKGROUND_COLOR: 132, 154, 165
+              BACKGROUND_IMAGE: background.png
+          FREE:
+            TEXT:
+              SHOW: False
+              SHOW_UNIT: True
+              X: 204
+              Y: 435
+              FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+              FONT_SIZE: 23
+              FONT_COLOR: 255, 255, 255
+              # BACKGROUND_COLOR: 132, 154, 165
+              BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     WLO:
