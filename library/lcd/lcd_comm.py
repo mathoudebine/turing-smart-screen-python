@@ -76,7 +76,8 @@ class LcdComm(ABC):
         if self.com_port == 'AUTO':
             lcd_com_port = self.auto_detect_com_port()
             if not lcd_com_port:
-                logger.error("Cannot find COM port automatically, please run Configuration again and select COM port manually")
+                logger.error(
+                    "Cannot find COM port automatically, please run Configuration again and select COM port manually")
                 try:
                     sys.exit(0)
                 except:
@@ -95,12 +96,7 @@ class LcdComm(ABC):
             pass
 
     def WriteData(self, byteBuffer: bytearray):
-        try:
-            self.lcd_serial.write(bytes(byteBuffer))
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write data) Too fast! Slow down!")
-
+        self.WriteLine(bytes(byteBuffer))
 
     def SendLine(self, line: bytes):
         if self.update_queue:
@@ -116,14 +112,29 @@ class LcdComm(ABC):
         except serial.serialutil.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
             logger.warning("(Write line) Too fast! Slow down!")
+        except serial.serialutil.SerialException:
+            # Error writing data to device: close and reopen serial port, try to write again
+            logger.error(
+                "SerialException: Failed to send serial data to device. Closing and reopening COM port before retrying once.")
+            self.closeSerial()
+            self.openSerial()
+            self.lcd_serial.write(line)
 
     def ReadData(self, readSize: int):
         try:
             response = self.lcd_serial.read(readSize)
-            #logger.debug("Received: [{}]".format(str(response, 'utf-8')))
-        except serial.serialutil.SerialException:
-            # We timed-out trying to read to our device, slow things down.
+            # logger.debug("Received: [{}]".format(str(response, 'utf-8')))
+            return response
+        except serial.serialutil.SerialTimeoutException:
+            # We timed-out trying to read from our device, slow things down.
             logger.warning("(Read data) Too fast! Slow down!")
+        except serial.serialutil.SerialException:
+            # Error writing data to device: close and reopen serial port, try to read again
+            logger.error(
+                "SerialException: Failed to read serial data from device. Closing and reopening COM port before retrying once.")
+            self.closeSerial()
+            self.openSerial()
+            return self.lcd_serial.read(readSize)
 
     @staticmethod
     @abstractmethod
@@ -342,7 +353,7 @@ class LcdComm(ABC):
             bar_image = bar_image.crop(box=bbox)
 
         # Draw progress bar
-        pct = (value - min_value)/(max_value - min_value)
+        pct = (value - min_value) / (max_value - min_value)
         draw = ImageDraw.Draw(bar_image)
 
         # PIL arc method uses angles with
