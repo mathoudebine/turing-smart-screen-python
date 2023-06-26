@@ -8,6 +8,8 @@ STATS:
         SHOW: False
       GRAPH:
         SHOW: False
+      RADIAL:
+        SHOW: False
     FREQUENCY:
       INTERVAL: 5
       TEXT:
@@ -32,10 +34,14 @@ STATS:
     PERCENTAGE:
       GRAPH:
         SHOW: False
+      RADIAL:
+        SHOW: False
       TEXT:
         SHOW: False
     MEMORY:
       GRAPH:
+        SHOW: False
+      RADIAL:
         SHOW: False
       TEXT:
         SHOW: False
@@ -49,8 +55,12 @@ STATS:
     SWAP:
       GRAPH:
         SHOW: False
+      RADIAL:
+        SHOW: False
     VIRTUAL:
       GRAPH:
+        SHOW: False
+      RADIAL:
         SHOW: False
       USED:
         SHOW: False
@@ -65,6 +75,8 @@ STATS:
     INTERVAL: 10
     USED:
       GRAPH:
+        SHOW: False
+      RADIAL:
         SHOW: False
       TEXT:
         SHOW: False
@@ -116,4 +128,3 @@ STATS:
     HOUR:
       TEXT:
         SHOW: False
-

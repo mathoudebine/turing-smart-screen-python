@@ -311,10 +311,16 @@ class LcdComm(ABC):
         if isinstance(font_color, str):
             font_color = tuple(map(int, font_color.split(', ')))
 
+        if angle_start % 361 == angle_end % 361:
+            if clockwise:
+                angle_start += 0.1
+            else:
+                angle_end += 0.1
+
         assert xc - radius >= 0 and xc + radius <= self.get_width(), 'Progress bar width exceeds display width'
         assert yc - radius >= 0 and yc + radius <= self.get_height(), 'Progress bar height exceeds display height'
-        assert 0 < bar_width <= radius, 'Progress bar linewidth must be > 0 and <= radius'
-        assert angle_end % 361 != angle_start % 361, 'Change your angles values'
+        assert 0 < bar_width <= radius, f'Progress bar linewidth is {bar_width}, must be > 0 and <= radius'
+        assert angle_end % 361 != angle_start % 361, f'Invalid angles values, start = {angle_start}, end = {angle_end}'
         assert isinstance(angle_steps, int), 'angle_steps value must be an integer'
         assert angle_sep >= 0, 'Provide an angle_sep value >= 0'
         assert angle_steps > 0, 'Provide an angle_step value > 0'
