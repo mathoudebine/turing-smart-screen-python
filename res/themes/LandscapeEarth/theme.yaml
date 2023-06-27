@@ -33,7 +33,7 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 66, 207, 239
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     FREQUENCY:
       INTERVAL: 5
       TEXT:
@@ -69,7 +69,7 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 66, 207, 239
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
         SHOW_UNIT: False
@@ -92,7 +92,7 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 66, 207, 239
         BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: True
         SHOW_UNIT: False
@@ -123,4 +123,4 @@ STATS:
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 26
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 16, 28, 57
+        BACKGROUND_COLOR: 16, 28, 57  # In case hour is over the star in background
