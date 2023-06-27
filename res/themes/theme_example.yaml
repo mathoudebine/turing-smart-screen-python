@@ -97,7 +97,8 @@ STATS:
         ANGLE_SEP: 5
         CLOCKWISE: True
         BAR_COLOR: 0, 255, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
@@ -200,7 +201,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
@@ -243,7 +245,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
@@ -302,7 +305,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
@@ -335,7 +339,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
@@ -400,7 +405,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 0
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200

@@ -117,12 +117,16 @@ def display_themed_progress_bar(theme_data, value):
     )
 
 
-def display_themed_radial_bar(theme_data, value, text_value=None):
+def display_themed_radial_bar(theme_data, value, min_size=0, unit=''):
     if not theme_data.get("SHOW", False):
         return
 
-    if text_value is None:
-        text_value = str(value)
+    if theme_data.get("SHOW_TEXT", False):
+        text = f"{{:>{min_size}}}".format(value)
+        if theme_data.get("SHOW_UNIT", True) and unit:
+            text += str(unit)
+    else:
+        text = ""
 
     display.lcd.DisplayRadialProgressBar(
         xc=theme_data.get("X", 0),
@@ -138,13 +142,13 @@ def display_themed_radial_bar(theme_data, value, text_value=None):
         clockwise=theme_data.get("CLOCKWISE", False),
         value=value,
         bar_color=theme_data.get("BAR_COLOR", (0, 0, 0)),
-        text=text_value if theme_data.get("SHOW_TEXT", False) else '',
+        text=text,
         font=theme_data.get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
-        )
+    )
 
 
 class CPU:
@@ -156,23 +160,31 @@ class CPU:
         )
         # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
-        cpu_percentage_text = f"{int(cpu_percentage):>3}"
-        display_themed_value(
-            theme_data=(theme_data['TEXT']),
-            value=cpu_percentage_text,
-            unit="%"
+        display_themed_progress_bar(
+            theme_data=theme_data['GRAPH'],
+            value=int(cpu_percentage)
         )
 
-        display_themed_progress_bar(theme_data['GRAPH'], int(cpu_percentage))
+        display_themed_radial_bar(
+            theme_data=(theme_data['RADIAL']),
+            value=int(cpu_percentage),
+            unit="%",
+            min_size=3)
 
-        display_themed_radial_bar(theme_data['RADIAL'], int(cpu_percentage))
+        display_themed_value(
+            theme_data=(theme_data['TEXT']),
+            value=int(cpu_percentage),
+            unit="%",
+            min_size=3
+        )
 
     @staticmethod
     def frequency():
         display_themed_value(
             theme_data=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'],
             value=f'{sensors.Cpu.frequency() / 1000:.2f}',
-            unit=" GHz"
+            unit=" GHz",
+            min_size=4
         )
 
     @staticmethod
@@ -239,7 +251,21 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
 
     # logger.debug(f"GPU Load: {load}")
     display_themed_progress_bar(gpu_percent_graph_data, load)
-    display_themed_radial_bar(gpu_percent_radial_data, load)
+
+    display_themed_radial_bar(
+        theme_data=gpu_percent_radial_data,
+        value=int(load),
+        min_size=3,
+        unit="%")
+
+    display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
+
+    display_themed_radial_bar(
+        theme_data=theme_gpu_data['MEMORY']['RADIAL'],
+        value=int(memory_percentage),
+        min_size=3,
+        unit="%"
+    )
 
     display_themed_value(
         theme_data=gpu_percent_text_data,
@@ -247,9 +273,6 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
         min_size=3,
         unit="%"
     )
-
-    display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
-    display_themed_radial_bar(theme_gpu_data['MEMORY']['RADIAL'], memory_percentage)
 
     display_themed_value(
         theme_data=gpu_mem_text_data,
@@ -284,11 +307,21 @@ class Memory:
 
         swap_percent = sensors.Memory.swap_percent()
         display_themed_progress_bar(memory_stats_theme_data['SWAP']['GRAPH'], swap_percent)
-        display_themed_radial_bar(memory_stats_theme_data['SWAP']['RADIAL'], swap_percent)
+        display_themed_radial_bar(
+            theme_data=memory_stats_theme_data['SWAP']['RADIAL'],
+            value=int(swap_percent),
+            min_size=3,
+            unit="%"
+        )
 
         virtual_percent = sensors.Memory.virtual_percent()
         display_themed_progress_bar(memory_stats_theme_data['VIRTUAL']['GRAPH'], virtual_percent)
-        display_themed_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'], virtual_percent)
+        display_themed_radial_bar(
+            theme_data=memory_stats_theme_data['VIRTUAL']['RADIAL'],
+            value=int(virtual_percent),
+            min_size=3,
+            unit="%"
+        )
 
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'],
@@ -322,7 +355,12 @@ class Disk:
 
         disk_usage_percent = sensors.Disk.disk_usage_percent()
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
-        display_themed_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
+        display_themed_radial_bar(
+            theme_data=disk_theme_data['USED']['RADIAL'],
+            value=int(disk_usage_percent),
+            min_size=3,
+            unit="%"
+        )
 
         display_themed_value(
             theme_data=disk_theme_data['USED']['TEXT'],
