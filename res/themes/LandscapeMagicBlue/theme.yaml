@@ -175,15 +175,6 @@ STATS:
         FONT_SIZE: 16
         FONT_COLOR: 128, 255, 255
         BACKGROUND_IMAGE: background.png
-      PERCENT_TEXT:
-        SHOW: True
-        SHOW_UNIT: False
-        X: 117
-        Y: 243
-        FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 14
-        FONT_COLOR: 128, 255, 255
-        BACKGROUND_IMAGE: background.png
       RADIAL:
         SHOW: True
         X: 136
@@ -198,7 +189,10 @@ STATS:
         ANGLE_SEP: 0
         CLOCKWISE: True
         BAR_COLOR: 255, 0, 173
-        SHOW_TEXT: False
+        SHOW_TEXT: True
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 14
+        FONT_COLOR: 128, 255, 255
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   DISK:
