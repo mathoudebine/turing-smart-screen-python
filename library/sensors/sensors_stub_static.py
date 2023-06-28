@@ -35,6 +35,7 @@ MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
 
+
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
