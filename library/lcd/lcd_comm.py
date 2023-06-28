@@ -74,20 +74,27 @@ class LcdComm(ABC):
 
     def openSerial(self):
         if self.com_port == 'AUTO':
-            lcd_com_port = self.auto_detect_com_port()
-            if not lcd_com_port:
+            self.com_port = self.auto_detect_com_port()
+            if not self.com_port:
                 logger.error(
                     "Cannot find COM port automatically, please run Configuration again and select COM port manually")
                 try:
                     sys.exit(0)
                 except:
                     os._exit(0)
-            logger.debug(f"Auto detected COM port: {lcd_com_port}")
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+            else:
+                logger.debug(f"Auto detected COM port: {self.com_port}")
         else:
-            lcd_com_port = self.com_port
-            logger.debug(f"Static COM port: {lcd_com_port}")
-            self.lcd_serial = serial.Serial(lcd_com_port, 115200, timeout=1, rtscts=1)
+            logger.debug(f"Static COM port: {self.com_port}")
+
+        try:
+            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=1)
+        except:
+            logger.error(f"Cannot open COM port {self.com_port}")
+            try:
+                sys.exit(0)
+            except:
+                os._exit(0)
 
     def closeSerial(self):
         try:
