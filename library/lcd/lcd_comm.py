@@ -89,8 +89,8 @@ class LcdComm(ABC):
 
         try:
             self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=1)
-        except:
-            logger.error(f"Cannot open COM port {self.com_port}")
+        except Exception as e:
+            logger.error(f"Cannot open COM port {self.com_port}: {e}")
             try:
                 sys.exit(0)
             except:
