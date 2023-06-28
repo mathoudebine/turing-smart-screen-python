@@ -229,25 +229,35 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
     gpu_percent_text_data = theme_gpu_data['PERCENTAGE']['TEXT']
 
     if math.isnan(load):
-        logger.warning("Your GPU load is not supported yet")
-        gpu_percent_graph_data['SHOW'] = False
-        gpu_percent_text_data['SHOW'] = False
-        gpu_percent_radial_data['SHOW'] = False
+        load = 0
+        if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW']:
+            logger.warning("Your GPU load is not supported yet")
+            gpu_percent_graph_data['SHOW'] = False
+            gpu_percent_text_data['SHOW'] = False
+            gpu_percent_radial_data['SHOW'] = False
 
     gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
+    gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
     if math.isnan(memory_percentage):
-        logger.warning("Your GPU memory relative usage (%) is not supported yet")
-        gpu_mem_graph_data['SHOW'] = False
+        memory_percentage = 0
+        if gpu_mem_graph_data['SHOW'] or gpu_mem_radial_data['SHOW']:
+            logger.warning("Your GPU memory relative usage (%) is not supported yet")
+            gpu_mem_graph_data['SHOW'] = False
+            gpu_mem_radial_data['SHOW'] = False
 
     gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
     if math.isnan(memory_used_mb):
-        logger.warning("Your GPU memory absolute usage (M) is not supported yet")
-        gpu_mem_text_data['SHOW'] = False
+        memory_used_mb = 0
+        if gpu_mem_text_data['SHOW']:
+            logger.warning("Your GPU memory absolute usage (M) is not supported yet")
+            gpu_mem_text_data['SHOW'] = False
 
     gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']
     if math.isnan(temperature):
-        logger.warning("Your GPU temperature is not supported yet")
-        gpu_temp_text_data['SHOW'] = False
+        temperature = 0
+        if gpu_temp_text_data['SHOW']:
+            logger.warning("Your GPU temperature is not supported yet")
+            gpu_temp_text_data['SHOW'] = False
 
     # logger.debug(f"GPU Load: {load}")
     display_themed_progress_bar(gpu_percent_graph_data, load)
@@ -261,7 +271,7 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
     display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
 
     display_themed_radial_bar(
-        theme_data=theme_gpu_data['MEMORY']['RADIAL'],
+        theme_data=gpu_mem_radial_data,
         value=int(memory_percentage),
         min_size=3,
         unit="%"
