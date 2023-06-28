@@ -83,8 +83,8 @@ STATS:
         SHOW: True
         X: 366
         Y: 155
-        RADIUS: 34
-        WIDTH: 5
+        RADIUS: 35
+        WIDTH: 7
         MIN_VALUE: 0
         MAX_VALUE: 100
         ANGLE_START: 120
