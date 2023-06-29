@@ -38,9 +38,6 @@ CONFIG_DATA = load_yaml("config.yaml")
 THEME_DEFAULT = load_yaml("res/themes/default.yaml")
 THEME_DATA = None
 
-# Matching between hardware revision and display size in inches
-revision_size = {'A': '3.5"', 'B': '3.5"', 'C': '5"', 'SIMU': '3.5"', 'SIMU5': '5"'}
-
 
 def copy_default(default, theme):
     """recursively supply default values into a dict of dicts of dicts ...."""
@@ -68,10 +65,10 @@ def load_theme():
     copy_default(THEME_DEFAULT, THEME_DATA)
 
 
-def check_theme_compatible():
+def check_theme_compatible(display_size: str):
     global THEME_DATA
     # Check if theme is compatible with hardware revision
-    if revision_size[CONFIG_DATA["display"]["REVISION"]] != THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
+    if display_size != THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
         logger.error("The selected theme " + CONFIG_DATA['config'][
             'THEME'] + " is not compatible with your display revision " + CONFIG_DATA["display"]["REVISION"])
         try:

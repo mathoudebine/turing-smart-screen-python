@@ -129,9 +129,11 @@ class SubRevision(Enum):
         self.command = command
 
 
+# This class is for Turing Smart Screen 5" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
                  update_queue: queue.Queue = None):
+        logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
 

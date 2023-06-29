@@ -17,6 +17,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import time
+from enum import Enum
 
 from serial.tools.list_ports import comports
 import numpy as np
@@ -35,10 +36,25 @@ class Command(IntEnum):
     SET_ORIENTATION = 121  # Sets the screen orientation
     DISPLAY_BITMAP = 197  # Displays an image on the screen
 
+    # Commands below are only supported by next generation Turing Smart screens
+    LCD_28 = 40  # ?
+    LCD_29 = 41  # ?
+    HELLO = 69  # Asks the screen for its model: 3.5", 5" or 7"
+    SET_MIRROR = 122  # Mirrors the rendering on the screen
+    DISPLAY_PIXELS = 195  # Displays a list of pixels than can be non-contiguous in one command, useful for line charts
 
+
+class SubRevision(Enum):
+    TURING_3_5 = 0  # Official Turing 3.5 do not answer to HELLO command
+    USBMONITOR_3_5 = bytearray([0x01, 0x01, 0x01, 0x01, 0x01, 0x01])
+    USBMONITOR_5 = bytearray([0x02, 0x02, 0x02, 0x02, 0x02, 0x02])
+    USBMONITOR_7 = bytearray([0x03, 0x03, 0x03, 0x03, 0x03, 0x03])
+
+# This class is for Turing Smart Screen (rev. A) 3.5" and UsbMonitor screens (all sizes)
 class LcdCommRevA(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
                  update_queue: queue.Queue = None):
+        logger.debug("HW revision: A")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
 
@@ -74,9 +90,35 @@ class LcdCommRevA(LcdComm):
             with self.update_queue_mutex:
                 self.update_queue.put((self.WriteData, [byteBuffer]))
 
+    def _hello(self):
+        hello = bytearray([Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO])
+
+        # This command reads LCD answer on serial link, so it bypasses the queue
+        self.WriteData(hello)
+        response = self.lcd_serial.read(6)
+        self.lcd_serial.flushInput()
+
+        if response == SubRevision.USBMONITOR_3_5.value:
+            self.sub_revision = SubRevision.USBMONITOR_3_5
+            self.display_width = 320
+            self.display_height = 480
+        elif response == SubRevision.USBMONITOR_5.value:
+            self.sub_revision = SubRevision.USBMONITOR_5
+            self.display_width = 480
+            self.display_height = 800
+        elif response == SubRevision.USBMONITOR_7.value:
+            self.sub_revision = SubRevision.USBMONITOR_7
+            self.display_width = 600
+            self.display_height = 1024
+        else:
+            self.sub_revision = SubRevision.TURING_3_5
+            self.display_width = 320
+            self.display_height = 480
+
+        logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
+
     def InitializeComm(self):
-        # HW revision A does not need init commands
-        pass
+        self._hello()
 
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
