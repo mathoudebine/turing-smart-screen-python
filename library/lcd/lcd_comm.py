@@ -18,6 +18,7 @@
 
 import os
 import queue
+import signal
 import sys
 import threading
 from abc import ABC, abstractmethod
@@ -28,6 +29,8 @@ import serial
 from PIL import Image, ImageDraw, ImageFont
 
 from library.log import logger
+from usb.core import find as finddev
+from usb.core import USBError
 
 
 class Orientation(IntEnum):
@@ -44,6 +47,10 @@ class LcdComm(ABC):
 
         # String containing absolute path to serial port e.g. "COM3", "/dev/ttyACM1" or "AUTO" for auto-discovery
         self.com_port = com_port
+
+        # This is used to reset the device if the computer sleeps and freeze the display.
+        self.idVendor = None
+        self.idProduct = None
 
         # Display always start in portrait orientation by default
         self.orientation = Orientation.PORTRAIT
@@ -88,7 +95,7 @@ class LcdComm(ABC):
             logger.debug(f"Static COM port: {self.com_port}")
 
         try:
-            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=1)
+            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=5, rtscts=1, write_timeout=5)
         except Exception as e:
             logger.error(f"Cannot open COM port {self.com_port}: {e}")
             try:
@@ -116,32 +123,18 @@ class LcdComm(ABC):
     def WriteLine(self, line: bytes):
         try:
             self.lcd_serial.write(line)
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to write to our device, slow things down.
-            logger.warning("(Write line) Too fast! Slow down!")
         except serial.serialutil.SerialException:
-            # Error writing data to device: close and reopen serial port, try to write again
-            logger.error(
-                "SerialException: Failed to send serial data to device. Closing and reopening COM port before retrying once.")
-            self.closeSerial()
-            self.openSerial()
-            self.lcd_serial.write(line)
+            logger.warning("(WriteLine) error, reseting device.")
+            self.reset_by_usb()
 
     def ReadData(self, readSize: int):
         try:
             response = self.lcd_serial.read(readSize)
             # logger.debug("Received: [{}]".format(str(response, 'utf-8')))
             return response
-        except serial.serialutil.SerialTimeoutException:
-            # We timed-out trying to read from our device, slow things down.
-            logger.warning("(Read data) Too fast! Slow down!")
         except serial.serialutil.SerialException:
-            # Error writing data to device: close and reopen serial port, try to read again
-            logger.error(
-                "SerialException: Failed to read serial data from device. Closing and reopening COM port before retrying once.")
-            self.closeSerial()
-            self.openSerial()
-            return self.lcd_serial.read(readSize)
+            logger.warning("(ReadData) error, reseting device.")
+            self.reset_by_usb()
 
     @staticmethod
     @abstractmethod
@@ -154,6 +147,24 @@ class LcdComm(ABC):
 
     @abstractmethod
     def Reset(self):
+        pass
+
+    def reset_by_usb(self):
+        logger.info(f"Reseting device via USB...cleaning all {self.update_queue.qsize()} queue entries")
+        with self.update_queue_mutex:
+            while not self.update_queue.empty():
+                try:
+                    self.update_queue.get()
+                except queue.Empty:
+                    continue
+                self.update_queue.task_done()
+            logger.info(f"Reseting device via USB queue cleaned: {self.update_queue.empty()}")
+            try:
+                dev = finddev(idVendor=self.idVendor, idProduct=self.idProduct)
+                dev.reset()
+                os.kill(os.getpid(), signal.SIGTERM)
+            except USBError or OSError:
+                logger.info("Error reseting device via USB...")
         pass
 
     @abstractmethod

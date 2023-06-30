@@ -41,6 +41,8 @@ class LcdCommRevA(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
+        self.idVendor = 0x1a86
+        self.idProduct = 0x5722
 
     def __del__(self):
         self.closeSerial()

@@ -53,6 +53,8 @@ class LcdCommRevB(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
+        self.idVendor = 0x1a86
+        self.idProduct = 0x5722
         self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
 
     def __del__(self):
