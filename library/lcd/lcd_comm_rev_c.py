@@ -156,7 +156,10 @@ class LcdCommRevC(LcdComm):
         # this device enumerates differently when off, we need to connect once to reset it to correct COM device
         try:
             logger.debug(f"Waiting for device {com_port} to be turned ON...")
-            serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
+            port = serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
+            port.close()
+            port = serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
+            port.close()
         except serial.serialutil.SerialException:
             pass
         time.sleep(10)
