@@ -53,6 +53,7 @@ class LcdCommRevA(LcdComm):
         for com_port in com_ports:
             if com_port.serial_number == "USB35INCHIPSV2":
                 auto_com_port = com_port.device
+                break
 
         return auto_com_port
 
