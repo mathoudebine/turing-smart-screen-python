@@ -161,7 +161,8 @@ class LcdComm(ABC):
             logger.info(f"Reseting device via USB queue cleaned: {self.update_queue.empty()}")
             try:
                 dev = finddev(idVendor=self.idVendor, idProduct=self.idProduct)
-                dev.reset()
+                if dev is not None:
+                    dev.reset()
                 os.kill(os.getpid(), signal.SIGTERM)
             except USBError or OSError:
                 logger.info("Error reseting device via USB...")
