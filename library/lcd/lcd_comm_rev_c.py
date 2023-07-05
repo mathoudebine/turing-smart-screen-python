@@ -134,8 +134,6 @@ class LcdCommRevC(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
-        self.idVendor = 0x1d6b
-        self.idProduct = 0x0106
 
     def __del__(self):
         self.closeSerial()
@@ -149,7 +147,7 @@ class LcdCommRevC(LcdComm):
                 LcdCommRevC._connect_to_reset_device_name(com_port)
                 return LcdCommRevC.auto_detect_com_port()
             if com_port.serial_number == '20080411':
-                return com_port.device
+                return com_port.device, com_port.vid, com_port.pid
 
         return None
 

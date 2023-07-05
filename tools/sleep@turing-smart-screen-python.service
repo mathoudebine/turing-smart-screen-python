@@ -1,0 +1,14 @@
+# Just eneble it. Dont need to "start/stop" it.
+[Unit]
+Description=%I sleep hook
+Before=sleep.target
+StopWhenUnneeded=yes
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=-/usr/bin/systemctl stop %i
+ExecStop=-/usr/bin/systemctl start %i
+
+[Install]
+WantedBy=sleep.target

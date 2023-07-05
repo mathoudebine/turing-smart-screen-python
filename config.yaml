@@ -9,7 +9,7 @@ config:
 
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
-  THEME: 3.5inchTheme2
+  THEME: DragonBall5inch
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -23,14 +23,14 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: "" # Ethernet Card
+  ETH: "enp4s0" # Ethernet Card
   WLO: "" # Wi-Fi Card
 
 display:
   # Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
   # Use SIMU for 3.5" simulated LCD (image written in screencap.png) or SIMU5 for 5" simulated LCD
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: A
+  REVISION: C
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness

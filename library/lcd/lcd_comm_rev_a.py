@@ -41,8 +41,6 @@ class LcdCommRevA(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
-        self.idVendor = 0x1a86
-        self.idProduct = 0x5722
 
     def __del__(self):
         self.closeSerial()
@@ -50,13 +48,12 @@ class LcdCommRevA(LcdComm):
     @staticmethod
     def auto_detect_com_port():
         com_ports = comports()
-        auto_com_port = None
 
         for com_port in com_ports:
             if com_port.serial_number == "USB35INCHIPSV2":
-                auto_com_port = com_port.device
+                return com_port.device, com_port.vid, com_port.pid
 
-        return auto_com_port
+        return None
 
     def SendCommand(self, cmd: Command, x: int, y: int, ex: int, ey: int, bypass_queue: bool = False):
         byteBuffer = bytearray(6)

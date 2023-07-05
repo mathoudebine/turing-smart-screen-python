@@ -80,9 +80,10 @@ class LcdComm(ABC):
             return self.display_width
 
     def openSerial(self):
+        com_port, self.idVendor, self.idProduct = self.auto_detect_com_port()
+
         if self.com_port == 'AUTO':
-            self.com_port = self.auto_detect_com_port()
-            if not self.com_port:
+            if not com_port:
                 logger.error(
                     "Cannot find COM port automatically, please run Configuration again and select COM port manually")
                 try:
@@ -90,6 +91,7 @@ class LcdComm(ABC):
                 except:
                     os._exit(0)
             else:
+                self.com_port = com_port
                 logger.debug(f"Auto detected COM port: {self.com_port}")
         else:
             logger.debug(f"Static COM port: {self.com_port}")
@@ -131,6 +133,10 @@ class LcdComm(ABC):
         try:
             response = self.lcd_serial.read(readSize)
             # logger.debug("Received: [{}]".format(str(response, 'utf-8')))
+            r = str(response)
+            if r.startswith("needReSend:1", 0, 24):
+                logger.warning("(ReadData) received needReSend, call hello..")
+                self.InitializeComm()
             return response
         except serial.serialutil.SerialException:
             logger.warning("(ReadData) error, reseting device.")

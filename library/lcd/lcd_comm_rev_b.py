@@ -53,8 +53,6 @@ class LcdCommRevB(LcdComm):
                  update_queue: queue.Queue = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
-        self.idVendor = 0x1a86
-        self.idProduct = 0x5722
         self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
 
     def __del__(self):
@@ -69,13 +67,12 @@ class LcdCommRevB(LcdComm):
     @staticmethod
     def auto_detect_com_port():
         com_ports = comports()
-        auto_com_port = None
 
         for com_port in com_ports:
             if com_port.serial_number == "2017-2-25":
-                auto_com_port = com_port.device
+                return com_port.device, com_port.vid, com_port.pid
 
-        return auto_com_port
+        return None
 
     def SendCommand(self, cmd: Command, payload=None, bypass_queue: bool = False):
         # New protocol (10 byte packets, framed with the command, 8 data bytes inside)
