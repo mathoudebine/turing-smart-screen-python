@@ -27,7 +27,7 @@ import sys
 PNG_SIGNATURE = b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'
 PNG_IEND = b'\x49\x45\x4E\x44\xAE\x42\x60\x82'
 
-MIN_PYTHON = (3, 7)
+MIN_PYTHON = (3, 8)
 if sys.version_info < MIN_PYTHON:
     print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:

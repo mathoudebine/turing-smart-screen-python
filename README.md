@@ -14,7 +14,7 @@ This project is an open-source alternative software, NOT the USBMonitor.exe / Ex
 
 A Python system monitor program and a library for **3.5" & 5" IPS USB-C (UART) displays.**    
 
-Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.7+  
+Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.8+  
 
 ### Supported smart screens models:
 
