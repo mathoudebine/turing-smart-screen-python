@@ -156,22 +156,23 @@ class LcdComm(ABC):
         pass
 
     def reset_by_usb(self):
-        logger.info(f"Reseting device via USB...cleaning all {self.update_queue.qsize()} queue entries")
-        with self.update_queue_mutex:
-            while not self.update_queue.empty():
+        if self.idProduct is not None and not self.idVendor is not None:
+            logger.info(f"Reseting device via USB...cleaning all {self.update_queue.qsize()} queue entries")
+            with self.update_queue_mutex:
+                while not self.update_queue.empty():
+                    try:
+                        self.update_queue.get()
+                    except queue.Empty:
+                        continue
+                    self.update_queue.task_done()
+                logger.info(f"Reseting device via USB queue cleaned: {self.update_queue.empty()}")
                 try:
-                    self.update_queue.get()
-                except queue.Empty:
-                    continue
-                self.update_queue.task_done()
-            logger.info(f"Reseting device via USB queue cleaned: {self.update_queue.empty()}")
-            try:
-                dev = finddev(idVendor=self.idVendor, idProduct=self.idProduct)
-                if dev is not None:
-                    dev.reset()
-                os.kill(os.getpid(), signal.SIGTERM)
-            except USBError or OSError:
-                logger.info("Error reseting device via USB...")
+                    dev = finddev(idVendor=self.idVendor, idProduct=self.idProduct)
+                    if dev is not None:
+                        dev.reset()
+                    os.kill(os.getpid(), signal.SIGTERM)
+                except USBError or OSError:
+                    logger.info("Error reseting device via USB...")
         pass
 
     @abstractmethod
