@@ -20,6 +20,7 @@ import os
 import queue
 import sys
 import threading
+import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
 from typing import Tuple
@@ -124,6 +125,7 @@ class LcdComm(ABC):
             logger.error(
                 "SerialException: Failed to send serial data to device. Closing and reopening COM port before retrying once.")
             self.closeSerial()
+            time.sleep(1)
             self.openSerial()
             self.lcd_serial.write(line)
 
@@ -140,6 +142,7 @@ class LcdComm(ABC):
             logger.error(
                 "SerialException: Failed to read serial data from device. Closing and reopening COM port before retrying once.")
             self.closeSerial()
+            time.sleep(1)
             self.openSerial()
             return self.lcd_serial.read(readSize)
 
