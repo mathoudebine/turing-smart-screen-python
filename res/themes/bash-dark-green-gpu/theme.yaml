@@ -32,9 +32,9 @@ STATS:
         WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 120
-        ANGLE_END: 60
-        ANGLE_STEPS: 20
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
         ANGLE_SEP: 0
         CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
@@ -72,11 +72,11 @@ STATS:
         WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 60
-        ANGLE_END: 120
-        ANGLE_STEPS: 20
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
         ANGLE_SEP: 0
-        CLOCKWISE: False
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
         BACKGROUND_IMAGE: background.png
       TEXT:
@@ -130,11 +130,11 @@ STATS:
         WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 60
-        ANGLE_END: 120
-        ANGLE_STEPS: 20
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
         ANGLE_SEP: 0
-        CLOCKWISE: False
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
         BACKGROUND_IMAGE: background.png
       USED:
@@ -175,11 +175,11 @@ STATS:
         WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 60
-        ANGLE_END: 120
-        ANGLE_STEPS: 20
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
         ANGLE_SEP: 0
-        CLOCKWISE: False
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
         BACKGROUND_IMAGE: background.png
       TEXT:
