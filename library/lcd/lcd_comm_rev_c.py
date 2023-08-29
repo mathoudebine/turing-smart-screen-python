@@ -119,11 +119,10 @@ class SleepInterval(Enum):
 
 
 class SubRevision(Enum):
-    UNKNOWN = bytearray((0x00,))
-    FIVEINCH = bytearray(
-        (0x63, 0x68, 0x73, 0x5f, 0x35, 0x69, 0x6e, 0x63, 0x68, 0x2e, 0x64, 0x65, 0x76, 0x31, 0x5f, 0x72, 0x6f, 0x6d,
-         0x31, 0x2e, 0x38, 0x37, 0x00)
-    )
+    UNKNOWN = None
+    FIVEINCH = bytearray(b'chs_5inch.dev1_rom1.87\x00')
+    TWOINCH = bytearray(b'chs_5inch.dev1_rom1.88\x00')
+    EIGHTINCH = bytearray(b'chs_88inch.dev1_rom1.88')
 
     def __init__(self, command):
         self.command = command
@@ -203,6 +202,16 @@ class LcdCommRevC(LcdComm):
         self.lcd_serial.flushInput()
         if response == SubRevision.FIVEINCH.value:
             self.sub_revision = SubRevision.FIVEINCH
+            self.display_width = 480
+            self.display_height = 800
+        elif response == SubRevision.TWOINCH.value:
+            self.sub_revision = SubRevision.TWOINCH
+            self.display_width = 480
+            self.display_height = 480
+        elif response == SubRevision.EIGHTINCH.value:
+            self.sub_revision = SubRevision.EIGHTINCH
+            self.display_width = 480
+            self.display_height = 1920
         else:
             logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
 
@@ -359,6 +368,7 @@ class LcdCommRevC(LcdComm):
 
         if cmd:
             payload.extend(cmd.value)
+        print("image_size='%s'" % image_size)
         payload.extend(bytearray.fromhex(image_size))
         payload.extend(Padding.NULL.value * 3)
         payload.extend(count.to_bytes(4, 'big'))
