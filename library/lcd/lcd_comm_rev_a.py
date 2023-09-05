@@ -16,10 +16,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import struct
 import time
 
 from serial.tools.list_ports import comports
+import numpy as np
 
 from library.lcd.lcd_comm import *
 from library.log import logger
@@ -130,6 +130,32 @@ class LcdCommRevA(LcdComm):
         byteBuffer[10] = (height & 255)
         self.lcd_serial.write(bytes(byteBuffer))
 
+    @staticmethod
+    def imageToRGB565LE(image: Image):
+        if image.mode not in ["RGB", "RGBA"]:
+            # we need the first 3 channels to be R, G and B
+            image = image.convert("RGB")
+
+        rgb = np.asarray(image)
+
+        # flatten the first 2 dimensions (width and height) into a single stream
+        # of RGB pixels
+        rgb = rgb.reshape((image.size[1] * image.size[0], -1))
+
+        # extract R, G, B channels and promote them to 16 bits
+        r = rgb[:, 0].astype(np.uint16)
+        g = rgb[:, 1].astype(np.uint16)
+        b = rgb[:, 2].astype(np.uint16)
+
+        # construct RGB565
+        r = (r >> 3)
+        g = (g >> 2)
+        b = (b >> 3)
+        rgb565 = (r << 11) | (g << 5) | b
+
+        # serialize to little-endian
+        return rgb565.newbyteorder('<').tobytes()
+
     def DisplayPILImage(
             self,
             image: Image,
@@ -137,47 +163,45 @@ class LcdCommRevA(LcdComm):
             image_width: int = 0,
             image_height: int = 0
     ):
+        width, height = self.get_width(), self.get_height()
+
         # If the image height/width isn't provided, use the native image size
         if not image_height:
             image_height = image.size[1]
         if not image_width:
             image_width = image.size[0]
 
-        # If our image is bigger than our display, resize it to fit our screen
-        if image.size[1] > self.get_height():
-            image_height = self.get_height()
-        if image.size[0] > self.get_width():
-            image_width = self.get_width()
-
-        assert x <= self.get_width(), 'Image X coordinate must be <= display width'
-        assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
+        assert x <= width, 'Image X coordinate must be <= display width'
+        assert y <= height, 'Image Y coordinate must be <= display height'
         assert image_height > 0, 'Image height must be > 0'
         assert image_width > 0, 'Image width must be > 0'
+
+        # If our image size + the (x, y) position offsets are bigger than
+        # our display, reduce the image size to fit our screen
+        if x + image_width > width:
+            image_width = width - x
+        if y + image_height > height:
+            image_height = height - y
+
+        if image_width != image.size[0] or image_height != image.size[1]:
+            image = image.crop((0, 0, image_width, image_height))
 
         (x0, y0) = (x, y)
         (x1, y1) = (x + image_width - 1, y + image_height - 1)
 
-        self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
-
-        pix = image.load()
-        line = bytes()
+        rgb565le = self.imageToRGB565LE(image)
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            for h in range(image_height):
-                for w in range(image_width):
-                    R = pix[w, h][0] >> 3
-                    G = pix[w, h][1] >> 2
-                    B = pix[w, h][2] >> 3
+            self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
 
-                    rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('<H', rgb)
-
-                    # Send image data by multiple of "display width" bytes
-                    if len(line) >= self.get_width() * 8:
-                        self.SendLine(line)
-                        line = bytes()
+            # Send image data by multiple of "display width" bytes
+            start = 0
+            end = width * 8
+            while end <= len(rgb565le):
+                self.SendLine(rgb565le[start:end])
+                start, end = end, end + width * 8
 
             # Write last line if needed
-            if len(line) > 0:
-                self.SendLine(line)
+            if start != len(rgb565le):
+                self.SendLine(rgb565le[start:])
