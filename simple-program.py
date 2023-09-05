@@ -22,6 +22,7 @@
 import os
 import signal
 import sys
+import time
 from datetime import datetime
 
 # Import only the modules for LCD communication
@@ -117,7 +118,11 @@ if __name__ == "__main__":
         background = f"res/backgrounds/{REVISION}/example{size}_landscape.png"
 
     # Display sample picture
+    logger.debug("setting background picture")
+    start = time.perf_counter()
     lcd_comm.DisplayBitmap(background)
+    end = time.perf_counter()
+    logger.debug(f"background picture set (took {end-start:.3f} s)")
 
     # Display sample text
     lcd_comm.DisplayText("Basic text", 50, 100)
@@ -140,6 +145,7 @@ if __name__ == "__main__":
     # Display the current time and some progress bars as fast as possible
     bar_value = 0
     while not stop:
+        start = time.perf_counter()
         lcd_comm.DisplayText(str(datetime.now().time()), 160, 2,
                              font="roboto/Roboto-Bold.ttf",
                              font_size=20,
@@ -184,6 +190,8 @@ if __name__ == "__main__":
                                           background_image=background)
 
         bar_value = (bar_value + 2) % 101
+        end = time.perf_counter()
+        logger.debug(f"refresh done (took {end-start:.3f} s)")
 
     # Close serial connection at exit
     lcd_comm.closeSerial()
