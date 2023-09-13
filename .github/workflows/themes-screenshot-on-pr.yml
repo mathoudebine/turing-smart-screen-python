@@ -53,6 +53,12 @@ jobs:
           
             # Rename screen capture
             cp screencap.png "screenshot-$theme.png"
+        
+            # Compare with original theme preview to detect changes, generate a diff
+            python3 tools/compare-images.py "screenshot-$theme.png" "$dir/preview.png" "diff-$theme.png"
+            if [ -f "diff-$theme.png" ]; then
+              echo "::warning::$theme theme rendering has changed, check if it is intentional or a side-effect. A diff is included in the job artifacts."
+            fi
           fi
         done
 
@@ -60,4 +66,6 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: themes-screenshots
-        path: screenshot-*.png
+        path: |
+          screenshot-*.png
+          diff-*.png
