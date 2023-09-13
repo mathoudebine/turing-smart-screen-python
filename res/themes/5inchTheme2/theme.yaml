@@ -4,13 +4,6 @@ display:
   DISPLAY_ORIENTATION: portrait
   DISPLAY_RGB_LED: 0, 0, 255
 
-static_images:
-  BACKGROUND:
-    PATH: background.png
-    X: 0
-    Y: 0
-    WIDTH: 480
-    HEIGHT: 800
 static_text:
   DISK_USED_LABEL:
     TEXT: "Used:"

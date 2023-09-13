@@ -17,7 +17,7 @@ static_text:
     Y: 411
     FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
     FONT_SIZE: 23
-    FONT_COLOR: 255, 255, 255
+    FONT_COLOR: 255, 0, 0
     BACKGROUND_COLOR: 132, 154, 165
   DISK_FREE_LABEL:
     TEXT: "Free:"
@@ -92,7 +92,7 @@ STATS:
         HEIGHT: 15
         MIN_VALUE: 0
         MAX_VALUE: 100
-        BAR_COLOR: 0, 0, 255
+        BAR_COLOR: 255, 0, 255
         BAR_OUTLINE: False
         BACKGROUND_COLOR: 0, 0, 0
       TEXT:
