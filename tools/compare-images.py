@@ -28,9 +28,7 @@ im2 = Image.open(sys.argv[2]).convert('RGB')
 
 if list(im1.getdata()) == list(im2.getdata()):
     print("The 2 pictures are visually identical")
-    sys.exit(0)
 else:
     print("The 2 pictures are different!")
     diff = ImageChops.difference(im1, im2)
     diff.save(sys.argv[3])
-    sys.exit(1)
