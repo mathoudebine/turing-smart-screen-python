@@ -63,15 +63,19 @@ class LcdSimulated(LcdComm):
         self.orientation = Orientation.PORTRAIT
 
         try:
-            webServer = HTTPServer(("localhost", WEBSERVER_PORT), SimulatedLcdWebServer)
+            self.webServer = HTTPServer(("localhost", WEBSERVER_PORT), SimulatedLcdWebServer)
             logger.debug("To see your simulated screen, open http://%s:%d in a browser" % ("localhost", WEBSERVER_PORT))
-            threading.Thread(target=webServer.serve_forever).start()
+            threading.Thread(target=self.webServer.serve_forever).start()
         except OSError:
             logger.error("Error starting webserver! An instance might already be running on port %d." % WEBSERVER_PORT)
 
     @staticmethod
     def auto_detect_com_port():
         return None
+
+    def closeSerial(self):
+        logger.debug("Shutting down web server")
+        self.webServer.shutdown()
 
     def InitializeComm(self):
         pass
