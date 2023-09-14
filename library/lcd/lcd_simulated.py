@@ -69,6 +69,9 @@ class LcdSimulated(LcdComm):
         except OSError:
             logger.error("Error starting webserver! An instance might already be running on port %d." % WEBSERVER_PORT)
 
+    def __del__(self):
+        self.closeSerial()
+
     @staticmethod
     def auto_detect_com_port():
         return None
