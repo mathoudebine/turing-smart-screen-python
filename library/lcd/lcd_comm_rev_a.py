@@ -191,9 +191,10 @@ class LcdCommRevA(LcdComm):
 
         rgb565le = self.imageToRGB565LE(image)
 
+        self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
+
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
 
             # Send image data by multiple of "display width" bytes
             start = 0
