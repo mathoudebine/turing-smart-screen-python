@@ -27,7 +27,7 @@ config:
   WLO: "" # Wi-Fi Card
 
 display:
-  # Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
+  # Display revision: A for Turing 3.5" and UsbPCMonitor 3.5"/5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
   # Use SIMU for 3.5" simulated LCD (image written in screencap.png) or SIMU5 for 5" simulated LCD
   # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
   REVISION: A
