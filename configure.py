@@ -57,31 +57,71 @@ except:
     except:
         os._exit(0)
 
+TURING_MODEL = "Turing Smart Screen"
+USBPCMONITOR_MODEL = "UsbPCMonitor"
+XUANFANG_MODEL = "XuanFang rev. B & flagship"
+SIMULATED_MODEL = "Simulated screen"
+
+SIZE_3_5_INCH = "3.5\""
+SIZE_5_INCH = "5\""
+SIZE_8_8_INCH = "8.8\""
+SIZE_2_1_INCH = "2.1\""
+
+size_list = (SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH, SIZE_2_1_INCH)
+
 # Maps between config.yaml values and GUI description
-revision_map = {'A': "Turing 3.5\" / rev. A", 'B': "XuanFang / rev. B / flagship", 'C': "Turing 5\"",
-                'SIMU': "Simulated 3.5\" screen", 'SIMU5': "Simulated 5\" screen"}
+# revision_to_model_map = {'A': TURING_MODEL, 'B': XUANFANG_MODEL, 'C': TURING_MODEL, 'SIMU': SIMULATED_MODEL,
+#                         'SIMU5': SIMULATED_MODEL}
+revision_and_size_to_model_map = {
+    ('A', SIZE_3_5_INCH): TURING_MODEL,  # Can also be UsbPCMonitor 3.5, does not matter since protocol is the same
+    ('A', SIZE_5_INCH): USBPCMONITOR_MODEL,
+    ('B', SIZE_3_5_INCH): XUANFANG_MODEL,
+    ('C', SIZE_5_INCH): TURING_MODEL,
+    ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
+    ('SIMU5', SIZE_5_INCH): SIMULATED_MODEL,
+}
+model_and_size_to_revision_map = {
+    (TURING_MODEL, SIZE_3_5_INCH): 'A',
+    (TURING_MODEL, SIZE_5_INCH): 'C',
+    (USBPCMONITOR_MODEL, SIZE_3_5_INCH): 'A',
+    (USBPCMONITOR_MODEL, SIZE_5_INCH): 'A',
+    (XUANFANG_MODEL, SIZE_3_5_INCH): 'B',
+    (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU5',
+}
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
-revision_size = {'A': '3.5"', 'B': '3.5"', 'C': '5"', 'SIMU': '3.5"', 'SIMU5': '5"'}
+
+themes_dir = 'res/themes'
 
 
-def get_themes(revision: str):
+def get_theme_data(name: str):
+    dir = os.path.join(themes_dir, name)
+    # checking if it is a directory
+    if os.path.isdir(dir):
+        # Check if a theme.yaml file exists
+        theme = os.path.join(dir, 'theme.yaml')
+        if os.path.isfile(theme):
+            # Get display size from theme.yaml
+            with open(theme, "rt", encoding='utf8') as stream:
+                theme_data, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
+                return theme_data
+    return None
+
+
+def get_themes(size: str):
     themes = []
-    directory = 'res/themes/'
-    for filename in os.listdir('res/themes'):
-        dir = os.path.join(directory, filename)
-        # checking if it is a directory
-        if os.path.isdir(dir):
-            # Check if a theme.yaml file exists
-            theme = os.path.join(dir, 'theme.yaml')
-            if os.path.isfile(theme):
-                # Get display size from theme.yaml
-                with open(theme, "rt", encoding='utf8') as stream:
-                    theme_data, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
-                    if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == revision_size[revision]:
-                        themes.append(filename)
+    for filename in os.listdir(themes_dir):
+        theme_data = get_theme_data(filename)
+        if theme_data and theme_data['display'].get("DISPLAY_SIZE", '3.5"') == size:
+            themes.append(filename)
     return sorted(themes, key=str.casefold)
+
+
+def get_theme_size(name: str) -> str:
+    theme_data = get_theme_data(name)
+    return theme_data['display'].get("DISPLAY_SIZE", '3.5"')
 
 
 def get_com_ports():
@@ -102,7 +142,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("730x510")
+        self.window.geometry("770x550")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -120,7 +160,7 @@ class TuringConfigWindow:
         self.theme_label = ttk.Label(self.window, text='Theme')
         self.theme_label.place(x=320, y=35)
         self.theme_cb = ttk.Combobox(self.window, state='readonly')
-        self.theme_cb.place(x=500, y=30, width=210)
+        self.theme_cb.place(x=500, y=30, width=250)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
         self.hwlib_label = ttk.Label(self.window, text='Hardware monitoring')
@@ -128,18 +168,18 @@ class TuringConfigWindow:
         if sys.platform != "win32":
             del hw_lib_map["LHM"]  # LHM is for Windows platforms only
         self.hwlib_cb = ttk.Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
-        self.hwlib_cb.place(x=500, y=70, width=210)
+        self.hwlib_cb.place(x=500, y=70, width=250)
         self.hwlib_cb.bind('<<ComboboxSelected>>', self.on_hwlib_change)
 
         self.eth_label = ttk.Label(self.window, text='Ethernet interface')
         self.eth_label.place(x=320, y=115)
         self.eth_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
-        self.eth_cb.place(x=500, y=110, width=210)
+        self.eth_cb.place(x=500, y=110, width=250)
 
         self.wl_label = ttk.Label(self.window, text='Wi-Fi interface')
         self.wl_label.place(x=320, y=155)
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
-        self.wl_cb.place(x=500, y=150, width=210)
+        self.wl_cb.place(x=500, y=150, width=250)
 
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
@@ -150,40 +190,47 @@ class TuringConfigWindow:
 
         self.model_label = ttk.Label(self.window, text='Smart screen model')
         self.model_label.place(x=320, y=265)
-        self.model_cb = ttk.Combobox(self.window, values=list(revision_map.values()), state='readonly')
+        self.model_cb = ttk.Combobox(self.window, values=list(dict.fromkeys((revision_and_size_to_model_map.values()))),
+                                     state='readonly')
         self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
-        self.model_cb.place(x=500, y=260, width=210)
+        self.model_cb.place(x=500, y=260, width=250)
+
+        self.size_label = ttk.Label(self.window, text='Smart screen size')
+        self.size_label.place(x=320, y=305)
+        self.size_cb = ttk.Combobox(self.window, values=size_list, state='readonly')
+        self.size_cb.bind('<<ComboboxSelected>>', self.on_size_change)
+        self.size_cb.place(x=500, y=300, width=250)
 
         self.com_label = ttk.Label(self.window, text='COM port')
-        self.com_label.place(x=320, y=305)
+        self.com_label.place(x=320, y=345)
         self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
-        self.com_cb.place(x=500, y=300, width=210)
+        self.com_cb.place(x=500, y=340, width=250)
 
         self.orient_label = ttk.Label(self.window, text='Orientation')
-        self.orient_label.place(x=320, y=345)
+        self.orient_label.place(x=320, y=385)
         self.orient_cb = ttk.Combobox(self.window, values=list(reverse_map.values()), state='readonly')
-        self.orient_cb.place(x=500, y=340, width=210)
+        self.orient_cb.place(x=500, y=380, width=250)
 
         self.brightness_string = StringVar()
         self.brightness_label = ttk.Label(self.window, text='Brightness')
-        self.brightness_label.place(x=320, y=385)
+        self.brightness_label.place(x=320, y=425)
         self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL,
                                            command=self.on_brightness_change)
-        self.brightness_slider.place(x=550, y=380, width=160)
+        self.brightness_slider.place(x=550, y=420, width=180)
         self.brightness_val_label = ttk.Label(self.window, textvariable=self.brightness_string)
-        self.brightness_val_label.place(x=500, y=385)
+        self.brightness_val_label.place(x=500, y=425)
         self.brightness_warning_label = ttk.Label(self.window,
-                                                  text="⚠ Turing / rev. A displays can get hot at high brightness!",
+                                                  text="⚠ Turing 3.5\" displays can get hot at high brightness!",
                                                   foreground='#ff8c00')
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=310, y=450, height=50, width=130)
+        self.edit_theme_btn.place(x=310, y=490, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=450, y=450, height=50, width=130)
+        self.save_btn.place(x=450, y=490, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=590, y=450, height=50, width=130)
+        self.save_run_btn.place(x=590, y=490, height=50, width=130)
 
         self.config = None
         self.load_config_values()
@@ -212,6 +259,7 @@ class TuringConfigWindow:
             self.theme_cb.set(self.config['config']['THEME'])
         except:
             self.theme_cb.current(0)
+        # self.load_theme_size()
         self.load_theme_preview()
 
         try:
@@ -243,8 +291,17 @@ class TuringConfigWindow:
         except:
             self.com_cb.current(0)
 
+        # Guess display size from theme in the configuration
+        size = get_theme_size(self.config['config']['THEME'])
         try:
-            self.model_cb.set(revision_map[self.config['display']['REVISION']])
+            self.size_cb.set(size)
+        except:
+            self.size_cb.current(0)
+
+        # Guess model from revision and size
+        revision = self.config['display']['REVISION']
+        try:
+            self.model_cb.set(revision_and_size_to_model_map[(revision, size)])
         except:
             self.model_cb.current(0)
 
@@ -260,6 +317,7 @@ class TuringConfigWindow:
 
         # Reload content on screen
         self.on_model_change()
+        self.on_size_change()
         self.on_theme_change()
         self.on_brightness_change()
         self.on_hwlib_change()
@@ -279,7 +337,7 @@ class TuringConfigWindow:
             self.config['config']['COM_PORT'] = "AUTO"
         else:
             self.config['config']['COM_PORT'] = self.com_cb.get()
-        self.config['display']['REVISION'] = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
+        self.config['display']['REVISION'] = model_and_size_to_revision_map[(self.model_cb.get(), self.size_cb.get())]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
@@ -287,6 +345,7 @@ class TuringConfigWindow:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
+        # self.load_theme_size()
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
@@ -306,8 +365,8 @@ class TuringConfigWindow:
 
     def on_model_change(self, e=None):
         self.show_hide_brightness_warning()
-        revision = [k for k, v in revision_map.items() if v == self.model_cb.get()][0]
-        if revision == "SIMU" or revision == "SIMU5":
+        model = self.model_cb.get()
+        if model == SIMULATED_MODEL:
             self.com_cb.configure(state="disabled", foreground="#C0C0C0")
             self.orient_cb.configure(state="disabled", foreground="#C0C0C0")
             self.brightness_slider.configure(state="disabled")
@@ -318,12 +377,16 @@ class TuringConfigWindow:
             self.brightness_slider.configure(state="normal")
             self.brightness_val_label.configure(foreground="#000")
 
-        themes = get_themes(revision)
+    def on_size_change(self, e=None):
+        size = self.size_cb.get()
+        themes = get_themes(size)
         self.theme_cb.config(values=themes)
 
         if not self.theme_cb.get() in themes:
             # The selected theme does not exist anymore / is not allowed for this screen model : select 1st theme avail.
             self.theme_cb.set(themes[0])
+
+        self.show_hide_brightness_warning()
 
     def on_hwlib_change(self, e=None):
         hwlib = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
@@ -345,10 +408,9 @@ class TuringConfigWindow:
                 self.save_run_btn.state(["!disabled"])
 
     def show_hide_brightness_warning(self, e=None):
-        if int(self.brightness_slider.get()) > 50 and [k for k, v in revision_map.items() if v == self.model_cb.get()][
-            0] == "A":
-            # Show warning for Turing Smart screen with high brightness
-            self.brightness_warning_label.place(x=320, y=420)
+        if int(self.brightness_slider.get()) > 50 and self.model_cb.get() == TURING_MODEL and self.size_cb.get() == SIZE_3_5_INCH:
+            # Show warning for Turing Smart screen 3.5 with high brightness
+            self.brightness_warning_label.place(x=320, y=460)
         else:
             self.brightness_warning_label.place_forget()
 
