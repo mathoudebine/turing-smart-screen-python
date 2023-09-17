@@ -61,7 +61,7 @@ There are 2 possible uses of this project Python code:
 This project is mainly a complete standalone program to use your screen as a system monitor, like the original vendor app.  
 Some themes are already included for a quick start!  
 ### [> Configure and start system monitor](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start)
-<img src="https://user-images.githubusercontent.com/38615348/221564385-737d0b01-d439-4e24-9bb6-cce205958dc9.png" height="400" />
+<img src="res/docs/config_wizard.png"/>  
 
 * Fully functional multi-OS code base (operates out of the box, tested on Windows, Linux & MacOS).
 * Display configuration using GUI configuration wizard or `config.yaml` file: no Python code to edit.
