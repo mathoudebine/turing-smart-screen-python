@@ -23,10 +23,10 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 | <img src="res/docs/turing.webp"/>                    | <img src="res/docs/xuanfang.webp"/>               | <img src="res/docs/turing5inch.png"/>       |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now) |
 
-| ✅ [UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html) |
-|-------------------------------------------------------------------------------|
-| <img src="res/docs/UsbPCMonitor.jpg" width="30%" height="30%"/>               |
-| Unknown manufacturer. Screen visually similar to Turing 3.5" / 5"             |
+| ✅ [UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html)                       |
+|-----------------------------------------------------------------------------------------------------|
+| <img src="res/docs/UsbPCMonitor_5inch.webp" width="30%" height="30%"/>                              |
+| Unknown manufacturer, visually similar to Turing 3.5" / 5". Original software is `UsbPCMonitor.exe` |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
