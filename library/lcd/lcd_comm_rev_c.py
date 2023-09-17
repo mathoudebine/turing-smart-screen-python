@@ -168,7 +168,7 @@ class LcdCommRevC(LcdComm):
         message = bytearray()
 
         if cmd != Command.SEND_PAYLOAD:
-            message = cmd.value
+            message = bytearray(cmd.value)
 
         # logger.debug("Command: {}".format(cmd.name))
 
