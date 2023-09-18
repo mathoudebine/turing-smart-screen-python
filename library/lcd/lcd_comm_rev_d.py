@@ -20,21 +20,19 @@ import struct
 from enum import Enum
 
 from serial.tools.list_ports import comports
-import numpy as np
 
 from library.lcd.lcd_comm import *
 from library.log import logger
 
 
 class Command(Enum):
-    # COMMANDS
     GETINFO = bytearray((71, 00, 00, 00))
-    SETHF = bytearray((67, 68, 00, 00))
-    SETVF = bytearray((67, 70, 00, 00))
-    SET180 = bytearray((67, 71, 00, 00))       # Set reverse orientation
-    SETORG = bytearray((67, 72, 00, 00))       # Set original orientation
+    SETORG = bytearray((67, 72, 00, 00))       # Set portrait orientation
+    SET180 = bytearray((67, 71, 00, 00))       # Set reverse portrait orientation
+    SETHF = bytearray((67, 68, 00, 00))        # Set portrait orientation with horizontal mirroring
+    SETVF = bytearray((67, 70, 00, 00))        # Set reverse portrait orientation with horizontal mirroring
     SETBL = bytearray((67, 67))                # Brightness setting
-    DISPCOLOR = bytearray((67, 66, 00, 00))
+    DISPCOLOR = bytearray((67, 66))            # Display RGB565 color on whole screen
     BLOCKWRITE = bytearray((67, 65))           # Send bitmap size
     INTOPICMODE = bytearray((68, 00, 00, 00))  # Start bitmap transmission
     OUTPICMODE = bytearray((65, 00, 00, 00))   # End bitmap transmission
@@ -70,10 +68,6 @@ class LcdCommRevD(LcdComm):
         self.lcd_serial.reset_input_buffer()
 
     def SendCommand(self, cmd: Command, payload: bytearray = None, bypass_queue: bool = False):
-
-        # Empty the input buffer regularly: we don't process what the screen sends here
-        self.lcd_serial.reset_input_buffer()
-
         message = bytearray(cmd.value)
 
         if payload:
@@ -91,10 +85,14 @@ class LcdCommRevD(LcdComm):
         pass
 
     def Reset(self):
-        pass
+        # HW revision D does not implement a command to reset it: clear display instead
+        self.Clear()
 
     def Clear(self):
-        pass
+        # HW revision D does not implement a Clear command: display a blank image on the whole screen
+        color = 0xFFFF  # RGB565 White color
+        color_bytes = bytearray(color.to_bytes(2))
+        self.SendCommand(cmd=Command.DISPCOLOR, payload=color_bytes)
 
     def ScreenOff(self):
         # HW revision D does not implement a "ScreenOff" native command: using SetBrightness(0) instead
@@ -118,7 +116,14 @@ class LcdCommRevD(LcdComm):
         self.SendCommand(cmd=Command.SETBL, payload=level_bytes)
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
-        pass
+        # In revision D, reverse orientations (reverse portrait / reverse landscape) are managed by the display
+        # Basic orientations (portrait / landscape) are software-managed because screen commands only support portrait
+        self.orientation = orientation
+
+        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+            self.SendCommand(cmd=Command.SET180)
+        else:
+            self.SendCommand(cmd=Command.SETORG)
 
     def DisplayPILImage(
             self,

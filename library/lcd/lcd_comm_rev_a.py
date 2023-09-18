@@ -151,7 +151,6 @@ class LcdCommRevA(LcdComm):
         self.SendCommand(Command.SET_BRIGHTNESS, level_absolute, 0, 0, 0)
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
-        self.orientation = orientation
         width = self.get_width()
         height = self.get_height()
         x = 0

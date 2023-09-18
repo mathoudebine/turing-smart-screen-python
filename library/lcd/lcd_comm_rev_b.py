@@ -141,11 +141,11 @@ class LcdCommRevB(LcdComm):
         self._hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it
-        pass
+        # HW revision B does not implement a command to reset it: clear display instead
+        self.Clear()
 
     def Clear(self):
-        # This hardware does not implement a Clear command: display a blank image on the whole screen
+        # HW revision B does not implement a Clear command: display a blank image on the whole screen
         # Force an orientation in case the screen is currently configured with one different from the theme
         backup_orientation = self.orientation
         self.SetOrientation(orientation=Orientation.PORTRAIT)
