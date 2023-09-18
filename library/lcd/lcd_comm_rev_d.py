@@ -28,16 +28,16 @@ from library.log import logger
 
 class Command(Enum):
     # COMMANDS
-    GetInfo = bytearray((71, 00, 00, 00))
-    SetHf = bytearray((67, 68, 00, 00))
-    SetVf = bytearray((67, 70, 00, 00))
-    Set180 = bytearray((67, 71, 00, 00))
-    SetOrg = bytearray((67, 72, 00, 00))
-    SetBl = bytearray((67, 67, 00, 00))
-    DispColor = bytearray((67, 66, 00, 00))
-    BlockWrite = bytearray((67, 65))
-    intopicMode = bytearray((68, 00, 00, 00))
-    outpicMode = bytearray((65, 00, 00, 00))
+    GETINFO = bytearray((71, 00, 00, 00))
+    SETHF = bytearray((67, 68, 00, 00))
+    SETVF = bytearray((67, 70, 00, 00))
+    SET180 = bytearray((67, 71, 00, 00))       # Set reverse orientation
+    SETORG = bytearray((67, 72, 00, 00))       # Set original orientation
+    SETBL = bytearray((67, 67))                # Brightness setting
+    DISPCOLOR = bytearray((67, 66, 00, 00))
+    BLOCKWRITE = bytearray((67, 65))           # Send bitmap size
+    INTOPICMODE = bytearray((68, 00, 00, 00))  # Start bitmap transmission
+    OUTPICMODE = bytearray((65, 00, 00, 00))   # End bitmap transmission
 
 
 # This class is for Kipye Qiye Smart Display 3.5"
@@ -66,7 +66,7 @@ class LcdCommRevD(LcdComm):
     def WriteData(self, byteBuffer: bytearray):
         LcdComm.WriteData(self, byteBuffer)
 
-        # Empty the input buffer after each writegitk: we don't process what the screen sends
+        # Empty the input buffer after each write: we don't process acknowledgements the screen sends back
         self.lcd_serial.reset_input_buffer()
 
     def SendCommand(self, cmd: Command, payload: bytearray = None, bypass_queue: bool = False):
@@ -97,13 +97,25 @@ class LcdCommRevD(LcdComm):
         pass
 
     def ScreenOff(self):
-        pass
+        # HW revision D does not implement a "ScreenOff" native command: using SetBrightness(0) instead
+        self.SetBrightness(0)
 
     def ScreenOn(self):
-        pass
+        # HW revision D does not implement a "ScreenOn" native command: using SetBrightness() instead
+        self.SetBrightness()
 
     def SetBrightness(self, level: int = 25):
-        pass
+        assert 0 <= level <= 100, 'Brightness level must be [0-100]'
+
+        # Brightness scales from 0 to 500, with 500 being the brightest and 0 being the darkest.
+        # Convert our brightness % to an absolute value.
+        converted_level = level * 5
+
+        level_bytes = bytearray(converted_level.to_bytes(2))
+
+        # Send the command twice because sometimes it is not applied...
+        self.SendCommand(cmd=Command.SETBL, payload=level_bytes)
+        self.SendCommand(cmd=Command.SETBL, payload=level_bytes)
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         pass
@@ -141,15 +153,15 @@ class LcdCommRevD(LcdComm):
         (x0, y0) = (x, y)
         (x1, y1) = (x + image_width - 1, y + image_height - 1)
 
-        # Send command BlockWrite with image size
+        # Send bitmap size
         image_data = bytearray(x0.to_bytes(2))
         image_data += bytearray(x1.to_bytes(2))
         image_data += bytearray(y0.to_bytes(2))
         image_data += bytearray(y1.to_bytes(2))
-        self.SendCommand(cmd=Command.BlockWrite, payload=image_data)
+        self.SendCommand(cmd=Command.BLOCKWRITE, payload=image_data)
 
-        # Send command intoPicMode to prepare bitmap data transmission
-        self.SendCommand(Command.intopicMode)
+        # Prepare bitmap data transmission
+        self.SendCommand(Command.INTOPICMODE)
 
         pix = image.load()
         line = bytes([80])
@@ -170,7 +182,6 @@ class LcdCommRevD(LcdComm):
 
                     # Send image data by multiple of 64 bytes + 1 command byte
                     if len(line) >= 65:
-                        old_line = line[0:64]
                         self.SendLine(line[0:64])
                         line = bytes([80]) + line[64:]
 
@@ -178,5 +189,5 @@ class LcdCommRevD(LcdComm):
             if len(line) > 0:
                 self.SendLine(line)
 
-        # Send command outpicMode to indicate the complete bitmap has been transmitted
-        self.SendCommand(Command.outpicMode)
+        # Indicate the complete bitmap has been transmitted
+        self.SendCommand(Command.OUTPICMODE)
