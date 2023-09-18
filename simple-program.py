@@ -110,9 +110,9 @@ if __name__ == "__main__":
 
     # Define background picture
     size = ""
-    if lcd_comm.display_width == 480 & lcd_comm.display_height == 800:
+    if lcd_comm.display_width == 480 and lcd_comm.display_height == 800:
         size = "5inch"
-    elif lcd_comm.display_width == 320 & lcd_comm.display_height == 480:
+    elif lcd_comm.display_width == 320 and lcd_comm.display_height == 480:
         size = "3inch"
     else:
         logger.error("Display resolution not supported")
@@ -135,10 +135,10 @@ if __name__ == "__main__":
     logger.debug(f"background picture set (took {end - start:.3f} s)")
 
     # Display sample text
-    lcd_comm.DisplayText("Basic text", 50, 100)
+    lcd_comm.DisplayText("Basic text", 50, 85)
 
     # Display custom text with solid background
-    lcd_comm.DisplayText("Custom italic multiline text\nright-aligned", 5, 150,
+    lcd_comm.DisplayText("Custom italic multiline text\nright-aligned", 5, 120,
                          font="roboto/Roboto-Italic.ttf",
                          font_size=20,
                          font_color=(0, 0, 255),
@@ -146,7 +146,7 @@ if __name__ == "__main__":
                          align='right')
 
     # Display custom text with transparent background
-    lcd_comm.DisplayText("Transparent bold text", 5, 250,
+    lcd_comm.DisplayText("Transparent bold text", 5, 180,
                          font="geforce/GeForce-Bold.ttf",
                          font_size=30,
                          font_color=(255, 255, 255),
@@ -174,7 +174,7 @@ if __name__ == "__main__":
                                     bar_color=(0, 255, 0), bar_outline=False,
                                     background_image=background)
 
-        lcd_comm.DisplayRadialProgressBar(98, 320, 25, 4,
+        lcd_comm.DisplayRadialProgressBar(98, 260, 25, 4,
                                           min_value=0,
                                           max_value=100,
                                           value=bar_value,
@@ -183,7 +183,7 @@ if __name__ == "__main__":
                                           font_color=(255, 255, 255),
                                           background_image=background)
 
-        lcd_comm.DisplayRadialProgressBar(222, 320, 40, 13,
+        lcd_comm.DisplayRadialProgressBar(222, 260, 40, 13,
                                           min_value=0,
                                           max_value=100,
                                           angle_start=405,
