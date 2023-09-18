@@ -94,7 +94,8 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (255, 255, 255)),
-        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
+        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
+        anchor="lt"
     )
 
 
