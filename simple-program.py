@@ -29,6 +29,7 @@ from datetime import datetime
 from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
+from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -37,9 +38,14 @@ from library.log import logger
 # COM_PORT = "COM5"
 COM_PORT = "AUTO"
 
-# Display revision: A for Turing 3.5", B for Xuanfang 3.5" (inc. flagship), C for Turing 5"
-# Use SIMU for 3.5" simulated LCD (image written in screencap.png) or SIMU5 for 5" simulated LCD
-# To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
+# Display revision:
+# - A      for Turing 3.5" and UsbPCMonitor 3.5"/5"
+# - B      for Xuanfang 3.5" (inc. flagship)
+# - C      for Turing 5"
+# - D      for Kipye Qiye Smart Display 3.5"
+# - SIMU   for 3.5" simulated LCD (image written in screencap.png)
+# - SIMU5  for 5" simulated LCD
+# To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
 REVISION = "A"
 
 stop = False
@@ -61,34 +67,30 @@ if __name__ == "__main__":
     # Build your LcdComm object based on the HW revision
     lcd_comm = None
     if REVISION == "A":
-        logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\")")
-        lcd_comm = LcdCommRevA(com_port=COM_PORT,
-                               display_width=320,
-                               display_height=480)
+        logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\" & UsbPCMonitor 3.5\"/5\")")
+        # NOTE: If you have UsbPCMonitor 5" you need to change the width/height to 480x800 below
+        lcd_comm = LcdCommRevA(com_port=COM_PORT, display_width=320, display_height=480)
     elif REVISION == "B":
-        print("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
-        lcd_comm = LcdCommRevB(com_port=COM_PORT,
-                               display_width=320,
-                               display_height=480)
+        logger.info("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
+        lcd_comm = LcdCommRevB(com_port=COM_PORT)
     elif REVISION == "C":
-        print("Selected Hardware Revision C (Turing Smart Screen 5\")")
-        lcd_comm = LcdCommRevC(com_port=COM_PORT,
-                               display_width=480,
-                               display_height=800)
+        logger.info("Selected Hardware Revision C (Turing Smart Screen 5\")")
+        lcd_comm = LcdCommRevC(com_port=COM_PORT)
+    elif REVISION == "D":
+        logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")
+        lcd_comm = LcdCommRevD(com_port=COM_PORT)
     elif REVISION == "SIMU":
-        print("Selected 3.5\" Simulated LCD")
-        lcd_comm = LcdSimulated(display_width=320,
-                                display_height=480)
+        logger.info("Selected 3.5\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=320, display_height=480)
     elif REVISION == "SIMU5":
-        print("Selected 5\" Simulated LCD")
-        lcd_comm = LcdSimulated(display_width=480,
-                                display_height=800)
+        logger.info("Selected 5\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=480, display_height=800)
     else:
-        print("ERROR: Unknown revision")
+        logger.error("Unknown revision")
         try:
-            sys.exit(0)
+            sys.exit(1)
         except:
-            os._exit(0)
+            os._exit(1)
 
     # Reset screen in case it was in an unstable state (screen is also cleared)
     lcd_comm.Reset()
@@ -96,7 +98,7 @@ if __name__ == "__main__":
     # Send initialization commands
     lcd_comm.InitializeComm()
 
-    # Set brightness in % (warning: revision A display can get hot at high brightness!)
+    # Set brightness in % (warning: revision A display can get hot at high brightness! Keep value at 50% max for rev. A)
     lcd_comm.SetBrightness(level=10)
 
     # Set backplate RGB LED color (for supported HW only)
@@ -107,22 +109,30 @@ if __name__ == "__main__":
     lcd_comm.SetOrientation(orientation=orientation)
 
     # Define background picture
-    if REVISION == "C" or REVISION == "SIMU5":
+    size = ""
+    if lcd_comm.display_width == 480 & lcd_comm.display_height == 800:
         size = "5inch"
+    elif lcd_comm.display_width == 320 & lcd_comm.display_height == 480:
+        size = "3inch"
     else:
-        size = ""
+        logger.error("Display resolution not supported")
+        lcd_comm.closeSerial()
+        try:
+            sys.exit(1)
+        except:
+            os._exit(1)
 
     if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
         background = f"res/backgrounds/example{size}.png"
     else:
-        background = f"res/backgrounds/{REVISION}/example{size}_landscape.png"
+        background = f"res/backgrounds/example{size}_landscape.png"
 
     # Display sample picture
     logger.debug("setting background picture")
     start = time.perf_counter()
     lcd_comm.DisplayBitmap(background)
     end = time.perf_counter()
-    logger.debug(f"background picture set (took {end-start:.3f} s)")
+    logger.debug(f"background picture set (took {end - start:.3f} s)")
 
     # Display sample text
     lcd_comm.DisplayText("Basic text", 50, 100)
@@ -191,7 +201,7 @@ if __name__ == "__main__":
 
         bar_value = (bar_value + 2) % 101
         end = time.perf_counter()
-        logger.debug(f"refresh done (took {end-start:.3f} s)")
+        logger.debug(f"refresh done (took {end - start:.3f} s)")
 
     # Close serial connection at exit
     lcd_comm.closeSerial()
