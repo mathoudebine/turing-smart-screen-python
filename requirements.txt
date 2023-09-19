@@ -1,7 +1,7 @@
 # Python packages requirements
 Pillow~=9.5.0         # Image generation
 pyserial~=3.5         # Serial linl to communicate with the display
-numpy~=1.24.4         # Efficient image serialization
+numpy~=1.26.0         # Efficient image serialization
 PyYAML~=6.0.1         # For themes files
 psutil~=5.9.5         # CPU / disk / network metrics
 GPUtil~=1.4.0         # Nvidia GPU
