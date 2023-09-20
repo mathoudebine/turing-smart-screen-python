@@ -223,6 +223,7 @@ class LcdCommRevB(LcdComm):
             (x0, y0) = (x, y)
             (x1, y1) = (x + image_width - 1, y + image_height - 1)
         else:
+            # Reverse landscape/portrait orientations are software-managed: get new coordinates
             (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
             (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 

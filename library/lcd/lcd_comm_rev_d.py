@@ -155,8 +155,15 @@ class LcdCommRevD(LcdComm):
         if image_width != image.size[0] or image_height != image.size[1]:
             image = image.crop((0, 0, image_width, image_height))
 
-        (x0, y0) = (x, y)
-        (x1, y1) = (x + image_width - 1, y + image_height - 1)
+        if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
+            (x0, y0) = (x, y)
+            (x1, y1) = (x + image_width - 1, y + image_height - 1)
+        else:
+            # Landscape / reverse landscape orientations are software managed: rotate image 90° and get new coordinates
+            image.rotate(90)
+            (x0, y0) = (y, self.display_height - x - image_width + 1)
+            (x1, y1) = (y + image_height - 1, self.display_height - x)
+            image_width, image_height = image_height, image_width
 
         # Send bitmap size
         image_data = bytearray(x0.to_bytes(2))
