@@ -186,7 +186,7 @@ class LcdCommRevB(LcdComm):
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
-    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 320, new_height: int = 480):
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         # In revision B, basic orientations (portrait / landscape) are managed by the display
         # The reverse orientations (reverse portrait / reverse landscape) are software-managed
         self.orientation = orientation
