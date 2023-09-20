@@ -354,6 +354,13 @@ class Memory:
             unit=" M"
         )
 
+        display_themed_value(
+            theme_data=memory_stats_theme_data['VIRTUAL']['TOTAL'],
+            value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1000000),
+            min_size=5,
+            unit=" M"
+        )
+
 
 class Disk:
     @staticmethod
