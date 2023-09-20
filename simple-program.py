@@ -105,27 +105,10 @@ if __name__ == "__main__":
     lcd_comm.SetBackplateLedColor(led_color=(255, 255, 255))
 
     # Set orientation (screen starts in Portrait)
-    orientation = Orientation.PORTRAIT
-    lcd_comm.SetOrientation(orientation=orientation)
+    lcd_comm.SetOrientation(orientation=Orientation.LANDSCAPE)
 
     # Define background picture
-    size = ""
-    if lcd_comm.display_width == 480 and lcd_comm.display_height == 800:
-        size = "5inch"
-    elif lcd_comm.display_width == 320 and lcd_comm.display_height == 480:
-        size = "3inch"
-    else:
-        logger.error("Display resolution not supported")
-        lcd_comm.closeSerial()
-        try:
-            sys.exit(1)
-        except:
-            os._exit(1)
-
-    if orientation == Orientation.PORTRAIT or orientation == orientation.REVERSE_PORTRAIT:
-        background = f"res/backgrounds/example{size}.png"
-    else:
-        background = f"res/backgrounds/example{size}_landscape.png"
+    background = f"res/backgrounds/example_{lcd_comm.get_width()}x{lcd_comm.get_height()}.png"
 
     # Display sample picture
     logger.debug("setting background picture")
