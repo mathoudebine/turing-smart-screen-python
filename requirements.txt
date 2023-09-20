@@ -1,5 +1,5 @@
 # Python packages requirements
-Pillow~=9.5.0         # Image generation
+Pillow~=10.0.1         # Image generation
 pyserial~=3.5         # Serial linl to communicate with the display
 numpy~=1.24.4         # Efficient image serialization
 PyYAML~=6.0.1         # For themes files
