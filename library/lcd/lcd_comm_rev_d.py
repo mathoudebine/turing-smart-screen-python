@@ -159,7 +159,7 @@ class LcdCommRevD(LcdComm):
             (x0, y0) = (x, y)
             (x1, y1) = (x + image_width - 1, y + image_height - 1)
         else:
-            # Landscape / reverse landscape orientations are software managed: rotate image 90° and get new coordinates
+            # Landscape / reverse landscape orientations are software managed: rotate image -90° and get new coordinates
             image = image.rotate(270, expand=True)
             (x0, y0) = (self.display_width - y - image_height, x)
             (x1, y1) = (self.display_width - y - 1, x + image_width - 1)
