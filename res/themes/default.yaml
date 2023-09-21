@@ -68,6 +68,9 @@ STATS:
       FREE:
         SHOW: False
         SHOW_UNIT: False
+      TOTAL:
+        SHOW: False
+        SHOW_UNIT: False
       PERCENT_TEXT:
         SHOW: False
         SHOW_UNIT: False
