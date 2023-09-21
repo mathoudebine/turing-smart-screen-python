@@ -12,7 +12,7 @@ This project is an open-source alternative software, NOT the original software p
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![macOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![Licence](https://img.shields.io/github/license/mathoudebine/turing-smart-screen-python?style=for-the-badge)](./LICENSE)
   
 
-A Python system monitor program and a library for **small IPS USB-C (UART) displays.**    
+A Python system monitor program and an abstraction library for **small IPS USB-C (UART) displays.**    
 
 Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.8+  
 
@@ -30,8 +30,8 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
-**Please note the Turing and the XuanFang screens are different products** designed and produced by different companies, despite having a similar appearance. The communication protocol is also different.  
-This project support products from both manufacturers, including backplate RGB LEDs for available models!
+**Please note all listed smart screens are different products** designed and produced by different companies, despite having a similar appearance. Their communication protocol is also different.  
+This project offers an abstraction layer to manage all of these products in a unified way, including some product-specific features like backplate RGB LEDs for available models!
 
 If you haven't received your screen yet but want to start developing your theme now, you can use the [**"simulated LCD" mode!**](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Simulated-display)
 
@@ -81,10 +81,10 @@ Some themes are already included for a quick start!
 
 ## Control the display from your Python projects
 
-If you don't want to use your screen for system monitoring, you can just use this project as a module to do some simple operations on the display from any Python code :
+If you don't want to use your screen for system monitoring, you can just use this project as a module from any Python code to do some simple operations on the display:
 - **Display custom picture**
 - **Display text**
-- **Display progress bar**
+- **Display horizontal / radial progress bar**
 - **Screen rotation**
 - Clear the screen (blank)
 - Turn the screen on/off
@@ -92,6 +92,7 @@ If you don't want to use your screen for system monitoring, you can just use thi
 - Set brightness
 - Set backplate RGB LEDs color (on supported hardware rev.) 
 
+This project will act as an abstraction library to handle specific protocols and capabilities of each supported smart screen models in a transparent way for the user.
 Check `simple-program.py` as an example.
 
 ### [> Control the display from your code](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Control-screen-from-your-own-code)
