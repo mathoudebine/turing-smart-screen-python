@@ -136,7 +136,8 @@ class Display:
                     background_color=config.THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
                     background_image=_get_full_path(config.THEME_DATA['PATH'],
                                                     config.THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE",
-                                                                                               None))
+                                                                                               None)),
+                    anchor="lt"
                 )
 
 
