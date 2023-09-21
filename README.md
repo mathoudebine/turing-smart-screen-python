@@ -12,7 +12,7 @@ This project is an open-source alternative software, NOT the USBMonitor.exe / Ex
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black) ![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white) ![macOS](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white) ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=for-the-badge&logo=Raspberry%20Pi&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) [![Licence](https://img.shields.io/github/license/mathoudebine/turing-smart-screen-python?style=for-the-badge)](./LICENSE)
   
 
-A Python system monitor program and a library for **3.5" & 5" IPS USB-C (UART) displays.**    
+A Python system monitor program and a library for **small IPS USB-C (UART) displays.**    
 
 Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basically all OS that support Python 3.8+  
 
@@ -23,10 +23,10 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 | <img src="res/docs/turing.webp"/>                    | <img src="res/docs/xuanfang.webp"/>               | <img src="res/docs/turing5inch.png"/>       |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now) |
 
-| ✅ [UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html)                       |
-|-----------------------------------------------------------------------------------------------------|
-| <img src="res/docs/UsbPCMonitor_5inch.webp" width="30%" height="30%"/>                              |
-| Unknown manufacturer, visually similar to Turing 3.5" / 5". Original software is `UsbPCMonitor.exe` |
+| ✅ [UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html)                       | ✅ [Kipye Qiye Smart Display 3.5"](https://www.aliexpress.us/item/3256803899049957.html) |
+|-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| <img src="res/docs/UsbPCMonitor_5inch.webp" width="60%" height="60%"/>                              | <img src="res/docs/kipye-qiye-35.webp" width="60%" height="60%"/>                       |
+| Unknown manufacturer, visually similar to Turing 3.5" / 5". Original software is `UsbPCMonitor.exe` | Front panel has an engraved inscription "奇叶智显" Qiye Zhixian (Qiye Smart Display)        |
 
 ### [> What is my smart screen model?](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions)  
 
@@ -42,10 +42,10 @@ If you haven't received your screen yet but want to start developing your theme 
 | <img src="res/docs/turing8inch.jpg"/>                                                                                                            | <img src="res/docs/turing2inch.webp"/>                                                                                                           | <img src="res/docs/fuldho_3.5.jpg"/>                                                                                                                                                                                                                                                                |
 | Very similar protocol than the 5". [Support planned in a future version.](https://github.com/mathoudebine/turing-smart-screen-python/issues/264) | Very similar protocol than the 5". [Support planned in a future version.](https://github.com/mathoudebine/turing-smart-screen-python/issues/264) | Managed with [proprietary Windows software `SmartMonitor.exe`](https://smartdisplay.lanzouo.com/b04jvavkb). Cannot be supported by this project: [see here](https://github.com/mathoudebine/turing-smart-screen-python/discussions/298). Use alternative library https://github.com/braewoods/hidss |
 
-| ❔ _[SmartCool Lcd](https://aliexpress.com/item/1005005443609423.html) / [GeekTeches AD35](https://aliexpress.com/item/1005004858688084.html) / AIDA64 / AX206_                                   | ❔ _[Kipye Qiye Smart Display 3.5"](https://www.aliexpress.us/item/3256803899049957.html)_                                                                                                                                                       |
-|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <img src="res/docs/ax206.jpg" width="30%" height="30%" /> <img src="res/docs/geekteches_ad35.jpg" width="30%" height="30%" /> <img src="res/docs/smartcool_lcd.webp" width="30%" height="30%" /> | <img src="res/docs/kipye-35.webp"/>                                                                                                                                                                                                             |
-| Not supported. Produced by multiple manufacturers, all use the same [Appotech AX206 hacked photo frame firmware](https://github.com/dreamlayers/dpf-ax). Supported by AIDA64 and lcd4linux       | Front panel has an engraved inscription "奇叶智显" Qiye Zhixian (Qiye Smart Display). Display should be compatible with this project. [Support planned in a future version.](https://github.com/mathoudebine/turing-smart-screen-python/issues/315) |
+| ❔ _[SmartCool Lcd](https://aliexpress.com/item/1005005443609423.html) / [GeekTeches AD35](https://aliexpress.com/item/1005004858688084.html) / AIDA64 / AX206_                                   |
+|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <img src="res/docs/ax206.jpg" width="30%" height="30%" /> <img src="res/docs/geekteches_ad35.jpg" width="30%" height="30%" /> <img src="res/docs/smartcool_lcd.webp" width="30%" height="30%" /> |
+| Not supported. Produced by multiple manufacturers, all use the same [Appotech AX206 hacked photo frame firmware](https://github.com/dreamlayers/dpf-ax). Supported by AIDA64 and lcd4linux       |
 
 ## How to start
 

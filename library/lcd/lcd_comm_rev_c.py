@@ -168,7 +168,7 @@ class LcdCommRevC(LcdComm):
         message = bytearray()
 
         if cmd != Command.SEND_PAYLOAD:
-            message = cmd.value
+            message = bytearray(cmd.value)
 
         # logger.debug("Command: {}".format(cmd.name))
 
@@ -213,6 +213,7 @@ class LcdCommRevC(LcdComm):
 
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
+        # Reset command bypasses queue because it is run when queue threads are not yet started
         self._send_command(Command.RESTART, bypass_queue=True)
         self.closeSerial()
         # Wait for display reset then reconnect

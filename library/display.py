@@ -23,6 +23,7 @@ from library.lcd.lcd_comm import Orientation
 from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
+from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -45,14 +46,6 @@ def _get_theme_orientation() -> Orientation:
             return Orientation.REVERSE_LANDSCAPE
         else:
             return Orientation.LANDSCAPE
-    elif config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_portrait':
-        logger.warn("'reverse_portrait' is deprecated as DISPLAY_ORIENTATION value in the theme."
-                    "Use 'portrait' instead, and use DISPLAY_REVERSE in config.yaml to reverse orientation.")
-        return Orientation.REVERSE_PORTRAIT
-    elif config.THEME_DATA["display"]["DISPLAY_ORIENTATION"] == 'reverse_landscape':
-        logger.warn("'reverse_landscape' is deprecated as DISPLAY_ORIENTATION value in the theme."
-                    "Use 'landscape' instead, and use DISPLAY_REVERSE in config.yaml to reverse orientation.")
-        return Orientation.REVERSE_LANDSCAPE
     else:
         logger.warning("Orientation '", config.THEME_DATA["display"]["DISPLAY_ORIENTATION"],
                        "' unknown, using portrait")
@@ -70,6 +63,9 @@ class Display:
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "C":
             self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "D":
+            self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             self.lcd = LcdSimulated(display_width=320,
@@ -136,7 +132,8 @@ class Display:
                     background_color=config.THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
                     background_image=_get_full_path(config.THEME_DATA['PATH'],
                                                     config.THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE",
-                                                                                               None))
+                                                                                               None)),
+                    anchor="lt"
                 )
 
 

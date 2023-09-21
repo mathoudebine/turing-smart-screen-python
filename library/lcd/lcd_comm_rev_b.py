@@ -141,11 +141,11 @@ class LcdCommRevB(LcdComm):
         self._hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it
-        pass
+        # HW revision B does not implement a command to reset it: clear display instead
+        self.Clear()
 
     def Clear(self):
-        # This hardware does not implement a Clear command: display a blank image on the whole screen
+        # HW revision B does not implement a Clear command: display a blank image on the whole screen
         # Force an orientation in case the screen is currently configured with one different from the theme
         backup_orientation = self.orientation
         self.SetOrientation(orientation=Orientation.PORTRAIT)
@@ -186,7 +186,7 @@ class LcdCommRevB(LcdComm):
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
-    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 320, new_height: int = 480):
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         # In revision B, basic orientations (portrait / landscape) are managed by the display
         # The reverse orientations (reverse portrait / reverse landscape) are software-managed
         self.orientation = orientation
@@ -223,6 +223,7 @@ class LcdCommRevB(LcdComm):
             (x0, y0) = (x, y)
             (x1, y1) = (x + image_width - 1, y + image_height - 1)
         else:
+            # Reverse landscape/portrait orientations are software-managed: get new coordinates
             (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
             (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 
