@@ -366,6 +366,16 @@ STATS:
         FONT_COLOR: 255, 255, 255
         # BACKGROUND_COLOR: 132, 154, 165
         BACKGROUND_IMAGE: background.png
+      TOTAL:
+        SHOW: FALSE
+        SHOW_UNIT: True
+        X: 182
+        Y: 129
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
         SHOW: False
         SHOW_UNIT: True
