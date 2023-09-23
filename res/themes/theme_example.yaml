@@ -273,6 +273,17 @@ STATS:
         FONT_COLOR: 200, 200, 200
         # BACKGROUND_COLOR: 50, 50, 50
         BACKGROUND_IMAGE: background.png
+    FPS:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 115
+        Y: 231
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
   MEMORY:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
