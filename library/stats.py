@@ -26,6 +26,9 @@ import math
 import os
 import platform
 import sys
+import time
+
+from statistics import mean
 
 import babel.dates
 from psutil._common import bytes2human
@@ -303,7 +306,15 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
 class Gpu:
     @staticmethod
     def stats():
-        load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
+        load_values = []
+        for i in range(100):
+            load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
+            if load != math.nan:
+                load_values.append(load)
+            else:
+                break
+        if load_values:
+            load = mean(load_values)
         display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
 
     @staticmethod
