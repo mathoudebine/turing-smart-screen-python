@@ -241,6 +241,9 @@ class Gpu(sensors.Gpu):
     # GPU to use is detected once, and its name is saved for future sensors readings
     gpu_name = ""
 
+    # Latest FPS value is backed up in case next reading returns no value
+    prev_fps = 0
+
     @classmethod
     def stats(cls) -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuAmd, cls.gpu_name)
@@ -273,6 +276,27 @@ class Gpu(sensors.Gpu):
                 temp = float(sensor.Value)
 
         return load, (used_mem / total_mem * 100.0), used_mem, temp
+
+    @classmethod
+    def fps(cls) -> int:
+        gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuAmd, cls.gpu_name)
+        if gpu_to_use is None:
+            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuNvidia, cls.gpu_name)
+        if gpu_to_use is None:
+            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuIntel, cls.gpu_name)
+        if gpu_to_use is None:
+            # GPU not supported
+            return -1
+
+        for sensor in gpu_to_use.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Factor and "FPS" in str(sensor.Name):
+                # If a reading returns a value <= 0, returns old value instead
+                if int(sensor.Value) > 0:
+                    cls.prev_fps = int(sensor.Value)
+                return cls.prev_fps
+
+        # No FPS sensor for this GPU model
+        return -1
 
     @classmethod
     def is_available(cls) -> bool:

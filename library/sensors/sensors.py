@@ -58,6 +58,11 @@ class Gpu(ABC):
 
     @staticmethod
     @abstractmethod
+    def fps() -> int:
+        pass
+
+    @staticmethod
+    @abstractmethod
     def is_available() -> bool:
         pass
 

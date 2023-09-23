@@ -223,12 +223,12 @@ class CPU:
         )
 
 
-def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
+def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps):
     theme_gpu_data = config.THEME_DATA['STATS']['GPU']
+
     gpu_percent_graph_data = theme_gpu_data['PERCENTAGE']['GRAPH']
     gpu_percent_radial_data = theme_gpu_data['PERCENTAGE']['RADIAL']
     gpu_percent_text_data = theme_gpu_data['PERCENTAGE']['TEXT']
-
     if math.isnan(load):
         load = 0
         if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW']:
@@ -259,6 +259,12 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
         if gpu_temp_text_data['SHOW']:
             logger.warning("Your GPU temperature is not supported yet")
             gpu_temp_text_data['SHOW'] = False
+
+    gpu_fps_text_data = theme_gpu_data['FPS']['TEXT']
+    if fps < 0:
+        if gpu_fps_text_data['SHOW']:
+            logger.warning("Your GPU FPS is not supported yet")
+            gpu_fps_text_data['SHOW'] = False
 
     # logger.debug(f"GPU Load: {load}")
     display_themed_progress_bar(gpu_percent_graph_data, load)
@@ -299,12 +305,20 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature):
         unit="°C"
     )
 
+    display_themed_value(
+        theme_data=gpu_fps_text_data,
+        value=int(fps),
+        min_size=4,
+        unit=" FPS"
+    )
+
 
 class Gpu:
     @staticmethod
     def stats():
         load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
-        display_gpu_stats(load, memory_percentage, memory_used_mb, temperature)
+        fps = sensors.Gpu.fps()
+        display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps)
 
     @staticmethod
     def is_available():

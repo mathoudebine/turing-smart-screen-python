@@ -53,6 +53,10 @@ class Gpu(sensors.Gpu):
         return random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), random.uniform(30, 90)
 
     @staticmethod
+    def fps() -> int:
+        return random.randint(20, 120)
+
+    @staticmethod
     def is_available() -> bool:
         return True
 

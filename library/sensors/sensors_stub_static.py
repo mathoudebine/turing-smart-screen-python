@@ -34,6 +34,7 @@ DISK_TOTAL_SIZE_GB = 1000
 MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
+GPU_FPS = 120
 
 
 class Cpu(sensors.Cpu):
@@ -63,6 +64,10 @@ class Gpu(sensors.Gpu):
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, \
             GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1000, TEMPERATURE_SENSOR_VALUE
+
+    @staticmethod
+    def fps() -> int:
+        return GPU_FPS
 
     @staticmethod
     def is_available() -> bool:

@@ -50,6 +50,10 @@ STATS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+    FPS:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
   MEMORY:
     INTERVAL: 5
     SWAP:
