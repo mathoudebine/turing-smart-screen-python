@@ -17,12 +17,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import copy
+import math
 import os
 import queue
 import sys
 import threading
 import time
-import math
 from abc import ABC, abstractmethod
 from enum import IntEnum
 from typing import Tuple
@@ -68,7 +68,6 @@ class LcdComm(ABC):
 
         # Create a cache to store opened fonts, to avoid opening and loading from the filesystem every time
         self.font_cache = {}  # { key=(font, size), value=PIL.ImageFont }
-
 
     def get_width(self) -> int:
         if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
