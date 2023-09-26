@@ -146,6 +146,13 @@ def DateStats():
     stats.Date.stats()
 
 
+@async_job("Custom_Stats")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", None)).total_seconds())
+def CustomStats():
+    # print("Refresh custom stats")
+    stats.Custom.stats()
+
+
 @async_job("Queue_Handler")
 @schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():
