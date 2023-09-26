@@ -1,4 +1,6 @@
 ---
+author: "@mathoudebine"
+
 display:
   DISPLAY_ORIENTATION: landscape
   DISPLAY_RGB_LED: 16, 223, 239

@@ -1,4 +1,6 @@
 ---
+author: "@RussNelson"
+
 display:
   DISPLAY_ORIENTATION: landscape
   DISPLAY_RGB_LED: 255, 0, 0

@@ -1,4 +1,6 @@
 ---
+author: "@mathoudebine"
+
 display:
   DISPLAY_ORIENTATION: portrait
   DISPLAY_RGB_LED: 255, 255, 0

@@ -1,4 +1,6 @@
 ---
+author: "@amiltonjr"
+
 display:
   DISPLAY_ORIENTATION: portrait
   DISPLAY_RGB_LED: 255, 255, 0
@@ -59,6 +61,7 @@ static_text:
     FONT_SIZE: 15
     FONT_COLOR: 255, 239, 8
     BACKGROUND_IMAGE: background.png
+
 STATS:
   CPU:
     PERCENTAGE:

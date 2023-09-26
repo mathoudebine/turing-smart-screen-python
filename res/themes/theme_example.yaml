@@ -4,6 +4,11 @@
 
 # NOTE: Every HW sensor is hidden in this example, to show a sensor change 'SHOW: False' to 'SHOW: True'
 ---
+# If you indicate @ with your GitHub username, there will be a hyperlink to your GitHub profile in the Config. Wizard
+# Otherwise, you can just indicate any text e.g. author: "Your Name"
+# You can also remove the line if you don't want to be credited
+author: "@your_GitHub_username"
+
 display:
   # Specify the display size in inch for this theme: 3.5" (default) or 5"
   DISPLAY_SIZE: 3.5"
