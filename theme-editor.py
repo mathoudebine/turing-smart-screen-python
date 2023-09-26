@@ -110,6 +110,7 @@ def refresh_theme():
     stats.Disk.stats()
     stats.Net.stats()
     stats.Date.stats()
+    stats.Custom.stats()
 
 
 if __name__ == "__main__":

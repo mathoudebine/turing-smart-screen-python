@@ -70,6 +70,8 @@ else:
     except:
         os._exit(0)
 
+import library.sensors.sensors_custom as sensors_custom
+
 
 def get_theme_file_path(name):
     if name:
@@ -118,14 +120,17 @@ def display_themed_progress_bar(theme_data, value):
     )
 
 
-def display_themed_radial_bar(theme_data, value, min_size=0, unit=''):
+def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_text=None):
     if not theme_data.get("SHOW", False):
         return
 
     if theme_data.get("SHOW_TEXT", False):
-        text = f"{{:>{min_size}}}".format(value)
-        if theme_data.get("SHOW_UNIT", True) and unit:
-            text += str(unit)
+        if custom_text:
+            text = custom_text
+        else:
+            text = f"{{:>{min_size}}}".format(value)
+            if theme_data.get("SHOW_UNIT", True) and unit:
+                text += str(unit)
     else:
         text = ""
 
@@ -490,3 +495,41 @@ class Date:
             theme_data=hour_theme_data,
             value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}"
         )
+
+
+class Custom:
+    @staticmethod
+    def stats():
+        for custom_stat in config.THEME_DATA['STATS']['CUSTOM']:
+            if custom_stat != "INTERVAL":
+
+                # Load the custom sensor class from sensors_custom.py based on the class name
+                try:
+                    custom_stat_class = getattr(sensors_custom, str(custom_stat))()
+                    string_value = custom_stat_class.as_string()
+                    numeric_value = custom_stat_class.as_numeric()
+                except:
+                    logger.error("Custom sensor class " + str(custom_stat) + " not found in sensors_custom.py")
+                    return
+
+                if not string_value:
+                    string_value = str(numeric_value)
+
+                # Display text
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("TEXT", None)
+                if theme_data and string_value:
+                    display_themed_value(theme_data=theme_data, value=string_value)
+
+                # Display graph from numeric value
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("GRAPH", None)
+                if theme_data and numeric_value:
+                    display_themed_progress_bar(theme_data=theme_data, value=numeric_value)
+
+                # Display radial from numeric and text value
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("RADIAL", None)
+                if theme_data and numeric_value and string_value:
+                    display_themed_radial_bar(
+                        theme_data=theme_data,
+                        value=numeric_value,
+                        custom_text=string_value
+                    )

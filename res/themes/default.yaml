@@ -135,3 +135,5 @@ STATS:
     HOUR:
       TEXT:
         SHOW: False
+  CUSTOM:
+    INTERVAL: 3
