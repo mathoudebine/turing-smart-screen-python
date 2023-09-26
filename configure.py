@@ -23,6 +23,7 @@
 import os
 import subprocess
 import sys
+import webbrowser
 
 MIN_PYTHON = (3, 8)
 if sys.version_info < MIN_PYTHON:
@@ -155,7 +156,7 @@ class TuringConfigWindow:
         self.theme_preview = ttk.Label(self.window)
         self.theme_preview.place(x=10, y=10)
 
-        self.theme_author = ttk.Label(self.window, foreground='#a3a3a3')
+        self.theme_author = ttk.Label(self.window)
 
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
         sysmon_label.place(x=320, y=0)
@@ -255,7 +256,14 @@ class TuringConfigWindow:
             self.theme_preview.config(image=self.theme_preview_img)
 
             theme_data = get_theme_data(self.theme_cb.get())
-            self.theme_author.config(text="Author: " + theme_data.get('author', 'unknown'))
+            author_name = theme_data.get('author', 'unknown')
+            self.theme_author.config(text="Author: " + author_name)
+            if author_name.startswith("@"):
+                self.theme_author.config(foreground="#a3a3ff", cursor="hand2")
+                self.theme_author.bind("<Button-1>", lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
+            else:
+                self.theme_author.config(foreground="#a3a3a3", cursor="")
+                self.theme_author.unbind("<Button-1>")
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
