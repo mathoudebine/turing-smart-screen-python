@@ -1,8 +1,11 @@
 ---
+author: "@mathoudebine"
+
 display:
   DISPLAY_SIZE: 5"
   DISPLAY_ORIENTATION: portrait
   DISPLAY_RGB_LED: 0, 0, 255
+
 static_text:
   GPU_MODEL:
    TEXT: RTX3080TI
@@ -28,6 +31,7 @@ static_text:
    FONT_SIZE: 25
    FONT_COLOR: 255, 255, 255
    BACKGROUND_IMAGE: background.png
+
 static_images:
   BACKGROUND:
     PATH: background.png
@@ -35,6 +39,7 @@ static_images:
     Y: 0
     WIDTH: 480
     HEIGHT: 800
+
 STATS:
   CPU:
     PERCENTAGE:

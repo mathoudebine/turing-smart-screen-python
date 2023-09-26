@@ -1,4 +1,6 @@
 ---
+author: "@Rollbacke"
+
 display:
   DISPLAY_ORIENTATION: portrait
   DISPLAY_RGB_LED: 30, 255, 50

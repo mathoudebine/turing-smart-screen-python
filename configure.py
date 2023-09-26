@@ -155,6 +155,8 @@ class TuringConfigWindow:
         self.theme_preview = ttk.Label(self.window)
         self.theme_preview.place(x=10, y=10)
 
+        self.theme_author = ttk.Label(self.window, foreground='#a3a3a3')
+
         sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
         sysmon_label.place(x=320, y=0)
 
@@ -251,6 +253,10 @@ class TuringConfigWindow:
                 theme_preview = theme_preview.resize((280, 420), Image.Resampling.LANCZOS)
             self.theme_preview_img = ImageTk.PhotoImage(theme_preview)
             self.theme_preview.config(image=self.theme_preview_img)
+
+            theme_data = get_theme_data(self.theme_cb.get())
+            self.theme_author.config(text="Author: " + theme_data.get('author', 'unknown'))
+            self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
         with open("config.yaml", "rt", encoding='utf8') as stream:
