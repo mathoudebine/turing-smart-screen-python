@@ -204,7 +204,7 @@ class LcdComm(ABC):
         image = self.open_image(bitmap_path)
         self.DisplayPILImage(image, x, y, width, height)
 
-    def DisplayText(
+    def DrawText(
             self,
             text: str,
             x: int = 0,
@@ -216,9 +216,7 @@ class LcdComm(ABC):
             background_image: str = None,
             align: str = 'left',
             anchor: str = None,
-    ):
-        # Convert text to bitmap using PIL and display it
-        # Provide the background image path to display text with transparent background
+    ) -> Tuple[Image.Image, int, int]:
 
         if isinstance(font_color, str):
             font_color = tuple(map(int, font_color.split(', ')))
@@ -236,7 +234,7 @@ class LcdComm(ABC):
         if background_image is None:
             # A text bitmap is created with max width/height by default : text with solid background
             text_image = Image.new(
-                'RGB',
+                'RGBA',
                 (self.get_width(), self.get_height()),
                 background_color
             )
@@ -268,16 +266,34 @@ class LcdComm(ABC):
         # Crop text bitmap to keep only the text
         text_image = text_image.crop(box=(left, top, right, bottom))
 
+        return (text_image, left, top)
+
+    def DisplayText(
+            self,
+            text: str,
+            x: int = 0,
+            y: int = 0,
+            font: str = "roboto-mono/RobotoMono-Regular.ttf",
+            font_size: int = 20,
+            font_color: Tuple[int, int, int] = (0, 0, 0),
+            background_color: Tuple[int, int, int] = (255, 255, 255),
+            background_image: str = None,
+            align: str = 'left',
+            anchor: str = None,
+    ):
+        # Convert text to bitmap using PIL and display it
+        # Provide the background image path to display text with transparent background
+        text_image, left, top = self.DrawText(text, x, y, font, font_size, font_color, background_color, background_image, align, anchor)
+
         self.DisplayPILImage(text_image, left, top)
 
-    def DisplayProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
+    def DrawProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                            value: int = 50,
                            bar_color: Tuple[int, int, int] = (0, 0, 0),
                            bar_outline: bool = True,
                            background_color: Tuple[int, int, int] = (255, 255, 255),
-                           background_image: str = None):
-        # Generate a progress bar and display it
-        # Provide the background image path to display progress bar with transparent background
+                           background_image: str = None
+    ) -> Image:
 
         if isinstance(bar_color, str):
             bar_color = tuple(map(int, bar_color.split(', ')))
@@ -300,7 +316,7 @@ class LcdComm(ABC):
 
         if background_image is None:
             # A bitmap is created with solid background
-            bar_image = Image.new('RGB', (width, height), background_color)
+            bar_image = Image.new('RGBA', (width, height), background_color)
         else:
             # A bitmap is created from provided background image
             bar_image = self.open_image(background_image)
@@ -319,9 +335,23 @@ class LcdComm(ABC):
             # Draw outline
             draw.rectangle([0, 0, width - 1, height - 1], fill=None, outline=bar_color)
 
-        self.DisplayPILImage(bar_image, x, y)
+        return bar_image
 
-    def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
+    def DisplayProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
+                           value: int = 50,
+                           bar_color: Tuple[int, int, int] = (0, 0, 0),
+                           bar_outline: bool = True,
+                           background_color: Tuple[int, int, int] = (255, 255, 255),
+                           background_image: str = None
+    ):
+        # Generate a progress bar and display it
+        # Provide the background image path to display progress bar with transparent background
+        progress_bar_image = self.DrawProgressBar(x, y, width, height, min_value, max_value, value, bar_color, bar_outline, background_color, background_image)
+
+        self.DisplayPILImage(progress_bar_image, x, y)
+
+
+    def DrawRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
                                  min_value: int = 0,
                                  max_value: int = 100,
                                  angle_start: int = 0,
@@ -338,9 +368,6 @@ class LcdComm(ABC):
                                  bar_color: Tuple[int, int, int] = (0, 0, 0),
                                  background_color: Tuple[int, int, int] = (255, 255, 255),
                                  background_image: str = None):
-        # Generate a radial progress bar and display it
-        # Provide the background image path to display progress bar with transparent background
-
         if isinstance(bar_color, str):
             bar_color = tuple(map(int, bar_color.split(', ')))
 
@@ -378,7 +405,7 @@ class LcdComm(ABC):
         #
         if background_image is None:
             # A bitmap is created with solid background
-            bar_image = Image.new('RGB', (diameter, diameter), background_color)
+            bar_image = Image.new('RGBA', (diameter, diameter), background_color)
         else:
             # A bitmap is created from provided background image
             bar_image = self.open_image(background_image)
@@ -472,6 +499,29 @@ class LcdComm(ABC):
             draw.text((radius - w / 2, radius - top - h / 2), text,
                       font=font, fill=font_color)
 
+        return bar_image
+
+    def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
+                                 min_value: int = 0,
+                                 max_value: int = 100,
+                                 angle_start: int = 0,
+                                 angle_end: int = 360,
+                                 angle_sep: int = 5,
+                                 angle_steps: int = 10,
+                                 clockwise: bool = True,
+                                 value: int = 50,
+                                 text: str = None,
+                                 with_text: bool = True,
+                                 font: str = "roboto/Roboto-Black.ttf",
+                                 font_size: int = 20,
+                                 font_color: Tuple[int, int, int] = (0, 0, 0),
+                                 bar_color: Tuple[int, int, int] = (0, 0, 0),
+                                 background_color: Tuple[int, int, int] = (255, 255, 255),
+                                 background_image: str = None):
+        # Generate a radial progress bar and display it
+        # Provide the background image path to display progress bar with transparent background
+        bar_image = self.DrawRadialProgressBar(xc, yc, radius, bar_width, min_value, max_value, angle_start, angle_end, angle_sep, angle_steps, clockwise,
+                                         value, text, with_text, font, font_size, font_color, bar_color, background_color, background_image)
         self.DisplayPILImage(bar_image, xc - radius, yc - radius)
 
     # Load image from the filesystem, or get from the cache if it has already been loaded previously
