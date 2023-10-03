@@ -56,6 +56,10 @@ class ExampleCustomNumericData(CustomDataSource):
         # If this function is empty, the numeric value will be used as string without formatting
         # Example here: format numeric value: add unit as a suffix, and keep 1 digit decimal precision
         return f'{self.as_numeric(): .1f}%'
+        # Important note! If your numeric value can vary in size, be sure to display it with a default size.
+        # E.g. if your value can range from 0 to 9999, you need to display it with at least 4 characters every time.
+        # --> return f'{self.as_numeric():>4}%'
+        # Otherwise, part of the previous value can stay displayed ("ghosting") after a refresh
 
 
 # Example for a custom data class that only has text values
