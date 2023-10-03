@@ -77,7 +77,7 @@ class Command(Enum):
     # STATIC IMAGE
     START_DISPLAY_BITMAP = bytearray((0x2c,))
     PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
-    UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00, 0x00))
+    UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00))
 
     RESTARTSCREEN = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00, 0x17, 0x70))
@@ -352,7 +352,7 @@ class LcdCommRevC(LcdComm):
                 img_raw_data.append(f'{current_pixel[2]:02x}{current_pixel[1]:02x}{current_pixel[0]:02x}')
 
         image_msg = ''.join(img_raw_data)
-        image_size = f'{int((len(image_msg) / 2) + 2):04x}'  # The +2 is for the "ef69" that will be added later.
+        image_size = f'{int((len(image_msg) / 2) + 2):06x}'  # The +2 is for the "ef69" that will be added later.
 
         # logger.debug("Render Count: {}".format(count))
         payload = bytearray()
