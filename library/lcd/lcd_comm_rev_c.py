@@ -515,12 +515,14 @@ class LcdCommRevC(LcdComm):
     # Refresh the video overlay.
     def ResfreshVideoOverlay(self):
 
+        image_data = self.video_overlay.load()
         img_raw_data = []
+        visible_pixels = []
 
         for h in range(self.video_overlay.height):
 
             # Get the visible segments for each screen line.
-            visible_segments = LcdCommRevC._get_visible_segments(self.video_overlay, h)
+            visible_segments = LcdCommRevC._get_visible_segments(image_data, h)
 
             # Draw each segments.
             for segment in visible_segments:
@@ -528,23 +530,14 @@ class LcdCommRevC(LcdComm):
                 segment_width = segment[1]
                 img_raw_data.append(f'{(h * self.display_height + x):06x}{segment_width:04x}')
 
+                # Color
                 for w in range(segment_width):
-                    red, green, blue, alpha = self.video_overlay.getpixel((x + w, h))
+                    red, green, blue, alpha = image_data[x + w, h]
                     alpha_byte = int(alpha/255 * 15)
                     # color format (binary):  b4 b3 b2 b1 0 0 a4 a3 | g4 g3 g2 g1 0 0 a2 a1 | r4 r3 r2 r1 0 0 0 0
                     img_raw_data.append(f'{int(blue/255 * 15)<<4 | ((alpha_byte&0xC)>>2):02x}{int(green/255 * 15)<<4 | alpha_byte&0x3:02x}{int(red/255 * 15)<<4:02x}')
 
-        visible_pixels = []
-
-        for h in range(self.video_overlay.height):
-
-            # Get the visible segments for each screen line.
-            visible_segments = LcdCommRevC._get_visible_segments(self.video_overlay, h)
-
-            # Set each segment as visible for the screen.
-            for segment in visible_segments:
-                x = segment[0]
-                segment_width = segment[1]
+                # Set each segment as visible for the screen.
                 visible_pixels.append(f'{(h * self.display_height + x):06x}{segment_width:04x}')
 
         image_msg = ''.join(img_raw_data)
@@ -567,30 +560,28 @@ class LcdCommRevC(LcdComm):
         if len(image_msg) > 500:
             image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
         image_msg += 'ef69'
+        img_payload = bytearray.fromhex(image_msg)
 
         self._send_command(Command.SEND_PAYLOAD, payload=payload)
-        self._send_command(Command.SEND_PAYLOAD, payload=bytearray.fromhex(image_msg))
+        self._send_command(Command.SEND_PAYLOAD, payload=img_payload)
 
     # Return the visible(eg non transparent) pixel segments from an image at a given line.
     @staticmethod
-    def _get_visible_segments(image: Image, y: int = 0):
-        line = []
-        for x in range(image.width):
-            line.append(image.getpixel((x, y)))
+    def _get_visible_segments(image_data, y: int = 0, image_width : int = 800):
 
         visible_segments = []
 
         i = 0
         j = 0
-        while i < len(line):
+        while i < image_width:
             # First non transparent pixel.
-            if line[i][3] > 0:
+            if image_data[i, y][3] > 0:
 
                 # visible segment = position and length.
                 visible_segment = [i, 0]
                 j=i
-                while j < len(line) and line[j][3] > 0:
-                    if line[j][3] > 0:
+                while j < image_width and image_data[j, y][3] > 0:
+                    if image_data[j, y][3] > 0:
                         visible_segment[1] = visible_segment[1] + 1
                     j = j + 1
                 i=j
