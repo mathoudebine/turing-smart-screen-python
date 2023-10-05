@@ -151,8 +151,10 @@ class LcdCommRevC(LcdComm):
         logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
-        # Video overlay is an image drawn on the video.
+        # Video overlay is the image to be drawn on the video.
         self.video_overlay = None
+        # Previous video overlay stores the image previously drawn on the video (so only the updated pixels can be sent).
+        self.previous_video_overlay = None
 
     def __del__(self):
         self.closeSerial()
@@ -500,6 +502,7 @@ class LcdCommRevC(LcdComm):
         self._send_command(Command.DISPLAY_BITMAP_ON_VIDEO)
 
         self.video_overlay = Image.new("RGBA", (self.get_width(), self.get_height()), (255, 255, 255, 0))
+        self.previous_video_overlay = self.video_overlay.copy()
         self._send_command(Command.SEND_PAYLOAD, payload=bytearray(self._generate_full_image(self.video_overlay, self.orientation)))
 
         # Init visible pixels: no visible pixels.
@@ -512,30 +515,57 @@ class LcdCommRevC(LcdComm):
         self.lcd_serial.read_all()
         self._send_command(Command.QUERY_STATUS, readsize=1024)
 
+    # Calculate the update image (returns image with only the updated pixels)
+    def _get_diff_image(self) -> Image:
+        update_image = Image.new("RGBA", (self.previous_video_overlay.width, self.previous_video_overlay.height), (0, 0, 0, 0))
+        update_data = update_image.load()
+        previous_video_overlay_data = self.previous_video_overlay.load()
+        video_overlay_data = self.video_overlay.load()
+
+        # TODO Improve this loop, python real slow here.
+        for i in range(self.video_overlay.width):
+            for j in range(self.video_overlay.height):
+                if previous_video_overlay_data[i, j] != video_overlay_data[i, j]:
+                    update_data[i,j] = video_overlay_data[i, j]
+
+        return update_image
+
+
     # Refresh the video overlay.
     def ResfreshVideoOverlay(self):
 
-        image_data = self.video_overlay.load()
+        update_image = self._get_diff_image()
+        update_image_data = update_image.load()
+
+        video_overlay_data = self.video_overlay.load()
         img_raw_data = []
         visible_pixels = []
 
         for h in range(self.video_overlay.height):
 
-            # Get the visible segments for each screen line.
-            visible_segments = LcdCommRevC._get_visible_segments(image_data, h)
+            # Get the updated pixels segments for each screen line (so only the updated pixels are sent).
+            updated_pixels_segments = LcdCommRevC._get_visible_segments(update_image_data, h)
 
-            # Draw each segments.
-            for segment in visible_segments:
+            # Get the visible segments for each screen line.
+            visible_segments = LcdCommRevC._get_visible_segments(video_overlay_data, h)
+
+            # Send only updated pixels.
+            for segment in updated_pixels_segments:
                 x = segment[0]
                 segment_width = segment[1]
                 img_raw_data.append(f'{(h * self.display_height + x):06x}{segment_width:04x}')
 
-                # Color
+                # Color.
                 for w in range(segment_width):
-                    red, green, blue, alpha = image_data[x + w, h]
+                    red, green, blue, alpha = video_overlay_data[x + w, h]
                     alpha_byte = int(alpha/255 * 15)
                     # color format (binary):  b4 b3 b2 b1 0 0 a4 a3 | g4 g3 g2 g1 0 0 a2 a1 | r4 r3 r2 r1 0 0 0 0
                     img_raw_data.append(f'{int(blue/255 * 15)<<4 | ((alpha_byte&0xC)>>2):02x}{int(green/255 * 15)<<4 | alpha_byte&0x3:02x}{int(red/255 * 15)<<4:02x}')
+
+            # All visible pixels.
+            for segment in visible_segments:
+                x = segment[0]
+                segment_width = segment[1]
 
                 # Set each segment as visible for the screen.
                 visible_pixels.append(f'{(h * self.display_height + x):06x}{segment_width:04x}')
@@ -561,6 +591,8 @@ class LcdCommRevC(LcdComm):
             image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
         image_msg += 'ef69'
         img_payload = bytearray.fromhex(image_msg)
+
+        self.previous_video_overlay = self.video_overlay.copy()
 
         self._send_command(Command.SEND_PAYLOAD, payload=payload)
         self._send_command(Command.SEND_PAYLOAD, payload=img_payload)
