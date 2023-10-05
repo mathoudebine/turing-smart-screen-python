@@ -79,12 +79,18 @@ if __name__ == "__main__":
     elif REVISION == "D":
         logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")
         lcd_comm = LcdCommRevD(com_port=COM_PORT)
-    elif REVISION == "SIMU":
+    elif REVISION == "SIMU2.1":
+        logger.info("Selected 2.1\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=480, display_height=480)
+    elif REVISION == "SIMU3.5":
         logger.info("Selected 3.5\" Simulated LCD")
         lcd_comm = LcdSimulated(display_width=320, display_height=480)
     elif REVISION == "SIMU5":
         logger.info("Selected 5\" Simulated LCD")
         lcd_comm = LcdSimulated(display_width=480, display_height=800)
+    elif REVISION == "SIMU8.8":
+        logger.info("Selected 8.8\" Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=1920, display_height=480)
     else:
         logger.error("Unknown revision")
         try:

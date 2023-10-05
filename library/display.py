@@ -67,12 +67,19 @@ class Display:
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
-        elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
+        elif (config.CONFIG_DATA["display"]["REVISION"] == "SIMU"
+              or config.CONFIG_DATA["display"]["REVISION"] == "SIMU3.5"):
             self.lcd = LcdSimulated(display_width=320,
                                     display_height=480)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU5":
             self.lcd = LcdSimulated(display_width=480,
                                     display_height=800)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU2.1":
+            self.lcd = LcdSimulated(display_width=480,
+                                    display_height=480)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU8.8":
+            self.lcd = LcdSimulated(display_width=1920,
+                                    display_height=480)
         else:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
 

@@ -384,7 +384,6 @@ class LcdCommRevC(LcdComm):
 
         if cmd:
             payload.extend(cmd.value)
-        # print("image_size='%s'" % image_size)
         payload.extend(bytearray.fromhex(image_size))
         payload.extend(Padding.NULL.value * 3)
         payload.extend(count.to_bytes(4, 'big'))
