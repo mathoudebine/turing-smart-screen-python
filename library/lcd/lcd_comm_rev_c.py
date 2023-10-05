@@ -308,19 +308,29 @@ class LcdCommRevC(LcdComm):
             with self.update_queue_mutex:
                 self._send_command(Command.PRE_UPDATE_BITMAP)
                 self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
-                self._send_command(Command.DISPLAY_BITMAP, payload=bytearray(int(self.display_width*self.display_width/64).to_bytes(2)))
+                self._send_command(Command.DISPLAY_BITMAP,
+                                   payload=bytearray(int(self.display_width * self.display_width / 64).to_bytes(2)))
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image, self.orientation)),
                                    readsize=1024)
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
-            with self.update_queue_mutex:
-                img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP,
-                                                       self.orientation)
-                self._send_command(Command.SEND_PAYLOAD, payload=pyd)
-                self._send_command(Command.SEND_PAYLOAD, payload=img)
-                self._send_command(Command.QUERY_STATUS, readsize=1024)
-            Count.Start += 1
+            if image.width * image.height * 3 > 0xff00:
+                # Image is too big to be sent in one command: split it in half and send both parts
+                # By calling this method recursively, the two parts will be split again if they are still too big
+                width_half = int(image.width / 2)
+                im1 = image.crop((0, 0, width_half, image.height))
+                im2 = image.crop((width_half, 0, image.width, image.height))
+                self.DisplayPILImage(im1, x, y, im1.width, im1.height)
+                self.DisplayPILImage(im2, x + width_half, y, im2.width, im2.height)
+            else:
+                with self.update_queue_mutex:
+                    img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP,
+                                                           self.orientation)
+                    self._send_command(Command.SEND_PAYLOAD, payload=pyd)
+                    self._send_command(Command.SEND_PAYLOAD, payload=img)
+                    self._send_command(Command.QUERY_STATUS, readsize=1024)
+                Count.Start += 1
 
     @staticmethod
     def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
@@ -374,7 +384,7 @@ class LcdCommRevC(LcdComm):
 
         if cmd:
             payload.extend(cmd.value)
-        print("image_size='%s'" % image_size)
+        # print("image_size='%s'" % image_size)
         payload.extend(bytearray.fromhex(image_size))
         payload.extend(Padding.NULL.value * 3)
         payload.extend(count.to_bytes(4, 'big'))
