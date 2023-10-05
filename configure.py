@@ -69,14 +69,16 @@ SIZE_5_INCH = "5\""
 SIZE_8_8_INCH = "8.8\""
 SIZE_2_1_INCH = "2.1\""
 
-size_list = (SIZE_3_5_INCH, SIZE_5_INCH)
+size_list = (SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
 
 # Maps between config.yaml values and GUI description
 revision_and_size_to_model_map = {
     ('A', SIZE_3_5_INCH): TURING_MODEL,  # Can also be UsbPCMonitor 3.5, does not matter since protocol is the same
     ('A', SIZE_5_INCH): USBPCMONITOR_MODEL,
     ('B', SIZE_3_5_INCH): XUANFANG_MODEL,
+    ('C', SIZE_2_1_INCH): TURING_MODEL,
     ('C', SIZE_5_INCH): TURING_MODEL,
+    ('C', SIZE_8_8_INCH): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
     ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
     ('SIMU5', SIZE_5_INCH): SIMULATED_MODEL,
@@ -86,7 +88,9 @@ model_and_size_to_revision_map = {
     (USBPCMONITOR_MODEL, SIZE_3_5_INCH): 'A',
     (USBPCMONITOR_MODEL, SIZE_5_INCH): 'A',
     (XUANFANG_MODEL, SIZE_3_5_INCH): 'B',
+    (TURING_MODEL, SIZE_2_1_INCH): 'C',
     (TURING_MODEL, SIZE_5_INCH): 'C',
+    (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
     (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU5',
