@@ -78,9 +78,7 @@ class Command(Enum):
     START_DISPLAY_BITMAP = bytearray((0x2c,))
     PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00, 0x00))
-
-    RESTARTSCREEN = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
-    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00, 0x17, 0x70))
+    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00))
 
     STARTMODE_DEFAULT = bytearray((0x00,))
     STARTMODE_IMAGE = bytearray((0x01,))
@@ -143,12 +141,20 @@ class LcdCommRevC(LcdComm):
     def auto_detect_com_port():
         com_ports = comports()
 
+        # Try to find awake device through serial number or vid/pid
         for com_port in com_ports:
-            if com_port.serial_number == 'USB7INCH':
-                LcdCommRevC._connect_to_reset_device_name(com_port)
-                return LcdCommRevC.auto_detect_com_port()
             if com_port.serial_number == '20080411':
                 return com_port.device
+            if com_port.vid == 0x0525 and com_port.pid == 0xa4a7:
+                return com_port.device
+            if com_port.vid == 0x1d6b and (com_port.pid == 0x0121 or com_port.pid == 0x0106):
+                return com_port.device
+
+        # Try to find sleeping device and wake it up
+        for com_port in com_ports:
+            if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
+                LcdCommRevC._connect_to_reset_device_name(com_port)
+                return LcdCommRevC.auto_detect_com_port()
 
         return None
 
@@ -302,7 +308,7 @@ class LcdCommRevC(LcdComm):
             with self.update_queue_mutex:
                 self._send_command(Command.PRE_UPDATE_BITMAP)
                 self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
-                self._send_command(Command.DISPLAY_BITMAP)
+                self._send_command(Command.DISPLAY_BITMAP, payload=bytearray(int(self.display_width*self.display_width/64).to_bytes(2)))
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image, self.orientation)),
                                    readsize=1024)
