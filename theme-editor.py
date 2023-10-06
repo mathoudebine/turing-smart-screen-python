@@ -58,7 +58,7 @@ if len(sys.argv) != 2:
     except:
         os._exit(0)
 
-from PIL import ImageTk
+from PIL import ImageTk, Image
 
 import library.log
 
@@ -238,7 +238,12 @@ if __name__ == "__main__":
         led_color = tuple(map(int, led_color.split(', ')))
     viewer.configure(bg='#%02x%02x%02x' % led_color)
 
+    circular_mask = Image.open("res/backgrounds/circular-mask.png")
+
     # Display preview in the window
+    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+        # This is a circular screen: apply a circle mask over the preview
+        display.lcd.screen_image.paste(circular_mask, mask=circular_mask)
     display_image = ImageTk.PhotoImage(display.lcd.screen_image)
     viewer_picture = tkinter.Label(viewer, image=display_image, borderwidth=0)
     viewer_picture.place(x=RGB_LED_MARGIN, y=RGB_LED_MARGIN)
@@ -273,6 +278,9 @@ if __name__ == "__main__":
             display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
 
             # Display new picture
+            if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+                # This is a circular screen: apply a circle mask over the preview
+                display.lcd.screen_image.paste(circular_mask, mask=circular_mask)
             display_image = ImageTk.PhotoImage(display.lcd.screen_image)
             viewer_picture.config(image=display_image)
 

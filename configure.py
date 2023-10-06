@@ -106,6 +106,7 @@ reverse_map = {False: "classic", True: "reverse"}
 
 themes_dir = 'res/themes'
 
+circular_mask = Image.open("res/backgrounds/circular-mask.png")
 
 def get_theme_data(name: str):
     dir = os.path.join(themes_dir, name)
@@ -252,8 +253,14 @@ class TuringConfigWindow:
         self.window.mainloop()
 
     def load_theme_preview(self):
+        theme_data = get_theme_data(self.theme_cb.get())
+
         try:
             theme_preview = Image.open("res/themes/" + self.theme_cb.get() + "/preview.png")
+
+            if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+                # This is a circular screen: apply a circle mask over the preview
+                theme_preview.paste(circular_mask, mask=circular_mask)
         except:
             theme_preview = Image.open("res/docs/no-preview.png")
         finally:
@@ -261,7 +268,6 @@ class TuringConfigWindow:
             self.theme_preview_img = ImageTk.PhotoImage(theme_preview)
             self.theme_preview.config(image=self.theme_preview_img)
 
-            theme_data = get_theme_data(self.theme_cb.get())
             author_name = theme_data.get('author', 'unknown')
             self.theme_author.config(text="Author: " + author_name)
             if author_name.startswith("@"):
