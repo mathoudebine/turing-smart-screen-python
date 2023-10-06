@@ -3,7 +3,6 @@ Pillow~=10.1.0        # Image generation
 pyserial~=3.5         # Serial link to communicate with the display
 PyYAML~=6.0.1         # For themes files
 psutil~=5.9.6         # CPU / disk / network metrics
-GPUtil~=1.4.0         # Nvidia GPU
 pystray~=0.19.5       # Tray icon (all OS)
 babel~=2.13.0         # Date/time formatting
 ruamel.yaml~=0.17.40  # For configuration editor
@@ -11,7 +10,12 @@ sv-ttk~=2.5.5         # Tk Sun Valley theme for configuration editor
 
 # Efficient image serialization
 numpy~=1.24.4; python_version < "3.9"   # For Python 3.8 max.
-numpy~=1.26.0; python_version >= "3.9"
+numpy~=1.26.0; python_version >= "3.9"  # For Python 3.9+
+
+# For Nvidia GPU on all platforms
+GPUtil~=1.4.0; python_version < "3.12"
+# GPUtil is broken for Python 3.12+ and not maintained anymore: fetch it from a fork where it is fixed
+GPUtil @ git+https://github.com/mathoudebine/gputil.git@1.4.0-py3.12 ; python_version >= "3.12"
 
 # Following packages are for AMD GPU on Linux
 pyamdgpuinfo~=2.1.6; sys_platform=="linux" and python_version <= "3.11"
