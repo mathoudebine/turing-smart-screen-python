@@ -25,6 +25,7 @@ from math import ceil, floor
 import re
 import struct
 import os
+import numpy as np
 from typing import Tuple, Any
 
 import serial
@@ -517,17 +518,18 @@ class LcdCommRevC(LcdComm):
 
     # Calculate the update image (returns image with only the updated pixels)
     def _get_diff_image(self) -> Image:
-        update_image = Image.new("RGBA", (self.previous_video_overlay.width, self.previous_video_overlay.height), (0, 0, 0, 0))
-        update_data = update_image.load()
-        previous_video_overlay_data = self.previous_video_overlay.load()
-        video_overlay_data = self.video_overlay.load()
 
-        # TODO Improve this loop, python real slow here.
-        for i in range(self.video_overlay.width):
-            for j in range(self.video_overlay.height):
-                if previous_video_overlay_data[i, j] != video_overlay_data[i, j]:
-                    update_data[i,j] = video_overlay_data[i, j]
+        update_array = np.zeros((self.get_height(), self.get_width(), 4), dtype=np.uint8)
+        previous_video_overlay_array = np.asarray(self.previous_video_overlay)
+        video_overlay_array = np.asarray(self.video_overlay)
 
+        # Numpy to speed up the calculation.
+        # For each pixel, compare video overlay with previous video overlay and return
+        # an image with only the modified pixels.
+        diff_array = np.any(previous_video_overlay_array != video_overlay_array, axis=-1)
+        update_array[diff_array] = video_overlay_array[diff_array]
+
+        update_image = Image.fromarray(update_array.astype('uint8'), 'RGBA')
         return update_image
 
 
