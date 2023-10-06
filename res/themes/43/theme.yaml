@@ -1,0 +1,75 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 2.1"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 177, 224, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 480
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 262
+        Y: 281
+        FONT: jetbrains-mono/JetBrainsMono-Regular.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 144
+        Y: 314
+        WIDTH: 188
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 62, 58, 57
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 90
+        Y: 163
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 110
+        FONT_COLOR: 44, 104, 137
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 144
+        Y: 369
+        WIDTH: 188
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 255, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 62, 58, 57
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 262
+        Y: 338
+        FONT: jetbrains-mono/JetBrainsMono-Regular.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+
