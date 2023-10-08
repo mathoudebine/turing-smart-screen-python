@@ -21,7 +21,7 @@
 import queue
 import time
 from enum import Enum
-from math import ceil, floor
+from math import ceil
 import re
 import struct
 import os
@@ -29,7 +29,7 @@ import numpy as np
 from typing import Tuple, Any
 
 import serial
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import Orientation, LcdComm
@@ -538,18 +538,19 @@ class LcdCommRevC(LcdComm):
 
         update_image = self._get_diff_image()
         update_image_data = update_image.load()
-
         video_overlay_data = self.video_overlay.load()
+
+        # Build image payload.
         img_raw_data = []
         visible_pixels = []
 
         for h in range(self.video_overlay.height):
 
             # Get the updated pixels segments for each screen line (so only the updated pixels are sent).
-            updated_pixels_segments = LcdCommRevC._get_visible_segments(update_image_data, h)
+            updated_pixels_segments = LcdCommRevC._get_visible_segments(update_image_data, h, self.get_width())
 
             # Get the visible segments for each screen line.
-            visible_segments = LcdCommRevC._get_visible_segments(video_overlay_data, h)
+            visible_segments = LcdCommRevC._get_visible_segments(video_overlay_data, h, self.get_width())
 
             # Send only updated pixels.
             for segment in updated_pixels_segments:
@@ -575,28 +576,39 @@ class LcdCommRevC(LcdComm):
         image_msg = ''.join(img_raw_data)
         image_msg = image_msg + ''.join(visible_pixels)
 
-        image_size = f'{int((len(image_msg) / 2) + 2):06x}'  # The +2 is for the "ef69" that will be added later.
-
-        payload = bytearray()
-
-        payload.extend(Command.UPDATE_BITMAP.value)
-        payload.extend(bytearray.fromhex(image_size))
-        payload.extend(Padding.NULL.value * 3)
-        payload.extend(Count.Start.to_bytes(4, 'big'))
-        Count.Start = Count.Start + 1
 
         visible_pixels_msg = ''.join(visible_pixels)
         visible_pixels_size = int(len(visible_pixels_msg) / 2)
-        payload.extend(visible_pixels_size.to_bytes(4, 'big'))
 
         if len(image_msg) > 500:
-            image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
-        image_msg += 'ef69'
-        img_payload = bytearray.fromhex(image_msg)
+            image_msg_temp = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
 
+        img_payload = bytearray.fromhex(image_msg_temp)
+
+        # Fix image payload: last 250 bytes packet must not end with 0xef 0x69.
+        #                and last 250 bytes packet must not be "0x69 0x0000..." nor "0xef 0x69 0x0000..."
+        if len(img_payload)>250 and (len(img_payload) % 250 == 0 or len(img_payload) % 250 == 248 or len(img_payload) % 250 == 249):
+            # Add a dummy "visible pixel" field to fix image payload format.
+            img_payload.extend(bytearray((0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0xef, 0x69)))
+            image_size = f'{int((len(image_msg) / 2) + 7):06x}'
+            visible_pixels_size = visible_pixels_size +5
+        else:
+            img_payload.extend(bytearray((0xef, 0x69)))
+            image_size = f'{int((len(image_msg) / 2) + 2):06x}'
+
+        # Build update image command.
+        update_image_payload = bytearray()
+        update_image_payload.extend(Command.UPDATE_BITMAP.value)
+        update_image_payload.extend(bytearray.fromhex(image_size))
+        update_image_payload.extend(Padding.NULL.value * 3)
+        update_image_payload.extend(Count.Start.to_bytes(4, 'big'))
+        update_image_payload.extend(visible_pixels_size.to_bytes(4, 'big'))
+
+        # Increment message ID counter.
+        Count.Start = Count.Start + 1
         self.previous_video_overlay = self.video_overlay.copy()
 
-        self._send_command(Command.SEND_PAYLOAD, payload=payload)
+        self._send_command(Command.SEND_PAYLOAD, payload=update_image_payload)
         self._send_command(Command.SEND_PAYLOAD, payload=img_payload)
 
     # Return the visible(eg non transparent) pixel segments from an image at a given line.
@@ -612,13 +624,14 @@ class LcdCommRevC(LcdComm):
             if image_data[i, y][3] > 0:
 
                 # visible segment = position and length.
-                visible_segment = [i, 0]
-                j=i
+                visible_segment = [i, 1]
+                j = i + 1
                 while j < image_width and image_data[j, y][3] > 0:
-                    if image_data[j, y][3] > 0:
-                        visible_segment[1] = visible_segment[1] + 1
+                    visible_segment[1] = visible_segment[1] + 1
                     j = j + 1
-                i=j
+
+                i = j
+
                 visible_segments.append(visible_segment)
 
             i = i + 1
