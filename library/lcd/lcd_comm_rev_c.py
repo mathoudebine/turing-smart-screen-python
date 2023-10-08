@@ -27,6 +27,7 @@ import struct
 import os
 import numpy as np
 from typing import Tuple, Any
+from numba import jit
 
 import serial
 from PIL import Image
@@ -540,6 +541,9 @@ class LcdCommRevC(LcdComm):
         update_image_data = update_image.load()
         video_overlay_data = self.video_overlay.load()
 
+        update_image_array = np.asarray(update_image)
+        video_overlay_array = np.asarray(self.video_overlay)
+
         # Build image payload.
         img_raw_data = []
         visible_pixels = []
@@ -547,10 +551,12 @@ class LcdCommRevC(LcdComm):
         for h in range(self.video_overlay.height):
 
             # Get the updated pixels segments for each screen line (so only the updated pixels are sent).
-            updated_pixels_segments = LcdCommRevC._get_visible_segments(update_image_data, h, self.get_width())
+            # updated_pixels_segments = LcdCommRevC._get_visible_segments(update_image_data, h, self.get_width())
+            updated_pixels_segments = LcdCommRevC._get_visible_segments_numba(update_image_array, h, self.get_width())
 
             # Get the visible segments for each screen line.
-            visible_segments = LcdCommRevC._get_visible_segments(video_overlay_data, h, self.get_width())
+            # visible_segments = LcdCommRevC._get_visible_segments(video_overlay_data, h, self.get_width())
+            visible_segments = LcdCommRevC._get_visible_segments_numba(video_overlay_array, h, self.get_width())
 
             # Send only updated pixels.
             for segment in updated_pixels_segments:
@@ -632,6 +638,30 @@ class LcdCommRevC(LcdComm):
 
                 i = j
 
+                visible_segments.append(visible_segment)
+
+            i = i + 1
+
+        return visible_segments
+
+    @jit(nopython=True, cache=True)
+    def _get_visible_segments_numba(image_data : np.ndarray, y: int = 0, image_width : int = 800):
+
+        visible_segments = []
+
+        i = 0
+        j = 0
+        while i < image_width:
+            # First non transparent pixel.
+            if image_data[y, i][3] > 0:
+
+                # visible segment = position and length.
+                visible_segment = [i, 1]
+                j = i + 1
+                while j < image_width and (image_data[y, j][3] > 0 or image_data[y, j+1][3] > 0):
+                    visible_segment[1] = visible_segment[1] + 1
+                    j = j + 1
+                i = j
                 visible_segments.append(visible_segment)
 
             i = i + 1
