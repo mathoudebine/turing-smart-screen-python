@@ -38,6 +38,18 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
+    MEMORY_PERCENT:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+    MEMORY_USED:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False      
     MEMORY:
       GRAPH:
         SHOW: False

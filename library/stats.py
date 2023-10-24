@@ -84,6 +84,9 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
     if not theme_data.get("SHOW", False):
         return
 
+    #overridable MIN_SIZE from theme with backward compatibility
+    min_size=theme_data.get("MIN_SIZE", min_size)
+
     text = f"{{:>{min_size}}}".format(value)
     if theme_data.get("SHOW_UNIT", True) and unit:
         text += str(unit)
@@ -152,6 +155,26 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
         font=theme_data.get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
+        background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
+        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
+    )
+
+
+def display_themed_plot_graph(theme_data, values):
+    if not theme_data.get("SHOW", False):
+        return
+
+    display.lcd.DisplayPlotGraph(
+        x=theme_data.get("X", 0),
+        y=theme_data.get("Y", 0),
+        width=theme_data.get("WIDTH", 1),        
+        height=theme_data.get("HEIGHT", 1),
+        min_value=theme_data.get("MIN_VALUE", 0),
+        max_value=theme_data.get("MAX_VALUE", 100),
+        autoscale=theme_data.get("AUTOSCALE", False),
+        values=values,
+        line_color=theme_data.get("LINE_COLOR", (0, 0, 0)),
+        graph_axis=theme_data.get("AXIS", False),
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
     )
@@ -242,18 +265,36 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps)
             gpu_percent_text_data['SHOW'] = False
             gpu_percent_radial_data['SHOW'] = False
 
+    #for backward compatibility
     gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
     gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
+
+    gpu_mem_percent_graph_data = theme_gpu_data['MEMORY_PERCENT']['GRAPH']
+    gpu_mem_percent_radial_data = theme_gpu_data['MEMORY_PERCENT']['RADIAL']
+    gpu_mem_percent_text_data = theme_gpu_data['MEMORY_PERCENT']['TEXT']    
     if math.isnan(memory_percentage):
         memory_percentage = 0
+        if gpu_mem_percent_graph_data['SHOW'] or gpu_mem_percent_radial_data['SHOW'] or gpu_mem_percent_text_data['SHOW']:
+            logger.warning("Your GPU memory relative usage (%) is not supported yet")
+            gpu_mem_percent_graph_data['SHOW'] = False
+            gpu_mem_percent_radial_data['SHOW'] = False
+            gpu_mem_percent_text_data['SHOW'] = False
+        #for backward compatibility   
         if gpu_mem_graph_data['SHOW'] or gpu_mem_radial_data['SHOW']:
             logger.warning("Your GPU memory relative usage (%) is not supported yet")
             gpu_mem_graph_data['SHOW'] = False
             gpu_mem_radial_data['SHOW'] = False
 
+    #for backward compatibility   
     gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
+
+    gpu_mem_used_text_data = theme_gpu_data['MEMORY_USED']['TEXT']
     if math.isnan(memory_used_mb):
         memory_used_mb = 0
+        if gpu_mem_used_text_data['SHOW']:
+            logger.warning("Your GPU memory absolute usage (M) is not supported yet")
+            gpu_mem_used_text_data['SHOW'] = False
+        #for backward compatibility      
         if gpu_mem_text_data['SHOW']:
             logger.warning("Your GPU memory absolute usage (M) is not supported yet")
             gpu_mem_text_data['SHOW'] = False
@@ -280,10 +321,27 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps)
         min_size=3,
         unit="%")
 
+    #for backward compatibility 
     display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
 
     display_themed_radial_bar(
         theme_data=gpu_mem_radial_data,
+        value=int(memory_percentage),
+        min_size=3,
+        unit="%"
+    )
+
+    display_themed_progress_bar(gpu_mem_percent_graph_data, memory_percentage)
+
+    display_themed_radial_bar(
+        theme_data=gpu_mem_percent_radial_data,
+        value=int(memory_percentage),
+        min_size=3,
+        unit="%"
+    )
+
+    display_themed_value(
+        theme_data=gpu_mem_percent_text_data,
         value=int(memory_percentage),
         min_size=3,
         unit="%"
@@ -294,6 +352,14 @@ def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps)
         value=int(load),
         min_size=3,
         unit="%"
+    )
+
+    #for backward compatibility 
+    display_themed_value(
+        theme_data=gpu_mem_used_text_data,
+        value=int(memory_used_mb),
+        min_size=5,
+        unit=" M"
     )
 
     display_themed_value(
@@ -508,6 +574,7 @@ class Custom:
                     custom_stat_class = getattr(sensors_custom, str(custom_stat))()
                     string_value = custom_stat_class.as_string()
                     numeric_value = custom_stat_class.as_numeric()
+                    histo_values = custom_stat_class.as_histo()
                 except:
                     logger.error("Custom sensor class " + str(custom_stat) + " not found in sensors_custom.py")
                     return
@@ -522,14 +589,19 @@ class Custom:
 
                 # Display graph from numeric value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("GRAPH", None)
-                if theme_data and numeric_value:
+                if theme_data and not math.isnan(numeric_value):
                     display_themed_progress_bar(theme_data=theme_data, value=numeric_value)
 
                 # Display radial from numeric and text value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("RADIAL", None)
-                if theme_data and numeric_value and string_value:
+                if theme_data and not math.isnan(numeric_value) and string_value:
                     display_themed_radial_bar(
                         theme_data=theme_data,
                         value=numeric_value,
                         custom_text=string_value
                     )
+
+                # Display plot graph from histo values
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("PLOT", None)
+                if theme_data and histo_values:
+                    display_themed_plot_graph(theme_data=theme_data, values=histo_values)
