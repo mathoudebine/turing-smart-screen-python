@@ -23,6 +23,86 @@
 import platform
 from abc import ABC, abstractmethod
 
+import ctypes
+import math
+import os
+import sys
+from statistics import mean
+from typing import Tuple
+
+import clr  # Clr is from pythonnet package. Do not install clr package
+import psutil
+from win32api import *
+
+import library.sensors.sensors as sensors
+from library.log import logger
+
+# Import LibreHardwareMonitor dll to Python
+lhm_dll = os.getcwd() + '\\external\\LibreHardwareMonitor\\LibreHardwareMonitorLib.dll'
+# noinspection PyUnresolvedReferences
+clr.AddReference(lhm_dll)
+# noinspection PyUnresolvedReferences
+clr.AddReference(os.getcwd() + '\\external\\LibreHardwareMonitor\\HidSharp.dll')
+# noinspection PyUnresolvedReferences
+from LibreHardwareMonitor import Hardware
+
+# Import RTSSSharedMemoryNET dll to Python
+clr.AddReference(os.getcwd() + '\\external\\RTSSSharedMemoryNET\\RTSSSharedMemoryNET.dll')
+from RTSSSharedMemoryNET import OSD
+
+
+File_information = GetFileVersionInfo(lhm_dll, "\\")
+
+ms_file_version = File_information['FileVersionMS']
+ls_file_version = File_information['FileVersionLS']
+
+logger.debug("Found LibreHardwareMonitorLib %s" % ".".join([str(HIWORD(ms_file_version)), str(LOWORD(ms_file_version)),
+                                                            str(HIWORD(ls_file_version)),
+                                                            str(LOWORD(ls_file_version))]))
+
+if ctypes.windll.shell32.IsUserAnAdmin() == 0:
+    logger.error(
+        "Program is not running as administrator. Please run with admin rights or choose another HW_SENSORS option in "
+        "config.yaml")
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
+
+handle = Hardware.Computer()
+handle.IsCpuEnabled = True
+handle.IsGpuEnabled = True
+handle.IsMemoryEnabled = True
+handle.IsMotherboardEnabled = True
+handle.IsControllerEnabled = False
+handle.IsNetworkEnabled = True
+handle.IsStorageEnabled = True
+handle.Open()
+for hardware in handle.Hardware:
+    if hardware.HardwareType == Hardware.HardwareType.Cpu:
+        logger.info("Found CPU: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.Memory:
+        logger.info("Found Memory: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.GpuNvidia:
+        logger.info("Found Nvidia GPU: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.GpuAmd:
+        logger.info("Found AMD GPU: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.GpuIntel:
+        logger.info("Found Intel GPU: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.Storage:
+        logger.info("Found Storage: %s" % hardware.Name)
+    elif hardware.HardwareType == Hardware.HardwareType.Network:
+        logger.info("Found Network interface: %s" % hardware.Name)
+
+
+def get_hw_and_update(hwtype: Hardware.HardwareType, name: str = None) -> Hardware.Hardware:
+    for hardware in handle.Hardware:
+        if hardware.HardwareType == hwtype:
+            if (name and hardware.Name == name) or not name:
+                hardware.Update()
+                return hardware
+    return None
+
 
 # Custom data classes must be implemented in this file, inherit the CustomDataSource and implement its 2 methods
 class CustomDataSource(ABC):
@@ -40,6 +120,11 @@ class CustomDataSource(ABC):
         # If this function is empty, the numeric value will be used as string without formatting
         pass
 
+    @abstractmethod
+    def as_histo(self) -> list[float]:
+        # List of numeric values will be used for plot graph
+        # If there is no histo values, keep this function empty
+        pass
 
 # Example for a custom data class that has numeric and text values
 class ExampleCustomNumericData(CustomDataSource):
@@ -61,6 +146,9 @@ class ExampleCustomNumericData(CustomDataSource):
         # --> return f'{self.as_numeric():>4}%'
         # Otherwise, part of the previous value can stay displayed ("ghosting") after a refresh
 
+    def as_histo(self) -> list[float]:
+        pass
+
 
 # Example for a custom data class that only has text values
 class ExampleCustomTextOnlyData(CustomDataSource):
@@ -71,3 +159,69 @@ class ExampleCustomTextOnlyData(CustomDataSource):
     def as_string(self) -> str:
         # If a custom data class only has text values, it won't be possible to display graph or radial bars
         return "Python version: " + platform.python_version()
+
+    def as_histo(self) -> list[float]:
+        pass
+
+
+class GpuNvidiaFanPercent(CustomDataSource):
+    def as_numeric(self) -> float:
+        gpu = get_hw_and_update(Hardware.HardwareType.GpuNvidia)
+        for sensor in gpu.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Control:
+                return float(sensor.Value)
+                #return float(50)
+
+        logger.error("GPU Nvidia fan percent cannot be read")
+        return math.nan
+
+    def as_string(self) -> str:
+        return f'{int(self.as_numeric())}%'
+
+    def as_histo(self) -> list[float]:
+        pass
+
+class CpuFanPercent(CustomDataSource):
+    def as_numeric(self) -> float:
+        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
+        for sh in mb.SubHardware:
+            sh.Update()
+            for sensor in sh.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(sensor.Name):
+                    return float(sensor.Value)
+
+        logger.error("CPU fan percent cannot be read")
+        return math.nan
+
+    def as_string(self) -> str:
+        return f'{int(self.as_numeric())}%'
+
+    def as_histo(self) -> list[float]:
+        pass
+
+class RTSSFps(CustomDataSource):
+
+    histo = [-1] * 100
+
+    def as_numeric(self) -> float:
+        appEntries = OSD.GetAppEntries()
+        for app in appEntries:
+            if app.InstantaneousFrames > 0:
+                return float(app.InstantaneousFrames)
+
+        return float(0)
+
+    def as_string(self) -> str:
+        return f'{int(self.as_numeric())}'
+
+    def as_histo(self) -> list[float]:
+        appEntries = OSD.GetAppEntries()
+        for app in appEntries:
+            if app.InstantaneousFrames > 0:
+                RTSSFps.histo.append(app.InstantaneousFrames)
+                RTSSFps.histo.pop(0)
+                return RTSSFps.histo
+
+        return RTSSFps.histo
+
+
