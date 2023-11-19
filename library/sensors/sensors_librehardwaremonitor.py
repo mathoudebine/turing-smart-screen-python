@@ -330,8 +330,13 @@ class Memory(sensors.Memory):
         swap_used = virtual_mem_used - mem_used
         swap_available = virtual_mem_available - mem_available
         swap_total = swap_used + swap_available
+        try:
+            percent_swap = swap_used / swap_total * 100.0
+        except:
+            # No swap / pagefile disabled
+            percent_swap = 0.0
 
-        return swap_used / swap_total * 100.0
+        return percent_swap
 
     @staticmethod
     def virtual_percent() -> float:
