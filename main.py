@@ -27,12 +27,9 @@ import os
 import sys
 
 MIN_PYTHON = (3, 8)
+
 if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+    sys.exit("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
 
 try:
     import atexit
@@ -50,15 +47,11 @@ try:
 
     try:
         import pystray
-    except:
+    except ImportError:
         pass
-except:
-    print(
+except ImportError:
+    sys.exit(
         "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 from library.log import logger
 import library.scheduler as scheduler
