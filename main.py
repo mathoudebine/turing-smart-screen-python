@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(os.path.join(os.getcwd(), "configure.py"), shell=True)
+        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "configure.py")])
         clean_stop(tray_icon)
 
 
