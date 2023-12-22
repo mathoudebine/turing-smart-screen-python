@@ -260,7 +260,7 @@ if __name__ == "__main__":
                  "update automatically")
     # Every time the theme file is modified: reload preview
     while True:
-        if os.path.getmtime(theme_file) > last_edit_time:
+        if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
             logger.debug("The theme file has been updated, the preview window will refresh")
             refresh_theme()
             last_edit_time = os.path.getmtime(theme_file)
