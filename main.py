@@ -108,7 +108,10 @@ if __name__ == "__main__":
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "configure.py")])
+        kwargs = {}
+        if hasattr(subprocess, "DETACHED_PROCESS"):
+            kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "configure.py")], **kwargs)
         clean_stop(tray_icon)
 
 

@@ -371,7 +371,10 @@ class TuringConfigWindow:
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "main.py")])
+        kwargs = {}
+        if hasattr(subprocess, "DETACHED_PROCESS"):
+            kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "main.py")], **kwargs)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):
