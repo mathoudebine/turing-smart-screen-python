@@ -36,6 +36,7 @@ if sys.version_info < MIN_PYTHON:
 try:
     import tkinter.ttk as ttk
     from tkinter import *
+    from PIL import ImageTk
 except:
     print(
         "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
@@ -48,7 +49,7 @@ try:
     import psutil
     import ruamel.yaml
     import sv_ttk
-    from PIL import Image, ImageTk
+    from PIL import Image
     from serial.tools.list_ports import comports
 except:
     print(
