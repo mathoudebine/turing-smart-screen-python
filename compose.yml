@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: .
+    container_name: ${APP_NAME:-tsr} 
+    tty: true
+    environment:
+      - DISPLAY=${DISPLAY}
+    network_mode: host
+    volumes:
+      - $HOME/.Xauthority:/root/.Xauthority:rw
+      - ./config.yaml:/app/config.yaml
+    devices:
+      - /dev/ttyACM0
+    restart: unless-stopped 
