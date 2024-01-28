@@ -73,19 +73,23 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def temperature() -> float:
         cpu_temp = math.nan
-        sensors_temps = psutil.sensors_temperatures()
-        if 'coretemp' in sensors_temps:
-            # Intel CPU
-            cpu_temp = sensors_temps['coretemp'][0].current
-        elif 'k10temp' in sensors_temps:
-            # AMD CPU
-            cpu_temp = sensors_temps['k10temp'][0].current
-        elif 'cpu_thermal' in sensors_temps:
-            # ARM CPU
-            cpu_temp = sensors_temps['cpu_thermal'][0].current
-        elif 'zenpower' in sensors_temps:
-            # AMD CPU with zenpower (k10temp is in blacklist)
-            cpu_temp = sensors_temps['zenpower'][0].current
+        try:
+            sensors_temps = psutil.sensors_temperatures()
+            if 'coretemp' in sensors_temps:
+                # Intel CPU
+                cpu_temp = sensors_temps['coretemp'][0].current
+            elif 'k10temp' in sensors_temps:
+                # AMD CPU
+                cpu_temp = sensors_temps['k10temp'][0].current
+            elif 'cpu_thermal' in sensors_temps:
+                # ARM CPU
+                cpu_temp = sensors_temps['cpu_thermal'][0].current
+            elif 'zenpower' in sensors_temps:
+                # AMD CPU with zenpower (k10temp is in blacklist)
+                cpu_temp = sensors_temps['zenpower'][0].current
+        except:
+            # psutil.sensors_temperatures not available on Windows / MacOS
+            pass
         return cpu_temp
 
     @staticmethod

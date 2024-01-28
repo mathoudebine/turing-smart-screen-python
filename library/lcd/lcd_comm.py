@@ -27,11 +27,6 @@ from abc import ABC, abstractmethod
 from enum import IntEnum
 from typing import Tuple, List
 
-try:
-    from itertools import izip
-except ImportError:  # Python 3
-    izip = zip
-
 import serial
 from PIL import Image, ImageDraw, ImageFont
 
@@ -402,7 +397,7 @@ class LcdComm(ABC):
 
         # Draw plot graph
         draw = ImageDraw.Draw(graph_image)
-        draw.line(list(izip(plotsX, plotsY)), fill=line_color, width=2)
+        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=2)
 
         if graph_axis:
             # Draw axis
