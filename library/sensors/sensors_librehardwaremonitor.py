@@ -69,6 +69,7 @@ handle.IsMotherboardEnabled = True  # For CPU Fan Speed
 handle.IsControllerEnabled = True  # For CPU Fan Speed
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
+handle.IsPsuEnabled = False
 handle.Open()
 for hardware in handle.Hardware:
     if hardware.HardwareType == Hardware.HardwareType.Cpu:
