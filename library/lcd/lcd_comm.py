@@ -25,7 +25,7 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Tuple
+from typing import Tuple, List
 
 try:
     from itertools import izip
@@ -326,9 +326,11 @@ class LcdComm(ABC):
 
         self.DisplayPILImage(bar_image, x, y)
 
-    def DisplayLineGraph(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
+    def DisplayLineGraph(self, x: int, y: int, width: int, height: int,
+                         values: List[float],
+                         min_value: int = 0,
+                         max_value: int = 100,
                          autoscale: bool = False,
-                         values: list[float] = (),
                          line_color: Tuple[int, int, int] = (0, 0, 0),
                          graph_axis: bool = True,
                          axis_color: Tuple[int, int, int] = (0, 0, 0),
