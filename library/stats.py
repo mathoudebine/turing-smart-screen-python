@@ -200,6 +200,8 @@ def display_themed_plot_graph(theme_data, values):
     if not theme_data.get("SHOW", False):
         return
 
+    line_color = theme_data.get("LINE_COLOR", (0, 0, 0))
+
     display.lcd.DisplayPlotGraph(
         x=theme_data.get("X", 0),
         y=theme_data.get("Y", 0),
@@ -209,8 +211,9 @@ def display_themed_plot_graph(theme_data, values):
         max_value=theme_data.get("MAX_VALUE", 100),
         autoscale=theme_data.get("AUTOSCALE", False),
         values=values,
-        line_color=theme_data.get("LINE_COLOR", (0, 0, 0)),
+        line_color=line_color,
         graph_axis=theme_data.get("AXIS", False),
+        axis_color=theme_data.get("AXIS_COLOR", line_color),  # If no color specified, use line color for axis
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
     )
@@ -588,7 +591,7 @@ class Custom:
                     custom_stat_class = getattr(sensors_custom, str(custom_stat))()
                     string_value = custom_stat_class.as_string()
                     numeric_value = custom_stat_class.as_numeric()
-                    histo_values = custom_stat_class.as_histo()
+                    last_values = custom_stat_class.last_values()
                 except Exception as e:
                     logger.error("Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
                     return
@@ -598,17 +601,17 @@ class Custom:
 
                 # Display text
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("TEXT", None)
-                if theme_data and string_value is not None:
+                if theme_data is not None and string_value is not None:
                     display_themed_value(theme_data=theme_data, value=string_value)
 
                 # Display graph from numeric value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("GRAPH", None)
-                if theme_data and numeric_value is not None and not math.isnan(numeric_value):
+                if theme_data is not None and numeric_value is not None and not math.isnan(numeric_value):
                     display_themed_progress_bar(theme_data=theme_data, value=numeric_value)
 
                 # Display radial from numeric and text value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("RADIAL", None)
-                if theme_data and numeric_value is not None and not math.isnan(
+                if theme_data is not None and numeric_value is not None and not math.isnan(
                         numeric_value) and string_value is not None:
                     display_themed_radial_bar(
                         theme_data=theme_data,
@@ -617,6 +620,6 @@ class Custom:
                     )
 
                 # Display plot graph from histo values
-                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("PLOT", None)
-                if theme_data and histo_values:
-                    display_themed_plot_graph(theme_data=theme_data, values=histo_values)
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("LINE_GRAPH", None)
+                if theme_data is not None and last_values is not None:
+                    display_themed_plot_graph(theme_data=theme_data, values=last_values)

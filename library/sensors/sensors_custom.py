@@ -21,6 +21,7 @@
 # See CustomDataExample theme for the theme implementation part
 
 import platform
+import random
 from abc import ABC, abstractmethod
 
 
@@ -40,14 +41,24 @@ class CustomDataSource(ABC):
         # If this function is empty, the numeric value will be used as string without formatting
         pass
 
+    @abstractmethod
+    def last_values(self) -> list[float]:
+        # List of last numeric values will be used for plot graph
+        # If you do not want to draw a line graph or if your custom data has no numeric values, keep this function empty
+        pass
+
 
 # Example for a custom data class that has numeric and text values
 class ExampleCustomNumericData(CustomDataSource):
+
+    # This list is used to store the last 10 values to display a line graph
+    last_val = [float(-1)] * 10  # By default, it is filed with -1 values
+
     def as_numeric(self) -> float:
         # Numeric value will be used for graph and radial progress bars
         # Here a Python function from another module can be called to get data
         # Example: return my_module.get_rgb_led_brightness() / return audio.system_volume() ...
-        return 75.845
+        return random.uniform(0, 50)
 
     def as_string(self) -> str:
         # Text value will be used for text display and radial progress bar inner text.
@@ -61,6 +72,15 @@ class ExampleCustomNumericData(CustomDataSource):
         # --> return f'{self.as_numeric():>4}%'
         # Otherwise, part of the previous value can stay displayed ("ghosting") after a refresh
 
+    def last_values(self) -> list[float]:
+        # Everytime this function is called, it gets the latest value from as_numeric(), store it to the history list,
+        # then return the new history.
+        # This function will be called to draw a line graph. Call it regularly to keep the last values updated.
+        self.last_val.append(self.as_numeric())
+        # Remove the oldest value from list
+        self.last_val.pop(0)
+        return self.last_val
+
 
 # Example for a custom data class that only has text values
 class ExampleCustomTextOnlyData(CustomDataSource):
@@ -70,4 +90,9 @@ class ExampleCustomTextOnlyData(CustomDataSource):
 
     def as_string(self) -> str:
         # If a custom data class only has text values, it won't be possible to display graph or radial bars
-        return "Python version: " + platform.python_version()
+        return "Python: " + platform.python_version()
+
+    def last_values(self) -> list[float]:
+        # If a custom data class only has text values, it won't be possible to display line graph
+        pass
+

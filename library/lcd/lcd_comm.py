@@ -327,17 +327,21 @@ class LcdComm(ABC):
         self.DisplayPILImage(bar_image, x, y)
 
     def DisplayPlotGraph(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
-                           autoscale: bool = False,  
-                           values: list[float] = (),
-                           line_color: Tuple[int, int, int] = (0, 0, 0),
-                           graph_axis: bool = True,                           
-                           background_color: Tuple[int, int, int] = (255, 255, 255),
-                           background_image: str = None):
+                         autoscale: bool = False,
+                         values: list[float] = (),
+                         line_color: Tuple[int, int, int] = (0, 0, 0),
+                         graph_axis: bool = True,
+                         axis_color: Tuple[int, int, int] = (0, 0, 0),
+                         background_color: Tuple[int, int, int] = (255, 255, 255),
+                         background_image: str = None):
         # Generate a plot graph and display it
         # Provide the background image path to display plot graph with transparent background
 
         if isinstance(line_color, str):
             line_color = tuple(map(int, line_color.split(', ')))
+
+        if isinstance(axis_color, str):
+            axis_color = tuple(map(int, axis_color.split(', ')))
 
         if isinstance(background_color, str):
             background_color = tuple(map(int, background_color.split(', ')))
@@ -346,7 +350,6 @@ class LcdComm(ABC):
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
         assert x + width <= self.get_width(), 'Progress bar width exceeds display width'
         assert y + height <= self.get_height(), 'Progress bar height exceeds display height'
-
 
         if background_image is None:
             # A bitmap is created with solid background
@@ -358,7 +361,7 @@ class LcdComm(ABC):
             # Crop bitmap to keep only the plot graph background
             graph_image = graph_image.crop(box=(x, y, x + width, y + height))
 
-        #if autoscale is enabled, define new min/max value to "zoom" the graph
+        # if autoscale is enabled, define new min/max value to "zoom" the graph
         if autoscale:
             trueMin = max_value
             trueMax = min_value
@@ -370,12 +373,12 @@ class LcdComm(ABC):
                         trueMax = value
 
             if trueMin != max_value and trueMax != min_value:
-                min_value = max (trueMin-5, min_value)
-                max_value = min (trueMax+5, max_value)
+                min_value = max(trueMin - 5, min_value)
+                max_value = min(trueMax + 5, max_value)
 
         step = width / len(values)
-        #pre compute yScale multiplier value
-        yScale = height / (max_value - min_value)       
+        # pre compute yScale multiplier value
+        yScale = height / (max_value - min_value)
 
         plotsX = []
         plotsY = []
@@ -395,29 +398,28 @@ class LcdComm(ABC):
 
                 count += 1
 
-
         # Draw plot graph
         draw = ImageDraw.Draw(graph_image)
         draw.line(list(izip(plotsX, plotsY)), fill=line_color, width=2)
 
         if graph_axis:
             # Draw axis
-            draw.line([0, height - 1, width - 1, height - 1], fill=line_color)
-            draw.line([0, 0, 0, height - 1], fill=line_color)
+            draw.line([0, height - 1, width - 1, height - 1], fill=axis_color)
+            draw.line([0, 0, 0, height - 1], fill=axis_color)
 
             # Draw Legend
-            draw.line([0, 0, 1, 0], fill=line_color)
+            draw.line([0, 0, 1, 0], fill=axis_color)
             text = f"{int(max_value)}"
             font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
             left, top, right, bottom = font.getbbox(text)
             draw.text((2, 0 - top), text,
-                      font=font, fill=line_color)
+                      font=font, fill=axis_color)
 
             text = f"{int(min_value)}"
             font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
             left, top, right, bottom = font.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
-                      font=font, fill=line_color)
+                      font=font, fill=axis_color)
 
         self.DisplayPILImage(graph_image, x, y)
 
