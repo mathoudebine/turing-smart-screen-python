@@ -293,7 +293,7 @@ class CPU:
 
         display_themed_progress_bar(cpu_fan_graph_data, fan_percent)
 
-        display_themed_percent_radial_bar(cpu_fan_radial_data,fan_percent)
+        display_themed_percent_radial_bar(cpu_fan_radial_data, fan_percent)
 
 
 def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: float, temperature: float, fps: int,
@@ -319,7 +319,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
 
     display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
 
-    display_themed_percent_radial_bar(gpu_mem_radial_data,memory_percentage)
+    display_themed_percent_radial_bar(gpu_mem_radial_data, memory_percentage)
 
     display_themed_value(
         theme_data=gpu_mem_text_data,
@@ -343,9 +343,9 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
 
     display_themed_progress_bar(gpu_percent_graph_data, load)
 
-    display_themed_percent_radial_bar(gpu_percent_radial_data,load)
+    display_themed_percent_radial_bar(gpu_percent_radial_data, load)
 
-    display_themed_percent_value(gpu_percent_text_data,load)
+    display_themed_percent_value(gpu_percent_text_data, load)
 
     # GPU mem. usage (%)
     gpu_mem_percent_graph_data = theme_gpu_data['MEMORY_PERCENT']['GRAPH']
@@ -362,7 +362,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
 
     display_themed_progress_bar(gpu_mem_percent_graph_data, memory_percentage)
 
-    display_themed_percent_radial_bar(gpu_mem_percent_radial_data,memory_percentage)
+    display_themed_percent_radial_bar(gpu_mem_percent_radial_data, memory_percentage)
 
     display_themed_percent_value(gpu_mem_percent_text_data, memory_percentage)
 
@@ -456,7 +456,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
 
     display_themed_progress_bar(gpu_fan_graph_data, fan_percent)
 
-    display_themed_percent_radial_bar(gpu_fan_radial_data,fan_percent)
+    display_themed_percent_radial_bar(gpu_fan_radial_data, fan_percent)
 
 
 class Gpu:
@@ -479,11 +479,11 @@ class Memory:
 
         swap_percent = sensors.Memory.swap_percent()
         display_themed_progress_bar(memory_stats_theme_data['SWAP']['GRAPH'], swap_percent)
-        display_themed_percent_radial_bar(memory_stats_theme_data['SWAP']['RADIAL'],swap_percent)
+        display_themed_percent_radial_bar(memory_stats_theme_data['SWAP']['RADIAL'], swap_percent)
 
         virtual_percent = sensors.Memory.virtual_percent()
         display_themed_progress_bar(memory_stats_theme_data['VIRTUAL']['GRAPH'], virtual_percent)
-        display_themed_percent_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'],virtual_percent)
+        display_themed_percent_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'], virtual_percent)
 
         display_themed_percent_value(memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'], virtual_percent)
 
@@ -519,7 +519,7 @@ class Disk:
 
         disk_usage_percent = sensors.Disk.disk_usage_percent()
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
-        display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'],disk_usage_percent)
+        display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
 
         display_themed_value(
             theme_data=disk_theme_data['USED']['TEXT'],

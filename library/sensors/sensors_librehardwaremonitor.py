@@ -133,7 +133,7 @@ def get_gpu_name() -> str:
 
         logger.warning(
             "Found %d GPUs on your system (%d AMD / %d Nvidia / %d Intel). Auto identify which GPU to use." % (
-            len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
+                len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
 
         if nvidia_gpus >= 1:
             # One (or more) Nvidia GPU: use first available for stats
@@ -233,7 +233,8 @@ class Cpu(sensors.Cpu):
         for sh in mb.SubHardware:
             sh.Update()
             for sensor in sh.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
+                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(
+                        sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
                     return float(sensor.Value)
 
         # No Fan Speed sensor for this CPU model
