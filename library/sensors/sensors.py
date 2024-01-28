@@ -41,12 +41,12 @@ class Cpu(ABC):
 
     @staticmethod
     @abstractmethod
-    def is_temperature_available() -> bool:
+    def temperature() -> float:
         pass
 
     @staticmethod
     @abstractmethod
-    def temperature() -> float:
+    def fan_percent() -> float:
         pass
 
 
@@ -59,6 +59,11 @@ class Gpu(ABC):
     @staticmethod
     @abstractmethod
     def fps() -> int:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def fan_percent() -> float:
         pass
 
     @staticmethod

@@ -29,6 +29,19 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+    FAN_SPEED:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
   GPU:
     INTERVAL: 1
     PERCENTAGE:
@@ -62,10 +75,26 @@ STATS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
     FPS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+    FAN_SPEED:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
   MEMORY:
     INTERVAL: 5
     SWAP:

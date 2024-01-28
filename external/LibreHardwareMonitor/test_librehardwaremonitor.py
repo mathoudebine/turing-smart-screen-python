@@ -47,19 +47,17 @@ handle.IsPsuEnabled = True
 handle.Open()
 
 for hw in handle.Hardware:
-    print("%s | %s | %s" % (hw.HardwareType, hw.Name, hw.Identifier))
-    hw.Update()
+    if hw.HardwareType == Hardware.HardwareType.Motherboard:
+        print("%s | %s | %s" % (hw.HardwareType, hw.Name, hw.Identifier))
+        hw.Update()
+        for subhw in hw.SubHardware:
+            subhw.Update()
+            print("    %s | %s | %s" % (subhw.HardwareType, subhw.Name, subhw.Identifier))
+            for sensor in subhw.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
+                    print("%f" % float(sensor.Value))
 
-    for sensor in hw.Sensors:
-        print("    %s | %s | %s" % (sensor.SensorType, sensor.Name, sensor.Value))
 
-    for subhw in hw.SubHardware:
-        print("    %s | %s | %s" % (subhw.HardwareType, subhw.Name, subhw.Identifier))
-        subhw.Update()
-
-        for sensor in subhw.Sensors:
-            print("        %s | %s | %s" % (sensor.SensorType, sensor.Name, sensor.Value))
-
-    print("----------------------------------------------------")
+        print("----------------------------------------------------")
 
 handle.Close()

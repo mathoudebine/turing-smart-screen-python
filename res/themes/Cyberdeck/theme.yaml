@@ -1,12 +1,3 @@
-# This file is a sample theme that contains every possible data to be displayed on screen
-# It can be used to start the development of a new theme: it should be copied to a sub-folder with its PNG resources
-# See the wiki to edit this file: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes
-
-# NOTE: Every HW sensor is hidden in this example, to show a sensor change 'SHOW: False' to 'SHOW: True'
----
-# If you indicate @ with your GitHub username, there will be a hyperlink to your GitHub profile in the Config. Wizard
-# Otherwise, you can just indicate any text e.g. author: "Your Name"
-# You can also remove the line if you don't want to be credited
 author: "@hicwic"
 
 display:
@@ -64,7 +55,29 @@ STATS:
         FONT_SIZE: 23
         FONT_COLOR: 248, 177, 51
         # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png        
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      RADIAL:
+        SHOW: True
+        X: 170
+        Y: 130
+        RADIUS: 31
+        WIDTH: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 220
+        ANGLE_END: 220
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR: 200, 100, 50
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 248, 177, 51
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
   MEMORY:
     INTERVAL: 5
     VIRTUAL:
@@ -147,6 +160,28 @@ STATS:
         FONT_COLOR: 248, 177, 51
         #BACKGROUND_COLOR: 100, 100, 100
         BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      RADIAL:
+        SHOW: True
+        X: 233
+        Y: 68
+        RADIUS: 31
+        WIDTH: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 320
+        ANGLE_END: 320
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: False
+        BAR_COLOR: 200, 100, 50
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 248, 177, 51
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     ETH:
@@ -172,28 +207,6 @@ STATS:
           BACKGROUND_IMAGE: background.png    
   CUSTOM:
     INTERVAL: 1
-    GpuNvidiaFanPercent:
-      RADIAL:
-        SHOW: True
-        X: 233
-        Y: 68
-        RADIUS: 31
-        WIDTH: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        ANGLE_START: 320
-        ANGLE_END: 320
-        ANGLE_STEPS: 20
-        ANGLE_SEP: 0
-        CLOCKWISE: False
-        BAR_COLOR: 200, 100, 50
-        SHOW_TEXT: True
-        SHOW_UNIT: True
-        FONT: roboto/Roboto-Bold.ttf
-        FONT_SIZE: 15
-        FONT_COLOR: 248, 177, 51
-        #BACKGROUND_COLOR: 200, 200, 200
-        BACKGROUND_IMAGE: background.png
     RTSSFps:
       TEXT:
         SHOW: True

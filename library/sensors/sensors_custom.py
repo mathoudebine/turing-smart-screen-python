@@ -164,41 +164,6 @@ class ExampleCustomTextOnlyData(CustomDataSource):
         pass
 
 
-class GpuNvidiaFanPercent(CustomDataSource):
-    def as_numeric(self) -> float:
-        gpu = get_hw_and_update(Hardware.HardwareType.GpuNvidia)
-        for sensor in gpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Control:
-                return float(sensor.Value)
-                #return float(50)
-
-        logger.error("GPU Nvidia fan percent cannot be read")
-        return math.nan
-
-    def as_string(self) -> str:
-        return f'{int(self.as_numeric())}%'
-
-    def as_histo(self) -> list[float]:
-        pass
-
-class CpuFanPercent(CustomDataSource):
-    def as_numeric(self) -> float:
-        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
-        for sh in mb.SubHardware:
-            sh.Update()
-            for sensor in sh.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(sensor.Name):
-                    return float(sensor.Value)
-
-        logger.error("CPU fan percent cannot be read")
-        return math.nan
-
-    def as_string(self) -> str:
-        return f'{int(self.as_numeric())}%'
-
-    def as_histo(self) -> list[float]:
-        pass
-
 class RTSSFps(CustomDataSource):
 
     histo = [-1] * 100

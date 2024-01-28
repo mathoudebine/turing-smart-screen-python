@@ -71,20 +71,8 @@ class Cpu(sensors.Cpu):
         return psutil.getloadavg()
 
     @staticmethod
-    def is_temperature_available() -> bool:
-        try:
-            sensors_temps = psutil.sensors_temperatures()
-            if 'coretemp' in sensors_temps or 'k10temp' in sensors_temps or 'cpu_thermal' in sensors_temps or 'zenpower' in sensors_temps:
-                return True
-            else:
-                return False
-        except AttributeError:
-            # sensors_temperatures may not be available at all
-            return False
-
-    @staticmethod
     def temperature() -> float:
-        cpu_temp = 0
+        cpu_temp = math.nan
         sensors_temps = psutil.sensors_temperatures()
         if 'coretemp' in sensors_temps:
             # Intel CPU
@@ -100,6 +88,11 @@ class Cpu(sensors.Cpu):
             cpu_temp = sensors_temps['zenpower'][0].current
         return cpu_temp
 
+    @staticmethod
+    def fan_percent() -> float:
+        # Not supported by Python libraries
+        return math.nan
+
 
 class Gpu(sensors.Gpu):
     @staticmethod
@@ -114,8 +107,23 @@ class Gpu(sensors.Gpu):
 
     @staticmethod
     def fps() -> int:
-        # Not supported by Python libraries
-        return -1
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.fps()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.fps()
+        else:
+            return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.fan_percent()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.fan_percent()
+        else:
+            return math.nan
 
     @staticmethod
     def is_available() -> bool:
@@ -173,6 +181,11 @@ class GpuNvidia(sensors.Gpu):
     def fps() -> int:
         # Not supported by Python libraries
         return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        # Not supported by Python libraries
+        return math.nan
 
     @staticmethod
     def is_available() -> bool:
@@ -243,6 +256,11 @@ class GpuAmd(sensors.Gpu):
     def fps() -> int:
         # Not supported by Python libraries
         return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        # Not supported by Python libraries
+        return math.nan
 
     @staticmethod
     def is_available() -> bool:
