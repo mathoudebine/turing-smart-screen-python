@@ -26,6 +26,7 @@ import math
 import os
 import platform
 import sys
+from typing import List
 
 import babel.dates
 from psutil._common import bytes2human
@@ -219,14 +220,14 @@ def display_themed_line_graph(theme_data, values):
     )
 
 
-def save_last_value(value, last_values: list[float]):
+def save_last_value(value, last_values: List[float]):
     # Store the value to the history list that can be used for line graph
     last_values.append(value)
     # Also remove the oldest value from history list
     last_values.pop(0)
 
 
-def last_values_list(size: int) -> list[float]:
+def last_values_list(size: int) -> List[float]:
     return [math.nan] * size
 
 
@@ -320,7 +321,6 @@ class CPU:
 
 
 class Gpu:
-
     last_values_gpu_percentage = last_values_list(size=10)
     last_values_gpu_mem_percentage = last_values_list(size=10)
     last_values_gpu_temperature = last_values_list(size=10)
@@ -376,7 +376,8 @@ class Gpu:
 
         if math.isnan(load):
             load = 0
-            if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW'] or gpu_percent_line_graph_data['SHOW']:
+            if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW'] or \
+                    gpu_percent_line_graph_data['SHOW']:
                 logger.warning("Your GPU load is not supported yet")
                 gpu_percent_graph_data['SHOW'] = False
                 gpu_percent_text_data['SHOW'] = False
@@ -650,7 +651,8 @@ class Custom:
                     string_value = custom_stat_class.as_string()
                     last_values = custom_stat_class.last_values()
                 except Exception as e:
-                    logger.error("Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
+                    logger.error(
+                        "Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
                     return
 
                 if string_value is None:

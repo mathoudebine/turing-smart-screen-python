@@ -227,9 +227,9 @@ STATS:
         Y: 220
         WIDTH: 133
         HEIGHT: 70
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        AUTOSCALE: False
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
@@ -287,8 +287,8 @@ STATS:
         WIDTH: 133
         HEIGHT: 70
         MIN_VALUE: 0
-        MAX_VALUE: 100
-        AUTOSCALE: False
+        MAX_VALUE: 3000
+        AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
@@ -476,9 +476,9 @@ STATS:
         Y: 220
         WIDTH: 133
         HEIGHT: 70
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        AUTOSCALE: False
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
@@ -535,8 +535,8 @@ STATS:
         WIDTH: 133
         HEIGHT: 70
         MIN_VALUE: 0
-        MAX_VALUE: 100
-        AUTOSCALE: False
+        MAX_VALUE: 300
+        AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
@@ -593,8 +593,8 @@ STATS:
         WIDTH: 133
         HEIGHT: 70
         MIN_VALUE: 0
-        MAX_VALUE: 100
-        AUTOSCALE: False
+        MAX_VALUE: 3000
+        AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0

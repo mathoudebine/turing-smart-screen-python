@@ -22,6 +22,7 @@ import math
 import platform
 import random
 from abc import ABC, abstractmethod
+from typing import List
 
 
 # Custom data classes must be implemented in this file, inherit the CustomDataSource and implement its 2 methods
@@ -41,7 +42,7 @@ class CustomDataSource(ABC):
         pass
 
     @abstractmethod
-    def last_values(self) -> list[float]:
+    def last_values(self) -> List[float]:
         # List of last numeric values will be used for plot graph
         # If you do not want to draw a line graph or if your custom data has no numeric values, keep this function empty
         pass
@@ -77,7 +78,7 @@ class ExampleCustomNumericData(CustomDataSource):
         # --> return f'{self.as_numeric():>4}%'
         # Otherwise, part of the previous value can stay displayed ("ghosting") after a refresh
 
-    def last_values(self) -> list[float]:
+    def last_values(self) -> List[float]:
         # List of last numeric values will be used for plot graph
         return self.last_val
 
@@ -92,6 +93,6 @@ class ExampleCustomTextOnlyData(CustomDataSource):
         # If a custom data class only has text values, it won't be possible to display graph or radial bars
         return "Python: " + platform.python_version()
 
-    def last_values(self) -> list[float]:
+    def last_values(self) -> List[float]:
         # If a custom data class only has text values, it won't be possible to display line graph
         pass
