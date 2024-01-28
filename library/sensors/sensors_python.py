@@ -240,7 +240,7 @@ class GpuNvidia(sensors.Gpu):
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "cpu" in (entry.label or name):
+                        if "gpu" in (entry.label or name):
                             return entry.current
         except:
             pass
@@ -324,7 +324,7 @@ class GpuAmd(sensors.Gpu):
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "cpu" in (entry.label or name):
+                        if "gpu" in (entry.label or name):
                             return entry.current
         except:
             pass
