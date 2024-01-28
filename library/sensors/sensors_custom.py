@@ -56,8 +56,8 @@ class ExampleCustomNumericData(CustomDataSource):
     def as_numeric(self) -> float:
         # Numeric value will be used for graph and radial progress bars
         # Here a Python function from another module can be called to get data
-        # Example: return my_module.get_rgb_led_brightness() / return audio.system_volume() ...
-        self.value = random.uniform(0, 100)
+        # Example: self.value = my_module.get_rgb_led_brightness() / audio.system_volume() ...
+        self.value = 75.845
 
         # Store the value to the history list that will be used for line graph
         self.last_val.append(self.value)
