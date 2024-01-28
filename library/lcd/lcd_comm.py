@@ -328,7 +328,7 @@ class LcdComm(ABC):
 
     def DisplayPlotGraph(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                            autoscale: bool = False,  
-                           values: list[float] = [],
+                           values: list[float] = (),
                            line_color: Tuple[int, int, int] = (0, 0, 0),
                            graph_axis: bool = True,                           
                            background_color: Tuple[int, int, int] = (255, 255, 255),

@@ -183,7 +183,17 @@ def display_themed_percent_radial_bar(theme_data, value):
         theme_data=theme_data,
         value=int(value),
         unit="%",
-        min_size=3)
+        min_size=3
+    )
+
+
+def display_themed_temperature_radial_bar(theme_data, value):
+    display_themed_radial_bar(
+        theme_data=theme_data,
+        value=int(value),
+        min_size=3,
+        unit="°C"
+    )
 
 
 def display_themed_plot_graph(theme_data, values):
@@ -215,13 +225,8 @@ class CPU:
         )
         # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
-        display_themed_progress_bar(
-            theme_data=theme_data['GRAPH'],
-            value=int(cpu_percentage)
-        )
-
+        display_themed_progress_bar(theme_data['GRAPH'], cpu_percentage)
         display_themed_percent_radial_bar(theme_data['RADIAL'], cpu_percentage)
-
         display_themed_percent_value(theme_data['TEXT'], cpu_percentage)
 
     @staticmethod
@@ -258,21 +263,9 @@ class CPU:
                 cpu_temp_radial_data['SHOW'] = False
                 cpu_temp_graph_data['SHOW'] = False
 
-        display_themed_value(
-            theme_data=cpu_temp_text_data,
-            value=int(temperature),
-            min_size=3,
-            unit="°C"
-        )
-
+        display_themed_temperature_value(cpu_temp_text_data, temperature)
         display_themed_progress_bar(cpu_temp_radial_data, temperature)
-
-        display_themed_radial_bar(
-            theme_data=cpu_temp_graph_data,
-            value=int(temperature),
-            min_size=3,
-            unit="°C"
-        )
+        display_themed_temperature_radial_bar(cpu_temp_graph_data, temperature)
 
     @staticmethod
     def fan_speed():
@@ -290,9 +283,7 @@ class CPU:
                 cpu_fan_graph_data['SHOW'] = False
 
         display_themed_percent_value(cpu_fan_text_data, fan_percent)
-
         display_themed_progress_bar(cpu_fan_graph_data, fan_percent)
-
         display_themed_percent_radial_bar(cpu_fan_radial_data, fan_percent)
 
 
@@ -318,9 +309,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_mem_text_data['SHOW'] = False
 
     display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
-
     display_themed_percent_radial_bar(gpu_mem_radial_data, memory_percentage)
-
     display_themed_value(
         theme_data=gpu_mem_text_data,
         value=int(memory_used_mb),
@@ -342,9 +331,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_percent_radial_data['SHOW'] = False
 
     display_themed_progress_bar(gpu_percent_graph_data, load)
-
     display_themed_percent_radial_bar(gpu_percent_radial_data, load)
-
     display_themed_percent_value(gpu_percent_text_data, load)
 
     # GPU mem. usage (%)
@@ -361,9 +348,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_mem_percent_text_data['SHOW'] = False
 
     display_themed_progress_bar(gpu_mem_percent_graph_data, memory_percentage)
-
     display_themed_percent_radial_bar(gpu_mem_percent_radial_data, memory_percentage)
-
     display_themed_percent_value(gpu_mem_percent_text_data, memory_percentage)
 
     # GPU mem. absolute usage (M)
@@ -394,21 +379,9 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_temp_radial_data['SHOW'] = False
             gpu_temp_graph_data['SHOW'] = False
 
-    display_themed_value(
-        theme_data=gpu_temp_text_data,
-        value=int(temperature),
-        min_size=3,
-        unit="°C"
-    )
-
+    display_themed_temperature_value(gpu_temp_text_data, temperature)
     display_themed_progress_bar(gpu_temp_graph_data, temperature)
-
-    display_themed_radial_bar(
-        theme_data=gpu_temp_radial_data,
-        value=int(temperature),
-        min_size=3,
-        unit="°C"
-    )
+    display_themed_temperature_radial_bar(gpu_temp_radial_data, temperature)
 
     # GPU FPS
     gpu_fps_text_data = theme_gpu_data['FPS']['TEXT']
@@ -423,15 +396,13 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_fps_radial_data['SHOW'] = False
             gpu_fps_graph_data['SHOW'] = False
 
+    display_themed_progress_bar(gpu_fps_graph_data, fps)
     display_themed_value(
         theme_data=gpu_fps_text_data,
         value=int(fps),
         min_size=4,
         unit=" FPS"
     )
-
-    display_themed_progress_bar(gpu_fps_graph_data, fps)
-
     display_themed_radial_bar(
         theme_data=gpu_fps_radial_data,
         value=int(fps),
@@ -453,9 +424,7 @@ def display_gpu_stats(load: float, memory_percentage: float, memory_used_mb: flo
             gpu_fan_graph_data['SHOW'] = False
 
     display_themed_percent_value(gpu_fan_text_data, fan_percent)
-
     display_themed_progress_bar(gpu_fan_graph_data, fan_percent)
-
     display_themed_percent_radial_bar(gpu_fan_radial_data, fan_percent)
 
 
@@ -484,7 +453,6 @@ class Memory:
         virtual_percent = sensors.Memory.virtual_percent()
         display_themed_progress_bar(memory_stats_theme_data['VIRTUAL']['GRAPH'], virtual_percent)
         display_themed_percent_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'], virtual_percent)
-
         display_themed_percent_value(memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'], virtual_percent)
 
         display_themed_value(
@@ -493,14 +461,12 @@ class Memory:
             min_size=5,
             unit=" M"
         )
-
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['FREE'],
             value=int(sensors.Memory.virtual_free() / 1000000),
             min_size=5,
             unit=" M"
         )
-
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['TOTAL'],
             value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1000000),
@@ -520,6 +486,7 @@ class Disk:
         disk_usage_percent = sensors.Disk.disk_usage_percent()
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
         display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
+        display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
 
         display_themed_value(
             theme_data=disk_theme_data['USED']['TEXT'],
@@ -527,16 +494,12 @@ class Disk:
             min_size=5,
             unit=" G"
         )
-
-        display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
-
         display_themed_value(
             theme_data=disk_theme_data['TOTAL']['TEXT'],
             value=int((free + used) / 1000000000),
             min_size=5,
             unit=" G"
         )
-
         display_themed_value(
             theme_data=disk_theme_data['FREE']['TEXT'],
             value=int(free / 1000000000),
@@ -621,14 +584,14 @@ class Custom:
             if custom_stat != "INTERVAL":
 
                 # Load the custom sensor class from sensors_custom.py based on the class name
-                # try:
-                custom_stat_class = getattr(sensors_custom, str(custom_stat))()
-                string_value = custom_stat_class.as_string()
-                numeric_value = custom_stat_class.as_numeric()
-                histo_values = custom_stat_class.as_histo()
-                # except Exception as e:
-                #    logger.error("Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
-                #    return
+                try:
+                    custom_stat_class = getattr(sensors_custom, str(custom_stat))()
+                    string_value = custom_stat_class.as_string()
+                    numeric_value = custom_stat_class.as_numeric()
+                    histo_values = custom_stat_class.as_histo()
+                except Exception as e:
+                    logger.error("Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
+                    return
 
                 if string_value is None:
                     string_value = str(numeric_value)
