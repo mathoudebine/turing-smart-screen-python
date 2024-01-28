@@ -326,7 +326,7 @@ class LcdComm(ABC):
 
         self.DisplayPILImage(bar_image, x, y)
 
-    def DisplayPlotGraph(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
+    def DisplayLineGraph(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                          autoscale: bool = False,
                          values: list[float] = (),
                          line_color: Tuple[int, int, int] = (0, 0, 0),

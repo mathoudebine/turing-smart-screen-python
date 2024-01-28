@@ -10,6 +10,8 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FREQUENCY:
       INTERVAL: 5
       TEXT:
@@ -33,6 +35,8 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FAN_SPEED:
       INTERVAL: 1
       TEXT:
@@ -41,6 +45,8 @@ STATS:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
   GPU:
     INTERVAL: 1
@@ -51,6 +57,8 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     MEMORY_PERCENT:
       GRAPH:
         SHOW: False
@@ -59,11 +67,13 @@ STATS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+      LINE_GRAPH:
+        SHOW: False
     MEMORY_USED:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False      
-    MEMORY:
+        SHOW_UNIT: False
+    MEMORY:  # Deprecated, do not use
       GRAPH:
         SHOW: False
       RADIAL:
@@ -79,6 +89,8 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FPS:
       TEXT:
         SHOW: False
@@ -87,6 +99,8 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FAN_SPEED:
       TEXT:
         SHOW: False
@@ -94,6 +108,8 @@ STATS:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
   MEMORY:
     INTERVAL: 5
