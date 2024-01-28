@@ -28,8 +28,17 @@ import subprocess
 import sys
 import time
 
+MIN_PYTHON = (3, 8)
+if sys.version_info < MIN_PYTHON:
+    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
+
 try:
     import tkinter
+    from PIL import ImageTk
 except:
     print(
         "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
@@ -38,13 +47,6 @@ except:
     except:
         os._exit(0)
 
-MIN_PYTHON = (3, 8)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 if len(sys.argv) != 2:
     print("Usage :")
@@ -57,8 +59,6 @@ if len(sys.argv) != 2:
         sys.exit(0)
     except:
         os._exit(0)
-
-from PIL import ImageTk
 
 import library.log
 
@@ -260,7 +260,7 @@ if __name__ == "__main__":
                  "update automatically")
     # Every time the theme file is modified: reload preview
     while True:
-        if os.path.getmtime(theme_file) > last_edit_time:
+        if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
             logger.debug("The theme file has been updated, the preview window will refresh")
             refresh_theme()
             last_edit_time = os.path.getmtime(theme_file)

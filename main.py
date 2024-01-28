@@ -142,6 +142,9 @@ if __name__ == "__main__":
                 elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
                     logger.info("Computer is resuming from sleep, display will turn on")
                     display.turn_on()
+                    # Some models have troubles displaying back the previous bitmap after being turned off/on
+                    display.display_static_images()
+                    display.display_static_text()
             else:
                 # For any other events, the program will stop
                 logger.info("Program will now exit")

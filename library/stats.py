@@ -579,22 +579,22 @@ class Custom:
                     logger.error("Custom sensor class " + str(custom_stat) + " not found in sensors_custom.py")
                     return
 
-                if not string_value:
+                if string_value is None:
                     string_value = str(numeric_value)
 
                 # Display text
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("TEXT", None)
-                if theme_data and string_value:
+                if theme_data and string_value is not None:
                     display_themed_value(theme_data=theme_data, value=string_value)
 
                 # Display graph from numeric value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("GRAPH", None)
-                if theme_data and not math.isnan(numeric_value):
+                if theme_data and numeric_value is not None and not math.isnan(numeric_value):
                     display_themed_progress_bar(theme_data=theme_data, value=numeric_value)
 
                 # Display radial from numeric and text value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("RADIAL", None)
-                if theme_data and not math.isnan(numeric_value) and string_value:
+                if theme_data and numeric_value is not None and not math.isnan(numeric_value) and string_value is not None:
                     display_themed_radial_bar(
                         theme_data=theme_data,
                         value=numeric_value,
