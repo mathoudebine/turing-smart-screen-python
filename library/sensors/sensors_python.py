@@ -57,6 +57,44 @@ class GpuType(IntEnum):
 DETECTED_GPU = GpuType.UNSUPPORTED
 
 
+# Function inspired of psutil/psutil/_pslinux.py:sensors_fans()
+# Adapted to get fan speed percentage instead of raw value
+def sensors_fans_percent():
+    """Return hardware fans info (for CPU and other peripherals) as a
+    dict including hardware label and current speed.
+
+    Implementation notes:
+    - /sys/class/hwmon looks like the most recent interface to
+      retrieve this info, and this implementation relies on it
+      only (old distros will probably use something else)
+    - lm-sensors on Ubuntu 16.04 relies on /sys/class/hwmon
+    """
+    from psutil._common import bcat, cat, sfan
+    import collections, glob, os
+
+    ret = collections.defaultdict(list)
+    basenames = glob.glob('/sys/class/hwmon/hwmon*/fan*_*')
+    if not basenames:
+        # CentOS has an intermediate /device directory:
+        # https://github.com/giampaolo/psutil/issues/971
+        basenames = glob.glob('/sys/class/hwmon/hwmon*/device/fan*_*')
+
+    basenames = sorted(set([x.split('_')[0] for x in basenames]))
+    for base in basenames:
+        try:
+            current = int(bcat(base + '_input'))
+            max = int(bcat(base + '_max'))
+            min = int(bcat(base + '_min'))
+            percent = int((current - min) / (max - min) * 100)
+        except (IOError, OSError) as err:
+            continue
+        unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
+        label = cat(base + '_label', fallback='').strip()
+        ret[unit_name].append(sfan(label, percent))
+
+    return dict(ret)
+
+
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
@@ -94,7 +132,16 @@ class Cpu(sensors.Cpu):
 
     @staticmethod
     def fan_percent() -> float:
-        # Not supported by Python libraries
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "cpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
         return math.nan
 
 
@@ -188,7 +235,16 @@ class GpuNvidia(sensors.Gpu):
 
     @staticmethod
     def fan_percent() -> float:
-        # Not supported by Python libraries
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "cpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
         return math.nan
 
     @staticmethod
@@ -263,7 +319,16 @@ class GpuAmd(sensors.Gpu):
 
     @staticmethod
     def fan_percent() -> float:
-        # Not supported by Python libraries
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "cpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
         return math.nan
 
     @staticmethod
