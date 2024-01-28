@@ -366,7 +366,7 @@ class LcdComm(ABC):
             trueMin = max_value
             trueMax = min_value
             for value in values:
-                if value >= 0:
+                if not math.isnan(value):
                     if trueMin > value:
                         trueMin = value
                     if trueMax < value:
@@ -384,7 +384,7 @@ class LcdComm(ABC):
         plotsY = []
         count = 0
         for value in values:
-            if value >= 0:
+            if not math.isnan(value):
                 # Don't let the set value exceed our min or max value, this is bad :)                
                 if value < min_value:
                     value = min_value

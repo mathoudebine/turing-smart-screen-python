@@ -220,6 +220,7 @@ def display_themed_plot_graph(theme_data, values):
 
 
 class CPU:
+
     @staticmethod
     def percentage():
         theme_data = config.THEME_DATA['STATS']['CPU']['PERCENTAGE']
@@ -589,8 +590,8 @@ class Custom:
                 # Load the custom sensor class from sensors_custom.py based on the class name
                 try:
                     custom_stat_class = getattr(sensors_custom, str(custom_stat))()
-                    string_value = custom_stat_class.as_string()
                     numeric_value = custom_stat_class.as_numeric()
+                    string_value = custom_stat_class.as_string()
                     last_values = custom_stat_class.last_values()
                 except Exception as e:
                     logger.error("Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))

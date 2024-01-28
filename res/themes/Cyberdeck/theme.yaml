@@ -182,6 +182,29 @@ STATS:
         FONT_COLOR: 248, 177, 51
         #BACKGROUND_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
+    FPS:
+      TEXT:
+        SHOW: True
+        X: 46
+        Y: 279
+        MIN_SIZE: 4
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 27
+        FONT_COLOR: 255, 255, 255
+        #BACKGROUND_COLOR: 100, 100, 100
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: True
+        X: 180
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 82
+        MIN_VALUE: 0
+        MAX_VALUE: 144
+        AUTOSCALE: True
+        LINE_COLOR: 255, 255, 255
+        AXIS: True
+        BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     ETH:
@@ -204,52 +227,4 @@ STATS:
           FONT_SIZE: 10
           FONT_COLOR: 255, 255, 255
           # BACKGROUND_COLOR: 132, 154, 165
-          BACKGROUND_IMAGE: background.png    
-  CUSTOM:
-    INTERVAL: 1
-    RTSSFps:
-      TEXT:
-        SHOW: True
-        X: 46
-        Y: 279
-        MIN_SIZE: 4
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 27
-        FONT_COLOR: 255, 255, 255
-        #BACKGROUND_COLOR: 100, 100, 100
-        BACKGROUND_IMAGE: background.png   
-      LINE_GRAPH:
-        SHOW: True
-        X: 180
-        Y: 220
-        WIDTH: 133
-        HEIGHT: 82
-        MIN_VALUE: 0
-        MAX_VALUE: 144
-        AUTOSCALE: True
-        LINE_COLOR: 255, 255, 255
-        AXIS: True
-        BACKGROUND_IMAGE: background.png           
-    CpuFanPercent:
-      RADIAL:
-        SHOW: True
-        X: 170
-        Y: 130
-        RADIUS: 31
-        WIDTH: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        ANGLE_START: 220
-        ANGLE_END: 220
-        ANGLE_STEPS: 20
-        ANGLE_SEP: 0
-        CLOCKWISE: True
-        BAR_COLOR: 200, 100, 50
-        SHOW_TEXT: True
-        SHOW_UNIT: True
-        FONT: roboto/Roboto-Bold.ttf
-        FONT_SIZE: 15
-        FONT_COLOR: 248, 177, 51
-        #BACKGROUND_COLOR: 200, 200, 200
-        BACKGROUND_IMAGE: background.png
-
+          BACKGROUND_IMAGE: background.png

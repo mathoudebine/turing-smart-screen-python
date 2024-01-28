@@ -93,7 +93,7 @@ STATS:
         WIDTH: 133
         HEIGHT: 70
         MIN_VALUE: 0
-        MAX_VALUE: 50
+        MAX_VALUE: 100
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
         AXIS: True
