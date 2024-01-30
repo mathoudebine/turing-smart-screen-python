@@ -178,6 +178,9 @@ STATS:
           # BACKGROUND_COLOR: 50, 50, 50
           BACKGROUND_IMAGE: background.png
     TEMPERATURE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 5
       TEXT:
         SHOW: False
@@ -238,6 +241,9 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 5
       TEXT:
         SHOW: False
