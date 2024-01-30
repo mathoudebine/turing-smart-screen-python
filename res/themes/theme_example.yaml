@@ -117,6 +117,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 100
+        HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -229,6 +230,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 30
         MAX_VALUE: 120
+        HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -288,6 +290,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 3000
+        HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -351,6 +354,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 100
+        HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -409,6 +413,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 100
+        HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -478,6 +483,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 30
         MAX_VALUE: 120
+        HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -536,6 +542,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 300
+        HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True
@@ -594,6 +601,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 3000
+        HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
         AXIS: True

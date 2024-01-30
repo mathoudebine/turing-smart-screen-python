@@ -35,6 +35,8 @@ import library.config as config
 from library.display import display
 from library.log import logger
 
+DEFAULT_HISTORY_SIZE = 10
+
 ETH_CARD = config.CONFIG_DATA["config"]["ETH"]
 WLO_CARD = config.CONFIG_DATA["config"]["WLO"]
 HW_SENSORS = config.CONFIG_DATA["config"]["HW_SENSORS"]
@@ -220,10 +222,13 @@ def display_themed_line_graph(theme_data, values):
     )
 
 
-def save_last_value(value, last_values: List[float]):
-    # Store the value to the history list that can be used for line graph
+def save_last_value(value: float, last_values: List[float], history_size: int):
+    # Initialize last values list the first time with given size
+    if len(last_values) != history_size:
+        last_values[:] = last_values_list(size=history_size)
+    # Store the value to the list that can then be used for line graph
     last_values.append(value)
-    # Also remove the oldest value from history list
+    # Also remove the oldest value from list
     last_values.pop(0)
 
 
@@ -232,9 +237,9 @@ def last_values_list(size: int) -> List[float]:
 
 
 class CPU:
-    last_values_cpu_percentage = last_values_list(size=10)
-    last_values_cpu_temperature = last_values_list(size=10)
-    last_values_cpu_fan_speed = last_values_list(size=10)
+    last_values_cpu_percentage = []
+    last_values_cpu_temperature = []
+    last_values_cpu_fan_speed = []
 
     @classmethod
     def percentage(cls):
@@ -242,7 +247,8 @@ class CPU:
         cpu_percentage = sensors.Cpu.percentage(
             interval=theme_data.get("INTERVAL", None)
         )
-        save_last_value(cpu_percentage, cls.last_values_cpu_percentage)
+        save_last_value(cpu_percentage, cls.last_values_cpu_percentage,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         # logger.debug(f"CPU Percentage: {cpu_percentage}")
 
         display_themed_progress_bar(theme_data['GRAPH'], cpu_percentage)
@@ -272,7 +278,9 @@ class CPU:
     @classmethod
     def temperature(cls):
         temperature = sensors.Cpu.temperature()
-        save_last_value(temperature, cls.last_values_cpu_temperature)
+        save_last_value(temperature, cls.last_values_cpu_temperature,
+                        config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                           DEFAULT_HISTORY_SIZE))
 
         cpu_temp_text_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT']
         cpu_temp_radial_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['RADIAL']
@@ -297,7 +305,9 @@ class CPU:
     @classmethod
     def fan_speed(cls):
         fan_percent = sensors.Cpu.fan_percent()
-        save_last_value(fan_percent, cls.last_values_cpu_fan_speed)
+        save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
+                        config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                         DEFAULT_HISTORY_SIZE))
 
         cpu_fan_text_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['TEXT']
         cpu_fan_radial_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['RADIAL']
@@ -321,11 +331,11 @@ class CPU:
 
 
 class Gpu:
-    last_values_gpu_percentage = last_values_list(size=10)
-    last_values_gpu_mem_percentage = last_values_list(size=10)
-    last_values_gpu_temperature = last_values_list(size=10)
-    last_values_gpu_fps = last_values_list(size=10)
-    last_values_gpu_fan_speed = last_values_list(size=10)
+    last_values_gpu_percentage = []
+    last_values_gpu_mem_percentage = []
+    last_values_gpu_temperature = []
+    last_values_gpu_fps = []
+    last_values_gpu_fan_speed = []
 
     @classmethod
     def stats(cls):
@@ -333,13 +343,18 @@ class Gpu:
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
 
-        save_last_value(load, cls.last_values_gpu_percentage)
-        save_last_value(memory_percentage, cls.last_values_gpu_mem_percentage)
-        save_last_value(temperature, cls.last_values_gpu_temperature)
-        save_last_value(fps, cls.last_values_gpu_fps)
-        save_last_value(fan_percent, cls.last_values_gpu_fan_speed)
-
         theme_gpu_data = config.THEME_DATA['STATS']['GPU']
+
+        save_last_value(load, cls.last_values_gpu_percentage,
+                        theme_gpu_data['PERCENTAGE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(memory_percentage, cls.last_values_gpu_mem_percentage,
+                        theme_gpu_data['MEMORY_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(temperature, cls.last_values_gpu_temperature,
+                        theme_gpu_data['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(fps, cls.last_values_gpu_fps,
+                        theme_gpu_data['FPS']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(fan_percent, cls.last_values_gpu_fan_speed,
+                        theme_gpu_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
 
         ################################ for backward compatibility only
         gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
@@ -518,19 +533,19 @@ class Memory:
 
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['USED'],
-            value=int(sensors.Memory.virtual_used() / 1024**2),
+            value=int(sensors.Memory.virtual_used() / 1024 ** 2),
             min_size=5,
             unit=" M"
         )
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['FREE'],
-            value=int(sensors.Memory.virtual_free() / 1024**2),
+            value=int(sensors.Memory.virtual_free() / 1024 ** 2),
             min_size=5,
             unit=" M"
         )
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['TOTAL'],
-            value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1024**2),
+            value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1024 ** 2),
             min_size=5,
             unit=" M"
         )

@@ -201,6 +201,7 @@ STATS:
         HEIGHT: 82
         MIN_VALUE: 0
         MAX_VALUE: 144
+        HISTORY_SIZE: 100
         AUTOSCALE: True
         LINE_COLOR: 255, 255, 255
         AXIS: True
