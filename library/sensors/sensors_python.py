@@ -268,11 +268,15 @@ class Memory(sensors.Memory):
 
     @staticmethod
     def virtual_used() -> int:  # In bytes
-        return psutil.virtual_memory().used
+        # Do not use psutil.virtual_memory().used: from https://psutil.readthedocs.io/en/latest/#memory
+        # "It is calculated differently depending on the platform and designed for informational purposes only"
+        return psutil.virtual_memory().total - psutil.virtual_memory().available
 
     @staticmethod
     def virtual_free() -> int:  # In bytes
-        return psutil.virtual_memory().free
+        # Do not use psutil.virtual_memory().free: from https://psutil.readthedocs.io/en/latest/#memory
+        # "note that this doesn’t reflect the actual memory available (use available instead)."
+        return psutil.virtual_memory().available
 
 
 class Disk(sensors.Disk):
