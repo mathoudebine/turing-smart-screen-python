@@ -6,7 +6,7 @@ psutil~=5.9.8         # CPU / disk / network metrics
 pystray~=0.19.5       # Tray icon (all OS)
 babel~=2.14.0         # Date/time formatting
 ruamel.yaml~=0.18.5  # For configuration editor
-sv-ttk~=2.5.5         # Tk Sun Valley theme for configuration editor
+sv-ttk~=2.6.0         # Tk Sun Valley theme for configuration editor
 
 # Efficient image serialization
 numpy~=1.24.4; python_version < "3.9"   # For Python 3.8 max.
