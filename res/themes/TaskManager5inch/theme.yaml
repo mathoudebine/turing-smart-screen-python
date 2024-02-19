@@ -1,0 +1,348 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 255, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 480
+
+static_text:
+  CPU_MODEL:
+    TEXT: Core I9 I10900K
+    X: 515
+    Y: 20
+    FONT: roboto-mono/RobotoMono-Regular.ttf
+    FONT_SIZE: 28
+    FONT_COLOR: 0, 0, 0
+    BACKGROUND_IMAGE: background.png
+  GPU_MODEL:
+    TEXT: RTX3080TI
+    X: 163
+    Y: 411
+    FONT: roboto-mono/RobotoMono-Regular.ttf
+    FONT_SIZE: 20
+    FONT_COLOR: 0, 0, 0
+    BACKGROUND_IMAGE: background.png
+  UP:
+    TEXT: UP
+    X: 162
+    Y: 324
+    FONT: roboto-mono/RobotoMono-Regular.ttf
+    FONT_SIZE: 20
+    FONT_COLOR: 0, 0, 0
+    BACKGROUND_IMAGE: background.png
+  DOWN:
+    TEXT: DN
+    X: 162
+    Y: 346
+    FONT: roboto-mono/RobotoMono-Regular.ttf
+    FONT_SIZE: 20
+    FONT_COLOR: 0, 0, 0
+    BACKGROUND_IMAGE: background.png
+  TEMP:
+    TEXT: "T°"
+    X: 217
+    Y: 27
+    FONT: roboto-mono/RobotoMono-Light.ttf
+    FONT_SIZE: 22
+    FONT_COLOR: 0, 0, 0
+    BACKGROUND_IMAGE: background.png
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      LINE_GRAPH:
+        SHOW: True
+        X: 387
+        Y: 94
+        WIDTH: 385
+        HEIGHT: 238
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 60
+        AUTOSCALE: False
+        LINE_COLOR: 0, 128, 192
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 722
+        Y: 63
+        FONT: roboto-mono/RobotoMono-Light.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      LINE_GRAPH:
+        SHOW: True
+        X: 20
+        Y: 20
+        WIDTH: 126
+        HEIGHT: 70
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        HISTORY_SIZE: 20
+        AUTOSCALE: True
+        LINE_COLOR: 0, 128, 192
+        AXIS: False
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 152
+        Y: 65
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 616
+        Y: 442
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 602
+        Y: 379
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        # BACKGROUND_COLOR: 132, 152, 165
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      LINE_GRAPH:
+        SHOW: True
+        X: 20
+        Y: 381
+        WIDTH: 126
+        HEIGHT: 69
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        AUTOSCALE: False
+        LINE_COLOR: 0, 64, 128
+        AXIS: False
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 152
+        Y: 436
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    MEMORY_PERCENT:
+      LINE_GRAPH:
+        SHOW: False
+        X: 0
+        Y: 0
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      LINE_GRAPH:
+        SHOW: False
+        X: 0
+        Y: 0
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        HISTORY_SIZE: 20
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FPS:
+      LINE_GRAPH:
+        SHOW: False
+        X: 0
+        Y: 0
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 300
+        HISTORY_SIZE: 20
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      LINE_GRAPH:
+        SHOW: False
+        X: 0
+        Y: 0
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 3000
+        HISTORY_SIZE: 20
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      LINE_GRAPH:
+        SHOW: True
+        X: 20
+        Y: 110
+        WIDTH: 126
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        AUTOSCALE: False
+        LINE_COLOR: 255, 128, 255
+        AXIS: False
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 152
+        Y: 155
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 220
+        Y: 155
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      LINE_GRAPH:
+        SHOW: True
+        X: 20
+        Y: 200
+        WIDTH: 126
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 20
+        AUTOSCALE: False
+        LINE_COLOR: 0, 255, 0
+        AXIS: False
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 152
+        Y: 245
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    ETH:
+      DOWNLOAD:
+        LINE_GRAPH:
+          SHOW: True
+          X: 20
+          Y: 290
+          WIDTH: 126
+          HEIGHT: 70
+          MIN_VALUE: 0
+          MAX_VALUE: 99999999999
+          HISTORY_SIZE: 20
+          AUTOSCALE: True
+          LINE_COLOR: 128, 0, 0
+          AXIS: False
+          AXIS_COLOR: 255, 135, 0
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+        TEXT:
+          SHOW: True
+          SHOW_UNIT: True
+          X: 202
+          Y: 324
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          SHOW_UNIT: True
+          X: 202
+          Y: 346
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        FORMAT: medium
+        SHOW: True
+        X: 388
+        Y: 412
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 0, 0, 0
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 388
+        Y: 380
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 0, 0, 0
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
