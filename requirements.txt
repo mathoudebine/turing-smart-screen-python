@@ -5,7 +5,7 @@ PyYAML~=6.0.1         # For themes files
 psutil~=5.9.8         # CPU / disk / network metrics
 pystray~=0.19.5       # Tray icon (all OS)
 babel~=2.14.0         # Date/time formatting
-ruamel.yaml~=0.18.5  # For configuration editor
+ruamel.yaml~=0.18.6  # For configuration editor
 sv-ttk~=2.6.0         # Tk Sun Valley theme for configuration editor
 
 # Efficient image serialization
