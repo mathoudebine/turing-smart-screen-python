@@ -14,13 +14,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-import math
+
 # This file allows to add custom data source as sensors and display them in System Monitor themes
 # There is no limitation on how much custom data source classes can be added to this file
 # See CustomDataExample theme for the theme implementation part
 
+import math
 import platform
-import random
 from abc import ABC, abstractmethod
 from typing import List
 
