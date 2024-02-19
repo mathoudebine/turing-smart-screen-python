@@ -51,12 +51,12 @@ class Cpu(sensors.Cpu):
         return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
-    def is_temperature_available() -> bool:
-        return True
-
-    @staticmethod
     def temperature() -> float:
         return TEMPERATURE_SENSOR_VALUE
+
+    @staticmethod
+    def fan_percent() -> float:
+        return PERCENTAGE_SENSOR_VALUE
 
 
 class Gpu(sensors.Gpu):
@@ -68,6 +68,10 @@ class Gpu(sensors.Gpu):
     @staticmethod
     def fps() -> int:
         return GPU_FPS
+
+    @staticmethod
+    def fan_percent() -> float:
+        return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def is_available() -> bool:

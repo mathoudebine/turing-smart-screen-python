@@ -57,6 +57,44 @@ class GpuType(IntEnum):
 DETECTED_GPU = GpuType.UNSUPPORTED
 
 
+# Function inspired of psutil/psutil/_pslinux.py:sensors_fans()
+# Adapted to get fan speed percentage instead of raw value
+def sensors_fans_percent():
+    """Return hardware fans info (for CPU and other peripherals) as a
+    dict including hardware label and current speed.
+
+    Implementation notes:
+    - /sys/class/hwmon looks like the most recent interface to
+      retrieve this info, and this implementation relies on it
+      only (old distros will probably use something else)
+    - lm-sensors on Ubuntu 16.04 relies on /sys/class/hwmon
+    """
+    from psutil._common import bcat, cat, sfan
+    import collections, glob, os
+
+    ret = collections.defaultdict(list)
+    basenames = glob.glob('/sys/class/hwmon/hwmon*/fan*_*')
+    if not basenames:
+        # CentOS has an intermediate /device directory:
+        # https://github.com/giampaolo/psutil/issues/971
+        basenames = glob.glob('/sys/class/hwmon/hwmon*/device/fan*_*')
+
+    basenames = sorted(set([x.split('_')[0] for x in basenames]))
+    for base in basenames:
+        try:
+            current = int(bcat(base + '_input'))
+            max = int(bcat(base + '_max'))
+            min = int(bcat(base + '_min'))
+            percent = int((current - min) / (max - min) * 100)
+        except (IOError, OSError) as err:
+            continue
+        unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
+        label = cat(base + '_label', fallback='').strip()
+        ret[unit_name].append(sfan(label, percent))
+
+    return dict(ret)
+
+
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
@@ -71,34 +109,40 @@ class Cpu(sensors.Cpu):
         return psutil.getloadavg()
 
     @staticmethod
-    def is_temperature_available() -> bool:
+    def temperature() -> float:
+        cpu_temp = math.nan
         try:
             sensors_temps = psutil.sensors_temperatures()
-            if 'coretemp' in sensors_temps or 'k10temp' in sensors_temps or 'cpu_thermal' in sensors_temps or 'zenpower' in sensors_temps:
-                return True
-            else:
-                return False
-        except AttributeError:
-            # sensors_temperatures may not be available at all
-            return False
+            if 'coretemp' in sensors_temps:
+                # Intel CPU
+                cpu_temp = sensors_temps['coretemp'][0].current
+            elif 'k10temp' in sensors_temps:
+                # AMD CPU
+                cpu_temp = sensors_temps['k10temp'][0].current
+            elif 'cpu_thermal' in sensors_temps:
+                # ARM CPU
+                cpu_temp = sensors_temps['cpu_thermal'][0].current
+            elif 'zenpower' in sensors_temps:
+                # AMD CPU with zenpower (k10temp is in blacklist)
+                cpu_temp = sensors_temps['zenpower'][0].current
+        except:
+            # psutil.sensors_temperatures not available on Windows / MacOS
+            pass
+        return cpu_temp
 
     @staticmethod
-    def temperature() -> float:
-        cpu_temp = 0
-        sensors_temps = psutil.sensors_temperatures()
-        if 'coretemp' in sensors_temps:
-            # Intel CPU
-            cpu_temp = sensors_temps['coretemp'][0].current
-        elif 'k10temp' in sensors_temps:
-            # AMD CPU
-            cpu_temp = sensors_temps['k10temp'][0].current
-        elif 'cpu_thermal' in sensors_temps:
-            # ARM CPU
-            cpu_temp = sensors_temps['cpu_thermal'][0].current
-        elif 'zenpower' in sensors_temps:
-            # AMD CPU with zenpower (k10temp is in blacklist)
-            cpu_temp = sensors_temps['zenpower'][0].current
-        return cpu_temp
+    def fan_percent() -> float:
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "cpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
+        return math.nan
 
 
 class Gpu(sensors.Gpu):
@@ -114,8 +158,23 @@ class Gpu(sensors.Gpu):
 
     @staticmethod
     def fps() -> int:
-        # Not supported by Python libraries
-        return -1
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.fps()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.fps()
+        else:
+            return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.fan_percent()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.fan_percent()
+        else:
+            return math.nan
 
     @staticmethod
     def is_available() -> bool:
@@ -173,6 +232,20 @@ class GpuNvidia(sensors.Gpu):
     def fps() -> int:
         # Not supported by Python libraries
         return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "gpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
+        return math.nan
 
     @staticmethod
     def is_available() -> bool:
@@ -243,6 +316,20 @@ class GpuAmd(sensors.Gpu):
     def fps() -> int:
         # Not supported by Python libraries
         return -1
+
+    @staticmethod
+    def fan_percent() -> float:
+        try:
+            fans = sensors_fans_percent()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if "gpu" in (entry.label or name):
+                            return entry.current
+        except:
+            pass
+
+        return math.nan
 
     @staticmethod
     def is_available() -> bool:

@@ -39,12 +39,12 @@ class Cpu(sensors.Cpu):
         return random.uniform(0, 100), random.uniform(0, 100), random.uniform(0, 100)
 
     @staticmethod
-    def is_temperature_available() -> bool:
-        return True
-
-    @staticmethod
     def temperature() -> float:
         return random.uniform(30, 90)
+
+    @staticmethod
+    def fan_percent() -> float:
+        return random.uniform(0, 100)
 
 
 class Gpu(sensors.Gpu):
@@ -55,6 +55,10 @@ class Gpu(sensors.Gpu):
     @staticmethod
     def fps() -> int:
         return random.randint(20, 120)
+
+    @staticmethod
+    def fan_percent() -> float:
+        return random.uniform(0, 100)
 
     @staticmethod
     def is_available() -> bool:

@@ -200,10 +200,8 @@ if __name__ == "__main__":
     scheduler.CPUPercentage()
     scheduler.CPUFrequency()
     scheduler.CPULoad()
-    if stats.CPU.is_temperature_available():
-        scheduler.CPUTemperature()
-    else:
-        logger.warning("Your CPU temperature is not supported yet")
+    scheduler.CPUTemperature()
+    scheduler.CPUFanSpeed()
     if stats.Gpu.is_available():
         scheduler.GpuStats()
     scheduler.MemoryStats()

@@ -10,6 +10,8 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FREQUENCY:
       INTERVAL: 5
       TEXT:
@@ -29,6 +31,23 @@ STATS:
       INTERVAL: 5
       TEXT:
         SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FAN_SPEED:
+      INTERVAL: 1
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
   GPU:
     INTERVAL: 1
     PERCENTAGE:
@@ -38,7 +57,23 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
-    MEMORY:
+      LINE_GRAPH:
+        SHOW: False
+    MEMORY_PERCENT:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      LINE_GRAPH:
+        SHOW: False
+    MEMORY_USED:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+    MEMORY:  # Deprecated, do not use
       GRAPH:
         SHOW: False
       RADIAL:
@@ -50,10 +85,32 @@ STATS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     FPS:
       TEXT:
         SHOW: False
         SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FAN_SPEED:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
   MEMORY:
     INTERVAL: 5
     SWAP:
@@ -61,10 +118,14 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     VIRTUAL:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
       USED:
         SHOW: False
@@ -84,6 +145,8 @@ STATS:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
       TEXT:
         SHOW: False
@@ -105,11 +168,15 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: False
+        LINE_GRAPH:
+          SHOW: False
       UPLOADED:
         TEXT:
           SHOW: False
       DOWNLOAD:
         TEXT:
+          SHOW: False
+        LINE_GRAPH:
           SHOW: False
       DOWNLOADED:
         TEXT:
@@ -118,11 +185,15 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: False
+        LINE_GRAPH:
+          SHOW: False
       UPLOADED:
         TEXT:
           SHOW: False
       DOWNLOAD:
         TEXT:
+          SHOW: False
+        LINE_GRAPH:
           SHOW: False
       DOWNLOADED:
         TEXT:

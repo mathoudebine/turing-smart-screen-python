@@ -65,10 +65,11 @@ handle = Hardware.Computer()
 handle.IsCpuEnabled = True
 handle.IsGpuEnabled = True
 handle.IsMemoryEnabled = True
-handle.IsMotherboardEnabled = False
-handle.IsControllerEnabled = False
+handle.IsMotherboardEnabled = True  # For CPU Fan Speed
+handle.IsControllerEnabled = True  # For CPU Fan Speed
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
+handle.IsPsuEnabled = False
 handle.Open()
 for hardware in handle.Hardware:
     if hardware.HardwareType == Hardware.HardwareType.Cpu:
@@ -90,7 +91,7 @@ for hardware in handle.Hardware:
 def get_hw_and_update(hwtype: Hardware.HardwareType, name: str = None) -> Hardware.Hardware:
     for hardware in handle.Hardware:
         if hardware.HardwareType == hwtype:
-            if (name and hardware.Name == name) or not name:
+            if (name and hardware.Name == name) or name is None:
                 hardware.Update()
                 return hardware
     return None
@@ -132,7 +133,7 @@ def get_gpu_name() -> str:
 
         logger.warning(
             "Found %d GPUs on your system (%d AMD / %d Nvidia / %d Intel). Auto identify which GPU to use." % (
-            len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
+                len(hw_gpus), amd_gpus, nvidia_gpus, intel_gpus))
 
         if nvidia_gpus >= 1:
             # One (or more) Nvidia GPU: use first available for stats
@@ -205,16 +206,6 @@ class Cpu(sensors.Cpu):
         return psutil.getloadavg()
 
     @staticmethod
-    def is_temperature_available() -> bool:
-        cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
-        for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Temperature:
-                if str(sensor.Name).startswith("Core") or str(sensor.Name).startswith("CPU Package"):
-                    return True
-
-        return False
-
-    @staticmethod
     def temperature() -> float:
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
         # By default, the average temperature of all CPU cores will be used
@@ -236,6 +227,19 @@ class Cpu(sensors.Cpu):
 
         return math.nan
 
+    @staticmethod
+    def fan_percent() -> float:
+        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
+        for sh in mb.SubHardware:
+            sh.Update()
+            for sensor in sh.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(
+                        sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
+                    return float(sensor.Value)
+
+        # No Fan Speed sensor for this CPU model
+        return math.nan
+
 
 class Gpu(sensors.Gpu):
     # GPU to use is detected once, and its name is saved for future sensors readings
@@ -244,13 +248,20 @@ class Gpu(sensors.Gpu):
     # Latest FPS value is backed up in case next reading returns no value
     prev_fps = 0
 
+    # Get GPU to use for sensors, and update it
     @classmethod
-    def stats(cls) -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def get_gpu_to_use(cls):
         gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuAmd, cls.gpu_name)
         if gpu_to_use is None:
             gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuNvidia, cls.gpu_name)
         if gpu_to_use is None:
             gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuIntel, cls.gpu_name)
+
+        return gpu_to_use
+
+    @classmethod
+    def stats(cls) -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+        gpu_to_use = cls.get_gpu_to_use()
         if gpu_to_use is None:
             # GPU not supported
             return math.nan, math.nan, math.nan, math.nan
@@ -279,11 +290,7 @@ class Gpu(sensors.Gpu):
 
     @classmethod
     def fps(cls) -> int:
-        gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuAmd, cls.gpu_name)
-        if gpu_to_use is None:
-            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuNvidia, cls.gpu_name)
-        if gpu_to_use is None:
-            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuIntel, cls.gpu_name)
+        gpu_to_use = cls.get_gpu_to_use()
         if gpu_to_use is None:
             # GPU not supported
             return -1
@@ -297,6 +304,20 @@ class Gpu(sensors.Gpu):
 
         # No FPS sensor for this GPU model
         return -1
+
+    @classmethod
+    def fan_percent(cls) -> float:
+        gpu_to_use = cls.get_gpu_to_use()
+        if gpu_to_use is None:
+            # GPU not supported
+            return math.nan
+
+        for sensor in gpu_to_use.Sensors:
+            if sensor.SensorType == Hardware.SensorType.Control:
+                return float(sensor.Value)
+
+        # No Fan Speed sensor for this GPU model
+        return math.nan
 
     @classmethod
     def is_available(cls) -> bool:
