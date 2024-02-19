@@ -518,18 +518,27 @@ class Gpu:
 
 
 class Memory:
-    @staticmethod
-    def stats():
+    last_values_memory_swap = []
+    last_values_memory_virtual = []
+
+    @classmethod
+    def stats(cls):
         memory_stats_theme_data = config.THEME_DATA['STATS']['MEMORY']
 
         swap_percent = sensors.Memory.swap_percent()
+        save_last_value(swap_percent, cls.last_values_memory_swap,
+                        memory_stats_theme_data['SWAP']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(memory_stats_theme_data['SWAP']['GRAPH'], swap_percent)
         display_themed_percent_radial_bar(memory_stats_theme_data['SWAP']['RADIAL'], swap_percent)
+        display_themed_line_graph(memory_stats_theme_data['SWAP']['LINE_GRAPH'], cls.last_values_memory_swap)
 
         virtual_percent = sensors.Memory.virtual_percent()
+        save_last_value(virtual_percent, cls.last_values_memory_virtual,
+                        memory_stats_theme_data['VIRTUAL']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(memory_stats_theme_data['VIRTUAL']['GRAPH'], virtual_percent)
         display_themed_percent_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'], virtual_percent)
         display_themed_percent_value(memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'], virtual_percent)
+        display_themed_line_graph(memory_stats_theme_data['VIRTUAL']['LINE_GRAPH'], cls.last_values_memory_virtual)
 
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['USED'],
@@ -552,17 +561,22 @@ class Memory:
 
 
 class Disk:
-    @staticmethod
-    def stats():
+    last_values_disk_usage = []
+
+    @classmethod
+    def stats(cls):
         used = sensors.Disk.disk_used()
         free = sensors.Disk.disk_free()
 
         disk_theme_data = config.THEME_DATA['STATS']['DISK']
 
         disk_usage_percent = sensors.Disk.disk_usage_percent()
+        save_last_value(disk_usage_percent, cls.last_values_disk_usage,
+                        disk_theme_data['USED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
         display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
         display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
+        display_themed_line_graph(disk_theme_data['USED']['LINE_GRAPH'], cls.last_values_disk_usage)
 
         display_themed_value(
             theme_data=disk_theme_data['USED']['TEXT'],
@@ -585,25 +599,42 @@ class Disk:
 
 
 class Net:
-    @staticmethod
-    def stats():
-        interval = config.THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)
-        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
-        net_theme_data = config.THEME_DATA['STATS']['NET']
+    last_values_wlo_upload = []
+    last_values_wlo_download = []
+    last_values_eth_upload = []
+    last_values_eth_download = []
 
+    @classmethod
+    def stats(cls):
+        net_theme_data = config.THEME_DATA['STATS']['NET']
+        interval = net_theme_data.get("INTERVAL", None)
+        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
+
+        save_last_value(upload_wlo, cls.last_values_wlo_upload,
+                        net_theme_data['WLO']['UPLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['WLO']['UPLOAD']['TEXT'], upload_wlo)
         Net._show_themed_total_data(net_theme_data['WLO']['UPLOADED']['TEXT'], uploaded_wlo)
+        display_themed_line_graph(net_theme_data['WLO']['UPLOAD']['LINE_GRAPH'], cls.last_values_wlo_upload)
 
+        save_last_value(download_wlo, cls.last_values_wlo_download,
+                        net_theme_data['WLO']['DOWNLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['WLO']['DOWNLOAD']['TEXT'], download_wlo)
         Net._show_themed_total_data(net_theme_data['WLO']['DOWNLOADED']['TEXT'], downloaded_wlo)
+        display_themed_line_graph(net_theme_data['WLO']['DOWNLOAD']['LINE_GRAPH'], cls.last_values_wlo_download)
 
         upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(ETH_CARD, interval)
 
+        save_last_value(upload_eth, cls.last_values_eth_upload,
+                        net_theme_data['ETH']['UPLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['ETH']['UPLOAD']['TEXT'], upload_eth)
         Net._show_themed_total_data(net_theme_data['ETH']['UPLOADED']['TEXT'], uploaded_eth)
+        display_themed_line_graph(net_theme_data['ETH']['UPLOAD']['LINE_GRAPH'], cls.last_values_eth_upload)
 
+        save_last_value(download_eth, cls.last_values_eth_download,
+                        net_theme_data['ETH']['DOWNLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['ETH']['DOWNLOAD']['TEXT'], download_eth)
         Net._show_themed_total_data(net_theme_data['ETH']['DOWNLOADED']['TEXT'], downloaded_eth)
+        display_themed_line_graph(net_theme_data['ETH']['DOWNLOAD']['LINE_GRAPH'], cls.last_values_eth_download)
 
     @staticmethod
     def _show_themed_total_data(theme_data, amount):

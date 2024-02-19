@@ -113,8 +113,8 @@ def CPUTemperature():
 @async_job("CPU_FanSpeed")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS']['CPU']['FAN_SPEED'].get("INTERVAL", None)).total_seconds())
 def CPUFanSpeed():
-    """ Refresh the CPU Temperature """
-    # logger.debug("Refresh CPU Temperature")
+    """ Refresh the CPU Fan Speed """
+    # logger.debug("Refresh CPU Fan Speed")
     stats.CPU.fan_speed()
 
 

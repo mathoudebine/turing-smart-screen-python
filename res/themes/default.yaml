@@ -118,10 +118,14 @@ STATS:
         SHOW: False
       RADIAL:
         SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     VIRTUAL:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
       USED:
         SHOW: False
@@ -141,6 +145,8 @@ STATS:
       GRAPH:
         SHOW: False
       RADIAL:
+        SHOW: False
+      LINE_GRAPH:
         SHOW: False
       TEXT:
         SHOW: False
@@ -162,11 +168,15 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: False
+        LINE_GRAPH:
+          SHOW: False
       UPLOADED:
         TEXT:
           SHOW: False
       DOWNLOAD:
         TEXT:
+          SHOW: False
+        LINE_GRAPH:
           SHOW: False
       DOWNLOADED:
         TEXT:
@@ -175,11 +185,15 @@ STATS:
       UPLOAD:
         TEXT:
           SHOW: False
+        LINE_GRAPH:
+          SHOW: False
       UPLOADED:
         TEXT:
           SHOW: False
       DOWNLOAD:
         TEXT:
+          SHOW: False
+        LINE_GRAPH:
           SHOW: False
       DOWNLOADED:
         TEXT:

@@ -653,6 +653,21 @@ STATS:
         FONT_COLOR: 200, 200, 200
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        HISTORY_SIZE: 10
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
     VIRTUAL:
       GRAPH:
         SHOW: False
@@ -685,6 +700,21 @@ STATS:
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        HISTORY_SIZE: 10
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       USED:
@@ -763,6 +793,21 @@ STATS:
         FONT_COLOR: 200, 200, 200
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: False
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 30
+        MAX_VALUE: 120
+        HISTORY_SIZE: 10
+        AUTOSCALE: True
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: False
         SHOW_UNIT: True
@@ -818,6 +863,21 @@ STATS:
           FONT_COLOR: 255, 255, 255
           # BACKGROUND_COLOR: 132, 154, 165
           BACKGROUND_IMAGE: background.png
+        LINE_GRAPH:
+          SHOW: False
+          X: 300
+          Y: 220
+          WIDTH: 133
+          HEIGHT: 70
+          MIN_VALUE: 30
+          MAX_VALUE: 120
+          HISTORY_SIZE: 10
+          AUTOSCALE: True
+          LINE_COLOR: 61, 184, 225
+          AXIS: True
+          AXIS_COLOR: 255, 135, 0
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: FALSE
@@ -837,6 +897,21 @@ STATS:
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
           # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+        LINE_GRAPH:
+          SHOW: False
+          X: 300
+          Y: 220
+          WIDTH: 133
+          HEIGHT: 70
+          MIN_VALUE: 30
+          MAX_VALUE: 120
+          HISTORY_SIZE: 10
+          AUTOSCALE: True
+          LINE_COLOR: 61, 184, 225
+          AXIS: True
+          AXIS_COLOR: 255, 135, 0
+          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
@@ -859,6 +934,21 @@ STATS:
           FONT_COLOR: 255, 255, 255
           # BACKGROUND_COLOR: 132, 154, 165
           BACKGROUND_IMAGE: background.png
+        LINE_GRAPH:
+          SHOW: False
+          X: 300
+          Y: 220
+          WIDTH: 133
+          HEIGHT: 70
+          MIN_VALUE: 30
+          MAX_VALUE: 120
+          HISTORY_SIZE: 10
+          AUTOSCALE: True
+          LINE_COLOR: 61, 184, 225
+          AXIS: True
+          AXIS_COLOR: 255, 135, 0
+          # BACKGROUND_COLOR: 0, 0, 0
+          BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: FALSE
@@ -878,6 +968,21 @@ STATS:
           FONT_SIZE: 23
           FONT_COLOR: 255, 255, 255
           # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+        LINE_GRAPH:
+          SHOW: False
+          X: 300
+          Y: 220
+          WIDTH: 133
+          HEIGHT: 70
+          MIN_VALUE: 30
+          MAX_VALUE: 120
+          HISTORY_SIZE: 10
+          AUTOSCALE: True
+          LINE_COLOR: 61, 184, 225
+          AXIS: True
+          AXIS_COLOR: 255, 135, 0
+          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:

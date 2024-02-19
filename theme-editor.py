@@ -105,6 +105,7 @@ def refresh_theme():
     stats.CPU.frequency()
     stats.CPU.load()
     stats.CPU.temperature()
+    stats.CPU.fan_speed()
     stats.Gpu.stats()
     stats.Memory.stats()
     stats.Disk.stats()
@@ -197,9 +198,6 @@ if __name__ == "__main__":
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
-    # Load theme file and generate first preview
-    refresh_theme()
-
     logger.debug("Starting Theme Editor...")
 
     # Get theme file to edit
@@ -216,6 +214,9 @@ if __name__ == "__main__":
         os.startfile(".\\" + theme_file)
     else:  # linux variants
         subprocess.call(('xdg-open', "./" + theme_file))
+
+    # Load theme file and generate first preview
+    refresh_theme()
 
     # Create preview window
     logger.debug("Opening theme preview window with static data")
