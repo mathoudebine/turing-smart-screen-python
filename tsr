@@ -1,0 +1,17 @@
+#!/bin/sh
+
+case "$1" in
+   "simple-program")
+     python3 /app/configure.py
+   ;;
+   "configure")
+     python3 /app/configure.py
+   ;;
+   "theme-editor")
+     python3 /app/theme-editor.py
+   ;;
+   *)
+     python3 /app/main.py
+   ;;
+esac
+
