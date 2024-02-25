@@ -82,14 +82,20 @@ def sensors_fans_percent():
     basenames = sorted(set([x.split('_')[0] for x in basenames]))
     for base in basenames:
         try:
-            current = int(bcat(base + '_input'))
-            max = int(bcat(base + '_max'))
-            min = int(bcat(base + '_min'))
-            percent = int((current - min) / (max - min) * 100)
+            current_rpm = int(bcat(base + '_input'))
+            try:
+                max_rpm = int(bcat(base + '_max'))
+            except:
+                max_rpm = 3000  # Approximated: max fan speed is 3000 RPM
+            try:
+                min_rpm = int(bcat(base + '_min'))
+            except:
+                min_rpm = 0  # Approximated: min fan speed is 0 RPM
+            percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
         except (IOError, OSError) as err:
             continue
         unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
-        label = cat(base + '_label', fallback='').strip()
+        label = cat(base + '_label', fallback=os.path.basename(base)).strip()
         ret[unit_name].append(sfan(label, percent))
 
     return dict(ret)
