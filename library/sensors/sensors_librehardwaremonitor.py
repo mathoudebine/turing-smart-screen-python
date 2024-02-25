@@ -230,12 +230,15 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def fan_percent() -> float:
         mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
-        for sh in mb.SubHardware:
-            sh.Update()
-            for sensor in sh.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(
-                        sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
-                    return float(sensor.Value)
+        try:
+            for sh in mb.SubHardware:
+                sh.Update()
+                for sensor in sh.Sensors:
+                    if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(
+                            sensor.Name):  # Is Motherboard #2 Fan always the CPU Fan ?
+                        return float(sensor.Value)
+        except:
+            pass
 
         # No Fan Speed sensor for this CPU model
         return math.nan
@@ -274,10 +277,15 @@ class Gpu(sensors.Gpu):
         for sensor in gpu_to_use.Sensors:
             if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("GPU Core"):
                 load = float(sensor.Value)
+            elif sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("D3D 3D") and math.isnan(
+                    load):
+                # Only use D3D usage if global "GPU Core" sensor is not available, because it is less
+                # precise and does not cover the entire GPU: https://www.hwinfo.com/forum/threads/what-is-d3d-usage.759/
+                load = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Used"):
                 used_mem = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith(
-                    "D3D Dedicated Memory Used") and math.isnan(used_mem):
+                    "D3D") and str(sensor.Name).endswith("Memory Used") and math.isnan(used_mem):
                 # Only use D3D memory usage if global "GPU Memory Used" sensor is not available, because it is less
                 # precise and does not cover the entire GPU: https://www.hwinfo.com/forum/threads/what-is-d3d-usage.759/
                 used_mem = float(sensor.Value)
@@ -312,9 +320,12 @@ class Gpu(sensors.Gpu):
             # GPU not supported
             return math.nan
 
-        for sensor in gpu_to_use.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Control:
-                return float(sensor.Value)
+        try:
+            for sensor in gpu_to_use.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Control:
+                    return float(sensor.Value)
+        except:
+            pass
 
         # No Fan Speed sensor for this GPU model
         return math.nan
