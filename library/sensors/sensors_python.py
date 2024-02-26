@@ -177,6 +177,16 @@ class Gpu(sensors.Gpu):
             return math.nan
 
     @staticmethod
+    def frequency() -> float:
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.frequency()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.frequency()
+        else:
+            return math.nan
+
+    @staticmethod
     def is_available() -> bool:
         global DETECTED_GPU
         if GpuAmd.is_available():
@@ -245,6 +255,11 @@ class GpuNvidia(sensors.Gpu):
         except:
             pass
 
+        return math.nan
+
+    @staticmethod
+    def frequency() -> float:
+        # Not supported by Python libraries
         return math.nan
 
     @staticmethod
@@ -329,6 +344,11 @@ class GpuAmd(sensors.Gpu):
         except:
             pass
 
+        return math.nan
+
+    @staticmethod
+    def frequency() -> float:
+        # Not supported by Python libraries
         return math.nan
 
     @staticmethod

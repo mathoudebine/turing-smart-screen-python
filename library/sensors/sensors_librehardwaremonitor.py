@@ -331,6 +331,23 @@ class Gpu(sensors.Gpu):
         return math.nan
 
     @classmethod
+    def frequency(cls) -> float:
+        gpu_to_use = cls.get_gpu_to_use()
+        if gpu_to_use is None:
+            # GPU not supported
+            return math.nan
+
+        try:
+            for sensor in gpu_to_use.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Control:
+                    pass
+        except:
+            pass
+
+        # No Frequency sensor for this GPU model
+        return math.nan
+
+    @classmethod
     def is_available(cls) -> bool:
         cls.gpu_name = get_gpu_name()
         return bool(cls.gpu_name)
