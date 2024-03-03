@@ -323,7 +323,8 @@ class Gpu(sensors.Gpu):
         try:
             for sensor in gpu_to_use.Sensors:
                 if sensor.SensorType == Hardware.SensorType.Control:
-                    return float(sensor.Value)
+                    if sensor.Value:
+                        return float(sensor.Value)
         except:
             pass
 
@@ -339,8 +340,11 @@ class Gpu(sensors.Gpu):
 
         try:
             for sensor in gpu_to_use.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Control:
-                    pass
+                if sensor.SensorType == Hardware.SensorType.Clock:
+                    # Keep only real core clocks, ignore effective core clocks
+                    if "Core" in str(sensor.Name) and "Effective" not in str(sensor.Name):
+                        if sensor.Value:
+                            return float(sensor.Value)
         except:
             pass
 
