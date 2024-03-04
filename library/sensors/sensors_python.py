@@ -275,6 +275,7 @@ class GpuAmd(sensors.Gpu):
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
+            pyamdgpuinfo.detect_gpus()
             amd_gpu = pyamdgpuinfo.get_gpu(0)
 
             try:
@@ -345,6 +346,7 @@ class GpuAmd(sensors.Gpu):
     @staticmethod
     def frequency() -> float:
         if pyamdgpuinfo:
+            pyamdgpuinfo.detect_gpus()
             return pyamdgpuinfo.get_gpu(0).query_sclk() / 1000000
         elif pyadl:
             return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentEngineClock()
