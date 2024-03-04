@@ -325,12 +325,18 @@ class GpuAmd(sensors.Gpu):
     @staticmethod
     def fan_percent() -> float:
         try:
+            # Try with psutil fans
             fans = sensors_fans_percent()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
                         if "gpu" in (entry.label or name):
                             return entry.current
+
+            # Try with pyadl if psutil did not find GPU fan
+            if pyadl:
+                return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentFanSpeed(
+                    pyadl.ADL_DEVICE_FAN_SPEED_TYPE_PERCENTAGE)
         except:
             pass
 
