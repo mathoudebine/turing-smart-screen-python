@@ -119,11 +119,8 @@ class SleepInterval(Enum):
 
 
 class SubRevision(Enum):
-    UNKNOWN = bytearray((0x00,))
-    FIVEINCH = bytearray(
-        (0x63, 0x68, 0x73, 0x5f, 0x35, 0x69, 0x6e, 0x63, 0x68, 0x2e, 0x64, 0x65, 0x76, 0x31, 0x5f, 0x72, 0x6f, 0x6d,
-         0x31, 0x2e, 0x38, 0x37, 0x00)
-    )
+    UNKNOWN = ""
+    FIVEINCH = "chs_5inch"
 
     def __init__(self, command):
         self.command = command
@@ -199,9 +196,9 @@ class LcdCommRevC(LcdComm):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self._send_command(Command.HELLO, bypass_queue=True)
-        response = self.lcd_serial.read(23)
+        response = str(self.lcd_serial.read(22).decode())
         self.lcd_serial.flushInput()
-        if response == SubRevision.FIVEINCH.value:
+        if response.startswith(SubRevision.FIVEINCH.value):
             self.sub_revision = SubRevision.FIVEINCH
         else:
             logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
