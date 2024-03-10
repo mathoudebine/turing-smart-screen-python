@@ -241,6 +241,7 @@ class CPU:
     last_values_cpu_percentage = []
     last_values_cpu_temperature = []
     last_values_cpu_fan_speed = []
+    last_values_cpu_frequency = []
 
     @classmethod
     def percentage(cls):
@@ -259,12 +260,26 @@ class CPU:
 
     @classmethod
     def frequency(cls):
+        freq_ghz = sensors.Cpu.frequency() / 1000
+        theme_data = config.THEME_DATA['STATS']['CPU']['FREQUENCY']
+
+        save_last_value(freq_ghz, cls.last_values_cpu_frequency,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+
         display_themed_value(
-            theme_data=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'],
-            value=f'{sensors.Cpu.frequency() / 1000:.2f}',
+            theme_data=theme_data['TEXT'],
+            value=f'{freq_ghz:.2f}',
             unit=" GHz",
             min_size=4
         )
+        display_themed_progress_bar(theme_data['GRAPH'], freq_ghz)
+        display_themed_radial_bar(
+            theme_data=theme_data['RADIAL'],
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_cpu_frequency)
 
     @classmethod
     def load(cls):
@@ -344,12 +359,14 @@ class Gpu:
     last_values_gpu_temperature = []
     last_values_gpu_fps = []
     last_values_gpu_fan_speed = []
+    last_values_gpu_frequency = []
 
     @classmethod
     def stats(cls):
         load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
+        freq_ghz = sensors.Gpu.frequency() / 1000
 
         theme_gpu_data = config.THEME_DATA['STATS']['GPU']
 
@@ -363,6 +380,8 @@ class Gpu:
                         theme_gpu_data['FPS']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         save_last_value(fan_percent, cls.last_values_gpu_fan_speed,
                         theme_gpu_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(freq_ghz, cls.last_values_gpu_frequency,
+                        theme_gpu_data['FREQUENCY']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
 
         ################################ for backward compatibility only
         gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
@@ -519,6 +538,26 @@ class Gpu:
         display_themed_progress_bar(gpu_fan_graph_data, fan_percent)
         display_themed_percent_radial_bar(gpu_fan_radial_data, fan_percent)
         display_themed_line_graph(gpu_fan_line_graph_data, cls.last_values_gpu_fan_speed)
+
+        # GPU Frequency (Ghz)
+        gpu_freq_text_data = theme_gpu_data['FREQUENCY']['TEXT']
+        gpu_freq_radial_data = theme_gpu_data['FREQUENCY']['RADIAL']
+        gpu_freq_graph_data = theme_gpu_data['FREQUENCY']['GRAPH']
+        gpu_freq_line_graph_data = theme_gpu_data['FREQUENCY']['LINE_GRAPH']
+        display_themed_value(
+            theme_data=gpu_freq_text_data,
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_progress_bar(gpu_freq_graph_data, freq_ghz)
+        display_themed_radial_bar(
+            theme_data=gpu_freq_radial_data,
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_line_graph(gpu_freq_line_graph_data, cls.last_values_gpu_frequency)
 
     @staticmethod
     def is_available():
