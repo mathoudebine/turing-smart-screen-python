@@ -51,6 +51,7 @@ try:
     import sv_ttk
     from PIL import Image
     from serial.tools.list_ports import comports
+    from tktooltip import ToolTip
 except:
     print(
         "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
@@ -245,8 +246,15 @@ class TuringConfigWindow:
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
         # For platform != Windows
-        self.cpu_fan_label = ttk.Label(self.window, text='CPU fan')
+        self.cpu_fan_label = ttk.Label(self.window, text='CPU fan (？)')
+        self.cpu_fan_label.config(foreground="#a3a3ff", cursor="hand2")
         self.cpu_fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
+
+        self.tooltip = ToolTip(self.cpu_fan_label,
+                               msg="If \"None\" is selected, CPU fan was not auto-detected.\n"
+                                   "Manually select your CPU fan from the list.\n\n"
+                                   "Fans missing from the list? Install lm-sensors package\n"
+                                   "and run 'sudo sensors-detect' command, then reboot.")
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=310, y=510, height=50, width=130)
