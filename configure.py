@@ -59,6 +59,8 @@ except:
     except:
         os._exit(0)
 
+from library.sensors.sensors_python import sensors_fans_percent
+
 TURING_MODEL = "Turing Smart Screen"
 USBPCMONITOR_MODEL = "UsbPCMonitor"
 XUANFANG_MODEL = "XuanFang rev. B & flagship"
@@ -139,6 +141,11 @@ def get_net_if():
     if_list = list(psutil.net_if_addrs().keys())
     if_list.insert(0, "None")  # Add manual entry on top for unavailable/not selected interface
     return if_list
+
+
+def get_fans():
+    fan_list = sensors_fans_percent()
+    return fan_list
 
 
 class TuringConfigWindow:
@@ -227,6 +234,11 @@ class TuringConfigWindow:
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
+
+        self.fan_label = ttk.Label(self.window, text='Fans')
+        self.fan_label.place(x=320, y=455)
+        self.fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
+        self.fan_cb.place(x=500, y=450, width=250)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=310, y=490, height=50, width=130)
