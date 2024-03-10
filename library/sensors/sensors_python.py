@@ -177,6 +177,16 @@ class Gpu(sensors.Gpu):
             return math.nan
 
     @staticmethod
+    def frequency() -> float:
+        global DETECTED_GPU
+        if DETECTED_GPU == GpuType.AMD:
+            return GpuAmd.frequency()
+        elif DETECTED_GPU == GpuType.NVIDIA:
+            return GpuNvidia.frequency()
+        else:
+            return math.nan
+
+    @staticmethod
     def is_available() -> bool:
         global DETECTED_GPU
         if GpuAmd.is_available():
@@ -248,6 +258,11 @@ class GpuNvidia(sensors.Gpu):
         return math.nan
 
     @staticmethod
+    def frequency() -> float:
+        # Not supported by Python libraries
+        return math.nan
+
+    @staticmethod
     def is_available() -> bool:
         try:
             return len(GPUtil.getGPUs()) > 0
@@ -260,52 +275,43 @@ class GpuAmd(sensors.Gpu):
     def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
-            i = 0
-            amd_gpus = []
-            while i < pyamdgpuinfo.detect_gpus():
-                amd_gpus.append(pyamdgpuinfo.get_gpu(i))
-                i = i + 1
+            pyamdgpuinfo.detect_gpus()
+            amd_gpu = pyamdgpuinfo.get_gpu(0)
 
             try:
-                memory_used_all = [item.query_vram_usage() for item in amd_gpus]
-                memory_used_bytes = sum(memory_used_all) / len(memory_used_all)
+                memory_used_bytes = amd_gpu.query_vram_usage()
                 memory_used = memory_used_bytes / 1000000
             except:
                 memory_used_bytes = math.nan
                 memory_used = math.nan
 
             try:
-                memory_total_all = [item.memory_info["vram_size"] for item in amd_gpus]
-                memory_total_bytes = sum(memory_total_all) / len(memory_total_all)
+                memory_total_bytes = amd_gpu.memory_info["vram_size"]
                 memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
             except:
                 memory_percentage = math.nan
 
             try:
-                load_all = [item.query_load() for item in amd_gpus]
-                load = (sum(load_all) / len(load_all)) * 100
+                load = amd_gpu.query_load()
             except:
                 load = math.nan
 
             try:
-                temperature_all = [item.query_temperature() for item in amd_gpus]
-                temperature = sum(temperature_all) / len(temperature_all)
+                temperature = amd_gpu.query_temperature()
             except:
                 temperature = math.nan
 
             return load, memory_percentage, memory_used, temperature
         elif pyadl:
-            amd_gpus = pyadl.ADLManager.getInstance().getDevices()
+            amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
 
             try:
-                load_all = [item.getCurrentUsage() for item in amd_gpus]
-                load = (sum(load_all) / len(load_all))
+                load = amd_gpu.getCurrentUsage()
             except:
                 load = math.nan
 
             try:
-                temperature_all = [item.getCurrentTemperature() for item in amd_gpus]
-                temperature = sum(temperature_all) / len(temperature_all)
+                temperature = amd_gpu.getCurrentTemperature()
             except:
                 temperature = math.nan
 
@@ -320,16 +326,32 @@ class GpuAmd(sensors.Gpu):
     @staticmethod
     def fan_percent() -> float:
         try:
+            # Try with psutil fans
             fans = sensors_fans_percent()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
                         if "gpu" in (entry.label or name):
                             return entry.current
+
+            # Try with pyadl if psutil did not find GPU fan
+            if pyadl:
+                return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentFanSpeed(
+                    pyadl.ADL_DEVICE_FAN_SPEED_TYPE_PERCENTAGE)
         except:
             pass
 
         return math.nan
+
+    @staticmethod
+    def frequency() -> float:
+        if pyamdgpuinfo:
+            pyamdgpuinfo.detect_gpus()
+            return pyamdgpuinfo.get_gpu(0).query_sclk() / 1000000
+        elif pyadl:
+            return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentEngineClock()
+        else:
+            return math.nan
 
     @staticmethod
     def is_available() -> bool:

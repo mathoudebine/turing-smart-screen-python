@@ -68,6 +68,11 @@ class Gpu(ABC):
 
     @staticmethod
     @abstractmethod
+    def frequency() -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
     def is_available() -> bool:
         pass
 

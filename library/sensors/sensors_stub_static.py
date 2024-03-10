@@ -35,6 +35,7 @@ MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
 GPU_FPS = 120
+GPU_FREQ_MHZ = 1500.0
 
 
 class Cpu(sensors.Cpu):
@@ -72,6 +73,10 @@ class Gpu(sensors.Gpu):
     @staticmethod
     def fan_percent() -> float:
         return PERCENTAGE_SENSOR_VALUE
+
+    @staticmethod
+    def frequency() -> float:
+        return GPU_FREQ_MHZ
 
     @staticmethod
     def is_available() -> bool:

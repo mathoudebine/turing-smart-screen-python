@@ -185,6 +185,7 @@ STATS:
     FPS:
       TEXT:
         SHOW: True
+        SHOW_UNIT: False
         X: 46
         Y: 279
         MIN_SIZE: 4

@@ -3,7 +3,7 @@
 STATS:
   CPU:
     PERCENTAGE:
-      INTERVAL: 1
+      INTERVAL: 100
       TEXT:
         SHOW: False
       GRAPH:
@@ -13,11 +13,17 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     FREQUENCY:
-      INTERVAL: 5
+      INTERVAL: 100
       TEXT:
         SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
     LOAD:
-      INTERVAL: 5
+      INTERVAL: 100
       ONE:
         TEXT:
           SHOW: False
@@ -28,7 +34,7 @@ STATS:
         TEXT:
           SHOW: False
     TEMPERATURE:
-      INTERVAL: 5
+      INTERVAL: 100
       TEXT:
         SHOW: False
       GRAPH:
@@ -38,10 +44,9 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     FAN_SPEED:
-      INTERVAL: 1
+      INTERVAL: 100
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
       GRAPH:
         SHOW: False
       RADIAL:
@@ -49,7 +54,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
   GPU:
-    INTERVAL: 1
+    INTERVAL: 100
     PERCENTAGE:
       GRAPH:
         SHOW: False
@@ -66,13 +71,11 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
       LINE_GRAPH:
         SHOW: False
     MEMORY_USED:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
     MEMORY:  # Deprecated, do not use
       GRAPH:
         SHOW: False
@@ -80,11 +83,9 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
     TEMPERATURE:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
       GRAPH:
         SHOW: False
       RADIAL:
@@ -94,7 +95,6 @@ STATS:
     FPS:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
       GRAPH:
         SHOW: False
       RADIAL:
@@ -104,7 +104,15 @@ STATS:
     FAN_SPEED:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FREQUENCY:
+      TEXT:
+        SHOW: False
       GRAPH:
         SHOW: False
       RADIAL:
@@ -112,7 +120,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
   MEMORY:
-    INTERVAL: 5
+    INTERVAL: 100
     SWAP:
       GRAPH:
         SHOW: False
@@ -129,18 +137,14 @@ STATS:
         SHOW: False
       USED:
         SHOW: False
-        SHOW_UNIT: False
       FREE:
         SHOW: False
-        SHOW_UNIT: False
       TOTAL:
         SHOW: False
-        SHOW_UNIT: False
       PERCENT_TEXT:
         SHOW: False
-        SHOW_UNIT: False
   DISK:
-    INTERVAL: 10
+    INTERVAL: 100
     USED:
       GRAPH:
         SHOW: False
@@ -150,20 +154,16 @@ STATS:
         SHOW: False
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
       PERCENT_TEXT:
         SHOW: False
-        SHOW_UNIT: False
     TOTAL:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
     FREE:
       TEXT:
         SHOW: False
-        SHOW_UNIT: False
   NET:
-    INTERVAL: 1
+    INTERVAL: 100
     WLO:
       UPLOAD:
         TEXT:
@@ -199,7 +199,7 @@ STATS:
         TEXT:
           SHOW: False
   DATE:
-    INTERVAL: 1
+    INTERVAL: 100
     DAY:
       TEXT:
         SHOW: False
@@ -207,4 +207,4 @@ STATS:
       TEXT:
         SHOW: False
   CUSTOM:
-    INTERVAL: 3
+    INTERVAL: 100

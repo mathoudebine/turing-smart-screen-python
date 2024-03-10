@@ -61,6 +61,10 @@ class Gpu(sensors.Gpu):
         return random.uniform(0, 100)
 
     @staticmethod
+    def frequency() -> float:
+        return random.uniform(800, 3400)
+
+    @staticmethod
     def is_available() -> bool:
         return True
 
