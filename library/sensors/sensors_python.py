@@ -144,13 +144,17 @@ class Cpu(sensors.Cpu):
         return cpu_temp
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         try:
             fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if is_cpu_fan(entry.label) or is_cpu_fan(name):
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.percent
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
                             return entry.percent
         except:
             pass

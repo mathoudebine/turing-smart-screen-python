@@ -55,7 +55,7 @@ class Cpu(sensors.Cpu):
         return TEMPERATURE_SENSOR_VALUE
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         return PERCENTAGE_SENSOR_VALUE
 
 

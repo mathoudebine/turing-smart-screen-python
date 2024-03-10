@@ -46,7 +46,7 @@ class Cpu(ABC):
 
     @staticmethod
     @abstractmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         pass
 
 
