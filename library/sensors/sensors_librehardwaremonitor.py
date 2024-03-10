@@ -228,7 +228,7 @@ class Cpu(sensors.Cpu):
         return math.nan
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
         try:
             for sh in mb.SubHardware:

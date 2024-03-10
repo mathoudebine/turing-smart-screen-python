@@ -26,6 +26,13 @@ config:
   ETH: "" # Ethernet Card
   WLO: "" # Wi-Fi Card
 
+  # CPU fan
+  # For Linux/MacOS platforms, the CPU fan is amongst all fan sensors gathered from the motherboard chipset
+  # If value is AUTO the system monitor will try to auto-select the CPU fan
+  # If auto-detection fails, it might be necessary to manually indicate which fan is the CPU fan
+  # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
+  CPU_FAN: AUTO
+
 display:
   # Display revision:
   # - A      for Turing 3.5" and UsbPCMonitor 3.5"/5"
