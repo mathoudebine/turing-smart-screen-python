@@ -359,6 +359,7 @@ class Gpu:
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
         freq_ghz = sensors.Gpu.frequency() / 1000
+        total_memory = sensors.Gpu.total_memory()
 
         theme_gpu_data = config.THEME_DATA['STATS']['GPU']
 
@@ -457,6 +458,16 @@ class Gpu:
             min_size=5,
             unit=" M"
         )
+
+        # GPU mem. total memory (M)
+        gpu_total_mem_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
+        if gpu_total_mem_text_data and gpu_total_mem_text_data['SHOW']:
+            display_themed_value(
+                theme_data=gpu_total_mem_text_data,
+                value=int(total_memory),
+                min_size=5, # Adjust min_size as necessary for your display
+                unit=" M"   # Assuming the unit is in Megabytes
+            )
 
         # GPU temperature (°C)
         gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']
