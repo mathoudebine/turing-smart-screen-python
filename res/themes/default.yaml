@@ -76,7 +76,10 @@ STATS:
     MEMORY_USED:
       TEXT:
         SHOW: False
-    MEMORY:  # Deprecated, do not use
+    MEMORY_TOTAL:
+      TEXT:
+        SHOW: False
+    MEMORY: # Deprecated, do not use
       GRAPH:
         SHOW: False
       RADIAL:
