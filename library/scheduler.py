@@ -153,6 +153,11 @@ def DateStats():
     # logger.debug("Refresh date stats")
     stats.Date.stats()
 
+@async_job("SystemUptime_Stats")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS']['UPTIME'].get("INTERVAL", None)).total_seconds())
+def SystemUptimeStats():
+    # logger.debug("Refresh system uptime stats")
+    stats.SystemUptime.stats()
 
 @async_job("Custom_Stats")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", None)).total_seconds())

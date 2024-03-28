@@ -111,6 +111,7 @@ def refresh_theme():
     stats.Disk.stats()
     stats.Net.stats()
     stats.Date.stats()
+    stats.SystemUptime.stats()
     stats.Custom.stats()
 
 
