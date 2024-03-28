@@ -208,6 +208,7 @@ if __name__ == "__main__":
     scheduler.DiskStats()
     scheduler.NetStats()
     scheduler.DateStats()
+    scheduler.SystemUptimeStats()
     scheduler.CustomStats()
     scheduler.QueueHandler()
 
