@@ -177,7 +177,9 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
-        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
+        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
+        custom_bbox=theme_data.get("CUSTOM_BBOX", (0, 0, 0, 0)),
+        text_offset=theme_data.get("TEXT_OFFSET", (0, 0))
     )
 
 
@@ -313,8 +315,8 @@ class CPU:
                 cpu_temp_line_graph_data['SHOW'] = False
 
         display_themed_temperature_value(cpu_temp_text_data, temperature)
-        display_themed_progress_bar(cpu_temp_radial_data, temperature)
-        display_themed_temperature_radial_bar(cpu_temp_graph_data, temperature)
+        display_themed_progress_bar(cpu_temp_graph_data, temperature)
+        display_themed_temperature_radial_bar(cpu_temp_radial_data, temperature)
         display_themed_line_graph(cpu_temp_line_graph_data, cls.last_values_cpu_temperature)
 
     @classmethod

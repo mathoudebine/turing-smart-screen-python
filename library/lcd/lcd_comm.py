@@ -436,7 +436,9 @@ class LcdComm(ABC):
                                  font_color: Tuple[int, int, int] = (0, 0, 0),
                                  bar_color: Tuple[int, int, int] = (0, 0, 0),
                                  background_color: Tuple[int, int, int] = (255, 255, 255),
-                                 background_image: str = None):
+                                 background_image: str = None,
+                                 custom_bbox: Tuple[int, int, int, int] = (0, 0, 0, 0),
+                                 text_offset: Tuple[int, int] = (0,0)):                                 
         # Generate a radial progress bar and display it
         # Provide the background image path to display progress bar with transparent background
 
@@ -568,10 +570,14 @@ class LcdComm(ABC):
             font = ImageFont.truetype("./res/fonts/" + font, font_size)
             left, top, right, bottom = font.getbbox(text)
             w, h = right - left, bottom - top
-            draw.text((radius - w / 2, radius - top - h / 2), text,
+            draw.text((radius - w / 2 + text_offset[0], radius - top - h / 2 + text_offset[1]), text,
                       font=font, fill=font_color)
 
-        self.DisplayPILImage(bar_image, xc - radius, yc - radius)
+        if custom_bbox[0] != 0 or custom_bbox[1] != 0 or custom_bbox[2] != 0 or custom_bbox[3] != 0:
+            bar_image = bar_image.crop(box=custom_bbox)
+
+        self.DisplayPILImage(bar_image, xc - radius + custom_bbox[0], yc - radius + custom_bbox[1])
+       # self.DisplayPILImage(bar_image, xc - radius, yc - radius)
 
     # Load image from the filesystem, or get from the cache if it has already been loaded previously
     def open_image(self, bitmap_path: str) -> Image:
