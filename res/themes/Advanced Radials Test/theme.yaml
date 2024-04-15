@@ -58,8 +58,8 @@ STATS:
         WIDTH: 15
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 100
-        ANGLE_END: 260
+        ANGLE_START: 190
+        ANGLE_END: 350
         ANGLE_STEPS: 10
         ANGLE_SEP: 5
         CLOCKWISE: True
@@ -71,8 +71,8 @@ STATS:
         FONT_COLOR: 0, 250, 0
         #BACKGROUND_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
-        CUSTOM_BBOX: [0, 0, 80, 160]
-        TEXT_OFFSET: [-30, 0]
+        CUSTOM_BBOX: [0, 0, 160, 80]
+        TEXT_OFFSET: [-10, -20]
     FAN_SPEED:
       RADIAL:
         SHOW: True
@@ -198,8 +198,8 @@ STATS:
         WIDTH: 15
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 80
-        ANGLE_END: 280
+        ANGLE_START: 170
+        ANGLE_END: 10
         ANGLE_STEPS: 10
         ANGLE_SEP: 5
         CLOCKWISE: False
@@ -211,8 +211,8 @@ STATS:
         FONT_COLOR: 255, 0, 0
         #BACKGROUND_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
-        CUSTOM_BBOX: [80, 0, 160, 160]
-        TEXT_OFFSET: [30, 0]
+        CUSTOM_BBOX: [0, 80, 160, 160]
+        TEXT_OFFSET: [10, 20]
     FAN_SPEED:
       RADIAL:
         SHOW: True
