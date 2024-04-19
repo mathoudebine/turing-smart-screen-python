@@ -30,15 +30,18 @@ STATS:
         X: 120
         Y: 100
         RADIUS: 80
-        WIDTH: 15
+        WIDTH: 26
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 100
-        ANGLE_END: 260
+        ANGLE_START: 110
+        ANGLE_END: 250
         ANGLE_STEPS: 10
-        ANGLE_SEP: 5
+        ANGLE_SEP: 0
         CLOCKWISE: True
         BAR_COLOR:  0, 250, 0
+        BAR_BACKGROUND_COLOR:  0, 50, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -55,15 +58,18 @@ STATS:
         X: 300
         Y: 180
         RADIUS: 80
-        WIDTH: 15
+        WIDTH: 26
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 190
-        ANGLE_END: 350
+        ANGLE_START: 200
+        ANGLE_END: 340
         ANGLE_STEPS: 10
-        ANGLE_SEP: 5
+        ANGLE_SEP: 0
         CLOCKWISE: True
         BAR_COLOR:  0, 250, 0
+        BAR_BACKGROUND_COLOR:  0, 50, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -83,11 +89,13 @@ STATS:
         MIN_VALUE: 0
         MAX_VALUE: 100
         ANGLE_START: 220
-        ANGLE_END: 220
+        ANGLE_END: 210
         ANGLE_STEPS: 20
         ANGLE_SEP: 0
         CLOCKWISE: True
         BAR_COLOR: 200, 100, 50
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -133,6 +141,8 @@ STATS:
         ANGLE_SEP: 25
         CLOCKWISE: True
         BAR_COLOR: 0, 0, 200
+        BAR_BACKGROUND_COLOR:  0, 0, 50
+        DRAW_BAR_BACKGROUND: True
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -148,15 +158,18 @@ STATS:
         X: 120
         Y: 100
         RADIUS: 80
-        WIDTH: 15
+        WIDTH: 26
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 80
-        ANGLE_END: 280
+        ANGLE_START: 70
+        ANGLE_END: 290
         ANGLE_STEPS: 10
-        ANGLE_SEP: 5
+        ANGLE_SEP: 0
         CLOCKWISE: False
         BAR_COLOR: 255, 0, 0
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -195,15 +208,18 @@ STATS:
         X: 300
         Y: 180
         RADIUS: 80
-        WIDTH: 15
+        WIDTH: 26
         MIN_VALUE: 0
         MAX_VALUE: 100
-        ANGLE_START: 170
-        ANGLE_END: 10
+        ANGLE_START: 160
+        ANGLE_END: 20
         ANGLE_STEPS: 10
-        ANGLE_SEP: 5
+        ANGLE_SEP: 0
         CLOCKWISE: False
         BAR_COLOR:  255, 0, 0
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
@@ -228,6 +244,8 @@ STATS:
         ANGLE_SEP: 0
         CLOCKWISE: False
         BAR_COLOR: 200, 100, 50
+        BAR_BACKGROUND_COLOR:  100, 50, 25
+        DRAW_BAR_BACKGROUND: True        
         SHOW_TEXT: True
         SHOW_UNIT: True
         FONT: roboto/Roboto-Bold.ttf
