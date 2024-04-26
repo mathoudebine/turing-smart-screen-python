@@ -176,7 +176,8 @@ class Cpu(sensors.Cpu):
     def percentage(interval: float) -> float:
         cpu = get_hw_and_update(Hardware.HardwareType.Cpu)
         for sensor in cpu.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("CPU Total") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith(
+                    "CPU Total") and sensor.Value is not None:
                 return float(sensor.Value)
 
         logger.error("CPU load cannot be read")
@@ -190,7 +191,8 @@ class Cpu(sensors.Cpu):
             for sensor in cpu.Sensors:
                 if sensor.SensorType == Hardware.SensorType.Clock:
                     # Keep only real core clocks, ignore effective core clocks
-                    if "Core #" in str(sensor.Name) and "Effective" not in str(sensor.Name) and sensor.Value is not None:
+                    if "Core #" in str(sensor.Name) and "Effective" not in str(
+                            sensor.Name) and sensor.Value is not None:
                         frequencies.append(float(sensor.Value))
 
             if frequencies:
@@ -213,19 +215,23 @@ class Cpu(sensors.Cpu):
         try:
             # By default, the average temperature of all CPU cores will be used
             for sensor in cpu.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Average") and sensor.Value is not None:
+                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith(
+                        "Core Average") and sensor.Value is not None:
                     return float(sensor.Value)
             # If not available, the max core temperature will be used
             for sensor in cpu.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core Max") and sensor.Value is not None:
+                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith(
+                        "Core Max") and sensor.Value is not None:
                     return float(sensor.Value)
             # If not available, the CPU Package temperature (usually same as max core temperature) will be used
             for sensor in cpu.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("CPU Package") and sensor.Value is not None:
+                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith(
+                        "CPU Package") and sensor.Value is not None:
                     return float(sensor.Value)
             # Otherwise any sensor named "Core..." will be used
             for sensor in cpu.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("Core") and sensor.Value is not None:
+                if sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith(
+                        "Core") and sensor.Value is not None:
                     return float(sensor.Value)
         except:
             pass
@@ -280,23 +286,28 @@ class Gpu(sensors.Gpu):
         temp = math.nan
 
         for sensor in gpu_to_use.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("GPU Core") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith(
+                    "GPU Core") and sensor.Value is not None:
                 load = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("D3D 3D") and math.isnan(
                     load) and sensor.Value is not None:
                 # Only use D3D usage if global "GPU Core" sensor is not available, because it is less
                 # precise and does not cover the entire GPU: https://www.hwinfo.com/forum/threads/what-is-d3d-usage.759/
                 load = float(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Used") and sensor.Value is not None:
+            elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith(
+                    "GPU Memory Used") and sensor.Value is not None:
                 used_mem = float(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith(
-                    "D3D") and str(sensor.Name).endswith("Memory Used") and math.isnan(used_mem) and sensor.Value is not None:
+                    "D3D") and str(sensor.Name).endswith("Memory Used") and math.isnan(
+                used_mem) and sensor.Value is not None:
                 # Only use D3D memory usage if global "GPU Memory Used" sensor is not available, because it is less
                 # precise and does not cover the entire GPU: https://www.hwinfo.com/forum/threads/what-is-d3d-usage.759/
                 used_mem = float(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Total") and sensor.Value is not None:
+            elif sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith(
+                    "GPU Memory Total") and sensor.Value is not None:
                 total_mem = float(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith("GPU Core") and sensor.Value is not None:
+            elif sensor.SensorType == Hardware.SensorType.Temperature and str(sensor.Name).startswith(
+                    "GPU Core") and sensor.Value is not None:
                 temp = float(sensor.Value)
 
         return load, (used_mem / total_mem * 100.0), used_mem, temp
@@ -310,7 +321,8 @@ class Gpu(sensors.Gpu):
 
         try:
             for sensor in gpu_to_use.Sensors:
-                if sensor.SensorType == Hardware.SensorType.Factor and "FPS" in str(sensor.Name) and sensor.Value is not None:
+                if sensor.SensorType == Hardware.SensorType.Factor and "FPS" in str(
+                        sensor.Name) and sensor.Value is not None:
                     # If a reading returns a value <= 0, returns old value instead
                     if int(sensor.Value) > 0:
                         cls.prev_fps = int(sensor.Value)
@@ -375,14 +387,17 @@ class Memory(sensors.Memory):
 
         # Get virtual / physical memory stats
         for sensor in memory.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Virtual Memory Used") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                    "Virtual Memory Used") and sensor.Value is not None:
                 virtual_mem_used = int(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Memory Used") and sensor.Value is not None:
+            elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                    "Memory Used") and sensor.Value is not None:
                 mem_used = int(sensor.Value)
             elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
                     "Virtual Memory Available") and sensor.Value is not None:
                 virtual_mem_available = int(sensor.Value)
-            elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Memory Available") and sensor.Value is not None:
+            elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                    "Memory Available") and sensor.Value is not None:
                 mem_available = int(sensor.Value)
 
         # Compute swap stats from virtual / physical memory stats
@@ -401,7 +416,8 @@ class Memory(sensors.Memory):
     def virtual_percent() -> float:
         memory = get_hw_and_update(Hardware.HardwareType.Memory)
         for sensor in memory.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith("Memory") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Load and str(sensor.Name).startswith(
+                    "Memory") and sensor.Value is not None:
                 return float(sensor.Value)
 
         return math.nan
@@ -410,7 +426,8 @@ class Memory(sensors.Memory):
     def virtual_used() -> int:  # In bytes
         memory = get_hw_and_update(Hardware.HardwareType.Memory)
         for sensor in memory.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Memory Used") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                    "Memory Used") and sensor.Value is not None:
                 return int(sensor.Value * 1000000000.0)
 
         return 0
@@ -419,7 +436,8 @@ class Memory(sensors.Memory):
     def virtual_free() -> int:  # In bytes
         memory = get_hw_and_update(Hardware.HardwareType.Memory)
         for sensor in memory.Sensors:
-            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Memory Available") and sensor.Value is not None:
+            if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                    "Memory Available") and sensor.Value is not None:
                 return int(sensor.Value * 1000000000.0)
 
         return 0
@@ -455,7 +473,8 @@ class Net(sensors.Net):
             net_if = get_net_interface_and_update(if_name)
             if net_if is not None:
                 for sensor in net_if.Sensors:
-                    if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith("Data Uploaded") and sensor.Value is not None:
+                    if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                            "Data Uploaded") and sensor.Value is not None:
                         uploaded = int(sensor.Value * 1000000000.0)
                     elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
                             "Data Downloaded") and sensor.Value is not None:
