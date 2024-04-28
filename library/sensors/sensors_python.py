@@ -98,15 +98,24 @@ def sensors_fans_percent():
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
-        return psutil.cpu_percent(interval=interval)
+        try:
+            return psutil.cpu_percent(interval=interval)
+        except:
+            return math.nan
 
     @staticmethod
     def frequency() -> float:
-        return psutil.cpu_freq().current
+        try:
+            return psutil.cpu_freq().current
+        except:
+            return math.nan
 
     @staticmethod
     def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
-        return psutil.getloadavg()
+        try:
+            return psutil.getloadavg()
+        except:
+            return math.nan, math.nan, math.nan
 
     @staticmethod
     def temperature() -> float:
@@ -369,37 +378,57 @@ class GpuAmd(sensors.Gpu):
 class Memory(sensors.Memory):
     @staticmethod
     def swap_percent() -> float:
-        return psutil.swap_memory().percent
+        try:
+            return psutil.swap_memory().percent
+        except:
+            return math.nan
 
     @staticmethod
     def virtual_percent() -> float:
-        return psutil.virtual_memory().percent
+        try:
+            return psutil.virtual_memory().percent
+        except:
+            return math.nan
 
     @staticmethod
     def virtual_used() -> int:  # In bytes
-        # Do not use psutil.virtual_memory().used: from https://psutil.readthedocs.io/en/latest/#memory
-        # "It is calculated differently depending on the platform and designed for informational purposes only"
-        return psutil.virtual_memory().total - psutil.virtual_memory().available
+        try:
+            # Do not use psutil.virtual_memory().used: from https://psutil.readthedocs.io/en/latest/#memory
+            # "It is calculated differently depending on the platform and designed for informational purposes only"
+            return psutil.virtual_memory().total - psutil.virtual_memory().available
+        except:
+            return -1
 
     @staticmethod
     def virtual_free() -> int:  # In bytes
-        # Do not use psutil.virtual_memory().free: from https://psutil.readthedocs.io/en/latest/#memory
-        # "note that this doesn’t reflect the actual memory available (use available instead)."
-        return psutil.virtual_memory().available
-
+        try:
+            # Do not use psutil.virtual_memory().free: from https://psutil.readthedocs.io/en/latest/#memory
+            # "note that this doesn’t reflect the actual memory available (use available instead)."
+            return psutil.virtual_memory().available
+        except:
+            return -1
 
 class Disk(sensors.Disk):
     @staticmethod
     def disk_usage_percent() -> float:
-        return psutil.disk_usage("/").percent
+        try:
+            return psutil.disk_usage("/").percent
+        except:
+            return math.nan
 
     @staticmethod
     def disk_used() -> int:  # In bytes
-        return psutil.disk_usage("/").used
+        try:
+            return psutil.disk_usage("/").used
+        except:
+            return -1
 
     @staticmethod
     def disk_free() -> int:  # In bytes
-        return psutil.disk_usage("/").free
+        try:
+            return psutil.disk_usage("/").free
+        except:
+            return -1
 
 
 class Net(sensors.Net):
@@ -407,27 +436,30 @@ class Net(sensors.Net):
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         global PNIC_BEFORE
-        # Get current counters
-        pnic_after = psutil.net_io_counters(pernic=True)
+        try:
+            # Get current counters
+            pnic_after = psutil.net_io_counters(pernic=True)
 
-        upload_rate = 0
-        uploaded = 0
-        download_rate = 0
-        downloaded = 0
+            upload_rate = 0
+            uploaded = 0
+            download_rate = 0
+            downloaded = 0
 
-        if if_name != "":
-            if if_name in pnic_after:
-                try:
-                    upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
-                    uploaded = pnic_after[if_name].bytes_sent
-                    download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
-                    downloaded = pnic_after[if_name].bytes_recv
-                except:
-                    # Interface might not be in PNIC_BEFORE for now
-                    pass
+            if if_name != "":
+                if if_name in pnic_after:
+                    try:
+                        upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                        uploaded = pnic_after[if_name].bytes_sent
+                        download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
+                        downloaded = pnic_after[if_name].bytes_recv
+                    except:
+                        # Interface might not be in PNIC_BEFORE for now
+                        pass
 
-                PNIC_BEFORE.update({if_name: pnic_after[if_name]})
-            else:
-                logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
+                    PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+                else:
+                    logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
 
-        return upload_rate, uploaded, download_rate, downloaded
+            return upload_rate, uploaded, download_rate, downloaded
+        except:
+            return -1, -1, -1, -1
