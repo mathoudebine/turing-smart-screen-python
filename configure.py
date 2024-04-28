@@ -271,11 +271,16 @@ class TuringConfigWindow:
         with open("config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
+        # Check if theme is valid
+        if get_theme_data(self.config['config']['THEME']) is None:
+            # Theme from config.yaml is not valid: use first theme available default size 3.5"
+            self.config['config']['THEME'] = get_themes(SIZE_3_5_INCH)[0]
+
         try:
             self.theme_cb.set(self.config['config']['THEME'])
         except:
-            self.theme_cb.current(0)
-        # self.load_theme_size()
+            self.theme_cb.set("")
+
         self.load_theme_preview()
 
         try:
@@ -361,7 +366,6 @@ class TuringConfigWindow:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
-        # self.load_theme_size()
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
