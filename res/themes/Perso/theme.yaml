@@ -71,19 +71,19 @@ STATS:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
       # but may cause significant CPU usage or the display not to update properly
-      INTERVAL: 1
+      INTERVAL: 0.5
       TEXT:
         SHOW: true
         SHOW_UNIT: true
-        X: 65
-        Y: 175
+        X: 110
+        Y: 127
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 40
+        FONT_SIZE: 35
         FONT_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       GRAPH:
-        SHOW: true
+        SHOW: false
         X: 40
         Y: 210
         WIDTH: 160
@@ -92,6 +92,21 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 247, 227, 227
         BAR_OUTLINE: true
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: true
+        X: 30
+        Y: 160
+        WIDTH: 180
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 120
+        AUTOSCALE: false
+        LINE_COLOR: 247, 227, 227
+        AXIS: true
+        AXIS_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
@@ -168,8 +183,8 @@ STATS:
       TEXT:
         SHOW: true
         SHOW_UNIT: True
-        X: 305
-        Y: 175
+        X: 345
+        Y: 127
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 40
         FONT_COLOR: 247, 227, 227
@@ -185,6 +200,21 @@ STATS:
         MAX_VALUE: 100
         BAR_COLOR: 247, 227, 227
         BAR_OUTLINE: true
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      LINE_GRAPH:
+        SHOW: true
+        X: 270
+        Y: 160
+        WIDTH: 180
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 120
+        AUTOSCALE: false
+        LINE_COLOR: 247, 227, 227
+        AXIS: True
+        AXIS_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     MEMORY:
@@ -489,7 +519,7 @@ STATS:
       UPLOADED:
         TEXT:
           SHOW: true
-          X: 315
+          X: 370
           Y: 570
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 17
@@ -524,7 +554,7 @@ STATS:
       DOWNLOADED:
         TEXT:
           SHOW: true
-          X: 80
+          X: 135
           Y: 570
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
           FONT_SIZE: 17
@@ -540,7 +570,7 @@ STATS:
         SHOW: True
         X: 275
         Y: 25
-        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 30
         FONT_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 50, 50, 50
@@ -551,28 +581,25 @@ STATS:
         SHOW: True
         X: 55
         Y: 25
-        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 30
         FONT_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 50, 50, 50
         BACKGROUND_IMAGE: background.png
-
   WEATHER:
-    INTERVAL: 120
+    # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MAX (not really useful as the API didn't update that quickly)
+    INTERVAL: 300
     TEXT:
       SHOW: True
-      X: 50
-      Y: 60
+      X: 55
+      Y: 75
       FONT: roboto-mono/RobotoMono-Bold.ttf
       FONT_SIZE: 18
       FONT_COLOR: 247, 227, 227
-      BACKGROUND_IMAGE: background.png
-        
+      BACKGROUND_IMAGE: background.png 
   CUSTOM:
-
     # For now the refresh interval (in seconds) is the same for all custom data classes
     INTERVAL: 1
-
     Ping:
       TEXT:
         SHOW: True
