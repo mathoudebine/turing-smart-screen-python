@@ -71,7 +71,7 @@ STATS:
       # In seconds. Longer intervals cause this to refresh more slowly.
       # Setting to lower values will display near real time data,
       # but may cause significant CPU usage or the display not to update properly
-      INTERVAL: 0.5
+      INTERVAL: 0.25
       TEXT:
         SHOW: true
         SHOW_UNIT: true
@@ -102,7 +102,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 100
-        HISTORY_SIZE: 120
+        HISTORY_SIZE: 480
         AUTOSCALE: false
         LINE_COLOR: 247, 227, 227
         AXIS: true
@@ -178,7 +178,7 @@ STATS:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
     # but may cause significant CPU usage or the display not to update properly
-    INTERVAL: 1
+    INTERVAL: 0.25
     PERCENTAGE:
       TEXT:
         SHOW: true
@@ -191,7 +191,7 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       GRAPH:
-        SHOW: true
+        SHOW: false
         X: 280
         Y: 210
         WIDTH: 160
@@ -210,7 +210,7 @@ STATS:
         HEIGHT: 70
         MIN_VALUE: 0
         MAX_VALUE: 100
-        HISTORY_SIZE: 120
+        HISTORY_SIZE: 480
         AUTOSCALE: false
         LINE_COLOR: 247, 227, 227
         AXIS: True
@@ -509,7 +509,7 @@ STATS:
           HEIGHT: 60
           MIN_VALUE: 0
           MAX_VALUE: 500000
-          HISTORY_SIZE: 60
+          HISTORY_SIZE: 120
           AUTOSCALE: False
           LINE_COLOR: 247, 227, 227
           AXIS: True
@@ -544,7 +544,7 @@ STATS:
           HEIGHT: 60
           MIN_VALUE: 0
           MAX_VALUE: 1500000
-          HISTORY_SIZE: 60
+          HISTORY_SIZE: 120
           AUTOSCALE: False
           LINE_COLOR: 247, 227, 227
           AXIS: True
@@ -587,7 +587,7 @@ STATS:
         # BACKGROUND_COLOR: 50, 50, 50
         BACKGROUND_IMAGE: background.png
   WEATHER:
-    # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MAX (not really useful as the API didn't update that quickly)
+    # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MINIMUM (not really useful as the API didn't update that quickly)
     INTERVAL: 300
     TEXT:
       SHOW: True
