@@ -1,15 +1,14 @@
----
 config:
   # Configuration values to set up basic communication
   # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: "AUTO"
+  COM_PORT: AUTO
 
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
-  THEME: 3.5inchTheme2
+  THEME: Perso
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -23,8 +22,21 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: "" # Ethernet Card
-  WLO: "" # Wi-Fi Card
+  ETH: Ethernet # Ethernet Card
+  WLO: Wi-Fi # Wi-Fi Card
+
+  # Used to calculate your ping.
+  PING: 8.8.8.8
+  
+  # For weather, you can use for example https://www.latlong.net/
+  LATITUDE: 45.75
+  LONGITUDE: 4.85
+  # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up. You need to subscreibe to the 3.0 OneCallAPI that has 1000 free daily calls
+  API_KEY: abcdef
+  # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
+  WEATHER_UNITS: metric
+  # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi
+  LANGUAGE: fr
 
 display:
   # Display revision:
@@ -35,7 +47,7 @@ display:
   # - SIMU   for 3.5" simulated LCD (image written in screencap.png)
   # - SIMU5  for 5" simulated LCD
   # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: A
+  REVISION: SIMU5
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness

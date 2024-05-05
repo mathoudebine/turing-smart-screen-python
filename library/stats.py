@@ -30,6 +30,7 @@ from typing import List
 
 import babel.dates
 from psutil._common import bytes2human
+import requests
 
 import library.config as config
 from library.display import display
@@ -767,3 +768,48 @@ class Custom:
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("LINE_GRAPH", None)
                 if theme_data is not None and last_values is not None:
                     display_themed_line_graph(theme_data=theme_data, values=last_values)
+
+class Weather:
+    @staticmethod
+    def stats():
+        weather_text = None
+        TEXT = config.THEME_DATA['STATS'].get('WEATHER', {}).get('TEXT', {})
+        WEATHER_UNITS = {'metric': '°C', 'imperial': '°F', 'standard': '°K'}
+
+        if TEXT.get("SHOW"):
+            if HW_SENSORS in ["STATIC", "STUB"]:
+                weather_text = "Clouds +1°C (-1°C) @21:40"
+            else:
+                lat = config.CONFIG_DATA['config'].get('LATITUDE', "")
+                lon = config.CONFIG_DATA['config'].get('LONGITUDE', "")
+                api_key = config.CONFIG_DATA['config'].get('API_KEY', "")
+                units = config.CONFIG_DATA['config'].get('WEATHER_UNITS', "")
+                lang = config.CONFIG_DATA['config'].get('LANGUAGE', "en")
+                deg = WEATHER_UNITS.get(units, '°?')
+                if api_key:
+                    url = f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=minutely,hourly,daily,alerts&appid={api_key}&units={units}&lang={lang}'
+                    try:
+                        response = requests.get(url)
+                        if response.status_code == 200:
+                            try:
+                                data = response.json()
+                                print(data)
+                                temp = f"{data['current']['temp']:.1f}{deg}"
+                                feel = f"{data['current']['feels_like']:.1f}{deg}"
+                                desc = data['current']['weather'][0]['description']
+                                now = datetime.datetime.now()
+                                time = f"@{now.hour:02d}:{now.minute:02d}"
+                                weather_text = f"{desc.capitalize()} {temp} ({feel}) {time}    "
+                            except Exception as e:
+                                logger.error(str(e))
+                                weather_text = "Error fetching weather"
+                        else:
+                            print(f"Failed to fetch weather data. Status code: {response.status_code}")
+                            print(f"Response content: {response.content}")
+                            logger.error(response.text)
+                            weather_text = response.json().get('message')
+                    except:
+                        weather_text = "Connection error"
+
+        if TEXT and TEXT.get("SHOW") and weather_text:
+            display_themed_value(theme_data=TEXT, value=weather_text)
