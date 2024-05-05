@@ -186,7 +186,7 @@ STATS:
         X: 345
         Y: 127
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 40
+        FONT_SIZE: 35
         FONT_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
@@ -362,10 +362,10 @@ STATS:
       PERCENT_TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 100
+        X: 110
         Y: 310
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 40
+        FONT_SIZE: 35
         FONT_COLOR: 247, 227, 227
         # BACKGROUND_COLOR: 132, 154, 165
         BACKGROUND_IMAGE: background.png
