@@ -120,6 +120,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -183,6 +184,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -284,6 +286,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -347,6 +350,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -411,6 +415,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -470,6 +475,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -540,6 +546,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -599,6 +606,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -658,6 +666,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -717,6 +726,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: False
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -771,6 +781,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -820,6 +831,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -911,6 +923,7 @@ STATS:
         HISTORY_SIZE: 10
         AUTOSCALE: True
         LINE_COLOR: 61, 184, 225
+        LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
@@ -981,6 +994,7 @@ STATS:
           HISTORY_SIZE: 10
           AUTOSCALE: True
           LINE_COLOR: 61, 184, 225
+          LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
           # BACKGROUND_COLOR: 0, 0, 0
@@ -1016,6 +1030,7 @@ STATS:
           HISTORY_SIZE: 10
           AUTOSCALE: True
           LINE_COLOR: 61, 184, 225
+          LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
           # BACKGROUND_COLOR: 0, 0, 0
@@ -1052,6 +1067,7 @@ STATS:
           HISTORY_SIZE: 10
           AUTOSCALE: True
           LINE_COLOR: 61, 184, 225
+          LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
           # BACKGROUND_COLOR: 0, 0, 0
@@ -1087,6 +1103,7 @@ STATS:
           HISTORY_SIZE: 10
           AUTOSCALE: True
           LINE_COLOR: 61, 184, 225
+          LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
           # BACKGROUND_COLOR: 0, 0, 0

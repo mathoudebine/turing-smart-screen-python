@@ -215,6 +215,7 @@ def display_themed_line_graph(theme_data, values):
         max_value=theme_data.get("MAX_VALUE", 100),
         autoscale=theme_data.get("AUTOSCALE", False),
         line_color=line_color,
+        line_width=theme_data.get("LINE_WIDTH", 2),
         graph_axis=theme_data.get("AXIS", False),
         axis_color=theme_data.get("AXIS_COLOR", line_color),  # If no color specified, use line color for axis
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),

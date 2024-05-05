@@ -327,6 +327,7 @@ class LcdComm(ABC):
                          max_value: int = 100,
                          autoscale: bool = False,
                          line_color: Tuple[int, int, int] = (0, 0, 0),
+                         line_width: int = 2,
                          graph_axis: bool = True,
                          axis_color: Tuple[int, int, int] = (0, 0, 0),
                          background_color: Tuple[int, int, int] = (255, 255, 255),
@@ -397,7 +398,7 @@ class LcdComm(ABC):
 
         # Draw plot graph
         draw = ImageDraw.Draw(graph_image)
-        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=2)
+        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=line_width)
 
         if graph_axis:
             # Draw axis
