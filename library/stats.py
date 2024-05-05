@@ -793,7 +793,7 @@ class Weather:
                         if response.status_code == 200:
                             try:
                                 data = response.json()
-                                print(data)
+                                # print(data)
                                 temp = f"{data['current']['temp']:.1f}{deg}"
                                 feel = f"{data['current']['feels_like']:.1f}{deg}"
                                 desc = data['current']['weather'][0]['description']

@@ -8,7 +8,7 @@ config:
 
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
-  THEME: Perso
+  THEME: ColoredFlat
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -47,7 +47,7 @@ display:
   # - SIMU   for 3.5" simulated LCD (image written in screencap.png)
   # - SIMU5  for 5" simulated LCD
   # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: SIMU5
+  REVISION: C
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
