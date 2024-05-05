@@ -778,7 +778,7 @@ class Weather:
 
         if TEXT.get("SHOW"):
             if HW_SENSORS in ["STATIC", "STUB"]:
-                weather_text = "Clouds +1°C (-1°C) @21:40"
+                weather_text = "+1°C (-1°C) @21:40 Clouds "
             else:
                 lat = config.CONFIG_DATA['config'].get('LATITUDE', "")
                 lon = config.CONFIG_DATA['config'].get('LONGITUDE', "")
@@ -799,7 +799,7 @@ class Weather:
                                 desc = data['current']['weather'][0]['description']
                                 now = datetime.datetime.now()
                                 time = f"@{now.hour:02d}:{now.minute:02d}"
-                                weather_text = f"{desc.capitalize()} {temp} ({feel}) {time}    "
+                                weather_text = f"{temp} ({feel}) {time} {desc.capitalize()}    "
                             except Exception as e:
                                 logger.error(str(e))
                                 weather_text = "Error fetching weather"
