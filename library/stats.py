@@ -772,18 +772,37 @@ class Custom:
 class Weather:
     @staticmethod
     def stats():
-        weather_text = None
-        TEXT = config.THEME_DATA['STATS'].get('WEATHER', {}).get('TEXT', {})
         WEATHER_UNITS = {'metric': '°C', 'imperial': '°F', 'standard': '°K'}
 
-        if TEXT.get("SHOW"):
+        weather_theme_data = config.THEME_DATA['STATS'].get('WEATHER', {})
+        wtemperature_theme_data = weather_theme_data.get('TEMPERATURE', {}).get('TEXT', {})
+        wfelt_theme_data = weather_theme_data.get('TEMPERATURE_FELT', {}).get('TEXT', {})
+        wupdatetime_theme_data = weather_theme_data.get('UPDATE_TIME', {}).get('TEXT', {})
+        wdescription_theme_data = weather_theme_data.get('WEATHER_DESCRIPTION', {}).get('TEXT', {})
+        whumidity_theme_data = weather_theme_data.get('HUMIDITY', {}).get('TEXT', {})
+
+        # Retrieve information used to center description, if needed
+        center_description_length = 40
+        if 'CENTER_LENGTH' in wdescription_theme_data:
+            center_description_length = wdescription_theme_data['CENTER_LENGTH']
+
+        activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get("SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get("SHOW") or whumidity_theme_data.get("SHOW") else False
+        
+        if activate:
             if HW_SENSORS in ["STATIC", "STUB"]:
-                weather_text = "+1°C (-1°C) @21:40 Clouds "
+                temp = "17.5°C"
+                feel = "(17.2°C)"
+                desc = "Cloudy"
+                time = "@15:33"
+                humidity = "45%"
+                if wdescription_theme_data['CENTER_LENGTH']:
+                    desc = "x"*center_description_length
             else:
+                # API Parameters
                 lat = config.CONFIG_DATA['config'].get('LATITUDE', "")
                 lon = config.CONFIG_DATA['config'].get('LONGITUDE', "")
                 api_key = config.CONFIG_DATA['config'].get('API_KEY', "")
-                units = config.CONFIG_DATA['config'].get('WEATHER_UNITS', "")
+                units = config.CONFIG_DATA['config'].get('WEATHER_UNITS', "metric")
                 lang = config.CONFIG_DATA['config'].get('LANGUAGE', "en")
                 deg = WEATHER_UNITS.get(units, '°?')
                 if api_key:
@@ -793,23 +812,33 @@ class Weather:
                         if response.status_code == 200:
                             try:
                                 data = response.json()
-                                # print(data)
                                 temp = f"{data['current']['temp']:.1f}{deg}"
-                                feel = f"{data['current']['feels_like']:.1f}{deg}"
-                                desc = data['current']['weather'][0]['description']
+                                feel = f"({data['current']['feels_like']:.1f}{deg})"
+                                desc = data['current']['weather'][0]['description'].capitalize()
+                                if wdescription_theme_data['CENTER_LENGTH']:
+                                    desc = desc.center(center_description_length)
+                                humidity = f"{data['current']['humidity']:.0f}%"
                                 now = datetime.datetime.now()
                                 time = f"@{now.hour:02d}:{now.minute:02d}"
-                                weather_text = f"{temp} ({feel}) {time} {desc.capitalize()}    "
                             except Exception as e:
                                 logger.error(str(e))
-                                weather_text = "Error fetching weather"
+                                desc = "Error fetching weather"
                         else:
                             print(f"Failed to fetch weather data. Status code: {response.status_code}")
                             print(f"Response content: {response.content}")
                             logger.error(response.text)
-                            weather_text = response.json().get('message')
+                            desc = response.json().get('message')
                     except:
-                        weather_text = "Connection error"
+                        desc = "Connection error"
 
-        if TEXT and TEXT.get("SHOW") and weather_text:
-            display_themed_value(theme_data=TEXT, value=weather_text)
+        if activate:
+            # Display Temperature
+            display_themed_value(theme_data=wtemperature_theme_data, value=temp)
+            # Display Temperature Felt
+            display_themed_value(theme_data=wfelt_theme_data, value=feel) 
+            # Display Update Time
+            display_themed_value(theme_data=wupdatetime_theme_data, value=time) 
+            # Display Humidity
+            display_themed_value(theme_data=whumidity_theme_data, value=humidity)
+            # Display Weather Description
+            display_themed_value(theme_data=wdescription_theme_data, value=desc)
