@@ -112,6 +112,7 @@ def refresh_theme():
     stats.Net.stats()
     stats.Date.stats()
     stats.Custom.stats()
+    stats.Weather.stats()
 
 
 if __name__ == "__main__":

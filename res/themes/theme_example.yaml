@@ -1126,3 +1126,53 @@ STATS:
         FONT_COLOR: 200, 200, 200
         # BACKGROUND_COLOR: 50, 50, 50
         BACKGROUND_IMAGE: background.png
+  WEATHER:
+    # For optimal use, if you want to stay on the free plan (1000 calls), the interval should be 90 MINIMUM (not really useful as the API didn't update that quickly)
+    INTERVAL: 300
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        X: 27
+        Y: 70
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png 
+    TEMPERATURE_FELT:
+      TEXT:
+        SHOW: True
+        X: 115
+        Y: 68
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png 
+    UPDATE_TIME:
+      TEXT:
+        SHOW: True
+        X: 370
+        Y: 69
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+    HUMIDITY:
+      TEXT:
+        SHOW: True
+        X: 290
+        Y: 69
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png  
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: True
+        CENTER: True # Used to center the description, on a 40 character basis or with CENTER_LENGTH below. Use MONO font for better results. Use fake static data for better positionning ! 
+        CENTER_LENGTH: 40
+        X: 20
+        Y: 95
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png 
