@@ -462,7 +462,7 @@ class TuringConfigWindow:
             import ctypes
             is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
             if (hwlib == "LHM" or hwlib == "AUTO") and not is_admin:
-                self.lhm_admin_warning.place(x=320, y=455)
+                self.lhm_admin_warning.place(x=320, y=460)
                 self.save_run_btn.state(["disabled"])
             else:
                 self.lhm_admin_warning.place_forget()
