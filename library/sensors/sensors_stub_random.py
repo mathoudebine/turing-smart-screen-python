@@ -43,7 +43,7 @@ class Cpu(sensors.Cpu):
         return random.uniform(30, 90)
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         return random.uniform(0, 100)
 
 

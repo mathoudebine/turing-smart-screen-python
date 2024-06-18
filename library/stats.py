@@ -37,9 +37,10 @@ from library.log import logger
 
 DEFAULT_HISTORY_SIZE = 10
 
-ETH_CARD = config.CONFIG_DATA["config"]["ETH"]
-WLO_CARD = config.CONFIG_DATA["config"]["WLO"]
-HW_SENSORS = config.CONFIG_DATA["config"]["HW_SENSORS"]
+ETH_CARD = config.CONFIG_DATA["config"].get("ETH", "")
+WLO_CARD = config.CONFIG_DATA["config"].get("WLO", "")
+HW_SENSORS = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
+CPU_FAN = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
 
 if HW_SENSORS == "PYTHON":
     if platform.system() == 'Windows':
@@ -319,7 +320,11 @@ class CPU:
 
     @classmethod
     def fan_speed(cls):
-        fan_percent = sensors.Cpu.fan_percent()
+        if CPU_FAN != "AUTO":
+            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
+        else:
+            fan_percent = sensors.Cpu.fan_percent()
+
         save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
                         config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
                                                                                          DEFAULT_HISTORY_SIZE))
@@ -333,7 +338,10 @@ class CPU:
             fan_percent = 0
             if cpu_fan_text_data['SHOW'] or cpu_fan_radial_data['SHOW'] or cpu_fan_graph_data[
                 'SHOW'] or cpu_fan_line_graph_data['SHOW']:
-                logger.warning("Your CPU Fan Speed is not supported yet")
+                if sys.platform == "win32":
+                    logger.warning("Your CPU Fan sensor could not be auto-detected")
+                else:
+                    logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
                 cpu_fan_text_data['SHOW'] = False
                 cpu_fan_radial_data['SHOW'] = False
                 cpu_fan_graph_data['SHOW'] = False

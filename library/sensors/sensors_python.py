@@ -22,6 +22,7 @@
 import math
 import platform
 import sys
+from collections import namedtuple
 from enum import IntEnum, auto
 from typing import Tuple
 
@@ -58,8 +59,8 @@ DETECTED_GPU = GpuType.UNSUPPORTED
 
 
 # Function inspired of psutil/psutil/_pslinux.py:sensors_fans()
-# Adapted to get fan speed percentage instead of raw value
-def sensors_fans_percent():
+# Adapted to also get fan speed percentage instead of raw value
+def sensors_fans():
     """Return hardware fans info (for CPU and other peripherals) as a
     dict including hardware label and current speed.
 
@@ -69,7 +70,7 @@ def sensors_fans_percent():
       only (old distros will probably use something else)
     - lm-sensors on Ubuntu 16.04 relies on /sys/class/hwmon
     """
-    from psutil._common import bcat, cat, sfan
+    from psutil._common import bcat, cat
     import collections, glob, os
 
     ret = collections.defaultdict(list)
@@ -82,17 +83,29 @@ def sensors_fans_percent():
     basenames = sorted(set([x.split('_')[0] for x in basenames]))
     for base in basenames:
         try:
-            current = int(bcat(base + '_input'))
-            max = int(bcat(base + '_max'))
-            min = int(bcat(base + '_min'))
-            percent = int((current - min) / (max - min) * 100)
+            current_rpm = int(bcat(base + '_input'))
+            try:
+                max_rpm = int(bcat(base + '_max'))
+            except:
+                max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
+            try:
+                min_rpm = int(bcat(base + '_min'))
+            except:
+                min_rpm = 0  # Approximated: min fan speed is 0 RPM
+            percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
         except (IOError, OSError) as err:
             continue
         unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
-        label = cat(base + '_label', fallback='').strip()
-        ret[unit_name].append(sfan(label, percent))
+        label = cat(base + '_label', fallback=os.path.basename(base)).strip()
+
+        custom_sfan = namedtuple('sfan', ['label', 'current', 'percent'])
+        ret[unit_name].append(custom_sfan(label, current_rpm, percent))
 
     return dict(ret)
+
+
+def is_cpu_fan(label: str) -> bool:
+    return ("cpu" in label.lower()) or ("proc" in label.lower())
 
 
 class Cpu(sensors.Cpu):
@@ -140,14 +153,18 @@ class Cpu(sensors.Cpu):
         return cpu_temp
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         try:
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "cpu" in (entry.label or name):
-                            return entry.current
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.percent
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
+                            return entry.percent
         except:
             pass
 
@@ -255,12 +272,12 @@ class GpuNvidia(sensors.Gpu):
     @staticmethod
     def fan_percent() -> float:
         try:
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "gpu" in (entry.label or name):
-                            return entry.current
+                        if "gpu" in (entry.label.lower() or name.lower()):
+                            return entry.percent
         except:
             pass
 
@@ -336,12 +353,12 @@ class GpuAmd(sensors.Gpu):
     def fan_percent() -> float:
         try:
             # Try with psutil fans
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "gpu" in (entry.label or name):
-                            return entry.current
+                        if "gpu" in (entry.label.lower() or name.lower()):
+                            return entry.percent
 
             # Try with pyadl if psutil did not find GPU fan
             if pyadl:
