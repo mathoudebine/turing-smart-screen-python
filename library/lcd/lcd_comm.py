@@ -217,7 +217,7 @@ class LcdComm(ABC):
             background_color: Tuple[int, int, int] = (255, 255, 255),
             background_image: str = None,
             align: str = 'left',
-            anchor: str = 'lt',
+            anchor: str = None,
     ):
         # Convert text to bitmap using PIL and display it
         # Provide the background image path to display text with transparent background
