@@ -34,7 +34,7 @@ from psutil._common import bytes2human
 import library.config as config
 from library.display import display
 from library.log import logger
-
+from uptime import uptime
 DEFAULT_HISTORY_SIZE = 10
 
 ETH_CARD = config.CONFIG_DATA["config"]["ETH"]
@@ -721,6 +721,36 @@ class Date:
             theme_data=hour_theme_data,
             value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}"
         )
+
+
+class SystemUptime:
+    @staticmethod
+    def stats():
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined uptime
+            uptimesec = "4294036"
+            uptimeformatted = "49 days, 16:47:16"
+        else:
+            uptimesec = int(uptime())
+            uptimeformatted = str(datetime.timedelta(seconds = uptimesec))
+
+        systemuptime_theme_data = config.THEME_DATA['STATS']['UPTIME']
+        
+        systemuptime_sec_theme_data = systemuptime_theme_data['SECONDS']['TEXT']
+        systemuptime_sec_format = systemuptime_sec_theme_data.get("FORMAT", 'medium')
+        if systemuptime_sec_theme_data and systemuptime_sec_theme_data['SHOW']:
+            display_themed_value(
+                theme_data = systemuptime_sec_theme_data,
+                value= uptimesec
+            )
+            
+        systemuptime_withdays_theme_data = systemuptime_theme_data['WITHDAYS']['TEXT']
+        systemuptime_formatted_format = systemuptime_withdays_theme_data.get("FORMAT", 'medium')
+        if systemuptime_withdays_theme_data and systemuptime_withdays_theme_data['SHOW']:
+            display_themed_value(
+                theme_data = systemuptime_withdays_theme_data,
+                value= uptimeformatted
+            )
 
 
 class Custom:
