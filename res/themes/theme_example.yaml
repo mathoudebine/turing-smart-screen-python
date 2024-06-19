@@ -1371,7 +1371,7 @@ STATS:
     INTERVAL: 1
     DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
       TEXT:
-        FORMAT: medium # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        FORMAT: medium # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023) / custom pattern e.g. "yyyy.MM.dd" (2024.02.20)
         SHOW: False
         X: 10
         Y: 16
@@ -1390,7 +1390,7 @@ STATS:
         ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
-        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
         SHOW: False
         X: 205
         Y: 13
