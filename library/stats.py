@@ -318,8 +318,8 @@ class CPU:
                 cpu_temp_line_graph_data['SHOW'] = False
 
         display_themed_temperature_value(cpu_temp_text_data, temperature)
-        display_themed_progress_bar(cpu_temp_radial_data, temperature)
-        display_themed_temperature_radial_bar(cpu_temp_graph_data, temperature)
+        display_themed_progress_bar(cpu_temp_graph_data, temperature)
+        display_themed_temperature_radial_bar(cpu_temp_radial_data, temperature)
         display_themed_line_graph(cpu_temp_line_graph_data, cls.last_values_cpu_temperature)
 
     @classmethod
