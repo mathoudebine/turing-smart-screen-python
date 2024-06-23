@@ -2,7 +2,7 @@
 Pillow~=10.3.0         # Image generation
 pyserial~=3.5          # Serial link to communicate with the display
 PyYAML~=6.0.1          # For themes files
-psutil~=5.9.8          # CPU / disk / network metrics
+psutil~=6.0.0          # CPU / disk / network metrics
 pystray~=0.19.5        # Tray icon (all OS)
 babel~=2.15.0          # Date/time formatting
 ruamel.yaml~=0.18.6    # For configuration editor
