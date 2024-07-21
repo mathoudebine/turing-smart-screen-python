@@ -30,6 +30,7 @@ from typing import List
 
 import babel.dates
 from psutil._common import bytes2human
+from uptime import uptime
 
 import library.config as config
 from library.display import display
@@ -86,6 +87,9 @@ def get_theme_file_path(name):
 
 def display_themed_value(theme_data, value, min_size=0, unit=''):
     if not theme_data.get("SHOW", False):
+        return
+
+    if value is None:
         return
 
     # overridable MIN_SIZE from theme with backward compatibility
@@ -747,6 +751,32 @@ class Date:
         display_themed_value(
             theme_data=hour_theme_data,
             value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}"
+        )
+
+
+class SystemUptime:
+    @staticmethod
+    def stats():
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined uptime
+            uptimesec = 4294036
+        else:
+            uptimesec = int(uptime())
+
+        uptimeformatted = str(datetime.timedelta(seconds=uptimesec))
+
+        systemuptime_theme_data = config.THEME_DATA['STATS']['UPTIME']
+
+        systemuptime_sec_theme_data = systemuptime_theme_data['SECONDS']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_sec_theme_data,
+            value=uptimesec
+        )
+
+        systemuptime_formatted_theme_data = systemuptime_theme_data['FORMATTED']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_formatted_theme_data,
+            value=uptimeformatted
         )
 
 

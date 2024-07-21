@@ -209,5 +209,13 @@ STATS:
     HOUR:
       TEXT:
         SHOW: False
+  UPTIME:
+    INTERVAL: 0
+    SECONDS:
+      TEXT:
+        SHOW: False
+    FORMATTED:
+      TEXT:
+        SHOW: False
   CUSTOM:
     INTERVAL: 0

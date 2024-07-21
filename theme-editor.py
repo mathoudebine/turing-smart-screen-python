@@ -121,6 +121,8 @@ def refresh_theme():
         stats.Net.stats()
     if config.THEME_DATA['STATS']['DATE'].get("INTERVAL", 0) > 0:
         stats.Date.stats()
+    if config.THEME_DATA['STATS']['UPTIME'].get("INTERVAL", 0) > 0:
+        stats.SystemUptime.stats()
     if config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", 0) > 0:
         stats.Custom.stats()
 
