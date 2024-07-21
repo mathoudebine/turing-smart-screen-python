@@ -206,5 +206,13 @@ STATS:
     HOUR:
       TEXT:
         SHOW: False
+  UPTIME:
+    INTERVAL: 100
+    SECONDS:
+      TEXT:
+        SHOW: False
+    WITHDAYS:
+      TEXT:
+        SHOW: False
   CUSTOM:
     INTERVAL: 100
