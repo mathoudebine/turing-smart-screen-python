@@ -3,7 +3,7 @@
 STATS:
   CPU:
     PERCENTAGE:
-      INTERVAL: 100
+      INTERVAL: 0
       TEXT:
         SHOW: False
       GRAPH:
@@ -13,7 +13,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     FREQUENCY:
-      INTERVAL: 100
+      INTERVAL: 0
       TEXT:
         SHOW: False
       GRAPH:
@@ -23,7 +23,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     LOAD:
-      INTERVAL: 100
+      INTERVAL: 0
       ONE:
         TEXT:
           SHOW: False
@@ -34,7 +34,7 @@ STATS:
         TEXT:
           SHOW: False
     TEMPERATURE:
-      INTERVAL: 100
+      INTERVAL: 0
       TEXT:
         SHOW: False
       GRAPH:
@@ -44,7 +44,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
     FAN_SPEED:
-      INTERVAL: 100
+      INTERVAL: 0
       TEXT:
         SHOW: False
       GRAPH:
@@ -54,7 +54,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
   GPU:
-    INTERVAL: 100
+    INTERVAL: 0
     PERCENTAGE:
       GRAPH:
         SHOW: False
@@ -76,7 +76,10 @@ STATS:
     MEMORY_USED:
       TEXT:
         SHOW: False
-    MEMORY:  # Deprecated, do not use
+    MEMORY_TOTAL:
+      TEXT:
+        SHOW: False
+    MEMORY: # Deprecated, do not use
       GRAPH:
         SHOW: False
       RADIAL:
@@ -120,7 +123,7 @@ STATS:
       LINE_GRAPH:
         SHOW: False
   MEMORY:
-    INTERVAL: 100
+    INTERVAL: 0
     SWAP:
       GRAPH:
         SHOW: False
@@ -144,7 +147,7 @@ STATS:
       PERCENT_TEXT:
         SHOW: False
   DISK:
-    INTERVAL: 100
+    INTERVAL: 0
     USED:
       GRAPH:
         SHOW: False
@@ -163,7 +166,7 @@ STATS:
       TEXT:
         SHOW: False
   NET:
-    INTERVAL: 100
+    INTERVAL: 0
     WLO:
       UPLOAD:
         TEXT:
@@ -199,7 +202,7 @@ STATS:
         TEXT:
           SHOW: False
   DATE:
-    INTERVAL: 100
+    INTERVAL: 0
     DAY:
       TEXT:
         SHOW: False
@@ -215,4 +218,4 @@ STATS:
       TEXT:
         SHOW: False
   CUSTOM:
-    INTERVAL: 100
+    INTERVAL: 0

@@ -51,6 +51,7 @@ try:
     import sv_ttk
     from PIL import Image
     from serial.tools.list_ports import comports
+    from tktooltip import ToolTip
 except:
     print(
         "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
@@ -58,6 +59,8 @@ except:
         sys.exit(0)
     except:
         os._exit(0)
+
+from library.sensors.sensors_python import sensors_fans, is_cpu_fan
 
 TURING_MODEL = "Turing Smart Screen"
 USBPCMONITOR_MODEL = "UsbPCMonitor"
@@ -141,14 +144,28 @@ def get_net_if():
     return if_list
 
 
+def get_fans():
+    fan_list = list()
+    auto_detected_cpu_fan = "None"
+    for name, entries in sensors_fans().items():
+        for entry in entries:
+            fan_list.append("%s/%s (%d%% - %d RPM)" % (name, entry.label, entry.percent, entry.current))
+            if (is_cpu_fan(entry.label) or is_cpu_fan(name)) and auto_detected_cpu_fan == "None":
+                auto_detected_cpu_fan = "Auto-detected: %s/%s" % (name, entry.label)
+
+    fan_list.insert(0, auto_detected_cpu_fan)  # Add manual entry on top if auto-detection succeeded
+    return fan_list
+
+
 class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("770x550")
+        self.window.geometry("770x570")
         self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
+        self.window.after(0, self.on_fan_speed_update)
 
         # Make TK look better with Sun Valley ttk theme
         sv_ttk.set_theme("light")
@@ -224,18 +241,29 @@ class TuringConfigWindow:
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=500, y=415, width=250)
 
+        # For Windows platform only
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
+        # For platform != Windows
+        self.cpu_fan_label = ttk.Label(self.window, text='CPU fan (？)')
+        self.cpu_fan_label.config(foreground="#a3a3ff", cursor="hand2")
+        self.cpu_fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
+
+        self.tooltip = ToolTip(self.cpu_fan_label,
+                               msg="If \"None\" is selected, CPU fan was not auto-detected.\n"
+                                   "Manually select your CPU fan from the list.\n\n"
+                                   "Fans missing from the list? Install lm-sensors package\n"
+                                   "and run 'sudo sensors-detect' command, then reboot.")
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=310, y=490, height=50, width=130)
+        self.edit_theme_btn.place(x=310, y=510, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=450, y=490, height=50, width=130)
+        self.save_btn.place(x=450, y=510, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=590, y=490, height=50, width=130)
+        self.save_run_btn.place(x=590, y=510, height=50, width=130)
 
         self.config = None
         self.load_config_values()
@@ -261,7 +289,8 @@ class TuringConfigWindow:
             self.theme_author.config(text="Author: " + author_name)
             if author_name.startswith("@"):
                 self.theme_author.config(foreground="#a3a3ff", cursor="hand2")
-                self.theme_author.bind("<Button-1>", lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
+                self.theme_author.bind("<Button-1>",
+                                       lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
             else:
                 self.theme_author.config(foreground="#a3a3a3", cursor="")
                 self.theme_author.unbind("<Button-1>")
@@ -271,11 +300,16 @@ class TuringConfigWindow:
         with open("config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
+        # Check if theme is valid
+        if get_theme_data(self.config['config']['THEME']) is None:
+            # Theme from config.yaml is not valid: use first theme available default size 3.5"
+            self.config['config']['THEME'] = get_themes(SIZE_3_5_INCH)[0]
+
         try:
             self.theme_cb.set(self.config['config']['THEME'])
         except:
-            self.theme_cb.current(0)
-        # self.load_theme_size()
+            self.theme_cb.set("")
+
         self.load_theme_preview()
 
         try:
@@ -331,6 +365,14 @@ class TuringConfigWindow:
         except:
             self.brightness_slider.set(50)
 
+        try:
+            if self.config['config']['CPU_FAN'] == "AUTO":
+                self.cpu_fan_cb.current(0)
+            else:
+                self.cpu_fan_cb.set(self.config['config']['CPU_FAN'])
+        except:
+            self.cpu_fan_cb.current(0)
+
         # Reload content on screen
         self.on_model_change()
         self.on_size_change()
@@ -353,6 +395,10 @@ class TuringConfigWindow:
             self.config['config']['COM_PORT'] = "AUTO"
         else:
             self.config['config']['COM_PORT'] = self.com_cb.get()
+        if self.cpu_fan_cb.current() == 0:
+            self.config['config']['CPU_FAN'] = "AUTO"
+        else:
+            self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[0]
         self.config['display']['REVISION'] = model_and_size_to_revision_map[(self.model_cb.get(), self.size_cb.get())]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
@@ -361,7 +407,6 @@ class TuringConfigWindow:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
-        # self.load_theme_size()
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
@@ -417,11 +462,18 @@ class TuringConfigWindow:
             import ctypes
             is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
             if (hwlib == "LHM" or hwlib == "AUTO") and not is_admin:
-                self.lhm_admin_warning.place(x=320, y=455)
+                self.lhm_admin_warning.place(x=320, y=460)
                 self.save_run_btn.state(["disabled"])
             else:
                 self.lhm_admin_warning.place_forget()
                 self.save_run_btn.state(["!disabled"])
+        else:
+            if hwlib == "PYTHON" or hwlib == "AUTO":
+                self.cpu_fan_label.place(x=320, y=460)
+                self.cpu_fan_cb.place(x=500, y=455, width=250)
+            else:
+                self.cpu_fan_label.place_forget()
+                self.cpu_fan_cb.place_forget()
 
     def show_hide_brightness_warning(self, e=None):
         if int(self.brightness_slider.get()) > 50 and self.model_cb.get() == TURING_MODEL and self.size_cb.get() == SIZE_3_5_INCH:
@@ -429,6 +481,14 @@ class TuringConfigWindow:
             self.brightness_warning_label.place(x=320, y=225)
         else:
             self.brightness_warning_label.place_forget()
+
+    def on_fan_speed_update(self):
+        # Update fan speed periodically
+        prev_value = self.cpu_fan_cb.current()  # Save currently selected index
+        self.cpu_fan_cb.config(values=get_fans())
+        if prev_value != -1:
+            self.cpu_fan_cb.current(prev_value)  # Force select same index to refresh displayed value
+        self.window.after(500, self.on_fan_speed_update)
 
 
 if __name__ == "__main__":

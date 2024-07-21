@@ -209,6 +209,8 @@ class LcdComm(ABC):
             text: str,
             x: int = 0,
             y: int = 0,
+            width: int = 0,
+            height: int = 0,
             font: str = "roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
             font_color: Tuple[int, int, int] = (0, 0, 0),
@@ -249,12 +251,30 @@ class LcdComm(ABC):
             self.font_cache[(font, font_size)] = ImageFont.truetype("./res/fonts/" + font, font_size)
         font = self.font_cache[(font, font_size)]
         d = ImageDraw.Draw(text_image)
-        left, top, right, bottom = d.textbbox((x, y), text, font=font, align=align, anchor=anchor)
 
-        # textbbox may return float values, which is not good for the bitmap operations below.
-        # Let's extend the bounding box to the next whole pixel in all directions
-        left, top = math.floor(left), math.floor(top)
-        right, bottom = math.ceil(right), math.ceil(bottom)
+        if width == 0 or height == 0:
+            left, top, right, bottom = d.textbbox((x, y), text, font=font, align=align, anchor=anchor)
+
+            # textbbox may return float values, which is not good for the bitmap operations below.
+            # Let's extend the bounding box to the next whole pixel in all directions
+            left, top = math.floor(left), math.floor(top)
+            right, bottom = math.ceil(right), math.ceil(bottom)
+        else:
+            left, top, right, bottom = x, y, x + width, y + height
+
+            if anchor.startswith("m"):
+                x = (right + left) / 2
+            elif anchor.startswith("r"):
+                x = right
+            else:
+                x = left
+
+            if anchor.endswith("m"):
+                y = (bottom + top) / 2
+            elif anchor.endswith("b"):
+                y = bottom
+            else:
+                y = top
 
         # Draw text onto the background image with specified color & font
         d.text((x, y), text, font=font, fill=font_color, align=align, anchor=anchor)
@@ -327,6 +347,7 @@ class LcdComm(ABC):
                          max_value: int = 100,
                          autoscale: bool = False,
                          line_color: Tuple[int, int, int] = (0, 0, 0),
+                         line_width: int = 2,
                          graph_axis: bool = True,
                          axis_color: Tuple[int, int, int] = (0, 0, 0),
                          background_color: Tuple[int, int, int] = (255, 255, 255),
@@ -397,7 +418,7 @@ class LcdComm(ABC):
 
         # Draw plot graph
         draw = ImageDraw.Draw(graph_image)
-        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=2)
+        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=line_width)
 
         if graph_axis:
             # Draw axis

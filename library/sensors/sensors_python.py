@@ -22,6 +22,7 @@
 import math
 import platform
 import sys
+from collections import namedtuple
 from enum import IntEnum, auto
 from typing import Tuple
 
@@ -58,8 +59,8 @@ DETECTED_GPU = GpuType.UNSUPPORTED
 
 
 # Function inspired of psutil/psutil/_pslinux.py:sensors_fans()
-# Adapted to get fan speed percentage instead of raw value
-def sensors_fans_percent():
+# Adapted to also get fan speed percentage instead of raw value
+def sensors_fans():
     """Return hardware fans info (for CPU and other peripherals) as a
     dict including hardware label and current speed.
 
@@ -69,7 +70,7 @@ def sensors_fans_percent():
       only (old distros will probably use something else)
     - lm-sensors on Ubuntu 16.04 relies on /sys/class/hwmon
     """
-    from psutil._common import bcat, cat, sfan
+    from psutil._common import bcat, cat
     import collections, glob, os
 
     ret = collections.defaultdict(list)
@@ -82,31 +83,52 @@ def sensors_fans_percent():
     basenames = sorted(set([x.split('_')[0] for x in basenames]))
     for base in basenames:
         try:
-            current = int(bcat(base + '_input'))
-            max = int(bcat(base + '_max'))
-            min = int(bcat(base + '_min'))
-            percent = int((current - min) / (max - min) * 100)
+            current_rpm = int(bcat(base + '_input'))
+            try:
+                max_rpm = int(bcat(base + '_max'))
+            except:
+                max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
+            try:
+                min_rpm = int(bcat(base + '_min'))
+            except:
+                min_rpm = 0  # Approximated: min fan speed is 0 RPM
+            percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
         except (IOError, OSError) as err:
             continue
         unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
-        label = cat(base + '_label', fallback='').strip()
-        ret[unit_name].append(sfan(label, percent))
+        label = cat(base + '_label', fallback=os.path.basename(base)).strip()
+
+        custom_sfan = namedtuple('sfan', ['label', 'current', 'percent'])
+        ret[unit_name].append(custom_sfan(label, current_rpm, percent))
 
     return dict(ret)
+
+
+def is_cpu_fan(label: str) -> bool:
+    return ("cpu" in label.lower()) or ("proc" in label.lower())
 
 
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
-        return psutil.cpu_percent(interval=interval)
+        try:
+            return psutil.cpu_percent(interval=interval)
+        except:
+            return math.nan
 
     @staticmethod
     def frequency() -> float:
-        return psutil.cpu_freq().current
+        try:
+            return psutil.cpu_freq().current
+        except:
+            return math.nan
 
     @staticmethod
     def load() -> Tuple[float, float, float]:  # 1 / 5 / 15min avg (%):
-        return psutil.getloadavg()
+        try:
+            return psutil.getloadavg()
+        except:
+            return math.nan, math.nan, math.nan
 
     @staticmethod
     def temperature() -> float:
@@ -131,14 +153,18 @@ class Cpu(sensors.Cpu):
         return cpu_temp
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         try:
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "cpu" in (entry.label or name):
-                            return entry.current
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.percent
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
+                            return entry.percent
         except:
             pass
 
@@ -147,14 +173,15 @@ class Cpu(sensors.Cpu):
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.stats()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.stats()
         else:
-            return math.nan, math.nan, math.nan, math.nan
+            return math.nan, math.nan, math.nan, math.nan, math.nan
 
     @staticmethod
     def fps() -> int:
@@ -207,7 +234,8 @@ class Gpu(sensors.Gpu):
 
 class GpuNvidia(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -220,6 +248,10 @@ class GpuNvidia(sensors.Gpu):
         try:
             memory_total_all = [item.memoryTotal for item in nvidia_gpus]
             memory_total_mb = sum(memory_total_all) / len(memory_total_all)
+        except:
+            memory_total_mb = math.nan
+
+        try:
             memory_percentage = (memory_used_mb / memory_total_mb) * 100
         except:
             memory_percentage = math.nan
@@ -236,7 +268,7 @@ class GpuNvidia(sensors.Gpu):
         except:
             temperature = math.nan
 
-        return load, memory_percentage, memory_used_mb, temperature
+        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature
 
     @staticmethod
     def fps() -> int:
@@ -246,12 +278,12 @@ class GpuNvidia(sensors.Gpu):
     @staticmethod
     def fan_percent() -> float:
         try:
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "gpu" in (entry.label or name):
-                            return entry.current
+                        if "gpu" in (entry.label.lower() or name.lower()):
+                            return entry.percent
         except:
             pass
 
@@ -272,7 +304,8 @@ class GpuNvidia(sensors.Gpu):
 
 class GpuAmd(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             pyamdgpuinfo.detect_gpus()
@@ -280,13 +313,19 @@ class GpuAmd(sensors.Gpu):
 
             try:
                 memory_used_bytes = amd_gpu.query_vram_usage()
-                memory_used = memory_used_bytes / 1000000
+                memory_used = memory_used_bytes / 1024 / 1024
             except:
                 memory_used_bytes = math.nan
                 memory_used = math.nan
 
             try:
                 memory_total_bytes = amd_gpu.memory_info["vram_size"]
+                memory_total = memory_total_bytes / 1024 / 1024
+            except:
+                memory_total_bytes = math.nan
+                memory_total = math.nan
+
+            try:
                 memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
             except:
                 memory_percentage = math.nan
@@ -301,7 +340,7 @@ class GpuAmd(sensors.Gpu):
             except:
                 temperature = math.nan
 
-            return load, memory_percentage, memory_used, temperature
+            return load, memory_percentage, memory_used, memory_total, temperature
         elif pyadl:
             amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
 
@@ -315,8 +354,8 @@ class GpuAmd(sensors.Gpu):
             except:
                 temperature = math.nan
 
-            # Memory absolute (M) and relative (%) usage not supported by pyadl
-            return load, math.nan, math.nan, temperature
+            # GPU memory data not supported by pyadl
+            return load, math.nan, math.nan, math.nan, temperature
 
     @staticmethod
     def fps() -> int:
@@ -327,12 +366,12 @@ class GpuAmd(sensors.Gpu):
     def fan_percent() -> float:
         try:
             # Try with psutil fans
-            fans = sensors_fans_percent()
+            fans = sensors_fans()
             if fans:
                 for name, entries in fans.items():
                     for entry in entries:
-                        if "gpu" in (entry.label or name):
-                            return entry.current
+                        if "gpu" in (entry.label.lower() or name.lower()):
+                            return entry.percent
 
             # Try with pyadl if psutil did not find GPU fan
             if pyadl:
@@ -369,37 +408,58 @@ class GpuAmd(sensors.Gpu):
 class Memory(sensors.Memory):
     @staticmethod
     def swap_percent() -> float:
-        return psutil.swap_memory().percent
+        try:
+            return psutil.swap_memory().percent
+        except:
+            return math.nan
 
     @staticmethod
     def virtual_percent() -> float:
-        return psutil.virtual_memory().percent
+        try:
+            return psutil.virtual_memory().percent
+        except:
+            return math.nan
 
     @staticmethod
     def virtual_used() -> int:  # In bytes
-        # Do not use psutil.virtual_memory().used: from https://psutil.readthedocs.io/en/latest/#memory
-        # "It is calculated differently depending on the platform and designed for informational purposes only"
-        return psutil.virtual_memory().total - psutil.virtual_memory().available
+        try:
+            # Do not use psutil.virtual_memory().used: from https://psutil.readthedocs.io/en/latest/#memory
+            # "It is calculated differently depending on the platform and designed for informational purposes only"
+            return psutil.virtual_memory().total - psutil.virtual_memory().available
+        except:
+            return -1
 
     @staticmethod
     def virtual_free() -> int:  # In bytes
-        # Do not use psutil.virtual_memory().free: from https://psutil.readthedocs.io/en/latest/#memory
-        # "note that this doesn’t reflect the actual memory available (use available instead)."
-        return psutil.virtual_memory().available
+        try:
+            # Do not use psutil.virtual_memory().free: from https://psutil.readthedocs.io/en/latest/#memory
+            # "note that this doesn’t reflect the actual memory available (use available instead)."
+            return psutil.virtual_memory().available
+        except:
+            return -1
 
 
 class Disk(sensors.Disk):
     @staticmethod
     def disk_usage_percent() -> float:
-        return psutil.disk_usage("/").percent
+        try:
+            return psutil.disk_usage("/").percent
+        except:
+            return math.nan
 
     @staticmethod
     def disk_used() -> int:  # In bytes
-        return psutil.disk_usage("/").used
+        try:
+            return psutil.disk_usage("/").used
+        except:
+            return -1
 
     @staticmethod
     def disk_free() -> int:  # In bytes
-        return psutil.disk_usage("/").free
+        try:
+            return psutil.disk_usage("/").free
+        except:
+            return -1
 
 
 class Net(sensors.Net):
@@ -407,27 +467,30 @@ class Net(sensors.Net):
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
         global PNIC_BEFORE
-        # Get current counters
-        pnic_after = psutil.net_io_counters(pernic=True)
+        try:
+            # Get current counters
+            pnic_after = psutil.net_io_counters(pernic=True)
 
-        upload_rate = 0
-        uploaded = 0
-        download_rate = 0
-        downloaded = 0
+            upload_rate = 0
+            uploaded = 0
+            download_rate = 0
+            downloaded = 0
 
-        if if_name != "":
-            if if_name in pnic_after:
-                try:
-                    upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
-                    uploaded = pnic_after[if_name].bytes_sent
-                    download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
-                    downloaded = pnic_after[if_name].bytes_recv
-                except:
-                    # Interface might not be in PNIC_BEFORE for now
-                    pass
+            if if_name != "":
+                if if_name in pnic_after:
+                    try:
+                        upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                        uploaded = pnic_after[if_name].bytes_sent
+                        download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
+                        downloaded = pnic_after[if_name].bytes_recv
+                    except:
+                        # Interface might not be in PNIC_BEFORE for now
+                        pass
 
-                PNIC_BEFORE.update({if_name: pnic_after[if_name]})
-            else:
-                logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
+                    PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+                else:
+                    logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
 
-        return upload_rate, uploaded, download_rate, downloaded
+            return upload_rate, uploaded, download_rate, downloaded
+        except:
+            return -1, -1, -1, -1

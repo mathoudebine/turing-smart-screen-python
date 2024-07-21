@@ -307,7 +307,7 @@ STATS:
           SHOW: True
           SHOW_UNIT: True
           X: 202
-          Y: 324
+          Y: 346
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 20
           FONT_COLOR: 0, 0, 0
@@ -317,7 +317,7 @@ STATS:
           SHOW: True
           SHOW_UNIT: True
           X: 202
-          Y: 346
+          Y: 324
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 20
           FONT_COLOR: 0, 0, 0
