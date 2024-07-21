@@ -313,6 +313,23 @@ class Gpu(sensors.Gpu):
         return load, (used_mem / total_mem * 100.0), used_mem, temp
 
     @classmethod
+    def total_memory(cls) -> float:
+        gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuAmd, cls.gpu_name)
+        if gpu_to_use is None:
+            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuNvidia, cls.gpu_name)
+        if gpu_to_use is None:
+            gpu_to_use = get_hw_and_update(Hardware.HardwareType.GpuIntel, cls.gpu_name)
+        if gpu_to_use is None:
+            # GPU not supported
+            return math.nan
+
+        for sensor in gpu_to_use.Sensors:
+            if sensor.SensorType == Hardware.SensorType.SmallData and str(sensor.Name).startswith("GPU Memory Total"):
+                return float(sensor.Value)
+
+        return math.nan
+
+    @classmethod
     def fps(cls) -> int:
         gpu_to_use = cls.get_gpu_to_use()
         if gpu_to_use is None:
