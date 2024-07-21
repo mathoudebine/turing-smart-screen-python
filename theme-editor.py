@@ -101,17 +101,28 @@ def refresh_theme():
 
     # Display all data on screen once
     import library.stats as stats
-    stats.CPU.percentage()
-    stats.CPU.frequency()
-    stats.CPU.load()
-    stats.CPU.temperature()
-    stats.CPU.fan_speed()
-    stats.Gpu.stats()
-    stats.Memory.stats()
-    stats.Disk.stats()
-    stats.Net.stats()
-    stats.Date.stats()
-    stats.Custom.stats()
+    if config.THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", 0) > 0:
+        stats.CPU.percentage()
+    if config.THEME_DATA['STATS']['CPU']['FREQUENCY'].get("INTERVAL", 0) > 0:
+        stats.CPU.frequency()
+    if config.THEME_DATA['STATS']['CPU']['LOAD'].get("INTERVAL", 0) > 0:
+        stats.CPU.load()
+    if config.THEME_DATA['STATS']['CPU']['TEMPERATURE'].get("INTERVAL", 0) > 0:
+        stats.CPU.temperature()
+    if config.THEME_DATA['STATS']['CPU']['FAN_SPEED'].get("INTERVAL", 0) > 0:
+        stats.CPU.fan_speed()
+    if config.THEME_DATA['STATS']['GPU'].get("INTERVAL", 0) > 0:
+        stats.Gpu.stats()
+    if config.THEME_DATA['STATS']['MEMORY'].get("INTERVAL", 0) > 0:
+        stats.Memory.stats()
+    if config.THEME_DATA['STATS']['DISK'].get("INTERVAL", 0) > 0:
+        stats.Disk.stats()
+    if config.THEME_DATA['STATS']['NET'].get("INTERVAL", 0) > 0:
+        stats.Net.stats()
+    if config.THEME_DATA['STATS']['DATE'].get("INTERVAL", 0) > 0:
+        stats.Date.stats()
+    if config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", 0) > 0:
+        stats.Custom.stats()
 
 
 if __name__ == "__main__":
