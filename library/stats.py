@@ -367,11 +367,10 @@ class Gpu:
 
     @classmethod
     def stats(cls):
-        load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
+        load, memory_percentage, memory_used_mb, total_memory_mb, temperature = sensors.Gpu.stats()
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
         freq_ghz = sensors.Gpu.frequency() / 1000
-        total_memory = sensors.Gpu.total_memory()
 
         theme_gpu_data = config.THEME_DATA['STATS']['GPU']
 
@@ -472,14 +471,19 @@ class Gpu:
         )
 
         # GPU mem. total memory (M)
-        gpu_total_mem_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
-        if gpu_total_mem_text_data and gpu_total_mem_text_data['SHOW']:
-            display_themed_value(
-                theme_data=gpu_total_mem_text_data,
-                value=int(total_memory),
-                min_size=5, # Adjust min_size as necessary for your display
-                unit=" M"   # Assuming the unit is in Megabytes
-            )
+        gpu_mem_total_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
+        if math.isnan(memory_used_mb):
+            memory_used_mb = 0
+            if gpu_mem_total_text_data['SHOW']:
+                logger.warning("Your GPU total memory capacity (M) is not supported yet")
+                gpu_mem_total_text_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=gpu_mem_total_text_data,
+            value=int(total_memory_mb),
+            min_size=5,  # Adjust min_size as necessary for your display
+            unit=" M"  # Assuming the unit is in Megabytes
+        )
 
         # GPU temperature (°C)
         gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']

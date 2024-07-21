@@ -62,9 +62,13 @@ class Cpu(sensors.Cpu):
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
-        return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, \
-            GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1000, TEMPERATURE_SENSOR_VALUE
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        return (PERCENTAGE_SENSOR_VALUE,
+                PERCENTAGE_SENSOR_VALUE,
+                GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1024,
+                GPU_MEM_TOTAL_SIZE_GB * 1024,
+                TEMPERATURE_SENSOR_VALUE)
 
     @staticmethod
     def fps() -> int:

@@ -173,14 +173,15 @@ class Cpu(sensors.Cpu):
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.stats()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.stats()
         else:
-            return math.nan, math.nan, math.nan, math.nan
+            return math.nan, math.nan, math.nan, math.nan, math.nan
 
     @staticmethod
     def fps() -> int:
@@ -233,7 +234,8 @@ class Gpu(sensors.Gpu):
 
 class GpuNvidia(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
         nvidia_gpus = GPUtil.getGPUs()
 
@@ -246,6 +248,10 @@ class GpuNvidia(sensors.Gpu):
         try:
             memory_total_all = [item.memoryTotal for item in nvidia_gpus]
             memory_total_mb = sum(memory_total_all) / len(memory_total_all)
+        except:
+            memory_total_mb = math.nan
+
+        try:
             memory_percentage = (memory_used_mb / memory_total_mb) * 100
         except:
             memory_percentage = math.nan
@@ -262,7 +268,7 @@ class GpuNvidia(sensors.Gpu):
         except:
             temperature = math.nan
 
-        return load, memory_percentage, memory_used_mb, temperature
+        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature
 
     @staticmethod
     def fps() -> int:
@@ -298,7 +304,8 @@ class GpuNvidia(sensors.Gpu):
 
 class GpuAmd(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         if pyamdgpuinfo:
             # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
             pyamdgpuinfo.detect_gpus()
@@ -306,13 +313,19 @@ class GpuAmd(sensors.Gpu):
 
             try:
                 memory_used_bytes = amd_gpu.query_vram_usage()
-                memory_used = memory_used_bytes / 1000000
+                memory_used = memory_used_bytes / 1024 / 1024
             except:
                 memory_used_bytes = math.nan
                 memory_used = math.nan
 
             try:
                 memory_total_bytes = amd_gpu.memory_info["vram_size"]
+                memory_total = memory_total_bytes / 1024 / 1024
+            except:
+                memory_total_bytes = math.nan
+                memory_total = math.nan
+
+            try:
                 memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
             except:
                 memory_percentage = math.nan
@@ -327,7 +340,7 @@ class GpuAmd(sensors.Gpu):
             except:
                 temperature = math.nan
 
-            return load, memory_percentage, memory_used, temperature
+            return load, memory_percentage, memory_used, memory_total, temperature
         elif pyadl:
             amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
 
@@ -341,8 +354,8 @@ class GpuAmd(sensors.Gpu):
             except:
                 temperature = math.nan
 
-            # Memory absolute (M) and relative (%) usage not supported by pyadl
-            return load, math.nan, math.nan, temperature
+            # GPU memory data not supported by pyadl
+            return load, math.nan, math.nan, math.nan, temperature
 
     @staticmethod
     def fps() -> int:
@@ -424,6 +437,7 @@ class Memory(sensors.Memory):
             return psutil.virtual_memory().available
         except:
             return -1
+
 
 class Disk(sensors.Disk):
     @staticmethod
