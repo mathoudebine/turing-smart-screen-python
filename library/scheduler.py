@@ -69,6 +69,8 @@ def schedule(interval):
                 **kwargs
         ):
             """ Wrapper to create our schedule and run it at the appropriate time """
+            if interval == 0:
+                return
             scheduler = sched.scheduler(time.time, time.sleep)
             periodic(scheduler, interval, func)
             scheduler.run()
