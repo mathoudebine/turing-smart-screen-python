@@ -57,6 +57,7 @@ STATS:
         # BACKGROUND_COLOR: 132, 154, 165
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
+      INTERVAL: 5
       RADIAL:
         SHOW: True
         X: 170
