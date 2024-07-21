@@ -423,6 +423,7 @@ STATS:
     # In seconds. Longer intervals cause this to refresh more slowly.
     # Setting to lower values will display near real time data,
     # but may cause significant CPU usage or the display not to update properly
+    # Note: refresh interval is common to all GPU sensors
     INTERVAL: 1
     PERCENTAGE:
       GRAPH:
