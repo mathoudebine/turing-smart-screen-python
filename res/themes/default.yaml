@@ -210,11 +210,11 @@ STATS:
       TEXT:
         SHOW: False
   UPTIME:
-    INTERVAL: 100
+    INTERVAL: 0
     SECONDS:
       TEXT:
         SHOW: False
-    WITHDAYS:
+    FORMATTED:
       TEXT:
         SHOW: False
   CUSTOM:

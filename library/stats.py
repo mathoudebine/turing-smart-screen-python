@@ -759,7 +759,7 @@ class SystemUptime:
     def stats():
         if HW_SENSORS == "STATIC":
             # For static sensors, use predefined uptime
-            uptimesec = "4294036"
+            uptimesec = 4294036
         else:
             uptimesec = int(uptime())
 
@@ -768,18 +768,16 @@ class SystemUptime:
         systemuptime_theme_data = config.THEME_DATA['STATS']['UPTIME']
 
         systemuptime_sec_theme_data = systemuptime_theme_data['SECONDS']['TEXT']
-        if systemuptime_sec_theme_data and systemuptime_sec_theme_data['SHOW']:
-            display_themed_value(
-                theme_data=systemuptime_sec_theme_data,
-                value=uptimesec
-            )
+        display_themed_value(
+            theme_data=systemuptime_sec_theme_data,
+            value=uptimesec
+        )
 
-        systemuptime_withdays_theme_data = systemuptime_theme_data['WITHDAYS']['TEXT']
-        if systemuptime_withdays_theme_data and systemuptime_withdays_theme_data['SHOW']:
-            display_themed_value(
-                theme_data=systemuptime_withdays_theme_data,
-                value=uptimeformatted
-            )
+        systemuptime_formatted_theme_data = systemuptime_theme_data['FORMATTED']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_formatted_theme_data,
+            value=uptimeformatted
+        )
 
 
 class Custom:
