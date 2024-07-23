@@ -331,7 +331,7 @@ class GpuAmd(sensors.Gpu):
                 memory_percentage = math.nan
 
             try:
-                load = amd_gpu.query_load()
+                load = amd_gpu.query_load() * 100
             except:
                 load = math.nan
 
