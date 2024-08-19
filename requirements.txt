@@ -12,7 +12,7 @@ uptime~=3.0.1          # For System Uptime
 
 # Efficient image serialization
 numpy~=1.24.4; python_version < "3.9"   # For Python 3.8 max.
-numpy~=1.26.4; python_version >= "3.9"  # For Python 3.9+
+numpy~=2.1.0; python_version >= "3.9"  # For Python 3.9+
 
 # For Nvidia GPU on all platforms
 GPUtil~=1.4.0; python_version < "3.12"
