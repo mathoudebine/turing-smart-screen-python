@@ -216,12 +216,14 @@ class Gpu(sensors.Gpu):
     @staticmethod
     def is_available() -> bool:
         global DETECTED_GPU
-        if GpuAmd.is_available():
-            logger.info("Detected AMD GPU(s)")
-            DETECTED_GPU = GpuType.AMD
-        elif GpuNvidia.is_available():
+        # Always use Nvidia GPU if available
+        if GpuNvidia.is_available():
             logger.info("Detected Nvidia GPU(s)")
             DETECTED_GPU = GpuType.NVIDIA
+        # Otherwise, use the AMD GPU / APU if available
+        elif GpuAmd.is_available():
+            logger.info("Detected AMD GPU(s)")
+            DETECTED_GPU = GpuType.AMD
         else:
             logger.warning("No supported GPU found")
             DETECTED_GPU = GpuType.UNSUPPORTED
