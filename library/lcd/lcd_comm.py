@@ -25,7 +25,7 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Tuple
+from typing import Tuple, List
 
 import serial
 from PIL import Image, ImageDraw, ImageFont
@@ -209,6 +209,8 @@ class LcdComm(ABC):
             text: str,
             x: int = 0,
             y: int = 0,
+            width: int = 0,
+            height: int = 0,
             font: str = "roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
             font_color: Tuple[int, int, int] = (0, 0, 0),
@@ -249,12 +251,30 @@ class LcdComm(ABC):
             self.font_cache[(font, font_size)] = ImageFont.truetype("./res/fonts/" + font, font_size)
         font = self.font_cache[(font, font_size)]
         d = ImageDraw.Draw(text_image)
-        left, top, right, bottom = d.textbbox((x, y), text, font=font, align=align, anchor=anchor)
 
-        # textbbox may return float values, which is not good for the bitmap operations below.
-        # Let's extend the bounding box to the next whole pixel in all directions
-        left, top = math.floor(left), math.floor(top)
-        right, bottom = math.ceil(right), math.ceil(bottom)
+        if width == 0 or height == 0:
+            left, top, right, bottom = d.textbbox((x, y), text, font=font, align=align, anchor=anchor)
+
+            # textbbox may return float values, which is not good for the bitmap operations below.
+            # Let's extend the bounding box to the next whole pixel in all directions
+            left, top = math.floor(left), math.floor(top)
+            right, bottom = math.ceil(right), math.ceil(bottom)
+        else:
+            left, top, right, bottom = x, y, x + width, y + height
+
+            if anchor.startswith("m"):
+                x = (right + left) / 2
+            elif anchor.startswith("r"):
+                x = right
+            else:
+                x = left
+
+            if anchor.endswith("m"):
+                y = (bottom + top) / 2
+            elif anchor.endswith("b"):
+                y = bottom
+            else:
+                y = top
 
         # Draw text onto the background image with specified color & font
         d.text((x, y), text, font=font, fill=font_color, align=align, anchor=anchor)
@@ -320,6 +340,106 @@ class LcdComm(ABC):
             draw.rectangle([0, 0, width - 1, height - 1], fill=None, outline=bar_color)
 
         self.DisplayPILImage(bar_image, x, y)
+
+    def DisplayLineGraph(self, x: int, y: int, width: int, height: int,
+                         values: List[float],
+                         min_value: int = 0,
+                         max_value: int = 100,
+                         autoscale: bool = False,
+                         line_color: Tuple[int, int, int] = (0, 0, 0),
+                         line_width: int = 2,
+                         graph_axis: bool = True,
+                         axis_color: Tuple[int, int, int] = (0, 0, 0),
+                         background_color: Tuple[int, int, int] = (255, 255, 255),
+                         background_image: str = None):
+        # Generate a plot graph and display it
+        # Provide the background image path to display plot graph with transparent background
+
+        if isinstance(line_color, str):
+            line_color = tuple(map(int, line_color.split(', ')))
+
+        if isinstance(axis_color, str):
+            axis_color = tuple(map(int, axis_color.split(', ')))
+
+        if isinstance(background_color, str):
+            background_color = tuple(map(int, background_color.split(', ')))
+
+        assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
+        assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
+        assert x + width <= self.get_width(), 'Progress bar width exceeds display width'
+        assert y + height <= self.get_height(), 'Progress bar height exceeds display height'
+
+        if background_image is None:
+            # A bitmap is created with solid background
+            graph_image = Image.new('RGB', (width, height), background_color)
+        else:
+            # A bitmap is created from provided background image
+            graph_image = self.open_image(background_image)
+
+            # Crop bitmap to keep only the plot graph background
+            graph_image = graph_image.crop(box=(x, y, x + width, y + height))
+
+        # if autoscale is enabled, define new min/max value to "zoom" the graph
+        if autoscale:
+            trueMin = max_value
+            trueMax = min_value
+            for value in values:
+                if not math.isnan(value):
+                    if trueMin > value:
+                        trueMin = value
+                    if trueMax < value:
+                        trueMax = value
+
+            if trueMin != max_value and trueMax != min_value:
+                min_value = max(trueMin - 5, min_value)
+                max_value = min(trueMax + 5, max_value)
+
+        step = width / len(values)
+        # pre compute yScale multiplier value
+        yScale = height / (max_value - min_value)
+
+        plotsX = []
+        plotsY = []
+        count = 0
+        for value in values:
+            if not math.isnan(value):
+                # Don't let the set value exceed our min or max value, this is bad :)                
+                if value < min_value:
+                    value = min_value
+                elif max_value < value:
+                    value = max_value
+
+                assert min_value <= value <= max_value, 'Plot point value shall be between min and max'
+
+                plotsX.append(count * step)
+                plotsY.append(height - (value - min_value) * yScale)
+
+                count += 1
+
+        # Draw plot graph
+        draw = ImageDraw.Draw(graph_image)
+        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=line_width)
+
+        if graph_axis:
+            # Draw axis
+            draw.line([0, height - 1, width - 1, height - 1], fill=axis_color)
+            draw.line([0, 0, 0, height - 1], fill=axis_color)
+
+            # Draw Legend
+            draw.line([0, 0, 1, 0], fill=axis_color)
+            text = f"{int(max_value)}"
+            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
+            left, top, right, bottom = font.getbbox(text)
+            draw.text((2, 0 - top), text,
+                      font=font, fill=axis_color)
+
+            text = f"{int(min_value)}"
+            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
+            left, top, right, bottom = font.getbbox(text)
+            draw.text((width - 1 - right, height - 2 - bottom), text,
+                      font=font, fill=axis_color)
+
+        self.DisplayPILImage(graph_image, x, y)
 
     def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
                                  min_value: int = 0,

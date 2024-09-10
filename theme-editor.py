@@ -28,8 +28,17 @@ import subprocess
 import sys
 import time
 
+MIN_PYTHON = (3, 8)
+if sys.version_info < MIN_PYTHON:
+    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
+
 try:
     import tkinter
+    from PIL import ImageTk
 except:
     print(
         "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
@@ -38,13 +47,6 @@ except:
     except:
         os._exit(0)
 
-MIN_PYTHON = (3, 8)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 if len(sys.argv) != 2:
     print("Usage :")
@@ -57,8 +59,6 @@ if len(sys.argv) != 2:
         sys.exit(0)
     except:
         os._exit(0)
-
-from PIL import ImageTk, Image
 
 import library.log
 
@@ -105,16 +105,30 @@ def refresh_theme():
 
     # Display all data on screen once
     import library.stats as stats
-    stats.CPU.percentage()
-    stats.CPU.frequency()
-    stats.CPU.load()
-    stats.CPU.temperature()
-    stats.Gpu.stats()
-    stats.Memory.stats()
-    stats.Disk.stats()
-    stats.Net.stats()
-    stats.Date.stats()
-    stats.Custom.stats()
+    if config.THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", 0) > 0:
+        stats.CPU.percentage()
+    if config.THEME_DATA['STATS']['CPU']['FREQUENCY'].get("INTERVAL", 0) > 0:
+        stats.CPU.frequency()
+    if config.THEME_DATA['STATS']['CPU']['LOAD'].get("INTERVAL", 0) > 0:
+        stats.CPU.load()
+    if config.THEME_DATA['STATS']['CPU']['TEMPERATURE'].get("INTERVAL", 0) > 0:
+        stats.CPU.temperature()
+    if config.THEME_DATA['STATS']['CPU']['FAN_SPEED'].get("INTERVAL", 0) > 0:
+        stats.CPU.fan_speed()
+    if config.THEME_DATA['STATS']['GPU'].get("INTERVAL", 0) > 0:
+        stats.Gpu.stats()
+    if config.THEME_DATA['STATS']['MEMORY'].get("INTERVAL", 0) > 0:
+        stats.Memory.stats()
+    if config.THEME_DATA['STATS']['DISK'].get("INTERVAL", 0) > 0:
+        stats.Disk.stats()
+    if config.THEME_DATA['STATS']['NET'].get("INTERVAL", 0) > 0:
+        stats.Net.stats()
+    if config.THEME_DATA['STATS']['DATE'].get("INTERVAL", 0) > 0:
+        stats.Date.stats()
+    if config.THEME_DATA['STATS']['UPTIME'].get("INTERVAL", 0) > 0:
+        stats.SystemUptime.stats()
+    if config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", 0) > 0:
+        stats.Custom.stats()
 
 
 if __name__ == "__main__":
@@ -201,9 +215,6 @@ if __name__ == "__main__":
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
-    # Load theme file and generate first preview
-    refresh_theme()
-
     logger.debug("Starting Theme Editor...")
 
     # Get theme file to edit
@@ -220,6 +231,9 @@ if __name__ == "__main__":
         os.startfile(".\\" + theme_file)
     else:  # linux variants
         subprocess.call(('xdg-open', "./" + theme_file))
+
+    # Load theme file and generate first preview
+    refresh_theme()
 
     # Create preview window
     logger.debug("Opening theme preview window with static data")
@@ -269,7 +283,7 @@ if __name__ == "__main__":
                  "update automatically")
     # Every time the theme file is modified: reload preview
     while True:
-        if os.path.getmtime(theme_file) > last_edit_time:
+        if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
             logger.debug("The theme file has been updated, the preview window will refresh")
             refresh_theme()
             last_edit_time = os.path.getmtime(theme_file)

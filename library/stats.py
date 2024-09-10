@@ -26,17 +26,22 @@ import math
 import os
 import platform
 import sys
+from typing import List
 
 import babel.dates
 from psutil._common import bytes2human
+from uptime import uptime
 
 import library.config as config
 from library.display import display
 from library.log import logger
 
-ETH_CARD = config.CONFIG_DATA["config"]["ETH"]
-WLO_CARD = config.CONFIG_DATA["config"]["WLO"]
-HW_SENSORS = config.CONFIG_DATA["config"]["HW_SENSORS"]
+DEFAULT_HISTORY_SIZE = 10
+
+ETH_CARD = config.CONFIG_DATA["config"].get("ETH", "")
+WLO_CARD = config.CONFIG_DATA["config"].get("WLO", "")
+HW_SENSORS = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
+CPU_FAN = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
 
 if HW_SENSORS == "PYTHON":
     if platform.system() == 'Windows':
@@ -84,6 +89,12 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
     if not theme_data.get("SHOW", False):
         return
 
+    if value is None:
+        return
+
+    # overridable MIN_SIZE from theme with backward compatibility
+    min_size = theme_data.get("MIN_SIZE", min_size)
+
     text = f"{{:>{min_size}}}".format(value)
     if theme_data.get("SHOW_UNIT", True) and unit:
         text += str(unit)
@@ -92,12 +103,33 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
         text=text,
         x=theme_data.get("X", 0),
         y=theme_data.get("Y", 0),
+        width=theme_data.get("WIDTH", 0),
+        height=theme_data.get("HEIGHT", 0),
         font=theme_data.get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (255, 255, 255)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
-        anchor="lt"
+        align=theme_data.get("ALIGN", "left"),
+        anchor=theme_data.get("ANCHOR", "lt"),
+    )
+
+
+def display_themed_percent_value(theme_data, value):
+    display_themed_value(
+        theme_data=theme_data,
+        value=int(value),
+        min_size=3,
+        unit="%"
+    )
+
+
+def display_themed_temperature_value(theme_data, value):
+    display_themed_value(
+        theme_data=theme_data,
+        value=int(value),
+        min_size=3,
+        unit="°C"
     )
 
 
@@ -157,173 +189,398 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
     )
 
 
-class CPU:
-    @staticmethod
-    def percentage():
-        theme_data = config.THEME_DATA['STATS']['CPU']['PERCENTAGE']
-        cpu_percentage = sensors.Cpu.percentage(
-            interval=theme_data.get("INTERVAL", None)
-        )
-        # logger.debug(f"CPU Percentage: {cpu_percentage}")
-
-        display_themed_progress_bar(
-            theme_data=theme_data['GRAPH'],
-            value=int(cpu_percentage)
-        )
-
-        display_themed_radial_bar(
-            theme_data=(theme_data['RADIAL']),
-            value=int(cpu_percentage),
-            unit="%",
-            min_size=3)
-
-        display_themed_value(
-            theme_data=(theme_data['TEXT']),
-            value=int(cpu_percentage),
-            unit="%",
-            min_size=3
-        )
-
-    @staticmethod
-    def frequency():
-        display_themed_value(
-            theme_data=config.THEME_DATA['STATS']['CPU']['FREQUENCY']['TEXT'],
-            value=f'{sensors.Cpu.frequency() / 1000:.2f}',
-            unit=" GHz",
-            min_size=4
-        )
-
-    @staticmethod
-    def load():
-        cpu_load = sensors.Cpu.load()
-        # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
-        load_theme_data = config.THEME_DATA['STATS']['CPU']['LOAD']
-
-        CPU._display_load_data(load_theme_data['ONE']['TEXT'], cpu_load[0])
-
-        CPU._display_load_data(load_theme_data['FIVE']['TEXT'], cpu_load[1])
-
-        CPU._display_load_data(load_theme_data['FIFTEEN']['TEXT'], cpu_load[2])
-
-    @staticmethod
-    def _display_load_data(theme_one_text_data, value):
-        display_themed_value(
-            theme_data=theme_one_text_data,
-            value=int(value),
-            min_size=3,
-            unit="%"
-        )
-
-    @staticmethod
-    def is_temperature_available():
-        return sensors.Cpu.is_temperature_available()
-
-    @staticmethod
-    def temperature():
-        display_themed_value(
-            theme_data=config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT'],
-            value=int(sensors.Cpu.temperature()),
-            min_size=3,
-            unit="°C"
-        )
-
-
-def display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps):
-    theme_gpu_data = config.THEME_DATA['STATS']['GPU']
-
-    gpu_percent_graph_data = theme_gpu_data['PERCENTAGE']['GRAPH']
-    gpu_percent_radial_data = theme_gpu_data['PERCENTAGE']['RADIAL']
-    gpu_percent_text_data = theme_gpu_data['PERCENTAGE']['TEXT']
-    if math.isnan(load):
-        load = 0
-        if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW']:
-            logger.warning("Your GPU load is not supported yet")
-            gpu_percent_graph_data['SHOW'] = False
-            gpu_percent_text_data['SHOW'] = False
-            gpu_percent_radial_data['SHOW'] = False
-
-    gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
-    gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
-    if math.isnan(memory_percentage):
-        memory_percentage = 0
-        if gpu_mem_graph_data['SHOW'] or gpu_mem_radial_data['SHOW']:
-            logger.warning("Your GPU memory relative usage (%) is not supported yet")
-            gpu_mem_graph_data['SHOW'] = False
-            gpu_mem_radial_data['SHOW'] = False
-
-    gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
-    if math.isnan(memory_used_mb):
-        memory_used_mb = 0
-        if gpu_mem_text_data['SHOW']:
-            logger.warning("Your GPU memory absolute usage (M) is not supported yet")
-            gpu_mem_text_data['SHOW'] = False
-
-    gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']
-    if math.isnan(temperature):
-        temperature = 0
-        if gpu_temp_text_data['SHOW']:
-            logger.warning("Your GPU temperature is not supported yet")
-            gpu_temp_text_data['SHOW'] = False
-
-    gpu_fps_text_data = theme_gpu_data['FPS']['TEXT']
-    if fps < 0:
-        if gpu_fps_text_data['SHOW']:
-            logger.warning("Your GPU FPS is not supported yet")
-            gpu_fps_text_data['SHOW'] = False
-
-    # logger.debug(f"GPU Load: {load}")
-    display_themed_progress_bar(gpu_percent_graph_data, load)
-
+def display_themed_percent_radial_bar(theme_data, value):
     display_themed_radial_bar(
-        theme_data=gpu_percent_radial_data,
-        value=int(load),
-        min_size=3,
-        unit="%")
+        theme_data=theme_data,
+        value=int(value),
+        unit="%",
+        min_size=3
+    )
 
-    display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
 
+def display_themed_temperature_radial_bar(theme_data, value):
     display_themed_radial_bar(
-        theme_data=gpu_mem_radial_data,
-        value=int(memory_percentage),
-        min_size=3,
-        unit="%"
-    )
-
-    display_themed_value(
-        theme_data=gpu_percent_text_data,
-        value=int(load),
-        min_size=3,
-        unit="%"
-    )
-
-    display_themed_value(
-        theme_data=gpu_mem_text_data,
-        value=int(memory_used_mb),
-        min_size=5,
-        unit=" M"
-    )
-
-    display_themed_value(
-        theme_data=gpu_temp_text_data,
-        value=int(temperature),
+        theme_data=theme_data,
+        value=int(value),
         min_size=3,
         unit="°C"
     )
 
-    display_themed_value(
-        theme_data=gpu_fps_text_data,
-        value=int(fps),
-        min_size=4,
-        unit=" FPS"
+
+def display_themed_line_graph(theme_data, values):
+    if not theme_data.get("SHOW", False):
+        return
+
+    line_color = theme_data.get("LINE_COLOR", (0, 0, 0))
+
+    display.lcd.DisplayLineGraph(
+        x=theme_data.get("X", 0),
+        y=theme_data.get("Y", 0),
+        width=theme_data.get("WIDTH", 1),
+        height=theme_data.get("HEIGHT", 1),
+        values=values,
+        min_value=theme_data.get("MIN_VALUE", 0),
+        max_value=theme_data.get("MAX_VALUE", 100),
+        autoscale=theme_data.get("AUTOSCALE", False),
+        line_color=line_color,
+        line_width=theme_data.get("LINE_WIDTH", 2),
+        graph_axis=theme_data.get("AXIS", False),
+        axis_color=theme_data.get("AXIS_COLOR", line_color),  # If no color specified, use line color for axis
+        background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
+        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
     )
 
 
+def save_last_value(value: float, last_values: List[float], history_size: int):
+    # Initialize last values list the first time with given size
+    if len(last_values) != history_size:
+        last_values[:] = last_values_list(size=history_size)
+    # Store the value to the list that can then be used for line graph
+    last_values.append(value)
+    # Also remove the oldest value from list
+    last_values.pop(0)
+
+
+def last_values_list(size: int) -> List[float]:
+    return [math.nan] * size
+
+
+class CPU:
+    last_values_cpu_percentage = []
+    last_values_cpu_temperature = []
+    last_values_cpu_fan_speed = []
+    last_values_cpu_frequency = []
+
+    @classmethod
+    def percentage(cls):
+        theme_data = config.THEME_DATA['STATS']['CPU']['PERCENTAGE']
+        cpu_percentage = sensors.Cpu.percentage(
+            interval=theme_data.get("INTERVAL", None)
+        )
+        save_last_value(cpu_percentage, cls.last_values_cpu_percentage,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        # logger.debug(f"CPU Percentage: {cpu_percentage}")
+
+        display_themed_progress_bar(theme_data['GRAPH'], cpu_percentage)
+        display_themed_percent_radial_bar(theme_data['RADIAL'], cpu_percentage)
+        display_themed_percent_value(theme_data['TEXT'], cpu_percentage)
+        display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_cpu_percentage)
+
+    @classmethod
+    def frequency(cls):
+        freq_ghz = sensors.Cpu.frequency() / 1000
+        theme_data = config.THEME_DATA['STATS']['CPU']['FREQUENCY']
+
+        save_last_value(freq_ghz, cls.last_values_cpu_frequency,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+
+        display_themed_value(
+            theme_data=theme_data['TEXT'],
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_progress_bar(theme_data['GRAPH'], freq_ghz)
+        display_themed_radial_bar(
+            theme_data=theme_data['RADIAL'],
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_cpu_frequency)
+
+    @classmethod
+    def load(cls):
+        cpu_load = sensors.Cpu.load()
+        # logger.debug(f"CPU Load: ({cpu_load[0]},{cpu_load[1]},{cpu_load[2]})")
+        load_theme_data = config.THEME_DATA['STATS']['CPU']['LOAD']
+
+        display_themed_percent_value(load_theme_data['ONE']['TEXT'], cpu_load[0])
+        display_themed_percent_value(load_theme_data['FIVE']['TEXT'], cpu_load[1])
+        display_themed_percent_value(load_theme_data['FIFTEEN']['TEXT'], cpu_load[2])
+
+    @classmethod
+    def temperature(cls):
+        temperature = sensors.Cpu.temperature()
+        save_last_value(temperature, cls.last_values_cpu_temperature,
+                        config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                           DEFAULT_HISTORY_SIZE))
+
+        cpu_temp_text_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['TEXT']
+        cpu_temp_radial_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['RADIAL']
+        cpu_temp_graph_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['GRAPH']
+        cpu_temp_line_graph_data = config.THEME_DATA['STATS']['CPU']['TEMPERATURE']['LINE_GRAPH']
+
+        if math.isnan(temperature):
+            temperature = 0
+            if cpu_temp_text_data['SHOW'] or cpu_temp_radial_data['SHOW'] or cpu_temp_graph_data[
+                'SHOW'] or cpu_temp_line_graph_data['SHOW']:
+                logger.warning("Your CPU temperature is not supported yet")
+                cpu_temp_text_data['SHOW'] = False
+                cpu_temp_radial_data['SHOW'] = False
+                cpu_temp_graph_data['SHOW'] = False
+                cpu_temp_line_graph_data['SHOW'] = False
+
+        display_themed_temperature_value(cpu_temp_text_data, temperature)
+        display_themed_progress_bar(cpu_temp_graph_data, temperature)
+        display_themed_temperature_radial_bar(cpu_temp_radial_data, temperature)
+        display_themed_line_graph(cpu_temp_line_graph_data, cls.last_values_cpu_temperature)
+
+    @classmethod
+    def fan_speed(cls):
+        if CPU_FAN != "AUTO":
+            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
+        else:
+            fan_percent = sensors.Cpu.fan_percent()
+
+        save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
+                        config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                         DEFAULT_HISTORY_SIZE))
+
+        cpu_fan_text_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['TEXT']
+        cpu_fan_radial_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['RADIAL']
+        cpu_fan_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['GRAPH']
+        cpu_fan_line_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH']
+
+        if math.isnan(fan_percent):
+            fan_percent = 0
+            if cpu_fan_text_data['SHOW'] or cpu_fan_radial_data['SHOW'] or cpu_fan_graph_data[
+                'SHOW'] or cpu_fan_line_graph_data['SHOW']:
+                if sys.platform == "win32":
+                    logger.warning("Your CPU Fan sensor could not be auto-detected")
+                else:
+                    logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
+                cpu_fan_text_data['SHOW'] = False
+                cpu_fan_radial_data['SHOW'] = False
+                cpu_fan_graph_data['SHOW'] = False
+                cpu_fan_line_graph_data['SHOW'] = False
+
+        display_themed_percent_value(cpu_fan_text_data, fan_percent)
+        display_themed_progress_bar(cpu_fan_graph_data, fan_percent)
+        display_themed_percent_radial_bar(cpu_fan_radial_data, fan_percent)
+        display_themed_line_graph(cpu_fan_line_graph_data, cls.last_values_cpu_fan_speed)
+
+
 class Gpu:
-    @staticmethod
-    def stats():
-        load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
+    last_values_gpu_percentage = []
+    last_values_gpu_mem_percentage = []
+    last_values_gpu_temperature = []
+    last_values_gpu_fps = []
+    last_values_gpu_fan_speed = []
+    last_values_gpu_frequency = []
+
+    @classmethod
+    def stats(cls):
+        load, memory_percentage, memory_used_mb, total_memory_mb, temperature = sensors.Gpu.stats()
         fps = sensors.Gpu.fps()
-        display_gpu_stats(load, memory_percentage, memory_used_mb, temperature, fps)
+        fan_percent = sensors.Gpu.fan_percent()
+        freq_ghz = sensors.Gpu.frequency() / 1000
+
+        theme_gpu_data = config.THEME_DATA['STATS']['GPU']
+
+        save_last_value(load, cls.last_values_gpu_percentage,
+                        theme_gpu_data['PERCENTAGE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(memory_percentage, cls.last_values_gpu_mem_percentage,
+                        theme_gpu_data['MEMORY_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(temperature, cls.last_values_gpu_temperature,
+                        theme_gpu_data['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(fps, cls.last_values_gpu_fps,
+                        theme_gpu_data['FPS']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(fan_percent, cls.last_values_gpu_fan_speed,
+                        theme_gpu_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(freq_ghz, cls.last_values_gpu_frequency,
+                        theme_gpu_data['FREQUENCY']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+
+        ################################ for backward compatibility only
+        gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
+        gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
+        if math.isnan(memory_percentage):
+            memory_percentage = 0
+            if gpu_mem_graph_data['SHOW'] or gpu_mem_radial_data['SHOW']:
+                logger.warning("Your GPU memory relative usage (%) is not supported yet")
+                gpu_mem_graph_data['SHOW'] = False
+                gpu_mem_radial_data['SHOW'] = False
+
+        gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
+        if math.isnan(memory_used_mb):
+            memory_used_mb = 0
+            if gpu_mem_text_data['SHOW']:
+                logger.warning("Your GPU memory absolute usage (M) is not supported yet")
+                gpu_mem_text_data['SHOW'] = False
+
+        display_themed_progress_bar(gpu_mem_graph_data, memory_percentage)
+        display_themed_percent_radial_bar(gpu_mem_radial_data, memory_percentage)
+        display_themed_value(
+            theme_data=gpu_mem_text_data,
+            value=int(memory_used_mb),
+            min_size=5,
+            unit=" M"
+        )
+        ################################ end of backward compatibility only
+
+        # GPU usage (%)
+        gpu_percent_graph_data = theme_gpu_data['PERCENTAGE']['GRAPH']
+        gpu_percent_radial_data = theme_gpu_data['PERCENTAGE']['RADIAL']
+        gpu_percent_text_data = theme_gpu_data['PERCENTAGE']['TEXT']
+        gpu_percent_line_graph_data = theme_gpu_data['PERCENTAGE']['LINE_GRAPH']
+
+        if math.isnan(load):
+            load = 0
+            if gpu_percent_graph_data['SHOW'] or gpu_percent_text_data['SHOW'] or gpu_percent_radial_data['SHOW'] or \
+                    gpu_percent_line_graph_data['SHOW']:
+                logger.warning("Your GPU load is not supported yet")
+                gpu_percent_graph_data['SHOW'] = False
+                gpu_percent_text_data['SHOW'] = False
+                gpu_percent_radial_data['SHOW'] = False
+                gpu_percent_line_graph_data['SHOW'] = False
+
+        display_themed_progress_bar(gpu_percent_graph_data, load)
+        display_themed_percent_radial_bar(gpu_percent_radial_data, load)
+        display_themed_percent_value(gpu_percent_text_data, load)
+        display_themed_line_graph(gpu_percent_line_graph_data, cls.last_values_gpu_percentage)
+
+        # GPU mem. usage (%)
+        gpu_mem_percent_graph_data = theme_gpu_data['MEMORY_PERCENT']['GRAPH']
+        gpu_mem_percent_radial_data = theme_gpu_data['MEMORY_PERCENT']['RADIAL']
+        gpu_mem_percent_text_data = theme_gpu_data['MEMORY_PERCENT']['TEXT']
+        gpu_mem_percent_line_graph_data = theme_gpu_data['MEMORY_PERCENT']['LINE_GRAPH']
+
+        if math.isnan(memory_percentage):
+            memory_percentage = 0
+            if gpu_mem_percent_graph_data['SHOW'] or gpu_mem_percent_radial_data['SHOW'] or gpu_mem_percent_text_data[
+                'SHOW'] or gpu_mem_percent_line_graph_data['SHOW']:
+                logger.warning("Your GPU memory relative usage (%) is not supported yet")
+                gpu_mem_percent_graph_data['SHOW'] = False
+                gpu_mem_percent_radial_data['SHOW'] = False
+                gpu_mem_percent_text_data['SHOW'] = False
+
+        display_themed_progress_bar(gpu_mem_percent_graph_data, memory_percentage)
+        display_themed_percent_radial_bar(gpu_mem_percent_radial_data, memory_percentage)
+        display_themed_percent_value(gpu_mem_percent_text_data, memory_percentage)
+        display_themed_line_graph(gpu_mem_percent_line_graph_data, cls.last_values_gpu_mem_percentage)
+
+        # GPU mem. absolute usage (M)
+        gpu_mem_used_text_data = theme_gpu_data['MEMORY_USED']['TEXT']
+        if math.isnan(memory_used_mb):
+            memory_used_mb = 0
+            if gpu_mem_used_text_data['SHOW']:
+                logger.warning("Your GPU memory absolute usage (M) is not supported yet")
+                gpu_mem_used_text_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=gpu_mem_used_text_data,
+            value=int(memory_used_mb),
+            min_size=5,
+            unit=" M"
+        )
+
+        # GPU mem. total memory (M)
+        gpu_mem_total_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
+        if math.isnan(memory_used_mb):
+            memory_used_mb = 0
+            if gpu_mem_total_text_data['SHOW']:
+                logger.warning("Your GPU total memory capacity (M) is not supported yet")
+                gpu_mem_total_text_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=gpu_mem_total_text_data,
+            value=int(total_memory_mb),
+            min_size=5,  # Adjust min_size as necessary for your display
+            unit=" M"  # Assuming the unit is in Megabytes
+        )
+
+        # GPU temperature (°C)
+        gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']
+        gpu_temp_radial_data = theme_gpu_data['TEMPERATURE']['RADIAL']
+        gpu_temp_graph_data = theme_gpu_data['TEMPERATURE']['GRAPH']
+        gpu_temp_line_graph_data = theme_gpu_data['TEMPERATURE']['LINE_GRAPH']
+
+        if math.isnan(temperature):
+            temperature = 0
+            if gpu_temp_text_data['SHOW'] or gpu_temp_radial_data['SHOW'] or gpu_temp_graph_data[
+                'SHOW'] or gpu_temp_line_graph_data['SHOW']:
+                logger.warning("Your GPU temperature is not supported yet")
+                gpu_temp_text_data['SHOW'] = False
+                gpu_temp_radial_data['SHOW'] = False
+                gpu_temp_graph_data['SHOW'] = False
+                gpu_temp_line_graph_data['SHOW'] = False
+
+        display_themed_temperature_value(gpu_temp_text_data, temperature)
+        display_themed_progress_bar(gpu_temp_graph_data, temperature)
+        display_themed_temperature_radial_bar(gpu_temp_radial_data, temperature)
+        display_themed_line_graph(gpu_temp_line_graph_data, cls.last_values_gpu_temperature)
+
+        # GPU FPS
+        gpu_fps_text_data = theme_gpu_data['FPS']['TEXT']
+        gpu_fps_radial_data = theme_gpu_data['FPS']['RADIAL']
+        gpu_fps_graph_data = theme_gpu_data['FPS']['GRAPH']
+        gpu_fps_line_graph_data = theme_gpu_data['FPS']['LINE_GRAPH']
+
+        if fps < 0:
+            fps = 0
+            if gpu_fps_text_data['SHOW'] or gpu_fps_radial_data['SHOW'] or gpu_fps_graph_data[
+                'SHOW'] or gpu_fps_line_graph_data['SHOW']:
+                logger.warning("Your GPU FPS is not supported yet")
+                gpu_fps_text_data['SHOW'] = False
+                gpu_fps_radial_data['SHOW'] = False
+                gpu_fps_graph_data['SHOW'] = False
+                gpu_fps_line_graph_data['SHOW'] = False
+
+        display_themed_progress_bar(gpu_fps_graph_data, fps)
+        display_themed_value(
+            theme_data=gpu_fps_text_data,
+            value=int(fps),
+            min_size=4,
+            unit=" FPS"
+        )
+        display_themed_radial_bar(
+            theme_data=gpu_fps_radial_data,
+            value=int(fps),
+            min_size=4,
+            unit=" FPS"
+        )
+        display_themed_line_graph(gpu_fps_line_graph_data, cls.last_values_gpu_fps)
+
+        # GPU Fan Speed (%)
+        gpu_fan_text_data = theme_gpu_data['FAN_SPEED']['TEXT']
+        gpu_fan_radial_data = theme_gpu_data['FAN_SPEED']['RADIAL']
+        gpu_fan_graph_data = theme_gpu_data['FAN_SPEED']['GRAPH']
+        gpu_fan_line_graph_data = theme_gpu_data['FAN_SPEED']['LINE_GRAPH']
+
+        if math.isnan(fan_percent):
+            fan_percent = 0
+            if gpu_fan_text_data['SHOW'] or gpu_fan_radial_data['SHOW'] or gpu_fan_graph_data[
+                'SHOW'] or gpu_fan_line_graph_data['SHOW']:
+                logger.warning("Your GPU Fan Speed is not supported yet")
+                gpu_fan_text_data['SHOW'] = False
+                gpu_fan_radial_data['SHOW'] = False
+                gpu_fan_graph_data['SHOW'] = False
+                gpu_fan_line_graph_data['SHOW'] = False
+
+        display_themed_percent_value(gpu_fan_text_data, fan_percent)
+        display_themed_progress_bar(gpu_fan_graph_data, fan_percent)
+        display_themed_percent_radial_bar(gpu_fan_radial_data, fan_percent)
+        display_themed_line_graph(gpu_fan_line_graph_data, cls.last_values_gpu_fan_speed)
+
+        # GPU Frequency (Ghz)
+        gpu_freq_text_data = theme_gpu_data['FREQUENCY']['TEXT']
+        gpu_freq_radial_data = theme_gpu_data['FREQUENCY']['RADIAL']
+        gpu_freq_graph_data = theme_gpu_data['FREQUENCY']['GRAPH']
+        gpu_freq_line_graph_data = theme_gpu_data['FREQUENCY']['LINE_GRAPH']
+        display_themed_value(
+            theme_data=gpu_freq_text_data,
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_progress_bar(gpu_freq_graph_data, freq_ghz)
+        display_themed_radial_bar(
+            theme_data=gpu_freq_radial_data,
+            value=f'{freq_ghz:.2f}',
+            unit=" GHz",
+            min_size=4
+        )
+        display_themed_line_graph(gpu_freq_line_graph_data, cls.last_values_gpu_frequency)
 
     @staticmethod
     def is_available():
@@ -331,73 +588,65 @@ class Gpu:
 
 
 class Memory:
-    @staticmethod
-    def stats():
+    last_values_memory_swap = []
+    last_values_memory_virtual = []
+
+    @classmethod
+    def stats(cls):
         memory_stats_theme_data = config.THEME_DATA['STATS']['MEMORY']
 
         swap_percent = sensors.Memory.swap_percent()
+        save_last_value(swap_percent, cls.last_values_memory_swap,
+                        memory_stats_theme_data['SWAP']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(memory_stats_theme_data['SWAP']['GRAPH'], swap_percent)
-        display_themed_radial_bar(
-            theme_data=memory_stats_theme_data['SWAP']['RADIAL'],
-            value=int(swap_percent),
-            min_size=3,
-            unit="%"
-        )
+        display_themed_percent_radial_bar(memory_stats_theme_data['SWAP']['RADIAL'], swap_percent)
+        display_themed_line_graph(memory_stats_theme_data['SWAP']['LINE_GRAPH'], cls.last_values_memory_swap)
 
         virtual_percent = sensors.Memory.virtual_percent()
+        save_last_value(virtual_percent, cls.last_values_memory_virtual,
+                        memory_stats_theme_data['VIRTUAL']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(memory_stats_theme_data['VIRTUAL']['GRAPH'], virtual_percent)
-        display_themed_radial_bar(
-            theme_data=memory_stats_theme_data['VIRTUAL']['RADIAL'],
-            value=int(virtual_percent),
-            min_size=3,
-            unit="%"
-        )
-
-        display_themed_value(
-            theme_data=memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'],
-            value=int(virtual_percent),
-            min_size=3,
-            unit="%"
-        )
+        display_themed_percent_radial_bar(memory_stats_theme_data['VIRTUAL']['RADIAL'], virtual_percent)
+        display_themed_percent_value(memory_stats_theme_data['VIRTUAL']['PERCENT_TEXT'], virtual_percent)
+        display_themed_line_graph(memory_stats_theme_data['VIRTUAL']['LINE_GRAPH'], cls.last_values_memory_virtual)
 
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['USED'],
-            value=int(sensors.Memory.virtual_used() / 1000000),
+            value=int(sensors.Memory.virtual_used() / 1024 ** 2),
             min_size=5,
             unit=" M"
         )
-
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['FREE'],
-            value=int(sensors.Memory.virtual_free() / 1000000),
+            value=int(sensors.Memory.virtual_free() / 1024 ** 2),
             min_size=5,
             unit=" M"
         )
-
         display_themed_value(
             theme_data=memory_stats_theme_data['VIRTUAL']['TOTAL'],
-            value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1000000),
+            value=int((sensors.Memory.virtual_free() + sensors.Memory.virtual_used()) / 1024 ** 2),
             min_size=5,
             unit=" M"
         )
 
 
 class Disk:
-    @staticmethod
-    def stats():
+    last_values_disk_usage = []
+
+    @classmethod
+    def stats(cls):
         used = sensors.Disk.disk_used()
         free = sensors.Disk.disk_free()
 
         disk_theme_data = config.THEME_DATA['STATS']['DISK']
 
         disk_usage_percent = sensors.Disk.disk_usage_percent()
+        save_last_value(disk_usage_percent, cls.last_values_disk_usage,
+                        disk_theme_data['USED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
-        display_themed_radial_bar(
-            theme_data=disk_theme_data['USED']['RADIAL'],
-            value=int(disk_usage_percent),
-            min_size=3,
-            unit="%"
-        )
+        display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
+        display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
+        display_themed_line_graph(disk_theme_data['USED']['LINE_GRAPH'], cls.last_values_disk_usage)
 
         display_themed_value(
             theme_data=disk_theme_data['USED']['TEXT'],
@@ -405,21 +654,12 @@ class Disk:
             min_size=5,
             unit=" G"
         )
-
-        display_themed_value(
-            theme_data=disk_theme_data['USED']['PERCENT_TEXT'],
-            value=int(disk_usage_percent),
-            min_size=3,
-            unit="%"
-        )
-
         display_themed_value(
             theme_data=disk_theme_data['TOTAL']['TEXT'],
             value=int((free + used) / 1000000000),
             min_size=5,
             unit=" G"
         )
-
         display_themed_value(
             theme_data=disk_theme_data['FREE']['TEXT'],
             value=int(free / 1000000000),
@@ -429,25 +669,42 @@ class Disk:
 
 
 class Net:
-    @staticmethod
-    def stats():
-        interval = config.THEME_DATA['STATS']['CPU']['PERCENTAGE'].get("INTERVAL", None)
-        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
-        net_theme_data = config.THEME_DATA['STATS']['NET']
+    last_values_wlo_upload = []
+    last_values_wlo_download = []
+    last_values_eth_upload = []
+    last_values_eth_download = []
 
+    @classmethod
+    def stats(cls):
+        net_theme_data = config.THEME_DATA['STATS']['NET']
+        interval = net_theme_data.get("INTERVAL", None)
+        upload_wlo, uploaded_wlo, download_wlo, downloaded_wlo = sensors.Net.stats(WLO_CARD, interval)
+
+        save_last_value(upload_wlo, cls.last_values_wlo_upload,
+                        net_theme_data['WLO']['UPLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['WLO']['UPLOAD']['TEXT'], upload_wlo)
         Net._show_themed_total_data(net_theme_data['WLO']['UPLOADED']['TEXT'], uploaded_wlo)
+        display_themed_line_graph(net_theme_data['WLO']['UPLOAD']['LINE_GRAPH'], cls.last_values_wlo_upload)
 
+        save_last_value(download_wlo, cls.last_values_wlo_download,
+                        net_theme_data['WLO']['DOWNLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['WLO']['DOWNLOAD']['TEXT'], download_wlo)
         Net._show_themed_total_data(net_theme_data['WLO']['DOWNLOADED']['TEXT'], downloaded_wlo)
+        display_themed_line_graph(net_theme_data['WLO']['DOWNLOAD']['LINE_GRAPH'], cls.last_values_wlo_download)
 
         upload_eth, uploaded_eth, download_eth, downloaded_eth = sensors.Net.stats(ETH_CARD, interval)
 
+        save_last_value(upload_eth, cls.last_values_eth_upload,
+                        net_theme_data['ETH']['UPLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['ETH']['UPLOAD']['TEXT'], upload_eth)
         Net._show_themed_total_data(net_theme_data['ETH']['UPLOADED']['TEXT'], uploaded_eth)
+        display_themed_line_graph(net_theme_data['ETH']['UPLOAD']['LINE_GRAPH'], cls.last_values_eth_upload)
 
+        save_last_value(download_eth, cls.last_values_eth_download,
+                        net_theme_data['ETH']['DOWNLOAD']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         Net._show_themed_tax_rate(net_theme_data['ETH']['DOWNLOAD']['TEXT'], download_eth)
         Net._show_themed_total_data(net_theme_data['ETH']['DOWNLOADED']['TEXT'], downloaded_eth)
+        display_themed_line_graph(net_theme_data['ETH']['DOWNLOAD']['LINE_GRAPH'], cls.last_values_eth_download)
 
     @staticmethod
     def _show_themed_total_data(theme_data, amount):
@@ -497,6 +754,32 @@ class Date:
         )
 
 
+class SystemUptime:
+    @staticmethod
+    def stats():
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined uptime
+            uptimesec = 4294036
+        else:
+            uptimesec = int(uptime())
+
+        uptimeformatted = str(datetime.timedelta(seconds=uptimesec))
+
+        systemuptime_theme_data = config.THEME_DATA['STATS']['UPTIME']
+
+        systemuptime_sec_theme_data = systemuptime_theme_data['SECONDS']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_sec_theme_data,
+            value=uptimesec
+        )
+
+        systemuptime_formatted_theme_data = systemuptime_theme_data['FORMATTED']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_formatted_theme_data,
+            value=uptimeformatted
+        )
+
+
 class Custom:
     @staticmethod
     def stats():
@@ -506,30 +789,38 @@ class Custom:
                 # Load the custom sensor class from sensors_custom.py based on the class name
                 try:
                     custom_stat_class = getattr(sensors_custom, str(custom_stat))()
-                    string_value = custom_stat_class.as_string()
                     numeric_value = custom_stat_class.as_numeric()
-                except:
-                    logger.error("Custom sensor class " + str(custom_stat) + " not found in sensors_custom.py")
+                    string_value = custom_stat_class.as_string()
+                    last_values = custom_stat_class.last_values()
+                except Exception as e:
+                    logger.error(
+                        "Error loading custom sensor class " + str(custom_stat) + " from sensors_custom.py : " + str(e))
                     return
 
-                if not string_value:
+                if string_value is None:
                     string_value = str(numeric_value)
 
                 # Display text
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("TEXT", None)
-                if theme_data and string_value:
+                if theme_data is not None and string_value is not None:
                     display_themed_value(theme_data=theme_data, value=string_value)
 
                 # Display graph from numeric value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("GRAPH", None)
-                if theme_data and numeric_value:
+                if theme_data is not None and numeric_value is not None and not math.isnan(numeric_value):
                     display_themed_progress_bar(theme_data=theme_data, value=numeric_value)
 
                 # Display radial from numeric and text value
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("RADIAL", None)
-                if theme_data and numeric_value and string_value:
+                if theme_data is not None and numeric_value is not None and not math.isnan(
+                        numeric_value) and string_value is not None:
                     display_themed_radial_bar(
                         theme_data=theme_data,
                         value=numeric_value,
                         custom_text=string_value
                     )
+
+                # Display plot graph from histo values
+                theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("LINE_GRAPH", None)
+                if theme_data is not None and last_values is not None:
+                    display_themed_line_graph(theme_data=theme_data, values=last_values)

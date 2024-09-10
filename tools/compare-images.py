@@ -23,8 +23,15 @@ import sys
 
 from PIL import Image, ImageChops
 
-im1 = Image.open(sys.argv[1]).convert('RGB')
-im2 = Image.open(sys.argv[2]).convert('RGB')
+try:
+    im1 = Image.open(sys.argv[1]).convert('RGB')
+except:
+    sys.exit(0)
+
+try:
+    im2 = Image.open(sys.argv[2]).convert('RGB')
+except:
+    sys.exit(0)
 
 if list(im1.getdata()) == list(im2.getdata()):
     print("The 2 pictures are visually identical")

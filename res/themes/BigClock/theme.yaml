@@ -7,7 +7,7 @@ display:
 
 static_images:
   BACKGROUND:
-    PATH: blackground-landscape.png
+    PATH: background.png
     X: 0
     Y: 0
     WIDTH: 480
