@@ -476,8 +476,8 @@ class Gpu:
 
         # GPU mem. total memory (M)
         gpu_mem_total_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
-        if math.isnan(memory_used_mb):
-            memory_used_mb = 0
+        if math.isnan(total_memory_mb):
+            total_memory_mb = 0
             if gpu_mem_total_text_data['SHOW']:
                 logger.warning("Your GPU total memory capacity (M) is not supported yet")
                 gpu_mem_total_text_data['SHOW'] = False
