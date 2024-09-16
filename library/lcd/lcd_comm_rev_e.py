@@ -78,9 +78,10 @@ class Command(Enum):
 
     # STATIC IMAGE
     START_DISPLAY_BITMAP = bytearray((0x2c,))
-    PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))    
+    PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69,))
-    UPDATE_BITMAP_NO_CHANGES = bytearray((0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0xEF, 0x69,))
+    UPDATE_BITMAP_NO_CHANGES = bytearray(
+        (0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0xEF, 0x69,))
     STOP_UPDATE_BITMAP = bytearray((0x87, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
 
     RESTARTSCREEN = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
@@ -93,6 +94,19 @@ class Command(Enum):
     STARTMODE_VIDEO = bytearray((0x02,))
     FLIP_180 = bytearray((0x01,))
     NO_FLIP = bytearray((0x00,))
+
+    UPLOAD_FILE = bytearray((0x6F, 0xef, 0x69,))  # 6FEF6900000017000000
+    DELETE_FILE = bytearray((0x66, 0xef, 0x69,))
+    LIST_FILES = bytearray((0x65, 0xEF, 0x69,))
+    QUERY_FILE_SIZE = bytearray((0x6e, 0xef, 0x69,))
+    QUERY_STORAGE_INFORMATION = bytearray((0x64, 0xef, 0x69,
+                                           0x00, 0x00, 0x00, 0x01,))  # 64EF6900000001
+
+    PLAY_IMAGE = bytearray((0x8C, 0xEF, 0x69, 0x00, 0x00,
+                            0x00, 0x21, 0x00, 0x00, 0x00,))  # 8CEF6900000017000000
+
+    PLAY_VIDEO = bytearray((0x78, 0xEF, 0x69, 0x00, 0x00,
+                            0x00, 0x1A, 0x00, 0x00, 0x00,))  # 78EF690000001A000000
 
     SEND_PAYLOAD = bytearray((0xFF,))
 
@@ -138,7 +152,8 @@ class LcdCommRevE(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 1920, display_height: int = 480,
                  update_queue: queue.Queue = None):
         logger.debug("HW revision: E")
-        LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
+        LcdComm.__init__(self, com_port, display_width,
+                         display_height, update_queue)
         self.openSerial()
 
     def __del__(self):
@@ -258,10 +273,10 @@ class LcdCommRevE(LcdComm):
 
     def ScreenOn(self, is_isolated_call: bool = True):
         logger.info("Calling ScreenOn")
-        
+
         if is_isolated_call:
             self._init_packet_interaction()
-        
+
         self._send_command(Command.STOP_VIDEO)
         self._send_command(Command.STOP_MEDIA, readsize=1024)
         # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]))
@@ -273,10 +288,10 @@ class LcdCommRevE(LcdComm):
         # Brightness scales from 0 to 255, with 255 being the brightest and 0 being the darkest.
         # Convert our brightness % to an absolute value.
         converted_level = int((level / 100) * 255)
-        
+
         if is_isolated_call:
             self._init_packet_interaction()
-            
+
         self._send_command(Command.SET_BRIGHTNESS, payload=bytearray(
             (converted_level,)), bypass_queue=True)
 
@@ -295,6 +310,102 @@ class LcdCommRevE(LcdComm):
             b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + \
                 Command.NO_FLIP.value + SleepInterval.OFF.value
             self._send_command(Command.OPTIONS, payload=b)
+
+    def ListDirectory(self, path: str) -> tuple[list[str], list[str]]:
+        self._init_packet_interaction()
+
+        payload = len(path).to_bytes(4, byteorder='big') + \
+            Padding.NULL.value * 3 + bytearray(path, 'utf-8')
+
+        response = self._send_command(
+            Command.LIST_FILES,
+            payload=payload,
+            readsize=10240,
+            bypass_queue=True)
+
+        responseList = response.decode().rstrip('\x00')
+        print(responseList)
+
+        assert responseList.startswith("result"), 'Failed to list files'
+
+        if responseList.startswith('result:'):
+            parts = responseList.split(':')
+            return parts[2].split('/')[:-1], parts[3].split('/')[:-1]
+
+        return [], []
+
+    def UploadFile(self, src_path: str, target_path: str):        
+        payload = len(target_path).to_bytes(4, byteorder='big') + \
+            Padding.NULL * 3 + bytearray(target_path, 'utf-8')
+            
+        response = self._send_command(
+            Command.UPLOAD_FILE, 
+            payload=payload,
+            readsize=1024, 
+            bypass_queue=True)
+
+        assert response.startswith(b'create_success'), 'Failed to create file'
+
+        with open(src_path, 'rb') as file:
+            byte = file.read(1024)
+            sent = 0
+            while byte != b"":
+                if len(byte) == 1024:
+                    self._send_command(Command.SEND_PAYLOAD,
+                                       payload=byte, bypass_queue=True)
+                    sent += 1024
+                else:
+                    response == self._send_command(
+                        Command.SEND_PAYLOAD, payload=byte, readsize=1024, bypass_queue=True)
+                    assert response.startswith(
+                        b'file_rev_done'), 'Failed to upload file'
+                print("Sent %d bytes" % sent)
+                byte = file.read(1024)
+
+    def DeleteFile(self, target_path: str):
+        self._init_packet_interaction()
+        
+        payload = len(target_path).to_bytes(4, byteorder='big') + \
+            Padding.NULL.value * 3 + bytearray(target_path, 'utf-8')
+        
+        self._send_command(
+            Command.DELETE_FILE,
+            payload=payload,
+            bypass_queue=True)
+
+    def GetFileSize(self, target_path: str, is_isolated_call: bool = True):
+        if is_isolated_call:
+            self._init_packet_interaction()
+
+        response = self._send_command(Command.QUERY_FILE_SIZE, payload=bytearray(
+            target_path, 'utf-8'), readsize=1024, bypass_queue=True)
+        size = int(response.decode().rstrip('\x00'))
+
+        assert size > 0, 'File does not exist'
+        return size
+
+    def PlayImageFromStorage(self, target_path: str, is_isolated_call: bool = True):
+        if is_isolated_call:
+            self._init_packet_interaction()
+
+        response = self._send_command(Command.PLAY_IMAGE, payload=bytearray(target_path, 'utf-8'),
+                                      readsize=1024, bypass_queue=True)
+
+        assert response.startswith(b'play_img_ok'), 'Failed to play image'
+
+    def PlayVideoFromStorage(self, target_path: str, is_isolated_call: bool = True):
+        if is_isolated_call:
+            self._init_packet_interaction()
+
+        self._stop_media(is_isolated_call=False)
+        self.SetBrightness(61, is_isolated_call=False)
+        size = self.GetFileSize(target_path, is_isolated_call=False)
+        print(bytearray(target_path, 'utf-8').hex())
+        response = self._send_command(Command.PLAY_VIDEO, payload=bytearray(target_path, 'utf-8'),
+                                      readsize=1024, bypass_queue=True)
+
+        assert response.startswith(
+            b'play_video_success'), 'Failed to play video'
 
     def DisplayPILImage(
             self,
@@ -324,32 +435,43 @@ class LcdCommRevE(LcdComm):
             with self.update_queue_mutex:
                 self._stop_media()
                 self.SetOrientation(self.orientation, is_isolated_call=False)
-                
+
                 self._send_command(Command.PRE_UPDATE_BITMAP)
                 self._send_command(Command.START_DISPLAY_BITMAP,
                                    padding=Padding.START_DISPLAY_BITMAP)
-                
-                self.SetBrightness(60, is_isolated_call=False)
-                
-                self._send_command(Command.DISPLAY_BITMAP, payload=bytearray(
-                    int(self.display_width * self.display_width).to_bytes(4)))
-                response = self._send_command(Command.SEND_PAYLOAD,
-                                              payload=bytearray(self._generate_full_image(
-                                                  image, self.orientation)),
-                                              readsize=1024)
 
-                assert response.startswith(b'full_png_sucess'), 'Failed to display bitmap'
+                self.SetBrightness(60, is_isolated_call=False)
+
+                self._send_command(
+                    Command.DISPLAY_BITMAP,
+                    payload=bytearray(int(self.display_width * self.display_width)
+                                      .to_bytes(4)),
+                    bypass_queue=True
+                )
+
+                response = self._send_command(
+                    Command.SEND_PAYLOAD,
+                    payload=bytearray(
+                        self._generate_full_image(image, self.orientation)),
+                    readsize=1024,
+                    bypass_queue=True
+                )
+
+                assert response.startswith(
+                    b'full_png_sucess'), 'Failed to display bitmap'
 
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
             with self.update_queue_mutex:
                 update_image, img_len = self._generate_update_image(
-                    image, x, y, self.orientation)   
-                             
-                payload_len = img_len.to_bytes(4, byteorder='big')                
-                command_payload = payload_len + Count.Start.to_bytes(7, byteorder='big')
+                    image, x, y, self.orientation)
 
-                self._send_command(Command.UPDATE_BITMAP, payload=command_payload)
+                payload_len = img_len.to_bytes(4, byteorder='big')
+                command_payload = payload_len + \
+                    Count.Start.to_bytes(7, byteorder='big')
+
+                self._send_command(Command.UPDATE_BITMAP,
+                                   payload=command_payload)
                 self._send_command(Command.SEND_PAYLOAD, payload=update_image)
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
             Count.Start += 1
@@ -367,7 +489,7 @@ class LcdCommRevE(LcdComm):
         pixel_data = []
         for y in range(image.height):
             for x in range(image.width):
-                pixel = image_data[x, y]                
+                pixel = image_data[x, y]
                 pixel_data += [pixel[2], pixel[1], pixel[0], pixel[3]]
 
         hex_data = bytes(pixel_data)
@@ -391,20 +513,22 @@ class LcdCommRevE(LcdComm):
 
         img_raw_data = bytes([])
         image_data = image.convert("RGBA").load()
-        
+
         for w in range(image.width):
             # Target start
-            img_raw_data += (((x + w) * self.display_height) + (y + image.height)).to_bytes(3, byteorder='big')
-            
+            img_raw_data += (((x + w) * self.display_height) +
+                             (y + image.height)).to_bytes(3, byteorder='big')
+
             # Number of pixels to be written
             img_raw_data += image.height.to_bytes(2, byteorder='big')
-            
+
             for h in range(image.height):
                 current_pixel = image_data[w, image.height - h - 1]
-                img_raw_data += bytes([current_pixel[2], current_pixel[1], current_pixel[0], current_pixel[3]])
-                
-        img_raw_data +=  bytes([0xef, 0x69])
-             
+                img_raw_data += bytes([current_pixel[2], current_pixel[1],
+                                      current_pixel[0], current_pixel[3]])
+
+        img_raw_data += bytes([0xef, 0x69])
+
         return b'\x00'.join(img_raw_data[i:i + 249] for i in range(0, len(img_raw_data), 249)), len(img_raw_data)
 
     def _stop_media(self, is_isolated_call: bool = True):
@@ -412,20 +536,24 @@ class LcdCommRevE(LcdComm):
             self._init_packet_interaction()
 
         self._send_command(Command.STOP_MEDIA)
-        response = self._send_command(Command.STOP_VIDEO, readsize=1024, bypass_queue=True)
+        response = self._send_command(
+            Command.STOP_VIDEO, readsize=1024, bypass_queue=True)
 
         assert response.startswith(b'media_stop'), 'Failed to stop media'
-        
+
     def _init_packet_interaction(self):
-        response = self._send_command(Command.HELLO, readsize=1024, bypass_queue=True)
-        assert response.startswith(b'chs_88inch'), 'Failed to initialize packet interaction'
-        
+        response = self._send_command(
+            Command.HELLO, readsize=1024, bypass_queue=True)
+        assert response.startswith(
+            b'chs_88inch'), 'Failed to initialize packet interaction'
+
     def _no_update(self):
-        payload_len = (8).to_bytes(4, byteorder='big')               
-        command_payload = payload_len + Count.Start.to_bytes(7, byteorder='big')        
-        
+        payload_len = (8).to_bytes(4, byteorder='big')
+        command_payload = payload_len + \
+            Count.Start.to_bytes(7, byteorder='big')
+
         self._send_command(Command.UPDATE_BITMAP, payload=command_payload)
         self._send_command(Command.UPDATE_BITMAP_NO_CHANGES)
         self._send_command(Command.QUERY_STATUS, readsize=1024)
-        
+
         Count.Start += 1
