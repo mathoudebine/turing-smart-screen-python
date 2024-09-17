@@ -102,11 +102,8 @@ class Command(Enum):
     QUERY_STORAGE_INFORMATION = bytearray((0x64, 0xef, 0x69,
                                            0x00, 0x00, 0x00, 0x01,))  # 64EF6900000001
 
-    PLAY_IMAGE = bytearray((0x8C, 0xEF, 0x69, 0x00, 0x00,
-                            0x00, 0x21, 0x00, 0x00, 0x00,))  # 8CEF6900000017000000
-
-    PLAY_VIDEO = bytearray((0x78, 0xEF, 0x69, 0x00, 0x00,
-                            0x00, 0x1A, 0x00, 0x00, 0x00,))  # 78EF690000001A000000
+    PLAY_IMAGE = bytearray((0x8C, 0xEF, 0x69,))
+    PLAY_VIDEO = bytearray((0x78, 0xEF, 0x69,))
 
     SEND_PAYLOAD = bytearray((0xFF,))
 
@@ -336,7 +333,7 @@ class LcdCommRevE(LcdComm):
 
     def UploadFile(self, src_path: str, target_path: str):        
         payload = len(target_path).to_bytes(4, byteorder='big') + \
-            Padding.NULL * 3 + bytearray(target_path, 'utf-8')
+            Padding.NULL.value * 3 + bytearray(target_path, 'utf-8')
             
         response = self._send_command(
             Command.UPLOAD_FILE, 
@@ -355,7 +352,7 @@ class LcdCommRevE(LcdComm):
                                        payload=byte, bypass_queue=True)
                     sent += 1024
                 else:
-                    response == self._send_command(
+                    response = self._send_command(
                         Command.SEND_PAYLOAD, payload=byte, readsize=1024, bypass_queue=True)
                     assert response.startswith(
                         b'file_rev_done'), 'Failed to upload file'
@@ -376,9 +373,16 @@ class LcdCommRevE(LcdComm):
     def GetFileSize(self, target_path: str, is_isolated_call: bool = True):
         if is_isolated_call:
             self._init_packet_interaction()
+            
+        payload = len(target_path).to_bytes(4, byteorder='big') + \
+            Padding.NULL.value * 3 + bytearray(target_path, 'utf-8')
 
-        response = self._send_command(Command.QUERY_FILE_SIZE, payload=bytearray(
-            target_path, 'utf-8'), readsize=1024, bypass_queue=True)
+        response = self._send_command(
+            Command.QUERY_FILE_SIZE, 
+            payload=payload, 
+            readsize=1024, 
+            bypass_queue=True)
+        
         size = int(response.decode().rstrip('\x00'))
 
         assert size > 0, 'File does not exist'
@@ -387,8 +391,11 @@ class LcdCommRevE(LcdComm):
     def PlayImageFromStorage(self, target_path: str, is_isolated_call: bool = True):
         if is_isolated_call:
             self._init_packet_interaction()
+            
+        payload = len(target_path).to_bytes(4, byteorder='big') + \
+            Padding.NULL.value * 3 + bytearray(target_path, 'utf-8')
 
-        response = self._send_command(Command.PLAY_IMAGE, payload=bytearray(target_path, 'utf-8'),
+        response = self._send_command(Command.PLAY_IMAGE, payload=payload,
                                       readsize=1024, bypass_queue=True)
 
         assert response.startswith(b'play_img_ok'), 'Failed to play image'
@@ -396,13 +403,15 @@ class LcdCommRevE(LcdComm):
     def PlayVideoFromStorage(self, target_path: str, is_isolated_call: bool = True):
         if is_isolated_call:
             self._init_packet_interaction()
-
-        self._stop_media(is_isolated_call=False)
-        self.SetBrightness(61, is_isolated_call=False)
-        size = self.GetFileSize(target_path, is_isolated_call=False)
-        print(bytearray(target_path, 'utf-8').hex())
-        response = self._send_command(Command.PLAY_VIDEO, payload=bytearray(target_path, 'utf-8'),
-                                      readsize=1024, bypass_queue=True)
+        
+        payload = len(target_path).to_bytes(4, byteorder='big') + \
+            Padding.NULL.value * 3 + bytearray(target_path, 'utf-8')
+        
+        response = self._send_command(
+            Command.PLAY_VIDEO, 
+            payload=payload,
+            readsize=1024, 
+            bypass_queue=True)
 
         assert response.startswith(
             b'play_video_success'), 'Failed to play video'

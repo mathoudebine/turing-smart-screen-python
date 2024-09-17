@@ -24,6 +24,7 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_rev_e import LcdCommRevE
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -66,6 +67,9 @@ class Display:
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "E":
+            self.lcd = LcdCommRevE(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif (config.CONFIG_DATA["display"]["REVISION"] == "SIMU"
               or config.CONFIG_DATA["display"]["REVISION"] == "SIMU3.5"):
