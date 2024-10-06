@@ -21,7 +21,7 @@
 import queue
 import time
 from enum import Enum
-from math import ceil, floor
+from math import ceil
 
 import serial
 from PIL import Image
@@ -33,29 +33,6 @@ from library.log import logger
 
 class Count:
     Start = 0
-
-
-# READ HELLO ALWAYS IS 23.
-# ALL READS IS 1024
-
-# ORDER:
-# SEND HELLO
-# READ HELLO (23)
-# SEND STOP_VIDEO
-# SEND STOP_MEDIA
-# READ STATUS (1024)
-# SEND SET_BRIGHTNESS
-# SEND SET_OPTIONS WITH ORIENTATION ?
-# SEND PRE_UPDATE_BITMAP
-# SEND START_DISPLAY_BITMAP
-# SEND DISPLAY_BITMAP
-# READ STATUS (1024)
-# SEND QUERY_STATUS
-# READ STATUS (1024)
-# WHILE:
-#   SEND UPDATE_BITMAP
-#   SEND QUERY_STATUS
-#   READ STATUS(1024)
 
 class Command(Enum):
     # COMMANDS
@@ -169,7 +146,7 @@ class LcdCommRevE(LcdComm):
 
         # Try to find sleeping device and wake it up
         for com_port in com_ports:
-            if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT88INCH':
+            if com_port.serial_number == 'CT88INCH':
                 LcdCommRevE._connect_to_reset_device_name(com_port)
                 return LcdCommRevE.auto_detect_com_port()
 
@@ -229,17 +206,15 @@ class LcdCommRevE(LcdComm):
             logger.warning(
                 "Display returned unknown sub-revision on Hello answer (%s)" % str(response))
 
-        logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
-
     def InitializeComm(self):
         pass
 
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
-        # Reset command bypasses queue because it is run when queue threads are not yet started
-        self._send_command(Command.HELLO, readsize=1024)
-        self._send_command(Command.RESTART)
-        self._send_command(Command.RESTART)
+        
+        self._init_packet_interaction()
+        self._send_command(Command.RESTART, bypass_queue=True)
+        self._send_command(Command.RESTART, bypass_queue=True)
         self.closeSerial()
         # Wait for display reset then reconnect
         time.sleep(15)
@@ -487,12 +462,12 @@ class LcdCommRevE(LcdComm):
 
     @staticmethod
     def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
-        if orientation == Orientation.PORTRAIT:
+        if orientation == Orientation.REVERSE_PORTRAIT:
             image = image.rotate(90, expand=True)
-        elif orientation == Orientation.REVERSE_PORTRAIT:
-            image = image.rotate(270, expand=True)
         elif orientation == Orientation.REVERSE_LANDSCAPE:
-            image = image.rotate(180)
+            image = image.rotate(180, expand=True)
+        elif orientation == Orientation.PORTRAIT:
+            image = image.rotate(270, expand=True)
 
         image_data = image.convert("RGBA").load()
         pixel_data = []
@@ -505,28 +480,27 @@ class LcdCommRevE(LcdComm):
         return b'\x00'.join(hex_data[i:i + 249] for i in range(0, len(hex_data), 249))
 
     def _generate_update_image(self, image, x, y, orientation: Orientation = Orientation.PORTRAIT):
-        # x0, y0 = x, y
+        x0, y0 = x, y
 
-        # if orientation == Orientation.PORTRAIT:
-        #     image = image.rotate(90, expand=True)
-        #     x0 = self.get_width() - x - image.height
-        # elif orientation == Orientation.REVERSE_PORTRAIT:
-        #     image = image.rotate(270, expand=True)
-        #     y0 = self.get_height() - y - image.width
-        # elif orientation == Orientation.REVERSE_LANDSCAPE:
-        #     image = image.rotate(180, expand=True)
-        #     y0 = self.get_width() - x - image.width
-        #     x0 = self.get_height() - y - image.height
-        # elif orientation == Orientation.LANDSCAPE:
-        #     x0, y0 = y, x
+        if orientation == Orientation.PORTRAIT:
+            y0 = self.get_height() - y - image.height
+        elif orientation == Orientation.REVERSE_PORTRAIT:
+            image = image.rotate(180, expand=True)
+            x0 = self.get_width() - x - image.width
+        elif orientation == Orientation.LANDSCAPE:
+            image = image.rotate(90, expand=True)
+            x0, y0 = y, x
+        elif orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(270, expand=True)
+            x0 = self.get_height() - y - image.width
+            y0 = self.get_width() - x - image.height
 
         img_raw_data = bytes([])
         image_data = image.convert("RGBA").load()
 
         for w in range(image.width):
             # Target start
-            img_raw_data += (((x + w) * self.display_height) +
-                             (y + image.height)).to_bytes(3, byteorder='big')
+            img_raw_data += (((x0 + w) * self.display_height) + y0).to_bytes(3, byteorder='big')
 
             # Number of pixels to be written
             img_raw_data += image.height.to_bytes(2, byteorder='big')
@@ -544,7 +518,7 @@ class LcdCommRevE(LcdComm):
         if is_isolated_call:
             self._init_packet_interaction()
 
-        self._send_command(Command.STOP_MEDIA)
+        self._send_command(Command.STOP_MEDIA, bypass_queue=True)
         response = self._send_command(
             Command.STOP_VIDEO, readsize=1024, bypass_queue=True)
 
