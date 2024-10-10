@@ -32,18 +32,14 @@ if sys.version_info < MIN_PYTHON:
         sys.exit(0)
     except:
         os._exit(0)
-
+IMPORT_ERRORS = ''
 try:
     import tkinter.ttk as ttk
     from tkinter import *
     from PIL import ImageTk
-except:
-    print(
-        "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+except Exception as e:
+    IMPORT_ERRORS += e.msg
+    IMPORT_ERRORS += "\n"
 
 try:
     import psutil
@@ -52,9 +48,16 @@ try:
     from PIL import Image
     from serial.tools.list_ports import comports
     from tktooltip import ToolTip
-except:
-    print(
-        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
+except Exception as e:
+    IMPORT_ERRORS += e.msg
+    IMPORT_ERRORS += "\n"
+
+if IMPORT_ERRORS:
+    IMPORT_ERRORS += "\n"
+    IMPORT_ERRORS += "Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start"
+    IMPORT_ERRORS += "\n"
+    IMPORT_ERRORS += "Or the troubleshooting page troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed"
+    print(IMPORT_ERRORS)
     try:
         sys.exit(0)
     except:
