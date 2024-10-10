@@ -82,7 +82,7 @@ if __name__ == "__main__":
         lcd_comm = LcdCommRevD(com_port=COM_PORT)
     elif REVISION == "E":
         logger.info("Selected Hardware Revision E (Turing Smart Screen 8.8\")")
-        lcd_comm = LcdCommRevE()
+        lcd_comm = LcdCommRevE(com_port=COM_PORT)
     elif REVISION == "SIMU2.1":
         logger.info("Selected 2.1\" Simulated LCD")
         lcd_comm = LcdSimulated(display_width=480, display_height=480)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
             os._exit(1)
 
     # Reset screen in case it was in an unstable state (screen is also cleared)
-   #lcd_comm.Clear()
+    lcd_comm.Reset()
 
     # Send initialization commands
     lcd_comm.InitializeComm()
@@ -117,26 +117,6 @@ if __name__ == "__main__":
     # Set orientation (screen starts in Portrait)
     lcd_comm.SetOrientation(orientation=Orientation.LANDSCAPE)
 
-    #lcd_comm.GetFileSize("/mnt/UDISK/video/earthd.mp4")
-    
-    dirs, files = lcd_comm.ListDirectory("/mnt/UDISK/img/")
-    
-    print(dirs)
-    print(files)
-
-    lcd_comm.DeleteFile("/mnt/UDISK/img/test.png")
-    
-    dirs, files = lcd_comm.ListDirectory("/mnt/UDISK/img/")
-    
-    print(dirs)
-    print(files)
-    
-    lcd_comm.UploadFile("./res/themes/--Theme examples/8.8inch/Cyberpunk 2077/theme_res_1888.png", "/mnt/UDISK/img/cyberpunk.png")
-
-    lcd_comm.PlayVideoFromStorage("/mnt/UDISK/video/earth.mp4")
-    lcd_comm.PlayImageFromStorage("/mnt/UDISK/img/test.png")
-
-    #lcd_comm._stop_media();
     # Define background picture
     background = f"res/backgrounds/example_{lcd_comm.get_width()}x{lcd_comm.get_height()}.png"
 
