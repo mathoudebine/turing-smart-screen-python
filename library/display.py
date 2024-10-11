@@ -24,6 +24,7 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_rev_e import LcdCommRevE
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -66,6 +67,9 @@ class Display:
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "E":
+            self.lcd = LcdCommRevE(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif (config.CONFIG_DATA["display"]["REVISION"] == "SIMU"
               or config.CONFIG_DATA["display"]["REVISION"] == "SIMU3.5"):
@@ -133,6 +137,8 @@ class Display:
                     text=config.THEME_DATA['static_text'][text].get("TEXT"),
                     x=config.THEME_DATA['static_text'][text].get("X", 0),
                     y=config.THEME_DATA['static_text'][text].get("Y", 0),
+                    width=config.THEME_DATA['static_text'][text].get("WIDTH", 0),
+                    height=config.THEME_DATA['static_text'][text].get("HEIGHT", 0),
                     font=config.THEME_DATA['static_text'][text].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
                     font_size=config.THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
                     font_color=config.THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
@@ -140,7 +146,8 @@ class Display:
                     background_image=_get_full_path(config.THEME_DATA['PATH'],
                                                     config.THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE",
                                                                                                None)),
-                    anchor="lt"
+                    align=config.THEME_DATA['static_text'][text].get("ALIGN", "left"),
+                    anchor=config.THEME_DATA['static_text'][text].get("ANCHOR", "lt"),
                 )
 
 

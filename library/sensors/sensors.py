@@ -41,24 +41,35 @@ class Cpu(ABC):
 
     @staticmethod
     @abstractmethod
-    def is_temperature_available() -> bool:
+    def temperature() -> float:
         pass
 
     @staticmethod
     @abstractmethod
-    def temperature() -> float:
+    def fan_percent(fan_name: str = None) -> float:
         pass
 
 
 class Gpu(ABC):
     @staticmethod
     @abstractmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
         pass
 
     @staticmethod
     @abstractmethod
     def fps() -> int:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def fan_percent() -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def frequency() -> float:
         pass
 
     @staticmethod

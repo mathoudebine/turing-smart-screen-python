@@ -40,7 +40,7 @@ STATS:
     # The name of the class must be an exact match to the class name in sensors_custom.py
     ExampleCustomNumericData:
 
-      # There are 3 ways of displaying a custom sensor containing numeric values: as text, as graph progress bar, as radial progress bar
+      # There are 4 ways of displaying a custom sensor containing numeric values: as text, as bar graph (progress bar), as radial progress bar, as line graph
       TEXT:
         SHOW: True
         X: 50
@@ -86,6 +86,19 @@ STATS:
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
 
+      LINE_GRAPH:
+        SHOW: True
+        X: 300
+        Y: 220
+        WIDTH: 133
+        HEIGHT: 70
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        AUTOSCALE: False
+        LINE_COLOR: 61, 184, 225
+        AXIS: True
+        AXIS_COLOR: 255, 135, 0
+        BACKGROUND_IMAGE: background.png
 
 
 

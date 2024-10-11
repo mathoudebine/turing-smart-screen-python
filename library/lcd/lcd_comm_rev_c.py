@@ -78,7 +78,9 @@ class Command(Enum):
     START_DISPLAY_BITMAP = bytearray((0x2c,))
     PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00))
-    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00))
+
+    RESTARTSCREEN = bytearray((0x84, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00, 0x17, 0x70))
 
     STARTMODE_DEFAULT = bytearray((0x00,))
     STARTMODE_IMAGE = bytearray((0x01,))
@@ -204,9 +206,9 @@ class LcdCommRevC(LcdComm):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self._send_command(Command.HELLO, bypass_queue=True)
-        response = self.lcd_serial.read(23)
+        response = str(self.lcd_serial.read(22).decode())
         self.lcd_serial.flushInput()
-        if response == SubRevision.FIVEINCH.value:
+        if response.startswith(SubRevision.FIVEINCH.value):
             self.sub_revision = SubRevision.FIVEINCH
             self.display_width = 480
             self.display_height = 800

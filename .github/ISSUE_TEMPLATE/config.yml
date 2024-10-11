@@ -1,11 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Existing issues
-    url: https://github.com/mathoudebine/turing-smart-screen-python/issues?q=is%3Aissue+
-    about: Please search for existing issues here first before opening a new one.
   - name: FAQ / Troubleshooting
     url: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting
-    about: Please check the FAQ page before opening a new issue.
+    about: ⚠️ Please check the FAQ page before opening a new issue.
+  - name: Existing issues
+    url: https://github.com/mathoudebine/turing-smart-screen-python/issues?q=is%3Aissue+
+    about: ⚠️ Please search for existing issues first before opening a new one.
   - name: Discussions
     url: https://github.com/mathoudebine/turing-smart-screen-python/discussions
-    about: Use the discussion space to have conversations, ask questions and post informations without opening issues. 
+    about: ℹ️ Use the discussion space to share your experience, ask questions and discuss with the community without opening issues. 
