@@ -66,18 +66,20 @@ class Command(Enum):
 
     OPTIONS = bytearray((0x7d, 0xef, 0x69, 0x00, 0x00,
                         0x00, 0x05, 0x00, 0x00, 0x00, 0xff))
+    OPTIONS_TURNOFF = bytearray((0x7d, 0xef, 0x69, 0x00, 0x00,
+                        0x00, 0x05, 0x00, 0x00, 0x00, 0x61))
     STARTMODE_DEFAULT = bytearray((0x00,))
     STARTMODE_IMAGE = bytearray((0x01,))
     STARTMODE_VIDEO = bytearray((0x02,))
     FLIP_180 = bytearray((0x01,))
     NO_FLIP = bytearray((0x00,))
 
-    UPLOAD_FILE = bytearray((0x6F, 0xef, 0x69,))  # 6FEF6900000017000000
+    UPLOAD_FILE = bytearray((0x6F, 0xef, 0x69,))
     DELETE_FILE = bytearray((0x66, 0xef, 0x69,))
     LIST_FILES = bytearray((0x65, 0xEF, 0x69,))
     QUERY_FILE_SIZE = bytearray((0x6e, 0xef, 0x69,))
     QUERY_STORAGE_INFORMATION = bytearray((0x64, 0xef, 0x69,
-                                           0x00, 0x00, 0x00, 0x01,))  # 64EF6900000001
+                                           0x00, 0x00, 0x00, 0x01,))
 
     PLAY_IMAGE = bytearray((0x8C, 0xEF, 0x69,))
     PLAY_VIDEO = bytearray((0x78, 0xEF, 0x69,))
@@ -112,15 +114,6 @@ class SleepInterval(Enum):
     def __init__(self, command):
         self.command = command
 
-
-class SubRevision(Enum):
-    UNKNOWN = None
-    EIGHTINCH = "chs_88inch"
-
-    def __init__(self, command):
-        self.command = command
-
-
 # This class is for Turing Smart Screen 5" screens
 class LcdCommRevE(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 1920, display_height: int = 480,
@@ -139,16 +132,16 @@ class LcdCommRevE(LcdComm):
 
         # Try to find awake device through serial number or vid/pid
         for com_port in com_ports:
-            if com_port.serial_number == 'CT88INCH':
-                return com_port.device
             if com_port.vid == 0x0525 and com_port.pid == 0xa4a7:
                 return com_port.device
-
-        # Try to find sleeping device and wake it up
+            
+        # If device is asleep, it is listening on a different COM port and identifies as CT88INCH or VID_1A86 & PID_CA88
         for com_port in com_ports:
-            if com_port.serial_number == 'CT88INCH':
-                LcdCommRevE._connect_to_reset_device_name(com_port)
-                return LcdCommRevE.auto_detect_com_port()
+            if com_port.serial_number == "CT88INCH":
+                logger.debug("Oh look, I found a sleeping 88 inch. Wakey wakey!")
+                return com_port.device
+            elif com_port.vid == 0x1a86 and com_port.pid == 0xCA88:
+                return com_port.device
 
         return None
 
@@ -195,16 +188,7 @@ class LcdCommRevE(LcdComm):
                 self.update_queue.put((self.ReadData, [readsize]))
 
     def _hello(self):
-        # This command reads LCD answer on serial link, so it bypasses the queue
-        self.sub_revision = SubRevision.UNKNOWN
-        self._send_command(Command.HELLO, bypass_queue=True)
-        response = str(self.lcd_serial.read(23).decode())
-        self.lcd_serial.flushInput()
-        if response.startswith(SubRevision.EIGHTINCH.value):
-            self.sub_revision = SubRevision.EIGHTINCH
-        else:
-            logger.warning(
-                "Display returned unknown sub-revision on Hello answer (%s)" % str(response))
+        self._init_packet_interaction();
 
     def InitializeComm(self):
         pass
@@ -212,12 +196,21 @@ class LcdCommRevE(LcdComm):
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
         
-        self._init_packet_interaction()
+        # When the device is asleep, there is an empty response to the hello
+        self._send_command(Command.HELLO, readsize=1024, bypass_queue=True)
+        
+        # Device wants to receive the restart command twice
         self._send_command(Command.RESTART, bypass_queue=True)
         self._send_command(Command.RESTART, bypass_queue=True)
         self.closeSerial()
+        
         # Wait for display reset then reconnect
         time.sleep(15)
+        
+        # When waking up, the device switches from COM3 to COM5
+        # -> Reset com port
+        self.com_port = 'AUTO'
+        
         self.openSerial()
 
     def Clear(self):
@@ -235,25 +228,30 @@ class LcdCommRevE(LcdComm):
 
     def ScreenOff(self):
         logger.info("Calling ScreenOff")
-        self._send_command(Command.HELLO, bypass_queue=True)
-        self._send_command(Command.STOP_VIDEO)
-        response = self._send_command(Command.STOP_MEDIA, readsize=1024)
+        
+        # I really don't know why I cannot stop the bitmap updates from here
+        
+        self.SetBrightness(0, is_isolated_call=False, bypass_queue=True)
+        
+        self._send_command(Command.OPTIONS_TURNOFF, bypass_queue=True)
+        self._send_command(Command.TURNOFF, bypass_queue=True)
+        self._send_command(Command.STOP_VIDEO, bypass_queue=True)        
+        
+        # UsbMonitorS sends a completely black bitmap at this point
+        # Experiments showed that this is not needed
 
-        assert response == b'media_stop', 'Failed to stop media'
-
-        self._send_command(Command.TURNOFF)
-
-    def ScreenOn(self, is_isolated_call: bool = True):
+    def ScreenOn(self):
         logger.info("Calling ScreenOn")
+        # Display needs to be reinizialized at this point, but as far as I can tell, this isn't possible at this point
+        
+        self.closeSerial()
+        # # Give the display some time to wake up and init COM5
+        time.sleep(10)
+        
+        self.com_port = "AUTO"
+        self.openSerial()
 
-        if is_isolated_call:
-            self._init_packet_interaction()
-
-        self._send_command(Command.STOP_VIDEO)
-        self._send_command(Command.STOP_MEDIA, readsize=1024)
-        # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]))
-
-    def SetBrightness(self, level: int = 25, is_isolated_call: bool = True):
+    def SetBrightness(self, level: int = 25, is_isolated_call: bool = True, bypass_queue: bool = True):
         # logger.info("Call SetBrightness")
         assert 0 <= level <= 100, 'Brightness level must be [0-100]'
 
@@ -265,7 +263,7 @@ class LcdCommRevE(LcdComm):
             self._init_packet_interaction()
 
         self._send_command(Command.SET_BRIGHTNESS, payload=bytearray(
-            (converted_level,)), bypass_queue=True)
+            (converted_level,)), bypass_queue=bypass_queue)
 
     def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, is_isolated_call: bool = True):
         self.orientation = orientation
@@ -296,15 +294,13 @@ class LcdCommRevE(LcdComm):
             bypass_queue=True)
 
         responseList = response.decode().rstrip('\x00')
-        print(responseList)
 
-        assert responseList.startswith("result"), 'Failed to list files'
+        if not responseList.startswith("result"):
+            logger.warning("Failed to list files")
+            return [], []
 
-        if responseList.startswith('result:'):
-            parts = responseList.split(':')
-            return parts[2].split('/')[:-1], parts[3].split('/')[:-1]
-
-        return [], []
+        parts = responseList.split(':')
+        return parts[2].split('/')[:-1], parts[3].split('/')[:-1]
 
     def UploadFile(self, src_path: str, target_path: str):        
         payload = len(target_path).to_bytes(4, byteorder='big') + \
@@ -397,7 +393,7 @@ class LcdCommRevE(LcdComm):
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
-    ):
+    ):        
         # If the image height/width isn't provided, use the native image size
         if not image_height:
             image_height = image.size[1]
@@ -428,8 +424,7 @@ class LcdCommRevE(LcdComm):
 
                 self._send_command(
                     Command.DISPLAY_BITMAP,
-                    payload=bytearray(int(self.display_width * self.display_width)
-                                      .to_bytes(4)),
+                    payload=bytearray(int(self.display_width * self.display_height * 4).to_bytes(4)),
                     bypass_queue=True
                 )
 
@@ -440,13 +435,13 @@ class LcdCommRevE(LcdComm):
                     readsize=1024,
                     bypass_queue=True
                 )
-
-                assert response.startswith(
-                    b'full_png_sucess'), 'Failed to display bitmap'
+                
+                if not response.startswith(b'full_png_sucess'):
+                    logger.warning("Failed to display bitmap")
 
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
-            with self.update_queue_mutex:
+            with self.update_queue_mutex:                
                 update_image, img_len = self._generate_update_image(
                     image, x, y, self.orientation)
 
@@ -522,13 +517,15 @@ class LcdCommRevE(LcdComm):
         response = self._send_command(
             Command.STOP_VIDEO, readsize=1024, bypass_queue=True)
 
-        assert response.startswith(b'media_stop'), 'Failed to stop media'
+        if not response.startswith(b'media_stop'):
+            logger.warning("Failed to stop media, got response: %s", response)
 
     def _init_packet_interaction(self):
         response = self._send_command(
             Command.HELLO, readsize=1024, bypass_queue=True)
-        assert response.startswith(
-            b'chs_88inch'), 'Failed to initialize packet interaction'
+        
+        if not response.startswith(b'chs_88inch'):
+            logger.warning("Failed to initialize packet interaction, got response: %s", response)
 
     def _no_update(self):
         payload_len = (8).to_bytes(4, byteorder='big')
