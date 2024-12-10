@@ -25,12 +25,13 @@ import threading
 import time
 from abc import ABC, abstractmethod
 from enum import IntEnum
-from typing import Tuple, List
+from typing import Tuple, List, Optional, Dict
 
 import serial
 from PIL import Image, ImageDraw, ImageFont
 
 from library.log import logger
+from library.lcd.color import Color, parse_color
 
 
 class Orientation(IntEnum):
@@ -42,7 +43,7 @@ class Orientation(IntEnum):
 
 class LcdComm(ABC):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         self.lcd_serial = None
 
         # String containing absolute path to serial port e.g. "COM3", "/dev/ttyACM1" or "AUTO" for auto-discovery
@@ -67,7 +68,10 @@ class LcdComm(ABC):
         self.image_cache = {}  # { key=path, value=PIL.Image }
 
         # Create a cache to store opened fonts, to avoid opening and loading from the filesystem every time
-        self.font_cache = {}  # { key=(font, size), value=PIL.ImageFont }
+        self.font_cache: Dict[
+            Tuple[str, int],  # key=(font, size)
+            ImageFont.FreeTypeFont # value= a loaded freetype font
+        ] = {}
 
     def get_width(self) -> int:
         if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
@@ -97,7 +101,7 @@ class LcdComm(ABC):
             logger.debug(f"Static COM port: {self.com_port}")
 
         try:
-            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=1)
+            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=True)
         except Exception as e:
             logger.error(f"Cannot open COM port {self.com_port}: {e}")
             try:
@@ -106,10 +110,20 @@ class LcdComm(ABC):
                 os._exit(0)
 
     def closeSerial(self):
-        try:
+        if self.lcd_serial is not None:
             self.lcd_serial.close()
-        except:
-            pass
+
+    def serial_write(self, data: bytes):
+        assert self.lcd_serial is not None
+        self.lcd_serial.write(data)
+
+    def serial_read(self, size: int) -> bytes:
+        assert self.lcd_serial is not None
+        return self.lcd_serial.read(size)
+
+    def serial_flush_input(self):
+        if self.lcd_serial is not None:
+            self.lcd_serial.reset_input_buffer()
 
     def WriteData(self, byteBuffer: bytearray):
         self.WriteLine(bytes(byteBuffer))
@@ -124,39 +138,39 @@ class LcdComm(ABC):
 
     def WriteLine(self, line: bytes):
         try:
-            self.lcd_serial.write(line)
-        except serial.serialutil.SerialTimeoutException:
+            self.serial_write(line)
+        except serial.SerialTimeoutException:
             # We timed-out trying to write to our device, slow things down.
             logger.warning("(Write line) Too fast! Slow down!")
-        except serial.serialutil.SerialException:
+        except serial.SerialException:
             # Error writing data to device: close and reopen serial port, try to write again
             logger.error(
                 "SerialException: Failed to send serial data to device. Closing and reopening COM port before retrying once.")
             self.closeSerial()
             time.sleep(1)
             self.openSerial()
-            self.lcd_serial.write(line)
+            self.serial_write(line)
 
     def ReadData(self, readSize: int):
         try:
-            response = self.lcd_serial.read(readSize)
+            response = self.serial_read(readSize)
             # logger.debug("Received: [{}]".format(str(response, 'utf-8')))
             return response
-        except serial.serialutil.SerialTimeoutException:
+        except serial.SerialTimeoutException:
             # We timed-out trying to read from our device, slow things down.
             logger.warning("(Read data) Too fast! Slow down!")
-        except serial.serialutil.SerialException:
+        except serial.SerialException:
             # Error writing data to device: close and reopen serial port, try to read again
             logger.error(
                 "SerialException: Failed to read serial data from device. Closing and reopening COM port before retrying once.")
             self.closeSerial()
             time.sleep(1)
             self.openSerial()
-            return self.lcd_serial.read(readSize)
+            return self.serial_read(readSize)
 
     @staticmethod
     @abstractmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         pass
 
     @abstractmethod
@@ -193,7 +207,7 @@ class LcdComm(ABC):
     @abstractmethod
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
@@ -213,20 +227,17 @@ class LcdComm(ABC):
             height: int = 0,
             font: str = "roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
-            font_color: Tuple[int, int, int] = (0, 0, 0),
-            background_color: Tuple[int, int, int] = (255, 255, 255),
-            background_image: str = None,
+            font_color: Color = (0, 0, 0),
+            background_color: Color = (255, 255, 255),
+            background_image: Optional[str] = None,
             align: str = 'left',
-            anchor: str = None,
+            anchor: str = 'la',
     ):
         # Convert text to bitmap using PIL and display it
         # Provide the background image path to display text with transparent background
 
-        if isinstance(font_color, str):
-            font_color = tuple(map(int, font_color.split(', ')))
-
-        if isinstance(background_color, str):
-            background_color = tuple(map(int, background_color.split(', ')))
+        font_color = parse_color(font_color)
+        background_color = parse_color(background_color)
 
         assert x <= self.get_width(), 'Text X coordinate ' + str(x) + ' must be <= display width ' + str(
             self.get_width())
@@ -251,13 +262,11 @@ class LcdComm(ABC):
             text_image = self.open_image(background_image)
 
         # Get text bounding box
-        if (font, font_size) not in self.font_cache:
-            self.font_cache[(font, font_size)] = ImageFont.truetype("./res/fonts/" + font, font_size)
-        font = self.font_cache[(font, font_size)]
+        fontdata = self.open_font(font, font_size)
         d = ImageDraw.Draw(text_image)
 
         if width == 0 or height == 0:
-            left, top, right, bottom = d.textbbox((x, y), text, font=font, align=align, anchor=anchor)
+            left, top, right, bottom = d.textbbox((x, y), text, font=fontdata, align=align, anchor=anchor)
 
             # textbbox may return float values, which is not good for the bitmap operations below.
             # Let's extend the bounding box to the next whole pixel in all directions
@@ -267,21 +276,21 @@ class LcdComm(ABC):
             left, top, right, bottom = x, y, x + width, y + height
 
             if anchor.startswith("m"):
-                x = (right + left) / 2
+                x = int((right + left) / 2)
             elif anchor.startswith("r"):
                 x = right
             else:
                 x = left
 
             if anchor.endswith("m"):
-                y = (bottom + top) / 2
+                y = int((bottom + top) / 2)
             elif anchor.endswith("b"):
                 y = bottom
             else:
                 y = top
 
         # Draw text onto the background image with specified color & font
-        d.text((x, y), text, font=font, fill=font_color, align=align, anchor=anchor)
+        d.text((x, y), text, font=fontdata, fill=font_color, align=align, anchor=anchor)
 
         # Restrict the dimensions if they overflow the display size
         left = max(left, 0)
@@ -296,18 +305,15 @@ class LcdComm(ABC):
 
     def DisplayProgressBar(self, x: int, y: int, width: int, height: int, min_value: int = 0, max_value: int = 100,
                            value: int = 50,
-                           bar_color: Tuple[int, int, int] = (0, 0, 0),
+                           bar_color: Color = (0, 0, 0),
                            bar_outline: bool = True,
-                           background_color: Tuple[int, int, int] = (255, 255, 255),
-                           background_image: str = None):
+                           background_color: Color = (255, 255, 255),
+                           background_image: Optional[str] = None):
         # Generate a progress bar and display it
         # Provide the background image path to display progress bar with transparent background
 
-        if isinstance(bar_color, str):
-            bar_color = tuple(map(int, bar_color.split(', ')))
-
-        if isinstance(background_color, str):
-            background_color = tuple(map(int, background_color.split(', ')))
+        bar_color = parse_color(bar_color)
+        background_color = parse_color(background_color)
 
         assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
@@ -347,26 +353,21 @@ class LcdComm(ABC):
 
     def DisplayLineGraph(self, x: int, y: int, width: int, height: int,
                          values: List[float],
-                         min_value: int = 0,
-                         max_value: int = 100,
+                         min_value: float = 0,
+                         max_value: float = 100,
                          autoscale: bool = False,
-                         line_color: Tuple[int, int, int] = (0, 0, 0),
+                         line_color: Color = (0, 0, 0),
                          line_width: int = 2,
                          graph_axis: bool = True,
-                         axis_color: Tuple[int, int, int] = (0, 0, 0),
-                         background_color: Tuple[int, int, int] = (255, 255, 255),
-                         background_image: str = None):
+                         axis_color: Color = (0, 0, 0),
+                         background_color: Color = (255, 255, 255),
+                         background_image: Optional[str] = None):
         # Generate a plot graph and display it
         # Provide the background image path to display plot graph with transparent background
 
-        if isinstance(line_color, str):
-            line_color = tuple(map(int, line_color.split(', ')))
-
-        if isinstance(axis_color, str):
-            axis_color = tuple(map(int, axis_color.split(', ')))
-
-        if isinstance(background_color, str):
-            background_color = tuple(map(int, background_color.split(', ')))
+        line_color = parse_color(line_color)
+        axis_color = parse_color(axis_color)
+        background_color = parse_color(background_color)
 
         assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
@@ -432,20 +433,19 @@ class LcdComm(ABC):
             # Draw Legend
             draw.line([0, 0, 1, 0], fill=axis_color)
             text = f"{int(max_value)}"
-            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
-            left, top, right, bottom = font.getbbox(text)
+            fontdata = self.open_font("roboto/Roboto-Black.ttf", 10)
+            _, top, right, bottom = fontdata.getbbox(text)
             draw.text((2, 0 - top), text,
-                      font=font, fill=axis_color)
+                      font=fontdata, fill=axis_color)
 
             text = f"{int(min_value)}"
-            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
-            left, top, right, bottom = font.getbbox(text)
+            _, top, right, bottom = fontdata.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
-                      font=font, fill=axis_color)
+                      font=fontdata, fill=axis_color)
 
         self.DisplayPILImage(graph_image, x, y)
 
-    def DrawRadialDecoration(self, draw: ImageDraw, angle: float, radius: float, width: float, color: Tuple[int, int, int] = (0, 0, 0)):
+    def DrawRadialDecoration(self, draw: ImageDraw.ImageDraw, angle: float, radius: float, width: float, color: Tuple[int, int, int] = (0, 0, 0)):
         i_cos = math.cos(angle*math.pi/180)
         i_sin = math.sin(angle*math.pi/180)
         x_f = (i_cos * (radius - width/2)) + radius
@@ -471,39 +471,32 @@ class LcdComm(ABC):
     def DisplayRadialProgressBar(self, xc: int, yc: int, radius: int, bar_width: int,
                                  min_value: int = 0,
                                  max_value: int = 100,
-                                 angle_start: int = 0,
-                                 angle_end: int = 360,
+                                 angle_start: float = 0,
+                                 angle_end: float = 360,
                                  angle_sep: int = 5,
                                  angle_steps: int = 10,
                                  clockwise: bool = True,
                                  value: int = 50,
-                                 text: str = None,
+                                 text: Optional[str] = None,
                                  with_text: bool = True,
                                  font: str = "roboto/Roboto-Black.ttf",
                                  font_size: int = 20,
-                                 font_color: Tuple[int, int, int] = (0, 0, 0),
-                                 bar_color: Tuple[int, int, int] = (0, 0, 0),
-                                 background_color: Tuple[int, int, int] = (255, 255, 255),
-                                 background_image: str = None,
+                                 font_color: Color = (0, 0, 0),
+                                 bar_color: Color = (0, 0, 0),
+                                 background_color: Color = (255, 255, 255),
+                                 background_image: Optional[str] = None,
                                  custom_bbox: Tuple[int, int, int, int] = (0, 0, 0, 0),
                                  text_offset: Tuple[int, int] = (0,0),
-                                 bar_background_color: Tuple[int, int, int] = (0, 0, 0),
+                                 bar_background_color: Color = (0, 0, 0),
                                  draw_bar_background: bool = False,
                                  bar_decoration: str = ""):                                 
         # Generate a radial progress bar and display it
         # Provide the background image path to display progress bar with transparent background
 
-        if isinstance(bar_color, str):
-            bar_color = tuple(map(int, bar_color.split(', ')))
-
-        if isinstance(background_color, str):
-            background_color = tuple(map(int, background_color.split(', ')))
-
-        if isinstance(font_color, str):
-            font_color = tuple(map(int, font_color.split(', ')))
-
-        if isinstance(bar_background_color, str):
-            bar_background_color = tuple(map(int, bar_background_color.split(', ')))
+        bar_color = parse_color(bar_color)
+        background_color = parse_color(background_color)
+        font_color = parse_color(font_color)
+        bar_background_color = parse_color(bar_background_color)
 
         if angle_start % 361 == angle_end % 361:
             if clockwise:
@@ -657,11 +650,11 @@ class LcdComm(ABC):
         if with_text:
             if text is None:
                 text = f"{int(pct * 100 + .5)}%"
-            font = ImageFont.truetype("./res/fonts/" + font, font_size)
-            left, top, right, bottom = font.getbbox(text)
+            fontdata = self.open_font(font, font_size)
+            left, top, right, bottom = fontdata.getbbox(text)
             w, h = right - left, bottom - top
             draw.text((radius - w / 2 + text_offset[0], radius - top - h / 2 + text_offset[1]), text,
-                      font=font, fill=font_color)
+                      font=fontdata, fill=font_color)
 
         if custom_bbox[0] != 0 or custom_bbox[1] != 0 or custom_bbox[2] != 0 or custom_bbox[3] != 0:
             bar_image = bar_image.crop(box=custom_bbox)
@@ -670,8 +663,13 @@ class LcdComm(ABC):
        # self.DisplayPILImage(bar_image, xc - radius, yc - radius)
 
     # Load image from the filesystem, or get from the cache if it has already been loaded previously
-    def open_image(self, bitmap_path: str) -> Image:
+    def open_image(self, bitmap_path: str) -> Image.Image:
         if bitmap_path not in self.image_cache:
             logger.debug("Bitmap " + bitmap_path + " is now loaded in the cache")
             self.image_cache[bitmap_path] = Image.open(bitmap_path)
         return copy.copy(self.image_cache[bitmap_path])
+
+    def open_font(self, name: str, size: int) -> ImageFont.FreeTypeFont:
+        if (name, size) not in self.font_cache:
+            self.font_cache[(name, size)] = ImageFont.truetype("./res/fonts/" + name, size)
+        return self.font_cache[(name, size)]
