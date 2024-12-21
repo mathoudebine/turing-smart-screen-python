@@ -853,7 +853,6 @@ class Weather:
         if activate:
             temp = None
             feel = None
-            desc = None
             time = None
             humidity = None
             if HW_SENSORS in ["STATIC", "STUB"]:
@@ -877,26 +876,26 @@ class Weather:
                     try:
                         response = requests.get(url)
                         if response.status_code == 200:
-                            try:
-                                data = response.json()
-                                temp = f"{data['current']['temp']:.1f}{deg}"
-                                feel = f"({data['current']['feels_like']:.1f}{deg})"
-                                desc = data['current']['weather'][0]['description'].capitalize()
-                                if wdescription_theme_data['CENTER_LENGTH']:
-                                    desc = desc.center(center_description_length)
-                                humidity = f"{data['current']['humidity']:.0f}%"
-                                now = datetime.datetime.now()
-                                time = f"@{now.hour:02d}:{now.minute:02d}"
-                            except Exception as e:
-                                logger.error(str(e))
-                                desc = "Error fetching weather"
+                            data = response.json()
+                            temp = f"{data['current']['temp']:.1f}{deg}"
+                            feel = f"({data['current']['feels_like']:.1f}{deg})"
+                            desc = data['current']['weather'][0]['description'].capitalize()
+                            if wdescription_theme_data['CENTER_LENGTH']:
+                                desc = desc.center(center_description_length)
+                            humidity = f"{data['current']['humidity']:.0f}%"
+                            now = datetime.datetime.now()
+                            time = f"@{now.hour:02d}:{now.minute:02d}"
                         else:
-                            print(f"Failed to fetch weather data. Status code: {response.status_code}")
-                            print(f"Response content: {response.content}")
+                            logger.error(f"Error {response.status_code} fetching OpenWeatherMap API:")
+                            # logger.debug(f"Response content: {response.content}")
                             logger.error(response.text)
                             desc = response.json().get('message')
-                    except:
-                        desc = "Connection error"
+                    except Exception as e:
+                        logger.error(f"Error fetching OpenWeatherMap API: {str(e)}")
+                        desc = "Error fetching OpenWeatherMap API"
+                else:
+                    logger.warning("No OpenWeatherMap API key provided in config.yaml")
+                    desc = "No OpenWeatherMap API key"
 
         if activate:
             # Display Temperature
@@ -907,7 +906,7 @@ class Weather:
             display_themed_value(theme_data=wupdatetime_theme_data, value=time)
             # Display Humidity
             display_themed_value(theme_data=whumidity_theme_data, value=humidity)
-            # Display Weather Description
+            # Display Weather Description (or error message)
             display_themed_value(theme_data=wdescription_theme_data, value=desc)
 
 
