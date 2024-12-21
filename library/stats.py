@@ -887,8 +887,8 @@ class Weather:
                             time = f"@{now.hour:02d}:{now.minute:02d}"
                         else:
                             logger.error(f"Error {response.status_code} fetching OpenWeatherMap API:")
-                            # logger.debug(f"Response content: {response.content}")
-                            logger.error(response.text)
+                            # logger.error(f"Response content: {response.content}")
+                            # logger.error(response.text)
                             desc = response.json().get('message')
                     except Exception as e:
                         logger.error(f"Error fetching OpenWeatherMap API: {str(e)}")
