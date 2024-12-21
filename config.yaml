@@ -1,14 +1,15 @@
+---
 config:
   # Configuration values to set up basic communication
   # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: AUTO
+  COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
-  THEME: ColoredFlat
+  THEME: 3.5inchTheme2
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -22,21 +23,8 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: Ethernet # Ethernet Card
-  WLO: Wi-Fi # Wi-Fi Card
-
-  # Used to calculate your ping.
-  PING: 8.8.8.8
-  
-  # For weather, you can use for example https://www.latlong.net/
-  LATITUDE: 45.75
-  LONGITUDE: 4.85
-  # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up. You need to subscreibe to the 3.0 OneCallAPI that has 1000 free daily calls
-  API_KEY: abcdef
-  # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
-  WEATHER_UNITS: metric
-  # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi
-  LANGUAGE: fr
+  ETH: "" # Ethernet Card
+  WLO: "" # Wi-Fi Card
 
   # CPU fan
   # For Linux/MacOS platforms, the CPU fan is amongst all fan sensors gathered from the motherboard chipset
@@ -44,6 +32,21 @@ config:
   # If auto-detection fails, it might be necessary to manually indicate which fan is the CPU fan
   # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
   CPU_FAN: AUTO
+
+  # IP address used for ping sensor. Can be external (e.g. 8.8.8.8) or internal (e.g. 192.168.x.x)
+  PING: 8.8.8.8
+
+  # Weather data with OpenWeatherMap API. Only useful if you want to use a theme that displays it
+  # Location from which to display the weather. Use for example https://www.latlong.net/ to get latitude/longitude
+  WEATHER_LATITUDE: 45.75
+  WEATHER_LONGITUDE: 4.85
+  # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up.
+  # You need to subscribe to the 3.0 OneCallAPI that has 1000 free daily calls
+  WEATHER_API_KEY: ""
+  # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
+  WEATHER_UNITS: metric
+  # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi
+  WEATHER_LANGUAGE: fr
 
 display:
   # Display revision:

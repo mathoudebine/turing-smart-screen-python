@@ -856,11 +856,11 @@ class Weather:
                     desc = "x"*center_description_length
             else:
                 # API Parameters
-                lat = config.CONFIG_DATA['config'].get('LATITUDE', "")
-                lon = config.CONFIG_DATA['config'].get('LONGITUDE', "")
-                api_key = config.CONFIG_DATA['config'].get('API_KEY', "")
+                lat = config.CONFIG_DATA['config'].get('WEATHER_LATITUDE', "")
+                lon = config.CONFIG_DATA['config'].get('WEATHER_LONGITUDE', "")
+                api_key = config.CONFIG_DATA['config'].get('WEATHER_API_KEY', "")
                 units = config.CONFIG_DATA['config'].get('WEATHER_UNITS', "metric")
-                lang = config.CONFIG_DATA['config'].get('LANGUAGE', "en")
+                lang = config.CONFIG_DATA['config'].get('WEATHER_LANGUAGE', "en")
                 deg = WEATHER_UNITS.get(units, '°?')
                 if api_key:
                     url = f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=minutely,hourly,daily,alerts&appid={api_key}&units={units}&lang={lang}'
