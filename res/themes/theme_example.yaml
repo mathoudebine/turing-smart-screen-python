@@ -1508,8 +1508,6 @@ STATS:
     WEATHER_DESCRIPTION:
       TEXT:
         SHOW: True
-        CENTER: True # Used to center the description, on a 40 character basis or with CENTER_LENGTH below. Use MONO font for better results. Use fake static data for better positionning ! 
-        CENTER_LENGTH: 40
         X: 20
         Y: 95
         FONT: roboto-mono/RobotoMono-Bold.ttf

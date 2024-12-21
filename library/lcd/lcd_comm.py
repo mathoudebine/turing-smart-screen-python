@@ -235,6 +235,10 @@ class LcdComm(ABC):
         assert len(text) > 0, 'Text must not be empty'
         assert font_size > 0, "Font size must be > 0"
 
+        # If only width is specified, assume height based on font size (one-line text)
+        if width > 0 and height == 0:
+            height = font_size
+
         if background_image is None:
             # A text bitmap is created with max width/height by default : text with solid background
             text_image = Image.new(

@@ -841,11 +841,6 @@ class Weather:
         wdescription_theme_data = weather_theme_data.get('WEATHER_DESCRIPTION', {}).get('TEXT', {})
         whumidity_theme_data = weather_theme_data.get('HUMIDITY', {}).get('TEXT', {})
 
-        # Retrieve information used to center description, if needed
-        center_description_length = 40
-        if 'CENTER_LENGTH' in wdescription_theme_data:
-            center_description_length = wdescription_theme_data['CENTER_LENGTH']
-
         activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get(
             "SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get(
             "SHOW") or whumidity_theme_data.get("SHOW") else False
@@ -861,8 +856,6 @@ class Weather:
                 desc = "Cloudy"
                 time = "@15:33"
                 humidity = "45%"
-                if wdescription_theme_data['CENTER_LENGTH']:
-                    desc = "x" * center_description_length
             else:
                 # API Parameters
                 lat = config.CONFIG_DATA['config'].get('WEATHER_LATITUDE', "")
@@ -880,8 +873,6 @@ class Weather:
                             temp = f"{data['current']['temp']:.1f}{deg}"
                             feel = f"({data['current']['feels_like']:.1f}{deg})"
                             desc = data['current']['weather'][0]['description'].capitalize()
-                            if wdescription_theme_data['CENTER_LENGTH']:
-                                desc = desc.center(center_description_length)
                             humidity = f"{data['current']['humidity']:.0f}%"
                             now = datetime.datetime.now()
                             time = f"@{now.hour:02d}:{now.minute:02d}"
