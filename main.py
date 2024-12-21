@@ -48,21 +48,25 @@ try:
         import win32con
         import win32gui
 
-    try:
-        import pystray
-    except:
-        pass
-except:
-    print(
-        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
+    from library.log import logger
+    import library.scheduler as scheduler
+    from library.display import display
+
+except Exception as e:
+    print("""Import error: %s
+Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
+Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed""" % str(
+        e))
     try:
         sys.exit(0)
     except:
         os._exit(0)
 
-from library.log import logger
-import library.scheduler as scheduler
-from library.display import display
+try:
+    import pystray
+except:
+    # If pystray cannot be loaded do not stop the program, just ignore it. The tray icon will not be displayed.
+    pass
 
 if __name__ == "__main__":
 

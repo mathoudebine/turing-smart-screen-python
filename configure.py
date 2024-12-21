@@ -32,16 +32,11 @@ if sys.version_info < MIN_PYTHON:
         sys.exit(0)
     except:
         os._exit(0)
-IMPORT_ERRORS = ''
+
 try:
     import tkinter.ttk as ttk
     from tkinter import *
     from PIL import ImageTk
-except Exception as e:
-    IMPORT_ERRORS += e.msg
-    IMPORT_ERRORS += "\n"
-
-try:
     import psutil
     import ruamel.yaml
     import sv_ttk
@@ -49,15 +44,10 @@ try:
     from serial.tools.list_ports import comports
     from tktooltip import ToolTip
 except Exception as e:
-    IMPORT_ERRORS += e.msg
-    IMPORT_ERRORS += "\n"
-
-if IMPORT_ERRORS:
-    IMPORT_ERRORS += "\n"
-    IMPORT_ERRORS += "Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start"
-    IMPORT_ERRORS += "\n"
-    IMPORT_ERRORS += "Or the troubleshooting page troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed"
-    print(IMPORT_ERRORS)
+    print("""Import error: %s
+Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
+Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed""" % str(
+        e))
     try:
         sys.exit(0)
     except:
