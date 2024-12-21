@@ -215,6 +215,7 @@ if __name__ == "__main__":
     scheduler.SystemUptimeStats()
     scheduler.CustomStats()
     scheduler.WeatherStats()
+    scheduler.PingStats()
     scheduler.QueueHandler()
 
     if tray_icon and platform.system() == "Darwin":  # macOS-specific

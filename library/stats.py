@@ -29,9 +29,10 @@ import sys
 from typing import List
 
 import babel.dates
+import requests
+from ping3 import ping
 from psutil._common import bytes2human
 from uptime import uptime
-import requests
 
 import library.config as config
 from library.display import display
@@ -43,6 +44,7 @@ ETH_CARD = config.CONFIG_DATA["config"].get("ETH", "")
 WLO_CARD = config.CONFIG_DATA["config"].get("WLO", "")
 HW_SENSORS = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
 CPU_FAN = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
+PING_DEST = config.CONFIG_DATA["config"].get("PING", "127.0.0.1")
 
 if HW_SENSORS == "PYTHON":
     if platform.system() == 'Windows':
@@ -826,6 +828,7 @@ class Custom:
                 if theme_data is not None and last_values is not None:
                     display_themed_line_graph(theme_data=theme_data, values=last_values)
 
+
 class Weather:
     @staticmethod
     def stats():
@@ -843,9 +846,16 @@ class Weather:
         if 'CENTER_LENGTH' in wdescription_theme_data:
             center_description_length = wdescription_theme_data['CENTER_LENGTH']
 
-        activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get("SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get("SHOW") or whumidity_theme_data.get("SHOW") else False
-        
+        activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get(
+            "SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get(
+            "SHOW") or whumidity_theme_data.get("SHOW") else False
+
         if activate:
+            temp = None
+            feel = None
+            desc = None
+            time = None
+            humidity = None
             if HW_SENSORS in ["STATIC", "STUB"]:
                 temp = "17.5°C"
                 feel = "(17.2°C)"
@@ -853,7 +863,7 @@ class Weather:
                 time = "@15:33"
                 humidity = "45%"
                 if wdescription_theme_data['CENTER_LENGTH']:
-                    desc = "x"*center_description_length
+                    desc = "x" * center_description_length
             else:
                 # API Parameters
                 lat = config.CONFIG_DATA['config'].get('WEATHER_LATITUDE', "")
@@ -892,10 +902,39 @@ class Weather:
             # Display Temperature
             display_themed_value(theme_data=wtemperature_theme_data, value=temp)
             # Display Temperature Felt
-            display_themed_value(theme_data=wfelt_theme_data, value=feel) 
+            display_themed_value(theme_data=wfelt_theme_data, value=feel)
             # Display Update Time
-            display_themed_value(theme_data=wupdatetime_theme_data, value=time) 
+            display_themed_value(theme_data=wupdatetime_theme_data, value=time)
             # Display Humidity
             display_themed_value(theme_data=whumidity_theme_data, value=humidity)
             # Display Weather Description
             display_themed_value(theme_data=wdescription_theme_data, value=desc)
+
+
+class Ping:
+    last_values_ping = []
+
+    @classmethod
+    def stats(cls):
+        theme_data = config.THEME_DATA['STATS']['PING']
+
+        delay = ping(dest_addr=PING_DEST, unit="ms")
+
+        save_last_value(delay, cls.last_values_ping,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        # logger.debug(f"Ping delay: {delay}ms")
+
+        display_themed_progress_bar(theme_data['GRAPH'], delay)
+        display_themed_radial_bar(
+            theme_data=theme_data['RADIAL'],
+            value=int(delay),
+            unit="ms",
+            min_size=6
+        )
+        display_themed_value(
+            theme_data=theme_data['TEXT'],
+            value=int(delay),
+            unit="ms",
+            min_size=6
+        )
+        display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_ping)

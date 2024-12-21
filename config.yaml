@@ -33,7 +33,7 @@ config:
   # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
   CPU_FAN: AUTO
 
-  # IP address used for ping sensor. Can be external (e.g. 8.8.8.8) or internal (e.g. 192.168.x.x)
+  # Address used for ping sensor. Can be internal/external IP (e.g. 8.8.8.8 or 192.168.0.1) or hostname (google.com)
   PING: 8.8.8.8
 
   # Weather data with OpenWeatherMap API. Only useful if you want to use a theme that displays it
@@ -57,7 +57,7 @@ display:
   # - SIMU   for 3.5" simulated LCD (image written in screencap.png)
   # - SIMU5  for 5" simulated LCD
   # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: C
+  REVISION: A
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness

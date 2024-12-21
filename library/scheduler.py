@@ -121,7 +121,7 @@ def CPUFanSpeed():
 
 
 @async_job("GPU_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['GPU'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('GPU', {}).get("INTERVAL", 0)).total_seconds())
 def GpuStats():
     """ Refresh the GPU Stats """
     # logger.debug("Refresh GPU Stats")
@@ -129,40 +129,42 @@ def GpuStats():
 
 
 @async_job("Memory_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['MEMORY'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('MEMORY', {}).get("INTERVAL", 0)).total_seconds())
 def MemoryStats():
     # logger.debug("Refresh memory stats")
     stats.Memory.stats()
 
 
 @async_job("Disk_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['DISK'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('DISK', {}).get("INTERVAL", 0)).total_seconds())
 def DiskStats():
     # logger.debug("Refresh disk stats")
     stats.Disk.stats()
 
 
 @async_job("Net_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['NET'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('NET', {}).get("INTERVAL", 0)).total_seconds())
 def NetStats():
     # logger.debug("Refresh net stats")
     stats.Net.stats()
 
 
 @async_job("Date_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['DATE'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('DATE', {}).get("INTERVAL", 0)).total_seconds())
 def DateStats():
     # logger.debug("Refresh date stats")
     stats.Date.stats()
 
+
 @async_job("SystemUptime_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['UPTIME'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('UPTIME', {}).get("INTERVAL", 0)).total_seconds())
 def SystemUptimeStats():
     # logger.debug("Refresh system uptime stats")
     stats.SystemUptime.stats()
 
+
 @async_job("Custom_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS']['CUSTOM'].get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('CUSTOM', {}).get("INTERVAL", 0)).total_seconds())
 def CustomStats():
     # print("Refresh custom stats")
     stats.Custom.stats()
@@ -173,6 +175,14 @@ def CustomStats():
 def WeatherStats():
     # logger.debug("Refresh Weather data")
     stats.Weather.stats()
+
+
+@async_job("Ping_Stats")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('PING', {}).get("INTERVAL", 0)).total_seconds())
+def PingStats():
+    # logger.debug("Refresh Ping data")
+    stats.Ping.stats()
+
 
 @async_job("Queue_Handler")
 @schedule(timedelta(milliseconds=1).total_seconds())

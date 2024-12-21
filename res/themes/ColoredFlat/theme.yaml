@@ -540,30 +540,28 @@ STATS:
         FONT_SIZE: 18
         FONT_COLOR: 247, 227, 227
         BACKGROUND_IMAGE: background.png 
-  CUSTOM:
-    # For now the refresh interval (in seconds) is the same for all custom data classes
+  PING:
     INTERVAL: 1
-    Ping:
-      TEXT:
-        SHOW: True
-        X: 325
-        Y: 495
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 25
-        FONT_COLOR: 247, 227, 227
-        BACKGROUND_IMAGE: background.png
-        ALIGN: right
-      LINE_GRAPH:
-        SHOW: true
-        X: 30
-        Y: 680
-        WIDTH: 415
-        HEIGHT: 70
-        MIN_VALUE: 0
-        MAX_VALUE: 250
-        HISTORY_SIZE: 120
-        AUTOSCALE: false
-        LINE_COLOR: 247, 227, 227
-        AXIS: True
-        AXIS_COLOR: 247, 227, 227
-        BACKGROUND_IMAGE: background.png
+    TEXT:
+      SHOW: True
+      X: 325
+      Y: 495
+      FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+      FONT_SIZE: 25
+      FONT_COLOR: 247, 227, 227
+      BACKGROUND_IMAGE: background.png
+      ALIGN: right
+    LINE_GRAPH:
+      SHOW: true
+      X: 30
+      Y: 680
+      WIDTH: 415
+      HEIGHT: 70
+      MIN_VALUE: 0
+      MAX_VALUE: 250
+      HISTORY_SIZE: 120
+      AUTOSCALE: false
+      LINE_COLOR: 247, 227, 227
+      AXIS: True
+      AXIS_COLOR: 247, 227, 227
+      BACKGROUND_IMAGE: background.png

@@ -21,12 +21,8 @@
 
 import math
 import platform
-import requests
 from abc import ABC, abstractmethod
 from typing import List
-from ping3 import ping, verbose_ping
-from datetime import datetime
-import library.config as config
 
 
 # Custom data classes must be implemented in this file, inherit the CustomDataSource and implement its 2 methods
@@ -51,37 +47,6 @@ class CustomDataSource(ABC):
         # If you do not want to draw a line graph or if your custom data has no numeric values, keep this function empty
         pass
 
-# Custom data class to measure ping to google.fr
-class Ping(CustomDataSource):
-    # This list is used to store the last 500 values to display a line graph
-    last_val = [math.nan] * 500  # By default, it is filed with math.nan values to indicate there is no data stored
-
-    def as_numeric(self) -> float:
-        # Measure the ping
-        try:
-            result = ping(config.CONFIG_DATA['config'].get('PING', "8.8.8.8"))*1000
-            if result is not None:
-                # Store the value to the history list that will be used for line graph
-                self.last_val.append(result)
-                # Also remove the oldest value from history list
-                self.last_val.pop(0)
-                return result
-            else:
-                self.last_val.append(9999)
-                self.last_val.pop(0)
-                return 9999  # Return 0 if ping fails
-        except Exception as e:
-            self.last_val.append(9999)
-            self.last_val.pop(0)
-            return 9999
-
-    def as_string(self) -> str:
-        # Format the ping result as a string
-        return f'{self.as_numeric():4.0f} ms'
-    
-    def last_values(self) -> List[float]:
-        # Since there is no historical data for ping, return an empty list
-        return self.last_val
 
 # Example for a custom data class that has numeric and text values
 class ExampleCustomNumericData(CustomDataSource):

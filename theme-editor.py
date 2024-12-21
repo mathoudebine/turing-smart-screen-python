@@ -47,7 +47,6 @@ except:
     except:
         os._exit(0)
 
-
 if len(sys.argv) != 2:
     print("Usage :")
     print("        theme-editor.py theme-name")
@@ -127,6 +126,8 @@ def refresh_theme():
         stats.Custom.stats()
     if config.THEME_DATA['STATS']['WEATHER'].get("INTERVAL", 0) > 0:
         stats.Weather.stats()
+    if config.THEME_DATA['STATS']['PING'].get("INTERVAL", 0) > 0:
+        stats.Ping.stats()
 
 
 if __name__ == "__main__":
