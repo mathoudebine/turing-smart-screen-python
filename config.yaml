@@ -46,7 +46,7 @@ config:
   # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
   WEATHER_UNITS: metric
   # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi
-  WEATHER_LANGUAGE: fr
+  WEATHER_LANGUAGE: en
 
 display:
   # Display revision:
