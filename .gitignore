@@ -129,8 +129,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm
+# Editors / IDEs
 .idea/
+.vscode/
 
 # Git mergetool backup
 *.orig
