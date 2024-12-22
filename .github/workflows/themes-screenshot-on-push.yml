@@ -46,7 +46,7 @@ jobs:
           
             # Setup selected theme in config.yaml
             echo "Using theme $theme"
-            sed -i "/THEME:/c\  THEME: $theme" config.yaml
+            sed -i '/THEME:/c\  THEME: "$theme"' config.yaml
     
             # For tests there is no real HW: use simulated LCD mode
             # Check if theme is for 5"
