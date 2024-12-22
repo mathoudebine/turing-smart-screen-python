@@ -61,6 +61,8 @@ STATS:
         LINE_COLOR: 247, 227, 227
         AXIS: true
         AXIS_COLOR: 247, 227, 227
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
       INTERVAL: 1
@@ -152,6 +154,8 @@ STATS:
         LINE_COLOR: 247, 227, 227
         AXIS: True
         AXIS_COLOR: 247, 227, 227
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         BACKGROUND_IMAGE: background.png
     MEMORY:
       GRAPH:
@@ -263,6 +267,8 @@ STATS:
         LINE_COLOR: 247, 227, 227
         AXIS: true
         AXIS_COLOR: 247, 227, 227
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
@@ -425,6 +431,8 @@ STATS:
           LINE_COLOR: 247, 227, 227
           AXIS: True
           AXIS_COLOR: 247, 227, 227
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
@@ -457,6 +465,8 @@ STATS:
           LINE_COLOR: 247, 227, 227
           AXIS: True
           AXIS_COLOR: 247, 227, 227
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
@@ -564,4 +574,6 @@ STATS:
       LINE_COLOR: 247, 227, 227
       AXIS: True
       AXIS_COLOR: 247, 227, 227
+      AXIS_FONT: roboto/Roboto-Black.ttf
+      AXIS_FONT_SIZE: 10
       BACKGROUND_IMAGE: background.png
