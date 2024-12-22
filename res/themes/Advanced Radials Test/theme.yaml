@@ -80,6 +80,7 @@ STATS:
         CUSTOM_BBOX: [0, 0, 160, 80]
         TEXT_OFFSET: [-10, -20]
     FAN_SPEED:
+      INTERVAL: 5
       RADIAL:
         SHOW: True
         X: 173
@@ -179,29 +180,6 @@ STATS:
         BACKGROUND_IMAGE: background.png
         CUSTOM_BBOX: [80, 0, 160, 160]
         TEXT_OFFSET: [30, 0]
-    MEMORY_PERCENT:
-      GRAPH:
-        SHOW: False
-        X: 349
-        Y: 48
-        WIDTH: 102
-        HEIGHT: 9
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
-        BAR_OUTLINE: False
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 295
-        Y: 46
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 20
-        FONT_COLOR: 21, 176, 231
-        #BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       RADIAL:
         SHOW: True
@@ -253,54 +231,7 @@ STATS:
         FONT_COLOR: 248, 177, 51
         #BACKGROUND_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
-    FPS:
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: False
-        X: 46
-        Y: 279
-        MIN_SIZE: 4
-        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 27
-        FONT_COLOR: 255, 255, 255
-        #BACKGROUND_COLOR: 100, 100, 100
-        BACKGROUND_IMAGE: background.png
-      LINE_GRAPH:
-        SHOW: False
-        X: 180
-        Y: 220
-        WIDTH: 133
-        HEIGHT: 82
-        MIN_VALUE: 0
-        MAX_VALUE: 144
-        HISTORY_SIZE: 100
-        AUTOSCALE: True
-        LINE_COLOR: 255, 255, 255
-        AXIS: True
-        BACKGROUND_IMAGE: background.png
-  NET:
-    INTERVAL: 1
-    ETH:
-      UPLOAD:
-        TEXT:
-          SHOW: False
-          X: 344
-          Y: 263
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 10
-          FONT_COLOR: 255, 255, 255
-          # BACKGROUND_COLOR: 132, 154, 165
-          BACKGROUND_IMAGE: background.png
-      DOWNLOAD:
-        TEXT:
-          SHOW: False
-          X: 390
-          Y: 232
-          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 10
-          FONT_COLOR: 255, 255, 255
-          # BACKGROUND_COLOR: 132, 154, 165
-          BACKGROUND_IMAGE: background.png
+
  
 
 
