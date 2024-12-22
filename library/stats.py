@@ -29,7 +29,10 @@ import sys
 from typing import List
 
 import babel.dates
+import requests
+from ping3 import ping
 from psutil._common import bytes2human
+from uptime import uptime
 
 import library.config as config
 from library.display import display
@@ -37,9 +40,11 @@ from library.log import logger
 
 DEFAULT_HISTORY_SIZE = 10
 
-ETH_CARD = config.CONFIG_DATA["config"]["ETH"]
-WLO_CARD = config.CONFIG_DATA["config"]["WLO"]
-HW_SENSORS = config.CONFIG_DATA["config"]["HW_SENSORS"]
+ETH_CARD = config.CONFIG_DATA["config"].get("ETH", "")
+WLO_CARD = config.CONFIG_DATA["config"].get("WLO", "")
+HW_SENSORS = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
+CPU_FAN = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
+PING_DEST = config.CONFIG_DATA["config"].get("PING", "127.0.0.1")
 
 if HW_SENSORS == "PYTHON":
     if platform.system() == 'Windows':
@@ -87,6 +92,9 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
     if not theme_data.get("SHOW", False):
         return
 
+    if value is None:
+        return
+
     # overridable MIN_SIZE from theme with backward compatibility
     min_size = theme_data.get("MIN_SIZE", min_size)
 
@@ -98,12 +106,15 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
         text=text,
         x=theme_data.get("X", 0),
         y=theme_data.get("Y", 0),
+        width=theme_data.get("WIDTH", 0),
+        height=theme_data.get("HEIGHT", 0),
         font=theme_data.get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (255, 255, 255)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
-        anchor="lt"
+        align=theme_data.get("ALIGN", "left"),
+        anchor=theme_data.get("ANCHOR", "lt"),
     )
 
 
@@ -220,6 +231,7 @@ def display_themed_line_graph(theme_data, values):
         max_value=theme_data.get("MAX_VALUE", 100),
         autoscale=theme_data.get("AUTOSCALE", False),
         line_color=line_color,
+        line_width=theme_data.get("LINE_WIDTH", 2),
         graph_axis=theme_data.get("AXIS", False),
         axis_color=theme_data.get("AXIS_COLOR", line_color),  # If no color specified, use line color for axis
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
@@ -324,7 +336,11 @@ class CPU:
 
     @classmethod
     def fan_speed(cls):
-        fan_percent = sensors.Cpu.fan_percent()
+        if CPU_FAN != "AUTO":
+            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
+        else:
+            fan_percent = sensors.Cpu.fan_percent()
+
         save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
                         config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
                                                                                          DEFAULT_HISTORY_SIZE))
@@ -338,7 +354,10 @@ class CPU:
             fan_percent = 0
             if cpu_fan_text_data['SHOW'] or cpu_fan_radial_data['SHOW'] or cpu_fan_graph_data[
                 'SHOW'] or cpu_fan_line_graph_data['SHOW']:
-                logger.warning("Your CPU Fan Speed is not supported yet")
+                if sys.platform == "win32":
+                    logger.warning("Your CPU Fan sensor could not be auto-detected")
+                else:
+                    logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
                 cpu_fan_text_data['SHOW'] = False
                 cpu_fan_radial_data['SHOW'] = False
                 cpu_fan_graph_data['SHOW'] = False
@@ -360,7 +379,7 @@ class Gpu:
 
     @classmethod
     def stats(cls):
-        load, memory_percentage, memory_used_mb, temperature = sensors.Gpu.stats()
+        load, memory_percentage, memory_used_mb, total_memory_mb, temperature = sensors.Gpu.stats()
         fps = sensors.Gpu.fps()
         fan_percent = sensors.Gpu.fan_percent()
         freq_ghz = sensors.Gpu.frequency() / 1000
@@ -461,6 +480,21 @@ class Gpu:
             value=int(memory_used_mb),
             min_size=5,
             unit=" M"
+        )
+
+        # GPU mem. total memory (M)
+        gpu_mem_total_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
+        if math.isnan(total_memory_mb):
+            total_memory_mb = 0
+            if gpu_mem_total_text_data['SHOW']:
+                logger.warning("Your GPU total memory capacity (M) is not supported yet")
+                gpu_mem_total_text_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=gpu_mem_total_text_data,
+            value=int(total_memory_mb),
+            min_size=5,  # Adjust min_size as necessary for your display
+            unit=" M"  # Assuming the unit is in Megabytes
         )
 
         # GPU temperature (°C)
@@ -728,6 +762,32 @@ class Date:
         )
 
 
+class SystemUptime:
+    @staticmethod
+    def stats():
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined uptime
+            uptimesec = 4294036
+        else:
+            uptimesec = int(uptime())
+
+        uptimeformatted = str(datetime.timedelta(seconds=uptimesec))
+
+        systemuptime_theme_data = config.THEME_DATA['STATS']['UPTIME']
+
+        systemuptime_sec_theme_data = systemuptime_theme_data['SECONDS']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_sec_theme_data,
+            value=uptimesec
+        )
+
+        systemuptime_formatted_theme_data = systemuptime_theme_data['FORMATTED']['TEXT']
+        display_themed_value(
+            theme_data=systemuptime_formatted_theme_data,
+            value=uptimeformatted
+        )
+
+
 class Custom:
     @staticmethod
     def stats():
@@ -772,3 +832,104 @@ class Custom:
                 theme_data = config.THEME_DATA['STATS']['CUSTOM'][custom_stat].get("LINE_GRAPH", None)
                 if theme_data is not None and last_values is not None:
                     display_themed_line_graph(theme_data=theme_data, values=last_values)
+
+
+class Weather:
+    @staticmethod
+    def stats():
+        WEATHER_UNITS = {'metric': '°C', 'imperial': '°F', 'standard': '°K'}
+
+        weather_theme_data = config.THEME_DATA['STATS'].get('WEATHER', {})
+        wtemperature_theme_data = weather_theme_data.get('TEMPERATURE', {}).get('TEXT', {})
+        wfelt_theme_data = weather_theme_data.get('TEMPERATURE_FELT', {}).get('TEXT', {})
+        wupdatetime_theme_data = weather_theme_data.get('UPDATE_TIME', {}).get('TEXT', {})
+        wdescription_theme_data = weather_theme_data.get('WEATHER_DESCRIPTION', {}).get('TEXT', {})
+        whumidity_theme_data = weather_theme_data.get('HUMIDITY', {}).get('TEXT', {})
+
+        activate = True if wtemperature_theme_data.get("SHOW") or wfelt_theme_data.get(
+            "SHOW") or wupdatetime_theme_data.get("SHOW") or wdescription_theme_data.get(
+            "SHOW") or whumidity_theme_data.get("SHOW") else False
+
+        if activate:
+            temp = None
+            feel = None
+            time = None
+            humidity = None
+            if HW_SENSORS in ["STATIC", "STUB"]:
+                temp = "17.5°C"
+                feel = "(17.2°C)"
+                desc = "Cloudy"
+                time = "@15:33"
+                humidity = "45%"
+            else:
+                # API Parameters
+                lat = config.CONFIG_DATA['config'].get('WEATHER_LATITUDE', "")
+                lon = config.CONFIG_DATA['config'].get('WEATHER_LONGITUDE', "")
+                api_key = config.CONFIG_DATA['config'].get('WEATHER_API_KEY', "")
+                units = config.CONFIG_DATA['config'].get('WEATHER_UNITS', "metric")
+                lang = config.CONFIG_DATA['config'].get('WEATHER_LANGUAGE', "en")
+                deg = WEATHER_UNITS.get(units, '°?')
+                if api_key:
+                    url = f'https://api.openweathermap.org/data/3.0/onecall?lat={lat}&lon={lon}&exclude=minutely,hourly,daily,alerts&appid={api_key}&units={units}&lang={lang}'
+                    try:
+                        response = requests.get(url)
+                        if response.status_code == 200:
+                            data = response.json()
+                            temp = f"{data['current']['temp']:.1f}{deg}"
+                            feel = f"({data['current']['feels_like']:.1f}{deg})"
+                            desc = data['current']['weather'][0]['description'].capitalize()
+                            humidity = f"{data['current']['humidity']:.0f}%"
+                            now = datetime.datetime.now()
+                            time = f"@{now.hour:02d}:{now.minute:02d}"
+                        else:
+                            logger.error(f"Error {response.status_code} fetching OpenWeatherMap API:")
+                            # logger.error(f"Response content: {response.content}")
+                            # logger.error(response.text)
+                            desc = response.json().get('message')
+                    except Exception as e:
+                        logger.error(f"Error fetching OpenWeatherMap API: {str(e)}")
+                        desc = "Error fetching OpenWeatherMap API"
+                else:
+                    logger.warning("No OpenWeatherMap API key provided in config.yaml")
+                    desc = "No OpenWeatherMap API key"
+
+        if activate:
+            # Display Temperature
+            display_themed_value(theme_data=wtemperature_theme_data, value=temp)
+            # Display Temperature Felt
+            display_themed_value(theme_data=wfelt_theme_data, value=feel)
+            # Display Update Time
+            display_themed_value(theme_data=wupdatetime_theme_data, value=time)
+            # Display Humidity
+            display_themed_value(theme_data=whumidity_theme_data, value=humidity)
+            # Display Weather Description (or error message)
+            display_themed_value(theme_data=wdescription_theme_data, value=desc)
+
+
+class Ping:
+    last_values_ping = []
+
+    @classmethod
+    def stats(cls):
+        theme_data = config.THEME_DATA['STATS']['PING']
+
+        delay = ping(dest_addr=PING_DEST, unit="ms")
+
+        save_last_value(delay, cls.last_values_ping,
+                        theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        # logger.debug(f"Ping delay: {delay}ms")
+
+        display_themed_progress_bar(theme_data['GRAPH'], delay)
+        display_themed_radial_bar(
+            theme_data=theme_data['RADIAL'],
+            value=int(delay),
+            unit="ms",
+            min_size=6
+        )
+        display_themed_value(
+            theme_data=theme_data['TEXT'],
+            value=int(delay),
+            unit="ms",
+            min_size=6
+        )
+        display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_ping)

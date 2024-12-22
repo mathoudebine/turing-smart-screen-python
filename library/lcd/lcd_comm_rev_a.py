@@ -196,7 +196,7 @@ class LcdCommRevA(LcdComm):
         rgb565 = (r << 11) | (g << 5) | b
 
         # serialize to little-endian
-        return rgb565.newbyteorder('<').tobytes()
+        return rgb565.astype('<u2').tobytes()
 
     def DisplayPILImage(
             self,
