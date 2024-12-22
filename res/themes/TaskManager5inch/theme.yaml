@@ -145,7 +145,6 @@ STATS:
         AUTOSCALE: False
         LINE_COLOR: 0, 64, 128
         AXIS: False
-        AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       TEXT:
@@ -171,6 +170,8 @@ STATS:
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     TEMPERATURE:
@@ -187,6 +188,8 @@ STATS:
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FPS:
@@ -203,6 +206,8 @@ STATS:
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
@@ -219,6 +224,8 @@ STATS:
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   MEMORY:
@@ -236,7 +243,6 @@ STATS:
         AUTOSCALE: False
         LINE_COLOR: 255, 128, 255
         AXIS: False
-        AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
@@ -272,7 +278,6 @@ STATS:
         AUTOSCALE: False
         LINE_COLOR: 0, 255, 0
         AXIS: False
-        AXIS_COLOR: 255, 135, 0
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       PERCENT_TEXT:
@@ -300,7 +305,6 @@ STATS:
           AUTOSCALE: True
           LINE_COLOR: 128, 0, 0
           AXIS: False
-          AXIS_COLOR: 255, 135, 0
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
         TEXT:

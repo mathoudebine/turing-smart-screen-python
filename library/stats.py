@@ -234,6 +234,8 @@ def display_themed_line_graph(theme_data, values):
         line_width=theme_data.get("LINE_WIDTH", 2),
         graph_axis=theme_data.get("AXIS", False),
         axis_color=theme_data.get("AXIS_COLOR", line_color),  # If no color specified, use line color for axis
+        axis_font=config.FONTS_DIR + theme_data.get("AXIS_FONT", "roboto/Roboto-Black.ttf"),
+        axis_font_size=theme_data.get("AXIS_FONT_SIZE", 10),
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
     )

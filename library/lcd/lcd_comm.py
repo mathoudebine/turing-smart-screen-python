@@ -354,8 +354,8 @@ class LcdComm(ABC):
                          line_width: int = 2,
                          graph_axis: bool = True,
                          axis_color: Tuple[int, int, int] = (0, 0, 0),
-                         font: str = "./res/fonts/roboto/Roboto-Black.ttf",
-                         font_size: int = 10,
+                         axis_font: str = "./res/fonts/roboto/Roboto-Black.ttf",
+                         axis_font_size: int = 10,
                          background_color: Tuple[int, int, int] = (255, 255, 255),
                          background_image: str = None):
         # Generate a plot graph and display it
@@ -434,13 +434,13 @@ class LcdComm(ABC):
             # Draw Legend
             draw.line([0, 0, 1, 0], fill=axis_color)
             text = f"{int(max_value)}"
-            ttfont = ImageFont.truetype(font, font_size)
+            ttfont = ImageFont.truetype(axis_font, axis_font_size)
             left, top, right, bottom = ttfont.getbbox(text)
             draw.text((2, 0 - top), text,
                       font=ttfont, fill=axis_color)
 
             text = f"{int(min_value)}"
-            ttfont = ImageFont.truetype(font, font_size)
+            ttfont = ImageFont.truetype(axis_font, axis_font_size)
             left, top, right, bottom = ttfont.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
                       font=ttfont, fill=axis_color)
