@@ -403,14 +403,17 @@ class TuringConfigWindow:
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
-        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " \"" + self.theme_cb.get() + "\"", shell=True)
+        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "theme-editor.py"), self.theme_cb.get()])
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(os.path.join(os.getcwd(), "main.py"), shell=True)
+        kwargs = {}
+        if hasattr(subprocess, "DETACHED_PROCESS"):
+            kwargs["creationflags"] = subprocess.DETACHED_PROCESS
+        subprocess.Popen([sys.executable, os.path.join(os.getcwd(), "main.py")], **kwargs)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):
