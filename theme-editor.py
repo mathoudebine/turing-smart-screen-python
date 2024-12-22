@@ -225,11 +225,11 @@ if __name__ == "__main__":
     logger.debug("Opening theme file in your default editor. If it does not work, open it manually in the "
                  "editor of your choice")
     if platform.system() == 'Darwin':  # macOS
-        subprocess.call(('open', "./" + theme_file))
+        subprocess.call(('open', config.MAIN_DIRECTORY / theme_file))
     elif platform.system() == 'Windows':  # Windows
-        os.startfile(".\\" + theme_file)
+        os.startfile( config.MAIN_DIRECTORY / theme_file)
     else:  # linux variants
-        subprocess.call(('xdg-open', "./" + theme_file))
+        subprocess.call(('xdg-open',  config.MAIN_DIRECTORY / theme_file))
 
     # Load theme file and generate first preview
     refresh_theme()
@@ -238,7 +238,7 @@ if __name__ == "__main__":
     logger.debug("Opening theme preview window with static data")
     viewer = tkinter.Tk()
     viewer.title("Turing SysMon Theme Editor")
-    viewer.iconphoto(True, tkinter.PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
+    viewer.iconphoto(True, tkinter.PhotoImage(file=config.MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png"))
     viewer.geometry(str(display.lcd.get_width() + 2 * RGB_LED_MARGIN) + "x" + str(
         display.lcd.get_height() + 2 * RGB_LED_MARGIN + 40))
     viewer.protocol("WM_DELETE_WINDOW", on_closing)
