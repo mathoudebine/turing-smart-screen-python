@@ -139,6 +139,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
@@ -211,6 +213,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     LOAD:
@@ -345,6 +349,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
@@ -417,6 +423,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   GPU:
@@ -491,6 +499,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     MEMORY_PERCENT:
@@ -559,6 +569,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     MEMORY_USED:
@@ -665,6 +677,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FPS:
@@ -733,6 +747,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
@@ -801,6 +817,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
@@ -869,6 +887,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   MEMORY:
@@ -924,6 +944,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     VIRTUAL:
@@ -974,6 +996,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       USED:
@@ -1098,6 +1122,8 @@ STATS:
         LINE_WIDTH: 2
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       TEXT:
@@ -1209,6 +1235,8 @@ STATS:
           LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
@@ -1261,6 +1289,8 @@ STATS:
           LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
@@ -1314,6 +1344,8 @@ STATS:
           LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
@@ -1366,6 +1398,8 @@ STATS:
           LINE_WIDTH: 2
           AXIS: True
           AXIS_COLOR: 255, 135, 0
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
@@ -1563,6 +1597,8 @@ STATS:
       LINE_WIDTH: 2
       AXIS: True
       AXIS_COLOR: 255, 135, 0
+      AXIS_FONT: roboto/Roboto-Black.ttf
+      AXIS_FONT_SIZE: 10
       # BACKGROUND_COLOR: 0, 0, 0
       BACKGROUND_IMAGE: background.png
     TEXT:

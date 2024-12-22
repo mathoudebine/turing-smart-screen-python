@@ -225,7 +225,7 @@ class LcdComm(ABC):
             y: int = 0,
             width: int = 0,
             height: int = 0,
-            font: str = "roboto-mono/RobotoMono-Regular.ttf",
+            font: str = "./res/fonts/roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
             font_color: Color = (0, 0, 0),
             background_color: Color = (255, 255, 255),
@@ -262,11 +262,11 @@ class LcdComm(ABC):
             text_image = self.open_image(background_image)
 
         # Get text bounding box
-        fontdata = self.open_font(font, font_size)
+        ttfont = self.open_font(font, font_size)
         d = ImageDraw.Draw(text_image)
 
         if width == 0 or height == 0:
-            left, top, right, bottom = d.textbbox((x, y), text, font=fontdata, align=align, anchor=anchor)
+            left, top, right, bottom = d.textbbox((x, y), text, font=ttfont, align=align, anchor=anchor)
 
             # textbbox may return float values, which is not good for the bitmap operations below.
             # Let's extend the bounding box to the next whole pixel in all directions
@@ -290,7 +290,7 @@ class LcdComm(ABC):
                 y = top
 
         # Draw text onto the background image with specified color & font
-        d.text((x, y), text, font=fontdata, fill=font_color, align=align, anchor=anchor)
+        d.text((x, y), text, font=ttfont, fill=font_color, align=align, anchor=anchor)
 
         # Restrict the dimensions if they overflow the display size
         left = max(left, 0)
@@ -360,6 +360,8 @@ class LcdComm(ABC):
                          line_width: int = 2,
                          graph_axis: bool = True,
                          axis_color: Color = (0, 0, 0),
+                         axis_font: str = "./res/fonts/roboto/Roboto-Black.ttf",
+                         axis_font_size: int = 10,
                          background_color: Color = (255, 255, 255),
                          background_image: Optional[str] = None):
         # Generate a plot graph and display it
@@ -433,15 +435,15 @@ class LcdComm(ABC):
             # Draw Legend
             draw.line([0, 0, 1, 0], fill=axis_color)
             text = f"{int(max_value)}"
-            fontdata = self.open_font("roboto/Roboto-Black.ttf", 10)
-            _, top, right, bottom = fontdata.getbbox(text)
+            ttfont = self.open_font(axis_font, axis_font_size)
+            _, top, right, bottom = ttfont.getbbox(text)
             draw.text((2, 0 - top), text,
-                      font=fontdata, fill=axis_color)
+                      font=ttfont, fill=axis_color)
 
             text = f"{int(min_value)}"
-            _, top, right, bottom = fontdata.getbbox(text)
+            _, top, right, bottom = ttfont.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
-                      font=fontdata, fill=axis_color)
+                      font=ttfont, fill=axis_color)
 
         self.DisplayPILImage(graph_image, x, y)
 
@@ -479,7 +481,7 @@ class LcdComm(ABC):
                                  value: int = 50,
                                  text: Optional[str] = None,
                                  with_text: bool = True,
-                                 font: str = "roboto/Roboto-Black.ttf",
+                                 font: str = "./res/fonts/roboto/Roboto-Black.ttf",
                                  font_size: int = 20,
                                  font_color: Color = (0, 0, 0),
                                  bar_color: Color = (0, 0, 0),
@@ -650,11 +652,11 @@ class LcdComm(ABC):
         if with_text:
             if text is None:
                 text = f"{int(pct * 100 + .5)}%"
-            fontdata = self.open_font(font, font_size)
-            left, top, right, bottom = fontdata.getbbox(text)
+            ttfont = self.open_font(font, font_size)
+            left, top, right, bottom = ttfont.getbbox(text)
             w, h = right - left, bottom - top
             draw.text((radius - w / 2 + text_offset[0], radius - top - h / 2 + text_offset[1]), text,
-                      font=fontdata, fill=font_color)
+                      font=ttfont, fill=font_color)
 
         if custom_bbox[0] != 0 or custom_bbox[1] != 0 or custom_bbox[2] != 0 or custom_bbox[3] != 0:
             bar_image = bar_image.crop(box=custom_bbox)
@@ -671,5 +673,5 @@ class LcdComm(ABC):
 
     def open_font(self, name: str, size: int) -> ImageFont.FreeTypeFont:
         if (name, size) not in self.font_cache:
-            self.font_cache[(name, size)] = ImageFont.truetype("./res/fonts/" + name, size)
+            self.font_cache[(name, size)] = ImageFont.truetype(name, size)
         return self.font_cache[(name, size)]

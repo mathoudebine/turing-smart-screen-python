@@ -40,6 +40,7 @@ try:
     import psutil
     import ruamel.yaml
     import sv_ttk
+    from pathlib import Path
     from PIL import Image
     from serial.tools.list_ports import comports
     from tktooltip import ToolTip
@@ -92,11 +93,12 @@ hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTH
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
 
-themes_dir = 'res/themes'
+MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
+THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
 
 
 def get_theme_data(name: str):
-    dir = os.path.join(themes_dir, name)
+    dir = os.path.join(THEMES_DIR, name)
     # checking if it is a directory
     if os.path.isdir(dir):
         # Check if a theme.yaml file exists
@@ -111,7 +113,7 @@ def get_theme_data(name: str):
 
 def get_themes(size: str):
     themes = []
-    for filename in os.listdir(themes_dir):
+    for filename in os.listdir(THEMES_DIR):
         theme_data = get_theme_data(filename)
         if theme_data and theme_data['display'].get("DISPLAY_SIZE", '3.5"') == size:
             themes.append(filename)
@@ -155,7 +157,7 @@ class TuringConfigWindow:
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
         self.window.geometry("770x570")
-        self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
+        self.window.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
         self.window.after(0, self.on_fan_speed_update)
@@ -266,9 +268,9 @@ class TuringConfigWindow:
 
     def load_theme_preview(self):
         try:
-            theme_preview = Image.open("res/themes/" + self.theme_cb.get() + "/preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY + "res/themes/" + self.theme_cb.get() + "/preview.png")
         except:
-            theme_preview = Image.open("res/docs/no-preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY + "res/docs/no-preview.png")
         finally:
             if theme_preview.width > theme_preview.height:
                 theme_preview = theme_preview.resize((300, 200), Image.Resampling.LANCZOS)
@@ -290,7 +292,7 @@ class TuringConfigWindow:
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
-        with open("config.yaml", "rt", encoding='utf8') as stream:
+        with open(MAIN_DIRECTORY + "config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
         # Check if theme is valid
@@ -403,14 +405,14 @@ class TuringConfigWindow:
         self.load_theme_preview()
 
     def on_theme_editor_click(self):
-        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " \"" + self.theme_cb.get() + "\"", shell=True)
+        subprocess.Popen(MAIN_DIRECTORY + "theme-editor.py" + " \"" + self.theme_cb.get() + "\"", shell=True)
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(os.path.join(os.getcwd(), "main.py"), shell=True)
+        subprocess.Popen(MAIN_DIRECTORY + "main.py", shell=True)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):

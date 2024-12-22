@@ -53,6 +53,8 @@ STATS:
         AXIS: True
         #AXIS_COLOR: 100, 207, 213
         AXIS_COLOR: 255, 255, 50
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         BACKGROUND_IMAGE: background.png
     TEMPERATURE:
       INTERVAL: 5
@@ -239,6 +241,8 @@ STATS:
           LINE_WIDTH: 1
           AXIS: True
           AXIS_COLOR: 255, 255, 50
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
         TEXT:
           SHOW: True
@@ -265,6 +269,8 @@ STATS:
           LINE_WIDTH: 1
           AXIS: True
           AXIS_COLOR: 255, 255, 50
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
         TEXT:
           SHOW: True
@@ -292,6 +298,8 @@ STATS:
           LINE_WIDTH: 1
           AXIS: True
           AXIS_COLOR: 255, 255, 50
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
         TEXT:
           SHOW: True
@@ -319,6 +327,8 @@ STATS:
           LINE_WIDTH: 1
           AXIS: True
           AXIS_COLOR: 255, 255, 50
+          AXIS_FONT: roboto/Roboto-Black.ttf
+          AXIS_FONT_SIZE: 10
           BACKGROUND_IMAGE: background.png
         TEXT:
           SHOW: True

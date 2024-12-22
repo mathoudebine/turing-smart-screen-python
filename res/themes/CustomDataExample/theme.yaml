@@ -98,6 +98,8 @@ STATS:
         LINE_COLOR: 61, 184, 225
         AXIS: True
         AXIS_COLOR: 255, 135, 0
+        AXIS_FONT: roboto/Roboto-Black.ttf
+        AXIS_FONT_SIZE: 10
         BACKGROUND_IMAGE: background.png
 
 
