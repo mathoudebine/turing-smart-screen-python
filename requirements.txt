@@ -8,6 +8,8 @@ ruamel.yaml~=0.18.6    # For configuration editor
 sv-ttk~=2.6.0          # Tk Sun Valley theme for configuration editor
 tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
 uptime~=3.0.1          # For System Uptime 
+requests~=2.32.3       # HTTP library
+ping3~=4.0.8           # ICMP ping implementation using raw socket
 
 # Image generation
 Pillow~=10.4.0; python_version < "3.9"    # For Python 3.8 max.

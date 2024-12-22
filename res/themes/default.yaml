@@ -217,5 +217,32 @@ STATS:
     FORMATTED:
       TEXT:
         SHOW: False
+  WEATHER:
+    INTERVAL: 0
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+    TEMPERATURE_FELT:
+      TEXT:
+        SHOW: False
+    UPDATE_TIME:
+      TEXT:
+        SHOW: False
+    HUMIDITY:
+      TEXT:
+        SHOW: False
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: False
+  PING:
+    INTERVAL: 0
+    GRAPH:
+      SHOW: False
+    RADIAL:
+      SHOW: False
+    LINE_GRAPH:
+      SHOW: False
+    TEXT:
+      SHOW: False
   CUSTOM:
     INTERVAL: 0
