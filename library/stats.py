@@ -188,7 +188,12 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
         font_size=theme_data.get("FONT_SIZE", 10),
         font_color=theme_data.get("FONT_COLOR", (0, 0, 0)),
         background_color=theme_data.get("BACKGROUND_COLOR", (0, 0, 0)),
-        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None))
+        background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
+        custom_bbox=theme_data.get("CUSTOM_BBOX", (0, 0, 0, 0)),
+        text_offset=theme_data.get("TEXT_OFFSET", (0, 0)),
+        bar_background_color = theme_data.get("BAR_BACKGROUND_COLOR", (0, 0, 0)),
+        draw_bar_background = theme_data.get("DRAW_BAR_BACKGROUND", False),
+        bar_decoration = theme_data.get("BAR_DECORATION", "")
     )
 
 
