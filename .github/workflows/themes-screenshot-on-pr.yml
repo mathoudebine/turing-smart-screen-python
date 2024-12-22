@@ -31,15 +31,15 @@ jobs:
         do
           if test -f "$dir/theme.yaml"; then        
             # Keep only folder name
-            theme=`basename ${dir%*/}`
+            theme=`basename "${dir%*/}"`
           
             # Setup selected theme in config.yaml
             echo "Using theme $theme"
-            sed -i "/THEME:/c\  THEME: $theme" config.yaml
+            sed -i '/THEME:/c\  THEME: "'"$theme"'"' config.yaml
     
             # For tests there is no real HW: use simulated LCD mode
             # Check if theme is for 5"
-            orientation=$(grep 'DISPLAY_SIZE' $dir/theme.yaml | sed 's/ //g')
+            orientation=$(grep 'DISPLAY_SIZE' "$dir/theme.yaml" | sed 's/ //g')
             if [ "$orientation" == "DISPLAY_SIZE:5\"" ]; then
               sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
             else

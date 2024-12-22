@@ -21,7 +21,7 @@
 import os
 import queue
 import sys
-
+from pathlib import Path
 import yaml
 
 from library.log import logger
@@ -34,8 +34,10 @@ def load_yaml(configfile):
 
 
 PATH = sys.path[0]
-CONFIG_DATA = load_yaml("config.yaml")
-THEME_DEFAULT = load_yaml("res/themes/default.yaml")
+MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
+FONTS_DIR = str(MAIN_DIRECTORY / "res" / "fonts") + "/"
+CONFIG_DATA = load_yaml(MAIN_DIRECTORY / "config.yaml")
+THEME_DEFAULT = load_yaml(MAIN_DIRECTORY / "res/themes/default.yaml")
 THEME_DATA = None
 
 
@@ -51,10 +53,10 @@ def copy_default(default, theme):
 def load_theme():
     global THEME_DATA
     try:
-        theme_path = "res/themes/" + CONFIG_DATA['config']['THEME'] + "/"
-        logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path + "theme.yaml"))
-        THEME_DATA = load_yaml(theme_path + "theme.yaml")
-        THEME_DATA['PATH'] = theme_path
+        theme_path = Path("res/themes/" + CONFIG_DATA['config']['THEME'])
+        logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path / "theme.yaml"))
+        THEME_DATA = load_yaml(MAIN_DIRECTORY / theme_path / "theme.yaml")
+        THEME_DATA['PATH'] = str(MAIN_DIRECTORY / theme_path) + "/"
     except:
         logger.error("Theme not found or contains errors!")
         try:

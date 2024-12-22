@@ -211,7 +211,7 @@ class LcdComm(ABC):
             y: int = 0,
             width: int = 0,
             height: int = 0,
-            font: str = "roboto-mono/RobotoMono-Regular.ttf",
+            font: str = "./res/fonts/roboto-mono/RobotoMono-Regular.ttf",
             font_size: int = 20,
             font_color: Tuple[int, int, int] = (0, 0, 0),
             background_color: Tuple[int, int, int] = (255, 255, 255),
@@ -252,7 +252,7 @@ class LcdComm(ABC):
 
         # Get text bounding box
         if (font, font_size) not in self.font_cache:
-            self.font_cache[(font, font_size)] = ImageFont.truetype("./res/fonts/" + font, font_size)
+            self.font_cache[(font, font_size)] = ImageFont.truetype(font, font_size)
         font = self.font_cache[(font, font_size)]
         d = ImageDraw.Draw(text_image)
 
@@ -354,6 +354,8 @@ class LcdComm(ABC):
                          line_width: int = 2,
                          graph_axis: bool = True,
                          axis_color: Tuple[int, int, int] = (0, 0, 0),
+                         font: str = "./res/fonts/roboto/Roboto-Black.ttf",
+                         font_size: int = 10,
                          background_color: Tuple[int, int, int] = (255, 255, 255),
                          background_image: str = None):
         # Generate a plot graph and display it
@@ -432,16 +434,16 @@ class LcdComm(ABC):
             # Draw Legend
             draw.line([0, 0, 1, 0], fill=axis_color)
             text = f"{int(max_value)}"
-            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
-            left, top, right, bottom = font.getbbox(text)
+            ttfont = ImageFont.truetype(font, font_size)
+            left, top, right, bottom = ttfont.getbbox(text)
             draw.text((2, 0 - top), text,
-                      font=font, fill=axis_color)
+                      font=ttfont, fill=axis_color)
 
             text = f"{int(min_value)}"
-            font = ImageFont.truetype("./res/fonts/" + "roboto/Roboto-Black.ttf", 10)
-            left, top, right, bottom = font.getbbox(text)
+            ttfont = ImageFont.truetype(font, font_size)
+            left, top, right, bottom = ttfont.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
-                      font=font, fill=axis_color)
+                      font=ttfont, fill=axis_color)
 
         self.DisplayPILImage(graph_image, x, y)
 
@@ -479,7 +481,7 @@ class LcdComm(ABC):
                                  value: int = 50,
                                  text: str = None,
                                  with_text: bool = True,
-                                 font: str = "roboto/Roboto-Black.ttf",
+                                 font: str = "./res/fonts/roboto/Roboto-Black.ttf",
                                  font_size: int = 20,
                                  font_color: Tuple[int, int, int] = (0, 0, 0),
                                  bar_color: Tuple[int, int, int] = (0, 0, 0),
@@ -657,7 +659,7 @@ class LcdComm(ABC):
         if with_text:
             if text is None:
                 text = f"{int(pct * 100 + .5)}%"
-            font = ImageFont.truetype("./res/fonts/" + font, font_size)
+            font = ImageFont.truetype(font, font_size)
             left, top, right, bottom = font.getbbox(text)
             w, h = right - left, bottom - top
             draw.text((radius - w / 2 + text_offset[0], radius - top - h / 2 + text_offset[1]), text,
