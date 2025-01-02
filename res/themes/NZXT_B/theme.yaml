@@ -140,3 +140,5 @@ STATS:
         FONT_SIZE: 26
         FONT_COLOR: 255, 255, 255
         BACKGROUND_IMAGE: background.png
+        WIDTH: 180
+        ANCHOR: lt

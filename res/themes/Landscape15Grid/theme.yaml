@@ -291,6 +291,8 @@ STATS:
         FONT_SIZE: 20
         FONT_COLOR: 255, 255, 255
         BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 130
+        ANCHOR: lt
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
         FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
@@ -301,3 +303,5 @@ STATS:
         FONT_SIZE: 28
         FONT_COLOR: 255, 255, 255
         BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 130
+        ANCHOR: lt

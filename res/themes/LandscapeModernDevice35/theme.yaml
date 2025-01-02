@@ -354,6 +354,7 @@ STATS:
         FONT_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
         ALIGN: left
+        WIDTH: 78
         ANCHOR: lt
     HOUR:
       TEXT:
@@ -366,6 +367,7 @@ STATS:
         FONT_COLOR: 200, 200, 200
         BACKGROUND_IMAGE: background.png
         ALIGN: left
+        WIDTH: 92
         ANCHOR: lt
   UPTIME:
     INTERVAL: 1

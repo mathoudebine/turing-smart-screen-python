@@ -484,22 +484,26 @@ STATS:
       TEXT:
         FORMAT: medium # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
         SHOW: True
-        X: 275
+        X: 240
         Y: 25
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 30
         FONT_COLOR: 247, 227, 227
         BACKGROUND_IMAGE: background.png
+        WIDTH: 240
+        ANCHOR: mt
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
         FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
         SHOW: True
-        X: 55
+        X: 0
         Y: 25
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 30
         FONT_COLOR: 247, 227, 227
         BACKGROUND_IMAGE: background.png
+        WIDTH: 240
+        ANCHOR: mt
   WEATHER:
     # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MINIMUM (not really useful as the API didn't update that quickly)
     INTERVAL: 300
