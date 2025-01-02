@@ -25,6 +25,8 @@ STATS:
         FONT_SIZE: 80
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 0, 0, 0
+        WIDTH: 460
+        ANCHOR: mm
     HOUR:
       TEXT:
         SHOW: True
@@ -34,3 +36,5 @@ STATS:
         FONT_SIZE: 80
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 50, 0, 0
+        WIDTH: 460
+        ANCHOR: mm

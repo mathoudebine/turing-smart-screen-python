@@ -248,16 +248,20 @@ STATS:
         SHOW: True
         X: 58
         Y: 10
+        WIDTH: 100
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 12
         FONT_COLOR: 128, 255, 255
         BACKGROUND_IMAGE: background.png
+        ANCHOR: mt  # Text is centered (needs fixed WIDTH)
     HOUR:
       TEXT:
         SHOW: True
-        X: 334
+        X: 325
         Y: 10
+        WIDTH: 100
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 12
         FONT_COLOR: 128, 255, 255
         BACKGROUND_IMAGE: background.png
+        ANCHOR: mt  # Text is centered (needs fixed WIDTH)
