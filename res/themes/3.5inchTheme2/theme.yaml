@@ -223,6 +223,6 @@ STATS:
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 132, 154, 165
-        WIDTH: 50
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 64
         ANCHOR: lm
