@@ -543,7 +543,7 @@ class MoreConfigWindow:
 
         weather_info_label = ttk.Label(self.window,
                                        text="To display weather forecast on themes that support it, you need an OpenWeatherMap \"One Call API 3.0\" key.\n"
-                                            "You will get 1,000 API calls per day for free. This program is configured stay under this threshold.")
+                                            "You will get 1,000 API calls per day for free. This program is configured to stay under this threshold (~300 calls/day).")
         weather_info_label.place(x=10, y=100)
         weather_api_link_label = ttk.Label(self.window,
                                            text="Click here to subscribe to OpenWeatherMap One Call API 3.0.")
