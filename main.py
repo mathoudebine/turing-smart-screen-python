@@ -1,4 +1,5 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+#!/usr/bin/env python
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -22,14 +23,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # This file is the system monitor main program to display HW sensors on your screen using themes (see README)
-import locale
 import os
-import platform
-import signal
 import sys
-import time
 
-MIN_PYTHON = (3, 7)
+MIN_PYTHON = (3, 8)
 if sys.version_info < MIN_PYTHON:
     print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:
@@ -37,29 +34,54 @@ if sys.version_info < MIN_PYTHON:
     except:
         os._exit(0)
 
-from PIL import Image
+try:
+    import atexit
+    import locale
+    import platform
+    import signal
+    import subprocess
+    import time
+    from pathlib import Path
+    from PIL import Image
+
+    if platform.system() == 'Windows':
+        import win32api
+        import win32con
+        import win32gui
+
+    from library.log import logger
+    import library.scheduler as scheduler
+    from library.display import display
+
+except Exception as e:
+    print("""Import error: %s
+Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
+Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed""" % str(
+        e))
+    try:
+        sys.exit(0)
+    except:
+        os._exit(0)
 
 try:
     import pystray
 except:
+    # If pystray cannot be loaded do not stop the program, just ignore it. The tray icon will not be displayed.
     pass
 
-from library.log import logger
-import library.scheduler as scheduler
-from library.display import display
+MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
 
 if __name__ == "__main__":
 
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
+    logger.debug("Using Python %s" % sys.version)
+
 
     def clean_stop(tray_icon=None):
-        # Turn screen off before stopping
-        display.lcd.ScreenOff()
-
-        # Turn backplate LED off for supported devices
-        display.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
+        # Turn screen and LEDs off before stopping
+        display.turn_off()
 
         # Do not stop the program now in case data transmission was in progress
         # Instead, ask the scheduler to empty the action queue before stopping
@@ -86,9 +108,15 @@ if __name__ == "__main__":
             os._exit(0)
 
 
-    def sighandler(signum, frame=None):
+    def on_signal_caught(signum, frame=None):
         logger.info("Caught signal %d, exiting" % signum)
         clean_stop()
+
+
+    def on_configure_tray(tray_icon, item):
+        logger.info("Configure from tray icon")
+        subprocess.Popen(MAIN_DIRECTORY + "configure.py", shell=True)
+        clean_stop(tray_icon)
 
 
     def on_exit_tray(tray_icon, item):
@@ -96,16 +124,54 @@ if __name__ == "__main__":
         clean_stop(tray_icon)
 
 
+    def on_clean_exit(*args):
+        logger.info("Program will now exit")
+        clean_stop()
+
+
+    if platform.system() == "Windows":
+        def on_win32_ctrl_event(event):
+            """Handle Windows console control events (like Ctrl-C)."""
+            if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT):
+                logger.debug("Caught Windows control event %s, exiting" % event)
+                clean_stop()
+            return 0
+
+
+        def on_win32_wm_event(hWnd, msg, wParam, lParam):
+            """Handle Windows window message events (like ENDSESSION, CLOSE, DESTROY)."""
+            logger.debug("Caught Windows window message event %s" % msg)
+            if msg == win32con.WM_POWERBROADCAST:
+                # WM_POWERBROADCAST is used to detect computer going to/resuming from sleep
+                if wParam == win32con.PBT_APMSUSPEND:
+                    logger.info("Computer is going to sleep, display will turn off")
+                    display.turn_off()
+                elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
+                    logger.info("Computer is resuming from sleep, display will turn on")
+                    display.turn_on()
+                    # Some models have troubles displaying back the previous bitmap after being turned off/on
+                    display.display_static_images()
+                    display.display_static_text()
+            else:
+                # For any other events, the program will stop
+                logger.info("Program will now exit")
+                clean_stop()
+
     # Create a tray icon for the program, with an Exit entry in menu
     try:
         tray_icon = pystray.Icon(
             name='Turing System Monitor',
             title='Turing System Monitor',
-            icon=Image.open("res/icons/monitor-icon-17865/64.png"),
+            icon=Image.open(MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"),
             menu=pystray.Menu(
                 pystray.MenuItem(
-                    'Exit',
-                    on_exit_tray))
+                    text='Configure',
+                    action=on_configure_tray),
+                pystray.Menu.SEPARATOR,
+                pystray.MenuItem(
+                    text='Exit',
+                    action=on_exit_tray)
+            )
         )
 
         # For platforms != macOS, display the tray icon now with non-blocking function
@@ -116,12 +182,15 @@ if __name__ == "__main__":
         tray_icon = None
         logger.warning("Tray icon is not supported on your platform")
 
-    # Set the signal handlers, to send a complete frame to the LCD before exit
-    signal.signal(signal.SIGINT, sighandler)
-    signal.signal(signal.SIGTERM, sighandler)
+    # Set the different stopping event handlers, to send a complete frame to the LCD before exit
+    atexit.register(on_clean_exit)
+    signal.signal(signal.SIGINT, on_signal_caught)
+    signal.signal(signal.SIGTERM, on_signal_caught)
     is_posix = os.name == 'posix'
     if is_posix:
-        signal.signal(signal.SIGQUIT, sighandler)
+        signal.signal(signal.SIGQUIT, on_signal_caught)
+    if platform.system() == "Windows":
+        win32api.SetConsoleCtrlHandler(on_win32_ctrl_event, True)
 
     # Initialize the display
     display.initialize_display()
@@ -138,25 +207,64 @@ if __name__ == "__main__":
     scheduler.CPUPercentage()
     scheduler.CPUFrequency()
     scheduler.CPULoad()
-    if stats.CPU.is_temperature_available():
-        scheduler.CPUTemperature()
-    else:
-        logger.warning("Your CPU temperature is not supported yet")
+    scheduler.CPUTemperature()
+    scheduler.CPUFanSpeed()
     if stats.Gpu.is_available():
         scheduler.GpuStats()
     scheduler.MemoryStats()
     scheduler.DiskStats()
     scheduler.NetStats()
     scheduler.DateStats()
+    scheduler.SystemUptimeStats()
+    scheduler.CustomStats()
+    scheduler.WeatherStats()
+    scheduler.PingStats()
     scheduler.QueueHandler()
 
-    if tray_icon and platform.system() == "Darwin":
-        from AppKit import NSBundle, NSApp, NSAutoreleasePool, NSApplicationActivationPolicyRegular, NSApplicationActivationPolicyProhibited
+    if tray_icon and platform.system() == "Darwin":  # macOS-specific
+        from AppKit import NSBundle, NSApp, NSApplicationActivationPolicyProhibited
 
-        # Hide Python Launcher icon from MacOS dock
+        # Hide Python Launcher icon from macOS dock
         info = NSBundle.mainBundle().infoDictionary()
         info["LSUIElement"] = "1"
         NSApp.setActivationPolicy_(NSApplicationActivationPolicyProhibited)
 
         # For macOS: display the tray icon now with blocking function
         tray_icon.run()
+
+    elif platform.system() == "Windows":  # Windows-specific
+        # Create a hidden window just to be able to receive window message events (for shutdown/logoff clean stop)
+        hinst = win32api.GetModuleHandle(None)
+        wndclass = win32gui.WNDCLASS()
+        wndclass.hInstance = hinst
+        wndclass.lpszClassName = "turingEventWndClass"
+        messageMap = {win32con.WM_QUERYENDSESSION: on_win32_wm_event,
+                      win32con.WM_ENDSESSION: on_win32_wm_event,
+                      win32con.WM_QUIT: on_win32_wm_event,
+                      win32con.WM_DESTROY: on_win32_wm_event,
+                      win32con.WM_CLOSE: on_win32_wm_event,
+                      win32con.WM_POWERBROADCAST: on_win32_wm_event}
+
+        wndclass.lpfnWndProc = messageMap
+
+        try:
+            myWindowClass = win32gui.RegisterClass(wndclass)
+            hwnd = win32gui.CreateWindowEx(win32con.WS_EX_LEFT,
+                                           myWindowClass,
+                                           "turingEventWnd",
+                                           0,
+                                           0,
+                                           0,
+                                           win32con.CW_USEDEFAULT,
+                                           win32con.CW_USEDEFAULT,
+                                           0,
+                                           0,
+                                           hinst,
+                                           None)
+            while True:
+                # Receive and dispatch window messages
+                win32gui.PumpWaitingMessages()
+                time.sleep(0.5)
+
+        except Exception as e:
+            logger.error("Exception while creating event window: %s" % str(e))

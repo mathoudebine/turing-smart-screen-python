@@ -5,9 +5,14 @@ After=network-online.target
 
 [Service]
 Type=simple
-User=root
 
+; Don't forget to change the value here!
+; There is no reason to run this program as root, just use your username
+User=YOUR_USERNAME_HERE
+
+; If you want to put the program in your home directory instead, remove 'ProtectHome=read-only' line below
 WorkingDirectory=/opt/turing-smart-screen-python/
+
 ExecStart=python3 main.py
 
 ; Always restart the script

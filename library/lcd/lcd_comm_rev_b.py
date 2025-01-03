@@ -1,7 +1,8 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2022-2023  Charles Ferguson (gerph)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,9 +48,11 @@ class SubRevision(IntEnum):
     A12 = 0xA12  # HW revision "flagship" - brightness 0-255
 
 
+# This class is for XuanFang (rev. B & flagship) 3.5" screens
 class LcdCommRevB(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
                  update_queue: queue.Queue = None):
+        logger.debug("HW revision: B")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
         self.sub_revision = SubRevision.A01  # Run a Hello command to detect correct sub-rev.
@@ -65,12 +68,13 @@ class LcdCommRevB(LcdComm):
 
     @staticmethod
     def auto_detect_com_port():
-        com_ports = serial.tools.list_ports.comports()
+        com_ports = comports()
         auto_com_port = None
 
         for com_port in com_ports:
             if com_port.serial_number == "2017-2-25":
                 auto_com_port = com_port.device
+                break
 
         return auto_com_port
 
@@ -101,12 +105,13 @@ class LcdCommRevB(LcdComm):
             with self.update_queue_mutex:
                 self.update_queue.put((self.WriteData, [byteBuffer]))
 
-    def Hello(self):
+    def _hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
 
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.SendCommand(Command.HELLO, payload=hello, bypass_queue=True)
         response = self.lcd_serial.read(10)
+        self.lcd_serial.flushInput()
 
         if len(response) != 10:
             logger.warning("Device not recognised (short response to HELLO)")
@@ -130,14 +135,14 @@ class LcdCommRevB(LcdComm):
             else:
                 logger.warning("Display returned unknown sub-revision on Hello answer")
 
-        logger.debug("HW sub-revision: %s" % (hex(self.sub_revision)))
+        logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
 
     def InitializeComm(self):
-        self.Hello()
+        self._hello()
 
     def Reset(self):
-        # HW revision B does not implement a command to reset it
-        pass
+        # HW revision B does not implement a command to reset it: clear display instead
+        self.Clear()
 
     def Clear(self):
         # HW revision B does not implement a Clear command: display a blank image on the whole screen
@@ -181,7 +186,7 @@ class LcdCommRevB(LcdComm):
         else:
             logger.info("Only HW revision 'flagship' supports backplate LED color setting")
 
-    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT, new_width: int = 320, new_height: int = 480):
+    def SetOrientation(self, orientation: Orientation = Orientation.PORTRAIT):
         # In revision B, basic orientations (portrait / landscape) are managed by the display
         # The reverse orientations (reverse portrait / reverse landscape) are software-managed
         self.orientation = orientation
@@ -211,13 +216,14 @@ class LcdCommRevB(LcdComm):
 
         assert x <= self.get_width(), 'Image X coordinate must be <= display width'
         assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
-        assert image_height > 0, 'Image width must be > 0'
-        assert image_width > 0, 'Image height must be > 0'
+        assert image_height > 0, 'Image height must be > 0'
+        assert image_width > 0, 'Image width must be > 0'
 
         if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
             (x0, y0) = (x, y)
             (x1, y1) = (x + image_width - 1, y + image_height - 1)
         else:
+            # Reverse landscape/portrait orientations are software-managed: get new coordinates
             (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
             (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 
@@ -238,22 +244,18 @@ class LcdCommRevB(LcdComm):
                         G = pix[w, h][1] >> 2
                         B = pix[w, h][2] >> 3
                     else:
+                        # Manage reverse orientations from software, because display does not manage it
                         R = pix[image_width - w - 1, image_height - h - 1][0] >> 3
                         G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
                         B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
 
-                    # Revision A: 0bRRRRRGGGGGGBBBBB
-                    #               fedcba9876543210
-                    # Revision B: 0bgggBBBBBRRRRRGGG
-                    # That is...
-                    #   High 3 bits of green in b0-b2
-                    #   Low 3 bits of green in b13-b15
-                    #   Red 5 bits in b3-b7
-                    #   Blue 5 bits in b8-b12
-                    rgb = (B << 8) | (G >> 3) | ((G & 7) << 13) | (R << 3)
-                    line += struct.pack('H', rgb)
+                    # Color information is 0bRRRRRGGGGGGBBBBB
+                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
+                    # Revition B: Encode in Big-Endian
+                    rgb = (R << 11) | (G << 5) | B
+                    line += struct.pack('>H', rgb)
 
-                    # Send image data by multiple of DISPLAY_WIDTH bytes
+                    # Send image data by multiple of "display width" bytes
                     if len(line) >= self.get_width() * 8:
                         self.SendLine(line)
                         line = bytes()

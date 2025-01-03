@@ -8,22 +8,15 @@ config:
   COM_PORT: "AUTO"
 
   # Theme to use (located in res/themes)
-  # Available themes:
-  # - 3.5inchTheme2
-  # - Terminal
-  # - Landscape6Grid
-  # - LandscapeMagicBlue
-  # - Cyberpunk
-  # - bash-dark-green
-  # - bash-dark-green-gpu
+  # Use the name of the folder as value
   THEME: 3.5inchTheme2
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
-  # - PYTHON  use Python libraries (psutils, GPUtil...) to read hardware sensors (supports all OS but not all HW)
-  # - LHM     use LibreHardwareMonitor library to read hardware sensors (Windows only - NEEDS ADMIN RIGHTS)
-  # - STUB    use fake random data instead of real hardware sensors
-  # - AUTO    use the best method based on your OS: Windows OS will use LHM, other OS will use Python libraries
+  # - PYTHON         use Python libraries (psutils, GPUtil...) to read hardware sensors (supports all OS but not all HW)
+  # - LHM            use LibreHardwareMonitor library to read hardware sensors (Windows only - NEEDS ADMIN RIGHTS)
+  # - STUB / STATIC  use random/static data instead of real hardware sensors
+  # - AUTO           use the best method based on your OS: Windows OS will use LHM, other OS will use Python libraries
   HW_SENSORS: AUTO
 
   # Network interfaces
@@ -33,9 +26,38 @@ config:
   ETH: "" # Ethernet Card
   WLO: "" # Wi-Fi Card
 
+  # CPU fan
+  # For Linux/MacOS platforms, the CPU fan is amongst all fan sensors gathered from the motherboard chipset
+  # If value is AUTO the system monitor will try to auto-select the CPU fan
+  # If auto-detection fails, it might be necessary to manually indicate which fan is the CPU fan
+  # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
+  CPU_FAN: AUTO
+
+  # Address used for ping sensor. Can be internal/external IP (e.g. 8.8.8.8 or 192.168.0.1) or hostname (google.com)
+  PING: 8.8.8.8
+
+  # Weather data with OpenWeatherMap API. Only useful if you want to use a theme that displays it
+
+  # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up.
+  # You need to subscribe to the 3.0 OneCallAPI that has 1000 free daily calls
+  WEATHER_API_KEY: ""
+  # Location from which to display the weather. Use for example https://www.latlong.net/ to get latitude/longitude
+  WEATHER_LATITUDE: 45.75
+  WEATHER_LONGITUDE: 4.85
+  # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
+  WEATHER_UNITS: metric
+  # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi
+  WEATHER_LANGUAGE: en
+
 display:
-  # Display revision: A or B (for "flagship" version, use B) or SIMU for simulated LCD (image written in screencap.png)
-  # To identify your revision: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
+  # Display revision:
+  # - A      for Turing 3.5" and UsbPCMonitor 3.5"/5"
+  # - B      for Xuanfang 3.5" (inc. flagship)
+  # - C      for Turing 5"
+  # - D      for Kipye Qiye Smart Display 3.5"
+  # - SIMU   for 3.5" simulated LCD (image written in screencap.png)
+  # - SIMU5  for 5" simulated LCD
+  # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
   REVISION: A
 
   # Display Brightness
@@ -47,10 +69,3 @@ display:
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
   # Note: Display basic orientation (portrait or landscape) is defined by the theme you have selected
   DISPLAY_REVERSE: false
-
-  # Display resolution in portrait orientation
-  # Do not use this setting to rotate display! The selected theme handles landscape/portrait orientation
-  DISPLAY_WIDTH: 320  # Do not change unless you have a good reason
-  DISPLAY_HEIGHT: 480  # Do not change unless you have a good reason
-
-

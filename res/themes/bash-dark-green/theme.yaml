@@ -1,309 +1,154 @@
 ---
 display:
-  # Specify the display orientation for this theme: portrait or landscape
   DISPLAY_ORIENTATION: portrait
-
-  # Backplate RGB LED color (for HW revision 'flagship' devices only)
   DISPLAY_RGB_LED: 30, 255, 50
 
 static_images:
-  # Specify what static images we want to show on the display
-  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
-  # Images are drawn in the order they are listed below, the top image will be drawn first (so places images back to front)
-  # IMAGE_NAME:
-  #   PATH:
-  #   X:
-  #   Y:
-  #   WIDTH:
-  #   HEIGHT:
   BACKGROUND:
     PATH: background.png
     X: 0
     Y: 0
     WIDTH: 320
     HEIGHT: 480
-static_text:
-  # Specify what static text we want to show on the display
-  # You can create additional records here, the name of the entry must be unique and contain at a minimum the PATH.
-  # Text are drawn in the order they are listed below, the top text will be drawn first (so places text back to front)
-  # TEXT_NAME:
-  #   TEXT:
-  #   X:
-  #   Y:
-  #   FONT:
-  #   FONT_SIZE:
-  #   FONT_COLOR: 0, 0, 0
-  #   BACKGROUND_COLOR: 255, 255, 255 (if you want solid color background)
-  #   BACKGROUND_IMAGE: path of your background picture (if you want transparent background)
+
 STATS:
   CPU:
     PERCENTAGE:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 1
-      TEXT:
+      RADIAL:
         SHOW: True
-        SHOW_UNIT: True
-        X: 13
-        Y: 84
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 22
-        FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      GRAPH:
-        SHOW: True
-        X: 23
-        Y: 140
-        WIDTH: 98
-        HEIGHT: 13
+        X: 100
+        Y: 123
+        RADIUS: 33
+        WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
+        ANGLE_SEP: 0
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
-        BAR_OUTLINE: False
-        # BACKGROUND_COLOR: 0, 255, 0
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 53, 191, 92
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
       INTERVAL: 5
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 94
-        Y: 84
+        X: 8
+        Y: 100
         FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 12
+        FONT_SIZE: 10
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
-    LOAD:
-      # In seconds. Longer intervals cause this to refresh more slowly.
-      # Setting to lower values will display near real time data,
-      # but may cause significant CPU usage or the display not to update properly
-      INTERVAL: 5
-      ONE:
-        TEXT:
-          SHOW: False
-          SHOW_UNIT: True
-          X: 110
-          Y: 106
-          FONT: roboto-mono/RobotoMono-Bold.ttf
-          FONT_SIZE: 13
-          FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
-      FIVE:
-        TEXT:
-          SHOW: False
-          SHOW_UNIT: True
-          X: 183
-          Y: 106
-          FONT: roboto-mono/RobotoMono-Bold.ttf
-          FONT_SIZE: 13
-          FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
-      FIFTEEN:
-        TEXT:
-          SHOW: False
-          SHOW_UNIT: True
-          X: 265
-          Y: 106
-          FONT: roboto-mono/RobotoMono-Bold.ttf
-          FONT_SIZE: 13
-          FONT_COLOR: 200, 200, 200
-          BACKGROUND_COLOR: 50, 50, 50
     TEMPERATURE:
       INTERVAL: 5
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 87
-        Y: 118
+        X: 4
+        Y: 148
         FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 12
+        FONT_SIZE: 10
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 132, 154, 165
-        BACKGROUND_IMAGE: background.png
-  GPU:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
-    INTERVAL: 1
-    PERCENTAGE:
-      GRAPH:
-        SHOW: False
-        X: 40
-        Y: 188
-        WIDTH: 130
-        HEIGHT: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 2, 216, 243
-        BAR_OUTLINE: True
-        # BACKGROUND_COLOR: 0, 255, 0
-        BACKGROUND_IMAGE: background.png
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 175
-        Y: 168
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 40
-        FONT_COLOR: 2, 216, 243
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-    MEMORY:
-      GRAPH:
-        SHOW: False
-        X: 115
-        Y: 215
-        WIDTH: 178
-        HEIGHT: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 90
-        Y: 167
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 255, 239, 8
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-    TEMPERATURE:
-      TEXT:
-        SHOW: False
-        SHOW_UNIT: True
-        X: 28
-        Y: 167
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 16
-        FONT_COLOR: 2, 216, 243
-        # BACKGROUND_COLOR: 132, 154, 165
         BACKGROUND_IMAGE: background.png
   MEMORY:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 5
-    SWAP:
-      GRAPH:
-        SHOW: False
-        X: 115
-        Y: 285
-        WIDTH: 178
-        HEIGHT: 13
-        MIN_VALUE: 0
-        MAX_VALUE: 100
-        BAR_COLOR: 255, 0, 0
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
     VIRTUAL:
-      GRAPH:
+      RADIAL:
         SHOW: True
-        X: 202
-        Y: 164
-        WIDTH: 98
-        HEIGHT: 13
+        X: 270
+        Y: 139
+        RADIUS: 33
+        WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
+        ANGLE_SEP: 0
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
-        BAR_OUTLINE: False
-        # BACKGROUND_COLOR: 0, 255, 0
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 53, 191, 92
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
         SHOW_UNIT: True
-        X: 182
-        Y: 95
+        X: 178
+        Y: 99
         FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 12
+        FONT_SIZE: 10
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
       FREE:
         SHOW: True
         SHOW_UNIT: True
-        X: 182
-        Y: 129
+        X: 178
+        Y: 148
         FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 12
+        FONT_SIZE: 10
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      PERCENT_TEXT:
-        SHOW: True
-        X: 240
-        Y: 105
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 22
-        FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   DISK:
     INTERVAL: 10
     USED:
-      GRAPH:
+      RADIAL:
         SHOW: True
-        X: 33
-        Y: 455
-        WIDTH: 98
-        HEIGHT: 13
+        X: 82
+        Y: 429
+        RADIUS: 33
+        WIDTH: 5
         MIN_VALUE: 0
         MAX_VALUE: 100
+        ANGLE_START: -90
+        ANGLE_END: 270
+        ANGLE_STEPS: 1
+        ANGLE_SEP: 0
+        CLOCKWISE: True
         BAR_COLOR: 53, 191, 92
-        BAR_OUTLINE: False
-        BACKGROUND_COLOR: 0, 0, 0
-        # BACKGROUND_IMAGE: background.png
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 53, 191, 92
+        BACKGROUND_IMAGE: background.png
       TEXT:
         SHOW: True
         SHOW_UNIT: True
         X: 124
-        Y: 390
+        Y: 394
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
-        BACKGROUND_IMAGE: background.png
-      PERCENT_TEXT:
-        SHOW: True
-        SHOW_UNIT: True
-        X: 46
-        Y: 402
-        FONT: roboto-mono/RobotoMono-Regular.ttf
-        FONT_SIZE: 22
-        FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     TOTAL:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
         X: 227
-        Y: 390
+        Y: 394
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
     FREE:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
         X: 124
-        Y: 439
+        Y: 443
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
@@ -312,105 +157,96 @@ STATS:
         TEXT:
           SHOW: True
           X: 4
-          Y: 311
+          Y: 315
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: True
           X: 90
-          Y: 311
+          Y: 315
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
           SHOW: True
           X: 4
-          Y: 261
+          Y: 265
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
           SHOW: True
           X: 90
-          Y: 261
+          Y: 265
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
     ETH:
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 254
-          Y: 311
+          X: 244
+          Y: 315
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       UPLOADED:
         TEXT:
           SHOW: True
-          X: 192
-          Y: 311
+          X: 182
+          Y: 315
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 254
-          Y: 261
+          X: 244
+          Y: 265
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
       DOWNLOADED:
         TEXT:
           SHOW: True
-          X: 192
-          Y: 261
+          X: 182
+          Y: 265
           FONT: roboto-mono/RobotoMono-Regular.ttf
           FONT_SIZE: 12
           FONT_COLOR: 53, 191, 92
-          # BACKGROUND_COLOR: 0, 0, 0
           BACKGROUND_IMAGE: background.png
   DATE:
-    # In seconds. Longer intervals cause this to refresh more slowly.
-    # Setting to lower values will display near real time data,
-    # but may cause significant CPU usage or the display not to update properly
     INTERVAL: 1
     DAY:
       TEXT:
         SHOW: True
         X: 6
-        Y: 4
+        Y: 8
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+        WIDTH: 130
+        ANCHOR: lt
     HOUR:
       TEXT:
         SHOW: True
         X: 195
-        Y: 4
+        Y: 8
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 14
         FONT_COLOR: 53, 191, 92
-        # BACKGROUND_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+        WIDTH: 80
+        ANCHOR: lt

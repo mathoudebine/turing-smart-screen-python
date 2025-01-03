@@ -1,0 +1,248 @@
+# This file is used to add mandatory sections to a theme file in case they are missing
+# This is not a theme! Do not use this file to create a new theme, as a lot of content is missing: use theme_example.yaml
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 0
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FREQUENCY:
+      INTERVAL: 0
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    LOAD:
+      INTERVAL: 0
+      ONE:
+        TEXT:
+          SHOW: False
+      FIVE:
+        TEXT:
+          SHOW: False
+      FIFTEEN:
+        TEXT:
+          SHOW: False
+    TEMPERATURE:
+      INTERVAL: 0
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FAN_SPEED:
+      INTERVAL: 0
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+  GPU:
+    INTERVAL: 0
+    PERCENTAGE:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      TEXT:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    MEMORY_PERCENT:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      TEXT:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    MEMORY_USED:
+      TEXT:
+        SHOW: False
+    MEMORY_TOTAL:
+      TEXT:
+        SHOW: False
+    MEMORY: # Deprecated, do not use
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      TEXT:
+        SHOW: False
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FPS:
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FAN_SPEED:
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    FREQUENCY:
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+  MEMORY:
+    INTERVAL: 0
+    SWAP:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+    VIRTUAL:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+      USED:
+        SHOW: False
+      FREE:
+        SHOW: False
+      TOTAL:
+        SHOW: False
+      PERCENT_TEXT:
+        SHOW: False
+  DISK:
+    INTERVAL: 0
+    USED:
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
+      LINE_GRAPH:
+        SHOW: False
+      TEXT:
+        SHOW: False
+      PERCENT_TEXT:
+        SHOW: False
+    TOTAL:
+      TEXT:
+        SHOW: False
+    FREE:
+      TEXT:
+        SHOW: False
+  NET:
+    INTERVAL: 0
+    WLO:
+      UPLOAD:
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      UPLOADED:
+        TEXT:
+          SHOW: False
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      DOWNLOADED:
+        TEXT:
+          SHOW: False
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      UPLOADED:
+        TEXT:
+          SHOW: False
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      DOWNLOADED:
+        TEXT:
+          SHOW: False
+  DATE:
+    INTERVAL: 0
+    DAY:
+      TEXT:
+        SHOW: False
+    HOUR:
+      TEXT:
+        SHOW: False
+  UPTIME:
+    INTERVAL: 0
+    SECONDS:
+      TEXT:
+        SHOW: False
+    FORMATTED:
+      TEXT:
+        SHOW: False
+  WEATHER:
+    INTERVAL: 0
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+    TEMPERATURE_FELT:
+      TEXT:
+        SHOW: False
+    UPDATE_TIME:
+      TEXT:
+        SHOW: False
+    HUMIDITY:
+      TEXT:
+        SHOW: False
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: False
+  PING:
+    INTERVAL: 0
+    GRAPH:
+      SHOW: False
+    RADIAL:
+      SHOW: False
+    LINE_GRAPH:
+      SHOW: False
+    TEXT:
+      SHOW: False
+  CUSTOM:
+    INTERVAL: 0

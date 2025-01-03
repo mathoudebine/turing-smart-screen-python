@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv-*/
 
 # Spyder project settings
 .spyderproject
@@ -128,8 +129,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm
+# Editors / IDEs
 .idea/
+.vscode/
 
 # Git mergetool backup
 *.orig

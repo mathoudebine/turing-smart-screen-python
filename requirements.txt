@@ -1,19 +1,37 @@
 # Python packages requirements
-Pillow~=9.3.0     # Image generation
-pyserial~=3.5     # Serial linl to communicate with the display
-PyYAML~=6.0       # For themes files
-psutil~=5.9.4     # CPU / disk / network metrics
-GPUtil~=1.4.0     # Nvidia GPU
-pystray~=0.19.4   # Tray icon (all OS)
+pyserial~=3.5          # Serial link to communicate with the display
+PyYAML~=6.0.2          # For themes files
+psutil~=6.1.1          # CPU / disk / network metrics
+pystray~=0.19.5        # Tray icon (all OS)
+babel~=2.16.0          # Date/time formatting
+ruamel.yaml~=0.18.8    # For configuration editor
+sv-ttk~=2.6.0          # Tk Sun Valley theme for configuration editor
+tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
+uptime~=3.0.1          # For System Uptime 
+requests~=2.32.3       # HTTP library
+ping3~=4.0.8           # ICMP ping implementation using raw socket
+
+# Image generation
+Pillow~=10.4.0; python_version < "3.9"    # For Python 3.8 max.
+Pillow~=11.1.0; python_version >= "3.9"  # For Python >=3.9
+
+# Efficient image serialization
+numpy~=1.24.4; python_version < "3.9"   # For Python 3.8 max.
+numpy~=2.0.2; python_version == "3.9"  # For Python 3.9, only numpy 2.0.x is supported as 2.1 only supports Python >=3.10
+numpy~=2.2.1; python_version >= "3.10"  # For Python >=3.10, any numpy 2.x is fine
+
+# For Nvidia GPU on all platforms
+GPUtil~=1.4.0; python_version < "3.12"
+# GPUtil is broken for Python 3.12+ and not maintained anymore: fetch it from a fork where it is fixed
+GPUtil @ git+https://github.com/mathoudebine/gputil.git@1.4.0-py3.12 ; python_version >= "3.12"
 
 # Following packages are for AMD GPU on Linux
-# Note: you may need to manually install Cython first
-Cython~=0.29.32; sys_platform=="linux"
-pyamdgpuinfo~=2.1.3; sys_platform=="linux"
+pyamdgpuinfo~=2.1.6; sys_platform=="linux" and python_version <= "3.12"
+# For Python > 3.12, you need to build install pyamdgpuinfo manually: see https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#linux--macos-no-supported-gpu-found-with-an-amd-gpu-and-python--311
 
 # Following packages are for AMD GPU on Windows
 pyadl~=0.1; sys_platform=="win32"
 
 # Following packages are for LibreHardwareMonitor integration on Windows
-pythonnet~=3.0.1; sys_platform=="win32"
-pywin32>=305; sys_platform=="win32"
+pythonnet~=3.0.5; sys_platform=="win32"
+pywin32>=306; sys_platform=="win32"

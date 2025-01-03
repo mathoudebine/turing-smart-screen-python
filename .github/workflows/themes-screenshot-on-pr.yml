@@ -1,0 +1,73 @@
+name: System monitor - themes screenshot (on PR)
+
+on:
+  pull_request:
+
+jobs:
+  system-monitor-theme-screenshot:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Configure system monitor for screenshot
+      run: |
+        # Use static data
+        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STATIC" config.yaml
+
+    - name: Run system monitor for 5 seconds on all themes
+      run: |
+        for dir in res/themes/*/
+        do
+          if test -f "$dir/theme.yaml"; then        
+            # Keep only folder name
+            theme=`basename "${dir%*/}"`
+          
+            # Setup selected theme in config.yaml
+            echo "Using theme $theme"
+            sed -i '/THEME:/c\  THEME: "'"$theme"'"' config.yaml
+    
+            # For tests there is no real HW: use simulated LCD mode
+            # Check if theme is for 5"
+            orientation=$(grep 'DISPLAY_SIZE' "$dir/theme.yaml" | sed 's/ //g')
+            if [ "$orientation" == "DISPLAY_SIZE:5\"" ]; then
+              sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
+            else
+              sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
+            fi
+        
+            # Run system-monitor for 10 seconds
+            python3 main.py > output.log 2>&1 &
+            sleep 10
+            killall -9 python3
+          
+            # Rename screen capture
+            cp screencap.png "screenshot-$theme.png"
+        
+            # Compare with original theme preview to detect changes, generate a diff
+            if [ -f "$dir/preview.png" ]; then
+              python3 tools/compare-images.py "screenshot-$theme.png" "$dir/preview.png" "diff-$theme.png"
+              if [ -f "diff-$theme.png" ]; then
+                echo "::warning::$theme theme rendering has changed, check if it is intentional or a side-effect. A diff is included in the job artifacts."
+              fi
+            fi
+          fi
+        done
+
+    - name: Archive screenshots
+      uses: actions/upload-artifact@v4
+      with:
+        name: themes-screenshots
+        path: |
+          screenshot-*.png
+          diff-*.png

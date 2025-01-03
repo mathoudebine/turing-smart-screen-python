@@ -1,4 +1,4 @@
-# turing-smart-screen-python - a Python system monitor and library for 3.5" USB-C displays like Turing Smart Screen or XuanFang
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
@@ -17,15 +17,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Configure logging format
+import locale
 import logging
+from logging.handlers import RotatingFileHandler
 
-logging.basicConfig(# format='%(asctime)s [%(levelname)s] %(message)s in %(pathname)s:%(lineno)d',
-                    format="%(asctime)s [%(levelname)s] %(message)s",
-                    handlers=[
-                        # logging.FileHandler("log.log", mode='w'),  # Log in textfile (erased at each start)
-                        logging.StreamHandler()  # Log also in console
-                    ],
-                    datefmt='%H:%M:%S')
+# use current locale for date/time formatting in logs
+locale.setlocale(locale.LC_ALL, '')
+
+logging.basicConfig(  # format='%(asctime)s [%(levelname)s] %(message)s in %(pathname)s:%(lineno)d',
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        RotatingFileHandler("log.log", maxBytes=1000000, backupCount=0),  # Log in textfile max 1MB
+        logging.StreamHandler()  # Log also in console
+    ],
+    datefmt='%x %X')
 
 logger = logging.getLogger('turing')
 logger.setLevel(logging.DEBUG)  # Lowest log level : print all messages

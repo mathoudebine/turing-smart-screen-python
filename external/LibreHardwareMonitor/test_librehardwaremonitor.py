@@ -43,6 +43,7 @@ handle.IsMotherboardEnabled = True
 handle.IsControllerEnabled = True
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
+handle.IsPsuEnabled = True
 handle.Open()
 
 for hw in handle.Hardware:
@@ -51,6 +52,14 @@ for hw in handle.Hardware:
 
     for sensor in hw.Sensors:
         print("    %s | %s | %s" % (sensor.SensorType, sensor.Name, sensor.Value))
+
+    for subhw in hw.SubHardware:
+        print("    %s | %s | %s" % (subhw.HardwareType, subhw.Name, subhw.Identifier))
+        subhw.Update()
+
+        for sensor in subhw.Sensors:
+            print("        %s | %s | %s" % (sensor.SensorType, sensor.Name, sensor.Value))
+
     print("----------------------------------------------------")
 
 handle.Close()

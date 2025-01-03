@@ -1,0 +1,133 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 66, 207, 239
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 120
+        Y: 137
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 14
+        Y: 160
+        WIDTH: 140
+        HEIGHT: 14
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 66, 207, 239
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 48
+        Y: 281
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 110
+        Y: 98
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 14
+        Y: 206
+        WIDTH: 140
+        HEIGHT: 14
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 66, 207, 239
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 120
+        Y: 183
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 14
+        Y: 250
+        WIDTH: 140
+        HEIGHT: 14
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 66, 207, 239
+        BAR_OUTLINE: False
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 120
+        Y: 227
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        FORMAT: medium
+        SHOW: True
+        X: 14
+        Y: 64
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 252, 255, 255
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 180
+        ANCHOR: lt
+    HOUR:
+      TEXT:
+        FORMAT: short
+        SHOW: True
+        X: 14
+        Y: 26
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 16, 24, 49
+        WIDTH: 115  # Increase to 160 if you need the time to cover the star (e.g. am/pm indicator) 
+        HEIGHT: 30
+        ANCHOR: lm
