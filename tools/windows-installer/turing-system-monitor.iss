@@ -32,6 +32,7 @@ WizardImageFile={#WizardDir}*.bmp
 WizardSmallImageFile={#IconDir}*.bmp
 SetupIconFile={#IconDir}icon.ico
 LicenseFile=..\..\LICENSE
+InfoBeforeFile={#WizardDir}Disclaimer.rtf
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
