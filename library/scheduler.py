@@ -171,7 +171,7 @@ def CustomStats():
 
 
 @async_job("Weather_Stats")
-@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('WEATHER', {}).get("INTERVAL", 0)).total_seconds())
+@schedule(timedelta(seconds=max(300.0, config.THEME_DATA['STATS'].get('WEATHER', {}).get("INTERVAL", 0))).total_seconds())
 def WeatherStats():
     # logger.debug("Refresh Weather data")
     stats.Weather.stats()
