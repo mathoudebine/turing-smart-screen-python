@@ -37,12 +37,13 @@ config:
   PING: 8.8.8.8
 
   # Weather data with OpenWeatherMap API. Only useful if you want to use a theme that displays it
-  # Location from which to display the weather. Use for example https://www.latlong.net/ to get latitude/longitude
-  WEATHER_LATITUDE: 45.75
-  WEATHER_LONGITUDE: 4.85
+
   # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up.
   # You need to subscribe to the 3.0 OneCallAPI that has 1000 free daily calls
   WEATHER_API_KEY: ""
+  # Location from which to display the weather. Use for example https://www.latlong.net/ to get latitude/longitude
+  WEATHER_LATITUDE: 45.75
+  WEATHER_LONGITUDE: 4.85
   # Units used to display temperatures (metric - °C, imperial - °F, standard - °K)
   WEATHER_UNITS: metric
   # Language is used by the API. Find more here https://openweathermap.org/api/one-call-3#multi

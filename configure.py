@@ -92,6 +92,17 @@ model_and_size_to_revision_map = {
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
+weather_unit_map = {"metric": "metric - °C", "imperial": "imperial - °F", "standard": "standard - °K"}
+weather_lang_map = {"sq": "Albanian", "af": "Afrikaans", "ar": "Arabic", "az": "Azerbaijani", "eu": "Basque",
+                    "be": "Belarusian", "bg": "Bulgarian", "ca": "Catalan", "zh_cn": "Chinese Simplified",
+                    "zh_tw": "Chinese Traditional", "hr": "Croatian", "cz": "Czech", "da": "Danish", "nl": "Dutch",
+                    "en": "English", "fi": "Finnish", "fr": "French", "gl": "Galician", "de": "German", "el": "Greek",
+                    "he": "Hebrew", "hi": "Hindi", "hu": "Hungarian", "is": "Icelandic", "id": "Indonesian",
+                    "it": "Italian", "ja": "Japanese", "kr": "Korean", "ku": "Kurmanji (Kurdish)", "la": "Latvian",
+                    "lt": "Lithuanian", "mk": "Macedonian", "no": "Norwegian", "fa": "Persian (Farsi)", "pl": "Polish",
+                    "pt": "Portuguese", "pt_br": "Português Brasil", "ro": "Romanian", "ru": "Russian", "sr": "Serbian",
+                    "sk": "Slovak", "sl": "Slovenian", "sp": "Spanish", "sv": "Swedish", "th": "Thai", "tr": "Turkish",
+                    "ua": "Ukrainian", "vi": "Vietnamese", "zu": "Zulu"}
 
 MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
 THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
@@ -161,6 +172,9 @@ class TuringConfigWindow:
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
         self.window.after(0, self.on_fan_speed_update)
+
+        # Subwindow for weather/ping config.
+        self.more_config_window = MoreConfigWindow(self)
 
         # Make TK look better with Sun Valley ttk theme
         sv_ttk.set_theme("light")
@@ -250,6 +264,10 @@ class TuringConfigWindow:
                                    "Manually select your CPU fan from the list.\n\n"
                                    "Fans missing from the list? Install lm-sensors package\n"
                                    "and run 'sudo sensors-detect' command, then reboot.")
+
+        self.edit_theme_btn = ttk.Button(self.window, text="Weather & ping",
+                                         command=lambda: self.on_weatherping_click())
+        self.edit_theme_btn.place(x=170, y=510, height=50, width=130)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=310, y=510, height=50, width=130)
@@ -375,6 +393,9 @@ class TuringConfigWindow:
         self.on_brightness_change()
         self.on_hwlib_change()
 
+        # Load configuration to sub-window as well
+        self.more_config_window.load_config_values(self.config)
+
     def save_config_values(self):
         self.config['config']['THEME'] = self.theme_cb.get()
         self.config['config']['HW_SENSORS'] = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
@@ -401,8 +422,22 @@ class TuringConfigWindow:
         with open("config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
+    def save_additional_config(self, ping: str, api_key: str, lat: str, long: str, unit: str, lang: str):
+        self.config['config']['PING'] = ping
+        self.config['config']['WEATHER_API_KEY'] = api_key
+        self.config['config']['WEATHER_LATITUDE'] = lat
+        self.config['config']['WEATHER_LONGITUDE'] = long
+        self.config['config']['WEATHER_UNITS'] = unit
+        self.config['config']['WEATHER_LANGUAGE'] = lang
+
+        with open("config.yaml", "w", encoding='utf-8') as file:
+            ruamel.yaml.YAML().dump(self.config, file)
+
     def on_theme_change(self, e=None):
         self.load_theme_preview()
+
+    def on_weatherping_click(self):
+        self.more_config_window.show()
 
     def on_theme_editor_click(self):
         subprocess.Popen(MAIN_DIRECTORY + "theme-editor.py" + " \"" + self.theme_cb.get() + "\"", shell=True)
@@ -484,6 +519,139 @@ class TuringConfigWindow:
         if prev_value != -1:
             self.cpu_fan_cb.current(prev_value)  # Force select same index to refresh displayed value
         self.window.after(500, self.on_fan_speed_update)
+
+
+class MoreConfigWindow:
+    def __init__(self, main_window: TuringConfigWindow):
+        self.window = Toplevel()
+        self.window.withdraw()
+        self.window.title('Configure weather & ping')
+        self.window.geometry("750x400")
+
+        self.main_window = main_window
+
+        # Make TK look better with Sun Valley ttk theme
+        sv_ttk.set_theme("light")
+
+        self.ping_label = ttk.Label(self.window, text='Hostname / IP to ping')
+        self.ping_label.place(x=10, y=10)
+        self.ping_entry = ttk.Entry(self.window)
+        self.ping_entry.place(x=190, y=5, width=250)
+
+        weather_label = ttk.Label(self.window, text='Weather forecast (OpenWeatherMap API)', font='bold')
+        weather_label.place(x=10, y=70)
+
+        weather_info_label = ttk.Label(self.window,
+                                       text="To display weather forecast on themes that support it, you need an OpenWeatherMap \"One Call API 3.0\" key.\n"
+                                            "You will get 1,000 API calls per day for free. This program is configured to stay under this threshold (~300 calls/day).")
+        weather_info_label.place(x=10, y=100)
+        weather_api_link_label = ttk.Label(self.window,
+                                           text="Click here to subscribe to OpenWeatherMap One Call API 3.0.")
+        weather_api_link_label.place(x=10, y=140)
+        weather_api_link_label.config(foreground="#a3a3ff", cursor="hand2")
+        weather_api_link_label.bind("<Button-1>",
+                                    lambda e: webbrowser.open_new_tab("https://openweathermap.org/api"))
+
+        self.api_label = ttk.Label(self.window, text='OpenWeatherMap API key')
+        self.api_label.place(x=10, y=170)
+        self.api_entry = ttk.Entry(self.window)
+        self.api_entry.place(x=190, y=165, width=250)
+
+        latlong_label = ttk.Label(self.window,
+                                  text="You can use online services to get your latitude/longitude e.g. latlong.net (click here)")
+        latlong_label.place(x=10, y=210)
+        latlong_label.config(foreground="#a3a3ff", cursor="hand2")
+        latlong_label.bind("<Button-1>",
+                           lambda e: webbrowser.open_new_tab("https://www.latlong.net/"))
+
+        self.lat_label = ttk.Label(self.window, text='Latitude')
+        self.lat_label.place(x=10, y=250)
+        self.lat_entry = ttk.Entry(self.window, validate='key',
+                                   validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.lat_entry.place(x=80, y=245, width=100)
+
+        self.long_label = ttk.Label(self.window, text='Longitude')
+        self.long_label.place(x=270, y=250)
+        self.long_entry = ttk.Entry(self.window, validate='key',
+                                    validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.long_entry.place(x=340, y=245, width=100)
+
+        self.unit_label = ttk.Label(self.window, text='Units')
+        self.unit_label.place(x=10, y=290)
+        self.unit_cb = ttk.Combobox(self.window, values=list(weather_unit_map.values()), state='readonly')
+        self.unit_cb.place(x=190, y=285, width=250)
+
+        self.lang_label = ttk.Label(self.window, text='Language')
+        self.lang_label.place(x=10, y=330)
+        self.lang_cb = ttk.Combobox(self.window, values=list(weather_lang_map.values()), state='readonly')
+        self.lang_cb.place(x=190, y=325, width=250)
+
+        self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
+        self.save_btn.place(x=590, y=340, height=50, width=130)
+
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def validateCoord(self, coord: str):
+        if not coord:
+            return True
+        try:
+            float(coord)
+        except:
+            return False
+        return True
+
+    def show(self):
+        self.window.deiconify()
+
+    def on_closing(self):
+        self.window.withdraw()
+
+    def load_config_values(self, config):
+        self.config = config
+
+        try:
+            self.ping_entry.insert(0, self.config['config']['PING'])
+        except:
+            self.ping_entry.insert(0, "8.8.8.8")
+
+        try:
+            self.api_entry.insert(0, self.config['config']['WEATHER_API_KEY'])
+        except:
+            pass
+
+        try:
+            self.lat_entry.insert(0, self.config['config']['WEATHER_LATITUDE'])
+        except:
+            self.lat_entry.insert(0, "45.75")
+
+        try:
+            self.long_entry.insert(0, self.config['config']['WEATHER_LONGITUDE'])
+        except:
+            self.long_entry.insert(0, "45.75")
+
+        try:
+            self.unit_cb.set(weather_unit_map[self.config['config']['WEATHER_UNITS']])
+        except:
+            self.unit_cb.set(0)
+
+        try:
+            self.lang_cb.set(weather_lang_map[self.config['config']['WEATHER_LANGUAGE']])
+        except:
+            self.lang_cb.set(weather_lang_map["en"])
+
+    def on_save_click(self):
+        self.save_config_values()
+        self.on_closing()
+
+    def save_config_values(self):
+        ping = self.ping_entry.get()
+        api_key = self.api_entry.get()
+        lat = self.lat_entry.get()
+        long = self.long_entry.get()
+        unit = [k for k, v in weather_unit_map.items() if v == self.unit_cb.get()][0]
+        lang = [k for k, v in weather_lang_map.items() if v == self.lang_cb.get()][0]
+
+        self.main_window.save_additional_config(ping, api_key, lat, long, unit, lang)
 
 
 if __name__ == "__main__":
