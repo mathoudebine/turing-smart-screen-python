@@ -18,6 +18,7 @@
 
 import time
 from enum import Enum
+from typing import Optional
 
 from serial.tools.list_ports import comports
 import numpy as np
@@ -53,7 +54,7 @@ class SubRevision(Enum):
 # This class is for Turing Smart Screen (rev. A) 3.5" and UsbMonitor screens (all sizes)
 class LcdCommRevA(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: A")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -62,7 +63,7 @@ class LcdCommRevA(LcdComm):
         self.closeSerial()
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
         auto_com_port = None
 
@@ -95,8 +96,8 @@ class LcdCommRevA(LcdComm):
 
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.WriteData(hello)
-        response = self.lcd_serial.read(6)
-        self.lcd_serial.flushInput()
+        response = self.serial_read(6)
+        self.serial_flush_input()
 
         if response == SubRevision.USBMONITOR_3_5.value:
             self.sub_revision = SubRevision.USBMONITOR_3_5
@@ -170,10 +171,10 @@ class LcdCommRevA(LcdComm):
         byteBuffer[8] = (width & 255)
         byteBuffer[9] = (height >> 8)
         byteBuffer[10] = (height & 255)
-        self.lcd_serial.write(bytes(byteBuffer))
+        self.serial_write(bytes(byteBuffer))
 
     @staticmethod
-    def imageToRGB565LE(image: Image):
+    def imageToRGB565LE(image: Image.Image):
         if image.mode not in ["RGB", "RGBA"]:
             # we need the first 3 channels to be R, G and B
             image = image.convert("RGB")
@@ -200,7 +201,7 @@ class LcdCommRevA(LcdComm):
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
