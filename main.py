@@ -23,6 +23,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # This file is the system monitor main program to display HW sensors on your screen using themes (see README)
+import glob
 import os
 import sys
 
@@ -115,7 +116,7 @@ if __name__ == "__main__":
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(MAIN_DIRECTORY + "configure.py", shell=True)
+        subprocess.Popen(MAIN_DIRECTORY + glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0], shell=True)
         clean_stop(tray_icon)
 
 
