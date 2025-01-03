@@ -34,6 +34,7 @@ configure_exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
+    contents_directory='.',
 )
 
 # System Monitor main program
@@ -70,6 +71,7 @@ main_exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
+    contents_directory='.',
 )
 
 # Theme Editor
@@ -106,6 +108,7 @@ editor_exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
+    contents_directory='.',
 )
 
 # Common collect task
