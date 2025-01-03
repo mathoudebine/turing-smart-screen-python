@@ -35,6 +35,7 @@ configure_exe = EXE(
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
     contents_directory='.',
+    version='tools\\windows-installer\\pyinstaller-version-info.txt',
 )
 
 # System Monitor main program
@@ -72,6 +73,7 @@ main_exe = EXE(
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
     contents_directory='.',
+    version='tools\\windows-installer\\pyinstaller-version-info.txt',
 )
 
 # Theme Editor
@@ -109,6 +111,7 @@ editor_exe = EXE(
     entitlements_file=None,
     icon=['res\\icons\\monitor-icon-17865\\icon.ico'],
     contents_directory='.',
+    version='tools\\windows-installer\\pyinstaller-version-info.txt',
 )
 
 # Common collect task
