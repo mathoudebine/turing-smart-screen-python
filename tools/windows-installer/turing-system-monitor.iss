@@ -2,6 +2,9 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define SourceDir "..\..\dist\turing-system-monitor\"
+#define IconDir "..\..\res\icons\monitor-icon-17865\"
+#define WizardDir "..\..\tools\windows-installer\"
+
 #define MyAppName "Turing System Monitor"
 #define MyAppVersion GetStringFileInfo(SourceDir + "main.exe", PRODUCT_VERSION)
 #define MyAppPublisher "Matthieu Houdebine"
@@ -13,7 +16,6 @@
 AppId={{5D52BFDE-9A40-4BFA-84F8-89A64B01A2AC}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
-;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
@@ -22,12 +24,14 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 OutputBaseFilename=turing-system-monitor_{#MyAppVersion}
 AllowNoIcons=yes
-; Uncomment the following line to run in non administrative install mode (install for current user only.)
-;PrivilegesRequired=lowest
+PrivilegesRequired=lowest
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=..\..\res\icons\monitor-icon-17865\icon.ico
+WizardImageFile={#WizardDir}*.bmp
+WizardSmallImageFile={#IconDir}*.bmp
+SetupIconFile={#IconDir}icon.ico
+LicenseFile=..\..\LICENSE
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -57,7 +61,7 @@ Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
 [Files]
-Source: "{#SourceDir}*"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
