@@ -61,8 +61,18 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "turkish"; MessagesFile: "compiler:Languages\Turkish.isl"
 Name: "ukrainian"; MessagesFile: "compiler:Languages\Ukrainian.isl"
 
+[Types]
+Name: "default"; Description: "Default installation"; Flags: iscustom
+
+[Components]
+Name: "program"; Description: "Turing System Monitor software"; Flags: fixed; Types: default
+Name: "themes"; Description: "Default themes (local changes will be lost! - custom themes are preserved)"; Types: default
+Name: "config"; Description: "Default configuration"; Types: default
+
 [Files]
-Source: "{#SourceDir}*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDir}*"; Excludes: "config.yaml,themes"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: program
+Source: "{#SourceDir}config.yaml"; DestDir: "{app}"; Flags: ignoreversion; Components: config
+Source: "{#SourceDir}res\themes\*"; Excludes: "--Theme examples"; DestDir: "{app}\res\themes\"; Flags: ignoreversion recursesubdirs; Components: themes
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -70,4 +80,32 @@ Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\Turing System Monitor"; Filename: "{app}\configure.exe"
 
+[Code]
+function IsUpgrade: Boolean;
+var
+    Value: string;
+    UninstallKey: string;
+begin
+    UninstallKey := 'Software\Microsoft\Windows\CurrentVersion\Uninstall\' +
+        ExpandConstant('{#SetupSetting("AppId")}') + '_is1';
+    Result := (RegQueryStringValue(HKLM, UninstallKey, 'UninstallString', Value) or
+        RegQueryStringValue(HKCU, UninstallKey, 'UninstallString', Value)) and (Value <> '');
+end;
 
+(* Skip components page when first installation: install all components *)
+function ShouldSkipPage(PageID: Integer): Boolean;
+begin
+  Result := (PageID = wpSelectComponents) and not IsUpgrade;
+end;
+
+procedure InitializeWizard;
+begin
+  if IsUpgrade then begin
+    Log('Upgrade detected');
+    WizardSelectComponents('program !themes, !config');
+    end
+  else begin
+    Log('First installation');
+    WizardSelectComponents('program themes config');
+  end;
+end;
