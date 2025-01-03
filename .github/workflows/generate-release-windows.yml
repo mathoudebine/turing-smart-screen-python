@@ -1,0 +1,44 @@
+name: Generate release (Windows)
+
+on:
+  pull_request:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  generate-release:
+
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Run PyInstaller to create binaries
+      run: |
+        pyinstaller.exe --noconfirm turing-system-monitor.spec
+
+    - name: Create InnoSetup installer from generated binaries
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: tools/windows-installer/turing-system-monitor.iss
+        options: /O+
+
+    - name: Archive a screenshot
+      uses: actions/upload-artifact@v4
+      with:
+        path: tools/windows-installer/Output/turing-system-monitor_*.exe
