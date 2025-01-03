@@ -13,7 +13,7 @@ ping3~=4.0.8           # ICMP ping implementation using raw socket
 
 # Image generation
 Pillow~=10.4.0; python_version < "3.9"    # For Python 3.8 max.
-Pillow~=11.0.0; python_version >= "3.9"  # For Python >=3.9
+Pillow~=11.1.0; python_version >= "3.9"  # For Python >=3.9
 
 # Efficient image serialization
 numpy~=1.24.4; python_version < "3.9"   # For Python 3.8 max.
