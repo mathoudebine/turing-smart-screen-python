@@ -20,6 +20,7 @@
 import struct
 
 from serial.tools.list_ports import comports
+import numpy as np
 
 from library.lcd.lcd_comm import *
 from library.log import logger
@@ -194,6 +195,39 @@ class LcdCommRevB(LcdComm):
         else:
             self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
 
+    @staticmethod
+    def imageToRGB565BE(image: Image.Image):
+        if image.mode not in ["RGB", "RGBA"]:
+            # we need the first 3 channels to be R, G and B
+            image = image.convert("RGB")
+
+        rgb = np.asarray(image)
+
+        # flatten the first 2 dimensions (width and height) into a single stream
+        # of RGB pixels
+        rgb = rgb.reshape((image.size[1] * image.size[0], -1))
+
+        # extract R, G, B channels and promote them to 16 bits
+        r = rgb[:, 0].astype(np.uint16)
+        g = rgb[:, 1].astype(np.uint16)
+        b = rgb[:, 2].astype(np.uint16)
+
+        # construct RGB565
+        r = (r >> 3)
+        g = (g >> 2)
+        b = (b >> 3)
+        rgb565 = (r << 11) | (g << 5) | b
+
+        # serialize to big-endian
+        return rgb565.astype('>u2').tobytes()
+
+    def serialize_image(self, image: Image.Image, height: int, width: int) -> bytes:
+        if image.width != width or image.height != height:
+            image = image.crop((0, 0, width, height))
+        if self.orientation == Orientation.REVERSE_PORTRAIT or self.orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180)
+        return self.imageToRGB565BE(image)
+
     def DisplayPILImage(
             self,
             image: Image.Image,
@@ -231,34 +265,18 @@ class LcdCommRevB(LcdComm):
                                   (y0 >> 8) & 255, y0 & 255,
                                   (x1 >> 8) & 255, x1 & 255,
                                   (y1 >> 8) & 255, y1 & 255])
-        pix = image.load()
-        line = bytes()
+
+        rgb565be = self.serialize_image(image, image_height, image_width)
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            for h in range(image_height):
-                for w in range(image_width):
-                    if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
-                        R = pix[w, h][0] >> 3
-                        G = pix[w, h][1] >> 2
-                        B = pix[w, h][2] >> 3
-                    else:
-                        # Manage reverse orientations from software, because display does not manage it
-                        R = pix[image_width - w - 1, image_height - h - 1][0] >> 3
-                        G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
-                        B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
-
-                    # Color information is 0bRRRRRGGGGGGBBBBB
-                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
-                    # Revition B: Encode in Big-Endian
-                    rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('>H', rgb)
-
-                    # Send image data by multiple of "display width" bytes
-                    if len(line) >= self.get_width() * 8:
-                        self.SendLine(line)
-                        line = bytes()
+            # Send image data by multiple of "display width" bytes
+            start = 0
+            end = self.get_width() * 8
+            while end <= len(rgb565be):
+                self.SendLine(rgb565be[start:end])
+                start, end = end, end + self.get_width() * 8
 
             # Write last line if needed
-            if len(line) > 0:
-                self.SendLine(line)
+            if start != len(rgb565be):
+                self.SendLine(rgb565be[start:])
