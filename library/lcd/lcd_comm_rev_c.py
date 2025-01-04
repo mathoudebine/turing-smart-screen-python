@@ -282,6 +282,9 @@ class LcdCommRevC(LcdComm):
         if image.size[0] > self.get_width():
             image_width = self.get_width()
 
+        if image_width != image.size[0] or image_height != image.size[1]:
+            image = image.crop((0, 0, image_width, image_height))
+
         assert x <= self.get_width(), 'Image X coordinate must be <= display width'
         assert y <= self.get_height(), 'Image Y coordinate must be <= display height'
         assert image_height > 0, 'Image height must be > 0'
