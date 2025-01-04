@@ -22,7 +22,7 @@ import queue
 import time
 from enum import Enum
 from math import ceil
-from typing import Optional
+from typing import Optional, Tuple
 
 import serial
 from PIL import Image
@@ -293,25 +293,23 @@ class LcdCommRevC(LcdComm):
                 self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
                 self._send_command(Command.DISPLAY_BITMAP)
                 self._send_command(Command.SEND_PAYLOAD,
-                                   payload=bytearray(self._generate_full_image(image, self.orientation)),
+                                   payload=bytearray(self._generate_full_image(image)),
                                    readsize=1024)
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
             with self.update_queue_mutex:
-                img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP,
-                                                       self.orientation)
+                img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP)
                 self._send_command(Command.SEND_PAYLOAD, payload=pyd)
                 self._send_command(Command.SEND_PAYLOAD, payload=img)
                 self._send_command(Command.QUERY_STATUS, readsize=1024)
             Count.Start += 1
 
-    @staticmethod
-    def _generate_full_image(image: Image.Image, orientation: Orientation = Orientation.PORTRAIT):
-        if orientation == Orientation.PORTRAIT:
+    def _generate_full_image(self, image: Image.Image) -> bytes:
+        if self.orientation == Orientation.PORTRAIT:
             image = image.rotate(90, expand=True)
-        elif orientation == Orientation.REVERSE_PORTRAIT:
+        elif self.orientation == Orientation.REVERSE_PORTRAIT:
             image = image.rotate(270, expand=True)
-        elif orientation == Orientation.REVERSE_LANDSCAPE:
+        elif self.orientation == Orientation.REVERSE_LANDSCAPE:
             image = image.rotate(180)
 
         image_data = image.convert("RGBA").load()
@@ -324,21 +322,22 @@ class LcdCommRevC(LcdComm):
         hex_data = bytearray.fromhex(image_ret)
         return b'\x00'.join(hex_data[i:i + 249] for i in range(0, len(hex_data), 249))
 
-    def _generate_update_image(self, image, x, y, count, cmd: Optional[Command] = None,
-                               orientation: Orientation = Orientation.PORTRAIT):
+    def _generate_update_image(
+        self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
+    ) -> Tuple[bytearray, bytearray]:
         x0, y0 = x, y
 
-        if orientation == Orientation.PORTRAIT:
+        if self.orientation == Orientation.PORTRAIT:
             image = image.rotate(90, expand=True)
             x0 = self.get_width() - x - image.height
-        elif orientation == Orientation.REVERSE_PORTRAIT:
+        elif self.orientation == Orientation.REVERSE_PORTRAIT:
             image = image.rotate(270, expand=True)
             y0 = self.get_height() - y - image.width
-        elif orientation == Orientation.REVERSE_LANDSCAPE:
+        elif self.orientation == Orientation.REVERSE_LANDSCAPE:
             image = image.rotate(180, expand=True)
             y0 = self.get_width() - x - image.width
             x0 = self.get_height() - y - image.height
-        elif orientation == Orientation.LANDSCAPE:
+        elif self.orientation == Orientation.LANDSCAPE:
             x0, y0 = y, x
 
         img_raw_data = []
