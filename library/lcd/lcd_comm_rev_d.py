@@ -109,7 +109,7 @@ class LcdCommRevD(LcdComm):
         # Convert our brightness % to an absolute value.
         converted_level = level * 5
 
-        level_bytes = bytearray(converted_level.to_bytes(2))
+        level_bytes = bytearray(converted_level.to_bytes(2, "big"))
 
         # Send the command twice because sometimes it is not applied...
         self.SendCommand(cmd=Command.SETBL, payload=level_bytes)
@@ -166,10 +166,11 @@ class LcdCommRevD(LcdComm):
             image_width, image_height = image_height, image_width
 
         # Send bitmap size
-        image_data = bytearray(x0.to_bytes(2))
-        image_data += bytearray(x1.to_bytes(2))
-        image_data += bytearray(y0.to_bytes(2))
-        image_data += bytearray(y1.to_bytes(2))
+        image_data = bytearray()
+        image_data += x0.to_bytes(2, "big")
+        image_data += x1.to_bytes(2, "big")
+        image_data += y0.to_bytes(2, "big")
+        image_data += y1.to_bytes(2, "big")
         self.SendCommand(cmd=Command.BLOCKWRITE, payload=image_data)
 
         # Prepare bitmap data transmission
