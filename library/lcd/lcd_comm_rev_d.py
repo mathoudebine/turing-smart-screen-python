@@ -16,12 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import struct
 from enum import Enum
 
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import *
+from library.lcd.serialize import image_to_RGB565, chunked
 from library.log import logger
 
 
@@ -175,31 +175,12 @@ class LcdCommRevD(LcdComm):
         # Prepare bitmap data transmission
         self.SendCommand(Command.INTOPICMODE)
 
-        pix = image.load()
-        line = bytes([80])
+        rgb565be = image_to_RGB565(image, "big")
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            for h in range(image_height):
-                for w in range(image_width):
-                    R = pix[w, h][0] >> 3
-                    G = pix[w, h][1] >> 2
-                    B = pix[w, h][2] >> 3
-
-                    # Color information is 0bRRRRRGGGGGGBBBBB
-                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
-                    # Revition B: Encode in Big-Endian
-                    rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('>H', rgb)
-
-                    # Send image data by multiple of 64 bytes + 1 command byte
-                    if len(line) >= 65:
-                        self.SendLine(line[0:64])
-                        line = bytes([80]) + line[64:]
-
-            # Write last line if needed
-            if len(line) > 0:
-                self.SendLine(line)
+            for chunk in chunked(rgb565be, 63):
+                self.SendLine(b"\x50" + chunk)
 
         # Indicate the complete bitmap has been transmitted
         self.SendCommand(Command.OUTPICMODE)
