@@ -37,3 +37,22 @@ def image_to_RGB565(image: Image.Image, endianness: Literal["big", "little"]) ->
     else:
         typ = "<u2"
     return rgb565.astype(typ).tobytes()
+
+
+def image_to_BGR(image: Image.Image) -> bytes:
+    if image.mode not in ["RGB", "RGBA"]:
+        # we need the first 3 channels to be R, G and B
+        image = image.convert("RGB")
+    rgb = np.asarray(image)
+    # same as rgb[:, :, [2, 1, 0]] but faster
+    bgr = np.take(rgb, (2, 1, 0), axis=-1)
+    return bgr.tobytes()
+
+
+def image_to_BGRA(image: Image.Image) -> bytes:
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
+    rgba = np.asarray(image)
+    # same as rgba[:, :, [2, 1, 0, 3]] but faster
+    bgra = np.take(rgba, (2, 1, 0, 3), axis=-1)
+    return bgra.tobytes()

@@ -29,6 +29,7 @@ from PIL import Image
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import Orientation, LcdComm
+from library.lcd.serialize import image_to_BGRA, image_to_BGR, chunked
 from library.log import logger
 
 
@@ -315,15 +316,9 @@ class LcdCommRevC(LcdComm):
         elif self.orientation == Orientation.REVERSE_LANDSCAPE:
             image = image.rotate(180)
 
-        image_data = image.convert("RGBA").load()
-        image_ret = ''
-        for y in range(image.height):
-            for x in range(image.width):
-                pixel = image_data[x, y]
-                image_ret += f'{pixel[2]:02x}{pixel[1]:02x}{pixel[0]:02x}{pixel[3]:02x}'
+        bgra_data = image_to_BGRA(image)
 
-        hex_data = bytearray.fromhex(image_ret)
-        return b'\x00'.join(hex_data[i:i + 249] for i in range(0, len(hex_data), 249))
+        return b'\x00'.join(chunked(bgra_data, 249))
 
     def _generate_update_image(
         self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
@@ -343,28 +338,26 @@ class LcdCommRevC(LcdComm):
         elif self.orientation == Orientation.LANDSCAPE:
             x0, y0 = y, x
 
-        img_raw_data = []
-        image_data = image.convert("RGBA").load()
-        for h in range(image.height):
-            img_raw_data.append(f'{((x0 + h) * self.display_height) + y0:06x}{image.width:04x}')
-            for w in range(image.width):
-                current_pixel = image_data[w, h]
-                img_raw_data.append(f'{current_pixel[2]:02x}{current_pixel[1]:02x}{current_pixel[0]:02x}')
+        img_raw_data = bytearray()
+        bgr_data = image_to_BGR(image)
+        for h, line in enumerate(chunked(bgr_data, image.width * 3)):
+            img_raw_data += int(((x0 + h) * self.display_height) + y0).to_bytes(3, "big")
+            img_raw_data += int(image.width).to_bytes(2, "big")
+            img_raw_data += line
 
-        image_msg = ''.join(img_raw_data)
-        image_size = f'{int((len(image_msg) / 2) + 2):06x}'  # The +2 is for the "ef69" that will be added later.
+        image_size = int(len(img_raw_data) + 2).to_bytes(3, "big") # The +2 is for the "ef69" that will be added later.
 
         # logger.debug("Render Count: {}".format(count))
         payload = bytearray()
 
         if cmd:
             payload.extend(cmd.value)
-        payload.extend(bytearray.fromhex(image_size))
+        payload.extend(image_size)
         payload.extend(Padding.NULL.value * 3)
         payload.extend(count.to_bytes(4, 'big'))
 
-        if len(image_msg) > 500:
-            image_msg = '00'.join(image_msg[i:i + 498] for i in range(0, len(image_msg), 498))
-        image_msg += 'ef69'
+        if len(img_raw_data) > 250:
+            img_raw_data = bytearray(b'\x00').join(chunked(bytes(img_raw_data), 249))
+        img_raw_data += b'\xef\x69'
 
-        return bytearray.fromhex(image_msg), payload
+        return img_raw_data, payload
