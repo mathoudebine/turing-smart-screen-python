@@ -22,6 +22,7 @@ import queue
 import time
 from enum import Enum
 from math import ceil
+from typing import Optional
 
 import serial
 from PIL import Image
@@ -129,7 +130,7 @@ class SubRevision(Enum):
 # This class is for Turing Smart Screen 5" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -138,7 +139,7 @@ class LcdCommRevC(LcdComm):
         self.closeSerial()
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
 
         for com_port in com_ports:
@@ -155,13 +156,13 @@ class LcdCommRevC(LcdComm):
         # this device enumerates differently when off, we need to connect once to reset it to correct COM device
         try:
             logger.debug(f"Waiting for device {com_port} to be turned ON...")
-            serial.Serial(com_port.device, 115200, timeout=1, rtscts=1)
-        except serial.serialutil.SerialException:
+            serial.Serial(com_port.device, 115200, timeout=1, rtscts=True)
+        except serial.SerialException:
             pass
         time.sleep(10)
 
-    def _send_command(self, cmd: Command, payload: bytearray = None, padding: Padding = None,
-                      bypass_queue: bool = False, readsize: int = None):
+    def _send_command(self, cmd: Command, payload: Optional[bytearray] = None, padding: Optional[Padding] = None,
+                      bypass_queue: bool = False, readsize: Optional[int] = None):
         message = bytearray()
 
         if cmd != Command.SEND_PAYLOAD:
@@ -196,8 +197,8 @@ class LcdCommRevC(LcdComm):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self._send_command(Command.HELLO, bypass_queue=True)
-        response = str(self.lcd_serial.read(22).decode())
-        self.lcd_serial.flushInput()
+        response = str(self.serial_read(22).decode())
+        self.serial_flush_input()
         if response.startswith(SubRevision.FIVEINCH.value):
             self.sub_revision = SubRevision.FIVEINCH
         else:
@@ -264,7 +265,7 @@ class LcdCommRevC(LcdComm):
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
@@ -305,7 +306,7 @@ class LcdCommRevC(LcdComm):
             Count.Start += 1
 
     @staticmethod
-    def _generate_full_image(image: Image, orientation: Orientation = Orientation.PORTRAIT):
+    def _generate_full_image(image: Image.Image, orientation: Orientation = Orientation.PORTRAIT):
         if orientation == Orientation.PORTRAIT:
             image = image.rotate(90, expand=True)
         elif orientation == Orientation.REVERSE_PORTRAIT:
@@ -323,7 +324,7 @@ class LcdCommRevC(LcdComm):
         hex_data = bytearray.fromhex(image_ret)
         return b'\x00'.join(hex_data[i:i + 249] for i in range(0, len(hex_data), 249))
 
-    def _generate_update_image(self, image, x, y, count, cmd: Command = None,
+    def _generate_update_image(self, image, x, y, count, cmd: Optional[Command] = None,
                                orientation: Orientation = Orientation.PORTRAIT):
         x0, y0 = x, y
 

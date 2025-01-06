@@ -47,7 +47,8 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
             imgfile = open(SCREENSHOT_FILE, 'rb').read()
             mimetype = mimetypes.MimeTypes().guess_type(SCREENSHOT_FILE)[0]
             self.send_response(200)
-            self.send_header('Content-type', mimetype)
+            if mimetype is not None:
+                self.send_header('Content-type', mimetype)
             self.end_headers()
             self.wfile.write(imgfile)
 
@@ -55,7 +56,7 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
 # Simulated display: write on a file instead of serial port
 class LcdSimulated(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.screen_image = Image.new("RGB", (self.get_width(), self.get_height()), (255, 255, 255))
         self.screen_image.save("tmp", "PNG")
@@ -73,7 +74,7 @@ class LcdSimulated(LcdComm):
         self.closeSerial()
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         return None
 
     def closeSerial(self):
@@ -111,7 +112,7 @@ class LcdSimulated(LcdComm):
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
