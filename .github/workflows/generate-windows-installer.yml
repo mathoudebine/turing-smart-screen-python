@@ -1,27 +1,25 @@
-name: Generate release (Windows)
+name: Generate Windows Installer
 
 on:
-  pull_request:
-  push:
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
 
 jobs:
-  generate-release:
+  generate-windows-installer:
 
     runs-on: windows-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.13"]
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Git Checkout ${{github.event.release.tag_name}}
+      uses: actions/checkout@v4
+
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.13'
 
     - name: Install dependencies
       run: |
@@ -38,7 +36,13 @@ jobs:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+
 
-    - name: Archive a screenshot
+    - name: '📦 Archive Windows installer'
       uses: actions/upload-artifact@v4
       with:
         path: tools/windows-installer/Output/turing-system-monitor_*.exe
+
+    - name: '📩 Publish Windows installer to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} turing-system-monitor_*.exe
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
