@@ -51,7 +51,7 @@ class SubRevision(IntEnum):
 # This class is for XuanFang (rev. B & flagship) 3.5" screens
 class LcdCommRevB(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: B")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -67,7 +67,7 @@ class LcdCommRevB(LcdComm):
         return self.sub_revision == SubRevision.A11 or self.sub_revision == SubRevision.A12
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
         auto_com_port = None
 
@@ -110,8 +110,8 @@ class LcdCommRevB(LcdComm):
 
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.SendCommand(Command.HELLO, payload=hello, bypass_queue=True)
-        response = self.lcd_serial.read(10)
-        self.lcd_serial.flushInput()
+        response = self.serial_read(10)
+        self.serial_flush_input()
 
         if len(response) != 10:
             logger.warning("Device not recognised (short response to HELLO)")
@@ -178,9 +178,8 @@ class LcdCommRevB(LcdComm):
 
         self.SendCommand(Command.SET_BRIGHTNESS, payload=[converted_level])
 
-    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
-        if isinstance(led_color, str):
-            led_color = tuple(map(int, led_color.split(', ')))
+    def SetBackplateLedColor(self, led_color: Color = (255, 255, 255)):
+        led_color = parse_color(led_color)
         if self.is_flagship():
             self.SendCommand(Command.SET_LIGHTING, payload=list(led_color))
         else:
@@ -197,7 +196,7 @@ class LcdCommRevB(LcdComm):
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
