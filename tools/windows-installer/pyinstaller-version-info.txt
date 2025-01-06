@@ -6,8 +6,8 @@ VSVersionInfo(
   ffi=FixedFileInfo(
     # filevers and prodvers should be always a tuple with four items: (1, 2, 3, 4)
     # Set not needed items to zero 0.
-    filevers=(3, 7, 0, 0),
-    prodvers=(3, 7, 0, 0),
+    filevers=(1, 2, 3, 4),
+    prodvers=(1, 2, 3, 4),
     # Contains a bitmask that specifies the valid bits 'flags'r
     mask=0x0,
     # Contains a bitmask that specifies the Boolean attributes of the file.
@@ -31,8 +31,8 @@ VSVersionInfo(
         '040904b0',
         [StringStruct('FileDescription', 'System Monitor for USB smart screens like Turing'),
         StringStruct('ProductName', 'Turing System Monitor'),
-        StringStruct('ProductVersion', '3.7.0'),
-        StringStruct('FileVersion', '3.7.0')])
+        StringStruct('ProductVersion', '1.2.3'),
+        StringStruct('FileVersion', '1.2.3')])
       ]), 
     VarFileInfo([VarStruct('Translation', [1033, 1200])])
   ]

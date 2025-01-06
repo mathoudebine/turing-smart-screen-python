@@ -26,6 +26,10 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -r requirements.txt
 
+    - name: Set version number for PyInstaller
+      run: |
+        python.exe tools\windows-installer\generate-version-info.py ${{github.event.release.tag_name}}
+
     - name: Run PyInstaller to create binaries
       run: |
         pyinstaller.exe --noconfirm turing-system-monitor.spec
