@@ -9,7 +9,7 @@ on:
 
 jobs:
   system-monitor:
-
+    name: System monitor (Windows)
     runs-on: windows-latest
 
     strategy:

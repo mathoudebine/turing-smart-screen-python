@@ -9,7 +9,7 @@ on:
 
 jobs:
   lint-flake8:
-
+    name: Lint with flake8
     runs-on: ubuntu-latest
 
     steps:

@@ -9,7 +9,7 @@ on:
 
 jobs:
   simple-program:
-
+    name: Simple program (MacOS)
     runs-on: macos-latest
 
     strategy:

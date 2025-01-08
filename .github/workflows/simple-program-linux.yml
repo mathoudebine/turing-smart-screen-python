@@ -9,7 +9,7 @@ on:
 
 jobs:
   simple-program:
-
+    name: Simple program (Linux)
     runs-on: ubuntu-latest
 
     strategy:

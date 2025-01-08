@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   generate-windows-installer:
-
+    name: Generate Windows Installer
     runs-on: windows-latest
 
     steps:

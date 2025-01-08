@@ -9,7 +9,7 @@ on:
 
 jobs:
   simple-program:
-
+    name: Simple program (Windows)
     runs-on: windows-latest
 
     strategy:
