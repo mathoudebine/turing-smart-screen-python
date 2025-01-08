@@ -8,7 +8,8 @@ on:
 
 jobs:
   system-monitor-theme-screenshot:
-  
+    name: Update themes screenshot and generate list
+
     # Don't run this action on forked repositories to avoid conflicts in PR...
     if: github.repository == 'mathoudebine/turing-smart-screen-python'
     

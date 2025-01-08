@@ -5,7 +5,7 @@ on:
 
 jobs:
   system-monitor-theme-screenshot:
-
+    name: Generate screenshot for all themes
     runs-on: ubuntu-latest
 
     steps:
