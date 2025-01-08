@@ -43,10 +43,12 @@ jobs:
     - name: '📦 Archive Windows installer'
       uses: actions/upload-artifact@v4
       with:
-        path: tools/windows-installer/Output/turing-system-monitor_*.exe
+        name: turing-system-monitor_${{github.event.release.tag_name}}
+        path: tools\windows-installer\Output\turing-system-monitor_${{github.event.release.tag_name}}.exe
+        if-no-files-found: error
 
     - name: '📩 Publish Windows installer to Release'
       run: |
-        gh release upload ${{github.event.release.tag_name}} turing-system-monitor_*.exe
+        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor_${{github.event.release.tag_name}}.exe
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
