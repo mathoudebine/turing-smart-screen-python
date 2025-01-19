@@ -1,0 +1,46 @@
+---
+author: "@ChrisClark"
+
+display:
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 240
+
+STATS:
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        # Centered
+        SHOW: True
+        X: 1
+        Y: 10
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 0, 0, 0
+        WIDTH: 320
+        ANCHOR: mm
+    HOUR:
+      TEXT:
+        # Centered
+        SHOW: True
+        # https://babel.pocoo.org/en/latest/api/dates.html  full, long, medium, or short, or a custom date/time pattern
+        #FORMAT: medium
+        #FORMAT: short
+        FORMAT: HH:mm
+        X: 1
+        Y: 130
+        FONT: roboto/Roboto-BoldItalic.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 0, 0
+        WIDTH: 320
+        ANCHOR: mm

@@ -67,6 +67,11 @@ class Display:
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"].startswith("SIMU_"):
+            res_str = config.CONFIG_DATA["display"]["REVISION"][len("SIMU_"):]
+            display_width, display_height = map(int, res_str.split('x'))
+            self.lcd = LcdSimulated(display_width=display_height,  # NOTE these seem to be reversed
+                        display_height=display_width)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             self.lcd = LcdSimulated(display_width=320,
                                     display_height=480)
