@@ -24,13 +24,21 @@ STATS:
         Y: 10
         FONT: roboto/Roboto-Bold.ttf
         FONT_SIZE: 60
+        #FONT_SIZE: 20
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 0, 0, 0
         WIDTH: 320
         ANCHOR: mm
     HOUR:
       TEXT:
-        # Centered
+        # In theme emulator, ALIGN appears to be ignored? ANCHOR seems to control this in Pillow
+        #ALIGN: left  # left / center / right
+        #ALIGN: center
+        #ANCHOR: lt   # does not work
+        #ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+        ANCHOR: mm   # works great as centered
+        #ANCHOR: la  # left
+        #ANCHOR: ra  # right
         SHOW: True
         # https://babel.pocoo.org/en/latest/api/dates.html  full, long, medium, or short, or a custom date/time pattern
         #FORMAT: medium
@@ -43,4 +51,3 @@ STATS:
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 50, 0, 0
         WIDTH: 320
-        ANCHOR: mm
