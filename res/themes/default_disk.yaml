@@ -1,0 +1,19 @@
+# This file is used to add mandatory sections to a theme file in case they are missing
+# This is not a theme! Do not use this file to create a new theme, as a lot of content is missing: use theme_example.yaml
+USED:
+  GRAPH:
+    SHOW: False
+  TEXT:
+    SHOW: False
+    SHOW_UNIT: False
+  PERCENT_TEXT:
+    SHOW: False
+    SHOW_UNIT: False
+TOTAL:
+  TEXT:
+    SHOW: False
+    SHOW_UNIT: False
+FREE:
+  TEXT:
+    SHOW: False
+    SHOW_UNIT: False
