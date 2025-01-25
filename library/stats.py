@@ -646,8 +646,7 @@ class Disk:
     @classmethod
     def stats(cls):
         if 'MOUNTS' not in config.THEME_DATA['STATS']['DISK']:
-            print("Doing mounts")
-            mountpoints = [ config.THEME_DATA['STATS']['DISK'] ]
+            mountpoints = [ {"/": config.THEME_DATA['STATS']['DISK'] }]
         else:
             mountpoints = config.THEME_DATA['STATS']['DISK']['MOUNTS']
 
