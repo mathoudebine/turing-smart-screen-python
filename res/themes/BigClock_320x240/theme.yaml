@@ -2,6 +2,9 @@
 author: "@ChrisClark"
 
 display:
+  DISPLAY_SIZE: 2.8"
+  # DISPLAY_RESOLUTION - custom addition?
+  DISPLAY_RESOLUTION: 320, 240
   DISPLAY_ORIENTATION: landscape
   DISPLAY_RGB_LED: 255, 0, 0
 
@@ -10,8 +13,26 @@ static_images:
     PATH: background.png
     X: 0
     Y: 0
+    # unclear what WIDTH, HEIGHT are used for. Crop, stretch, repeat, etc. - there are no other directives for this config type. If ommited, defaults to 0 (zero)
     WIDTH: 320
     HEIGHT: 240
+
+static_text:
+  TEXT:
+    TEXT: Hello World!
+    SHOW: True
+    #ANCHOR: mm   # works great as centered
+    #ANCHOR: la  # left
+    ANCHOR: ra  # right  # does not seem to work, unless this is right of text box? once Width is set this sort of works
+    #X: 32
+    #Y: 93
+    X: 0
+    Y: 93
+    WIDTH: 320
+    FONT: roboto/Roboto-BoldItalic.ttf
+    FONT_SIZE: 20
+    FONT_COLOR: 0, 200, 200
+    BACKGROUND_COLOR: 0, 128, 0
 
 STATS:
   DATE:
