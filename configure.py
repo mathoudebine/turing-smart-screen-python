@@ -19,7 +19,7 @@
 
 # This file is the system monitor configuration GUI
 
-
+import glob
 import os
 import subprocess
 import sys
@@ -419,7 +419,7 @@ class TuringConfigWindow:
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
-        with open("config.yaml", "w", encoding='utf-8') as file:
+        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def save_additional_config(self, ping: str, api_key: str, lat: str, long: str, unit: str, lang: str):
@@ -430,7 +430,7 @@ class TuringConfigWindow:
         self.config['config']['WEATHER_UNITS'] = unit
         self.config['config']['WEATHER_LANGUAGE'] = lang
 
-        with open("config.yaml", "w", encoding='utf-8') as file:
+        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
@@ -440,14 +440,14 @@ class TuringConfigWindow:
         self.more_config_window.show()
 
     def on_theme_editor_click(self):
-        subprocess.Popen(MAIN_DIRECTORY + "theme-editor.py" + " \"" + self.theme_cb.get() + "\"", shell=True)
+        subprocess.Popen(MAIN_DIRECTORY + glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0] + " \"" + self.theme_cb.get() + "\"", shell=True)
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(MAIN_DIRECTORY + "main.py", shell=True)
+        subprocess.Popen(MAIN_DIRECTORY + glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0], shell=True)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):

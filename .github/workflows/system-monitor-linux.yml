@@ -9,7 +9,7 @@ on:
 
 jobs:
   system-monitor:
-
+    name: System monitor (Linux)
     runs-on: ubuntu-latest
 
     strategy:

@@ -9,7 +9,7 @@ on:
 
 jobs:
   system-monitor:
-
+    name: System monitor (MacOS)
     runs-on: macos-latest
 
     strategy:
