@@ -1,5 +1,6 @@
 ---
 author: "@ChrisClark"
+# Also see theme_example.yaml
 
 display:
   DISPLAY_SIZE: 2.8"
@@ -29,6 +30,7 @@ static_text:
     X: 0
     Y: 93
     WIDTH: 320
+    # Adding a width forces the size of the text box, rather than sizing to width of text string
     FONT: roboto/Roboto-BoldItalic.ttf
     FONT_SIZE: 20
     FONT_COLOR: 0, 200, 200
@@ -62,6 +64,7 @@ STATS:
         #ANCHOR: ra  # right
         SHOW: True
         # https://babel.pocoo.org/en/latest/api/dates.html  full, long, medium, or short, or a custom date/time pattern
+        # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
         #FORMAT: medium
         #FORMAT: short
         FORMAT: HH:mm
