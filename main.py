@@ -27,7 +27,7 @@ import glob
 import os
 import sys
 
-MIN_PYTHON = (3, 8)
+MIN_PYTHON = (3, 9)
 if sys.version_info < MIN_PYTHON:
     print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:
