@@ -35,7 +35,7 @@ jobs:
         pyinstaller.exe --noconfirm turing-system-monitor.spec
 
     - name: Create InnoSetup installer from generated binaries
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
       with:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+
