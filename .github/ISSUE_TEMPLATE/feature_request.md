@@ -26,10 +26,10 @@ Add screenshots or photos/mockups of the rendering on the Turing screen to help 
 You can drag and drop photos here to add them to the description.
 
 **Environment:**  
- - Revision of this project [e.g. 1.1.1, `main` branch, specific commit]
+ - Revision of this project [e.g. 3.7.0, `main` branch, specific commit]
  - OS with version [e.g. Windows 11, Ubuntu 22.04]
- - Python version [e.g. Python 3.8]
- - Hardware [e.g. Intel CPU, Nvidia GPU, Raspberry Pi 3 B+ ...]
+ - Python version [e.g. Python 3.13]
+ - Hardware [e.g. Intel CPU, Nvidia GPU, Raspberry Pi 5 ...]
 
 **Additional context**  
 Add any other context or screenshots about the feature request here.
