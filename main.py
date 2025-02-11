@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(MAIN_DIRECTORY + glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0], shell=True)
+        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
         clean_stop(tray_icon)
 
 

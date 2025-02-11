@@ -440,14 +440,16 @@ class TuringConfigWindow:
         self.more_config_window.show()
 
     def on_theme_editor_click(self):
-        subprocess.Popen(MAIN_DIRECTORY + glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0] + " \"" + self.theme_cb.get() + "\"", shell=True)
+        subprocess.Popen(
+            f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
+            shell=True)
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(MAIN_DIRECTORY + glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0], shell=True)
+        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):
