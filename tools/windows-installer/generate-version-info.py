@@ -39,6 +39,13 @@ minor = int(version[1])
 revision = int(version[2])
 build = 0  # For this project we only use 3-digit versions
 
+if sys.argv[2] == "debug":
+    print (f"Generating debug version {major}.{minor}.{revision}-debug")
+    debug_version = True
+else:
+    print (f"Generating version {major}.{minor}.{revision}")
+    debug_version = False
+
 # Update FixedFileInfo version
 info.ffi.fileVersionMS = (major << 16) + minor
 info.ffi.fileVersionLS = (revision << 16) + build
@@ -49,6 +56,8 @@ info.ffi.productVersionLS = (revision << 16) + build
 for elem in info.kids[0].kids[0].kids:
     if elem.name == 'ProductVersion' or elem.name == 'FileVersion':
         elem.val = f"{major}.{minor}.{revision}"
+        if debug_version:
+            elem.val += "-debug"
 
 # Update version file with new info, to be used by PyInstaller
 with codecs.open(VERSION_INFO_FILE, 'w', 'utf-8') as fp:
