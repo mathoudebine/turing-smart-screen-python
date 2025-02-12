@@ -245,3 +245,10 @@ class LcdCommRevB(LcdComm):
             # Send image data by multiple of "display width" bytes
             for chunk in chunked(rgb565be, self.get_width() * 8):
                 self.SendLine(chunk)
+
+            # Implement a cooldown between two bitmaps, because we are not listening to events coming from the display
+            # Cooldown of 0.05 decreases "corrupted bitmap" significantly without slowing down too much
+            if self.update_queue:
+                self.update_queue.put((time.sleep, [0.05]))
+            else:
+                time.sleep(0.05)

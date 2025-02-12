@@ -80,6 +80,17 @@ if __name__ == "__main__":
     logger.debug("Using Python %s" % sys.version)
 
 
+    def wait_for_empty_queue(timeout: int = 5):
+        # Waiting for all pending request to be sent to display
+        logger.info("Waiting for all pending request to be sent to display (%ds max)..." % timeout)
+
+        wait_time = 0
+        while not scheduler.is_queue_empty() and wait_time < timeout:
+            time.sleep(0.1)
+            wait_time = wait_time + 0.1
+
+        logger.debug("(Waited %.1fs)" % wait_time)
+
     def clean_stop(tray_icon=None):
         # Turn screen and LEDs off before stopping
         display.turn_off()
@@ -88,15 +99,8 @@ if __name__ == "__main__":
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True
 
-        # Allow 5 seconds max. delay in case scheduler is not responding
-        wait_time = 5
-        logger.info("Waiting for all pending request to be sent to display (%ds max)..." % wait_time)
-
-        while not scheduler.is_queue_empty() and wait_time > 0:
-            time.sleep(0.1)
-            wait_time = wait_time - 0.1
-
-        logger.debug("(%.1fs)" % (5 - wait_time))
+        # Waiting for all pending request to be sent to display
+        wait_for_empty_queue(5)
 
         # Remove tray icon just before exit
         if tray_icon:
@@ -194,7 +198,11 @@ if __name__ == "__main__":
         win32api.SetConsoleCtrlHandler(on_win32_ctrl_event, True)
 
     # Initialize the display
+    logger.info("Initialize display")
     display.initialize_display()
+
+    # Start serial queue handler
+    scheduler.QueueHandler()
 
     # Create all static images
     display.display_static_images()
@@ -202,26 +210,30 @@ if __name__ == "__main__":
     # Create all static texts
     display.display_static_text()
 
-    # Run our jobs that update data
+    # Wait for static images/text to be displayed before starting monitoring (to avoid filling the queue while waiting)
+    wait_for_empty_queue(10)
+
+    # Start sensor scheduled reading. Avoid starting them all at the same time to optimize load
+    logger.info("Starting system monitoring")
     import library.stats as stats
 
-    scheduler.CPUPercentage()
-    scheduler.CPUFrequency()
-    scheduler.CPULoad()
-    scheduler.CPUTemperature()
-    scheduler.CPUFanSpeed()
+    scheduler.CPUPercentage(); time.sleep(0.25)
+    scheduler.CPUFrequency(); time.sleep(0.25)
+    scheduler.CPULoad(); time.sleep(0.25)
+    scheduler.CPUTemperature(); time.sleep(0.25)
+    scheduler.CPUFanSpeed(); time.sleep(0.25)
     if stats.Gpu.is_available():
-        scheduler.GpuStats()
-    scheduler.MemoryStats()
-    scheduler.DiskStats()
-    scheduler.NetStats()
-    scheduler.DateStats()
-    scheduler.SystemUptimeStats()
-    scheduler.CustomStats()
-    scheduler.WeatherStats()
-    scheduler.PingStats()
-    scheduler.QueueHandler()
+        scheduler.GpuStats(); time.sleep(0.25)
+    scheduler.MemoryStats(); time.sleep(0.25)
+    scheduler.DiskStats(); time.sleep(0.25)
+    scheduler.NetStats(); time.sleep(0.25)
+    scheduler.DateStats(); time.sleep(0.25)
+    scheduler.SystemUptimeStats(); time.sleep(0.25)
+    scheduler.CustomStats(); time.sleep(0.25)
+    scheduler.WeatherStats(); time.sleep(0.25)
+    scheduler.PingStats(); time.sleep(0.25)
 
+    # OS-specific tasks
     if tray_icon and platform.system() == "Darwin":  # macOS-specific
         from AppKit import NSBundle, NSApp, NSApplicationActivationPolicyProhibited
 
