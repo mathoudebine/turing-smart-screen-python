@@ -66,8 +66,8 @@ Name: "default"; Description: "Default installation"; Flags: iscustom
 
 [Components]
 Name: "program"; Description: "Turing System Monitor software"; Flags: fixed; Types: default
-Name: "themes"; Description: "Default themes (local changes will be lost! - custom themes are preserved)"; Types: default
-Name: "config"; Description: "Default configuration"; Types: default
+Name: "themes"; Description: "Default themes (local changes will be lost! - custom themes are preserved)"; Types: default; Flags: disablenouninstallwarning
+Name: "config"; Description: "Default configuration"; Types: default; Flags: disablenouninstallwarning
 
 [Files]
 Source: "{#SourceDir}*"; Excludes: "config.yaml,themes"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: program

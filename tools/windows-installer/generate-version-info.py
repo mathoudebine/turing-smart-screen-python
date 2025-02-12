@@ -39,7 +39,7 @@ minor = int(version[1])
 revision = int(version[2])
 build = 0  # For this project we only use 3-digit versions
 
-if sys.argv[2] == "debug":
+if len(sys.argv) == 3 and sys.argv[2] == "debug":
     print (f"Generating debug version {major}.{minor}.{revision}-debug")
     debug_version = True
 else:
