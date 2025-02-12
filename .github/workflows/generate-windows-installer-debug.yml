@@ -1,4 +1,4 @@
-name: Generate Windows Installer
+name: Generate Windows Installer (Debug)
 
 on:
   release:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   generate-windows-installer:
-    name: Generate Windows Installer
+    name: Generate Windows Installer (Debug)
     runs-on: windows-latest
 
     steps:
@@ -28,11 +28,11 @@ jobs:
 
     - name: Set version number for PyInstaller
       run: |
-        python.exe tools\windows-installer\generate-version-info.py ${{github.event.release.tag_name}}
+        python.exe tools\windows-installer\generate-version-info.py ${{github.event.release.tag_name}} debug
 
     - name: Run PyInstaller to create binaries
       run: |
-        pyinstaller.exe --noconfirm turing-system-monitor.spec
+        pyinstaller.exe --noconfirm turing-system-monitor-debug.spec
 
     - name: Create InnoSetup installer from generated binaries
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
@@ -44,11 +44,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: turing-system-monitor_${{github.event.release.tag_name}}
-        path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}.exe
+        path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
         if-no-files-found: error
 
     - name: '📩 Publish Windows installer to Release'
       run: |
-        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}.exe
+        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
