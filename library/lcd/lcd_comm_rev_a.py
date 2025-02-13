@@ -18,11 +18,12 @@
 
 import time
 from enum import Enum
+from typing import Optional
 
 from serial.tools.list_ports import comports
-import numpy as np
 
 from library.lcd.lcd_comm import *
+from library.lcd.serialize import image_to_RGB565, chunked
 from library.log import logger
 
 
@@ -53,7 +54,7 @@ class SubRevision(Enum):
 # This class is for Turing Smart Screen (rev. A) 3.5" and UsbMonitor screens (all sizes)
 class LcdCommRevA(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: A")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -62,7 +63,7 @@ class LcdCommRevA(LcdComm):
         self.closeSerial()
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
 
         for com_port in com_ports:
@@ -95,8 +96,8 @@ class LcdCommRevA(LcdComm):
 
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.WriteData(hello)
-        response = self.lcd_serial.read(6)
-        self.lcd_serial.flushInput()
+        response = self.serial_read(6)
+        self.serial_flush_input()
 
         if response == SubRevision.USBMONITOR_3_5.value:
             self.sub_revision = SubRevision.USBMONITOR_3_5
@@ -170,37 +171,11 @@ class LcdCommRevA(LcdComm):
         byteBuffer[8] = (width & 255)
         byteBuffer[9] = (height >> 8)
         byteBuffer[10] = (height & 255)
-        self.lcd_serial.write(bytes(byteBuffer))
-
-    @staticmethod
-    def imageToRGB565LE(image: Image):
-        if image.mode not in ["RGB", "RGBA"]:
-            # we need the first 3 channels to be R, G and B
-            image = image.convert("RGB")
-
-        rgb = np.asarray(image)
-
-        # flatten the first 2 dimensions (width and height) into a single stream
-        # of RGB pixels
-        rgb = rgb.reshape((image.size[1] * image.size[0], -1))
-
-        # extract R, G, B channels and promote them to 16 bits
-        r = rgb[:, 0].astype(np.uint16)
-        g = rgb[:, 1].astype(np.uint16)
-        b = rgb[:, 2].astype(np.uint16)
-
-        # construct RGB565
-        r = (r >> 3)
-        g = (g >> 2)
-        b = (b >> 3)
-        rgb565 = (r << 11) | (g << 5) | b
-
-        # serialize to little-endian
-        return rgb565.newbyteorder('<').tobytes()
+        self.serial_write(bytes(byteBuffer))
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
@@ -231,20 +206,12 @@ class LcdCommRevA(LcdComm):
         (x0, y0) = (x, y)
         (x1, y1) = (x + image_width - 1, y + image_height - 1)
 
-        rgb565le = self.imageToRGB565LE(image)
+        rgb565le = image_to_RGB565(image, "little")
 
         self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-
             # Send image data by multiple of "display width" bytes
-            start = 0
-            end = width * 8
-            while end <= len(rgb565le):
-                self.SendLine(rgb565le[start:end])
-                start, end = end, end + width * 8
-
-            # Write last line if needed
-            if start != len(rgb565le):
-                self.SendLine(rgb565le[start:])
+            for chunk in chunked(rgb565le, width * 8):
+                self.SendLine(chunk)

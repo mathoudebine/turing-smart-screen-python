@@ -17,7 +17,7 @@ static_text:
   DISK_USED_LABEL:
     TEXT: "Used:"
     X: 124
-    Y: 625
+    Y: 615
     FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
     FONT_SIZE: 23
     FONT_COLOR: 255, 255, 255
@@ -25,7 +25,7 @@ static_text:
   DISK_FREE_LABEL:
     TEXT: "Free:"
     X: 124
-    Y: 679
+    Y: 669
     FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
     FONT_SIZE: 23
     FONT_COLOR: 255, 255, 255
@@ -33,7 +33,7 @@ static_text:
   DISK_TOTAL_LABEL:
     TEXT: "Total:"
     X: 124
-    Y: 652
+    Y: 642
     FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
     FONT_SIZE: 23
     FONT_COLOR: 255, 255, 255
@@ -165,7 +165,7 @@ STATS:
       GRAPH:
         SHOW: True
         X: 124
-        Y: 600
+        Y: 590
         WIDTH: 178
         HEIGHT: 15
         MIN_VALUE: 0
@@ -177,7 +177,7 @@ STATS:
         SHOW: TRUE
         SHOW_UNIT: True
         X: 204
-        Y: 625
+        Y: 615
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -187,7 +187,7 @@ STATS:
         SHOW: TRUE
         SHOW_UNIT: True
         X: 204
-        Y: 652
+        Y: 642
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -197,7 +197,7 @@ STATS:
         SHOW: TRUE
         SHOW_UNIT: True
         X: 204
-        Y: 679
+        Y: 669
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 23
         FONT_COLOR: 255, 255, 255
@@ -214,6 +214,8 @@ STATS:
         FONT_SIZE: 25
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 132, 154, 165
+        WIDTH: 230
+        ANCHOR: lt
     HOUR:
       TEXT:
         SHOW: True
@@ -223,3 +225,31 @@ STATS:
         FONT_SIZE: 25
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 132, 154, 165
+        WIDTH: 230
+        ANCHOR: lt
+
+  WEATHER:
+    # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MINIMUM (not really useful as the API didn't update that quickly)
+    INTERVAL: 300
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        X: 270
+        Y: 768
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png 
+        WIDTH: 200
+        ANCHOR: rt
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: True
+        X: 270
+        Y: 740
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png 
+        WIDTH: 200
+        ANCHOR: rt

@@ -35,6 +35,7 @@ MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
 NETWORK_SPEED_BYTES = 1061000000
 GPU_FPS = 120
+GPU_FREQ_MHZ = 1500.0
 
 
 class Cpu(sensors.Cpu):
@@ -51,23 +52,35 @@ class Cpu(sensors.Cpu):
         return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
-    def is_temperature_available() -> bool:
-        return True
-
-    @staticmethod
     def temperature() -> float:
         return TEMPERATURE_SENSOR_VALUE
+
+    @staticmethod
+    def fan_percent(fan_name: str = None) -> float:
+        return PERCENTAGE_SENSOR_VALUE
 
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / temp (°C)
-        return PERCENTAGE_SENSOR_VALUE, PERCENTAGE_SENSOR_VALUE, \
-            GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1000, TEMPERATURE_SENSOR_VALUE
+    def stats() -> Tuple[
+        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        return (PERCENTAGE_SENSOR_VALUE,
+                PERCENTAGE_SENSOR_VALUE,
+                GPU_MEM_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE * 1024,
+                GPU_MEM_TOTAL_SIZE_GB * 1024,
+                TEMPERATURE_SENSOR_VALUE)
 
     @staticmethod
     def fps() -> int:
         return GPU_FPS
+
+    @staticmethod
+    def fan_percent() -> float:
+        return PERCENTAGE_SENSOR_VALUE
+
+    @staticmethod
+    def frequency() -> float:
+        return GPU_FREQ_MHZ
 
     @staticmethod
     def is_available() -> bool:

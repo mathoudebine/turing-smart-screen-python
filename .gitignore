@@ -31,7 +31,7 @@ MANIFEST
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
-*.spec
+tools/windows-installer/Output/
 
 # Installer logs
 pip-log.txt
@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv-*/
 
 # Spyder project settings
 .spyderproject
@@ -128,8 +129,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# PyCharm
+# Editors / IDEs
 .idea/
+.vscode/
 
 # Git mergetool backup
 *.orig

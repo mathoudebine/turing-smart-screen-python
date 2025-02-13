@@ -5,15 +5,15 @@ on:
 
 jobs:
   system-monitor-theme-screenshot:
-
+    name: Generate screenshot for all themes
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "3.13"
 
     - name: Install dependencies
       run: |
@@ -31,15 +31,15 @@ jobs:
         do
           if test -f "$dir/theme.yaml"; then        
             # Keep only folder name
-            theme=`basename ${dir%*/}`
+            theme=`basename "${dir%*/}"`
           
             # Setup selected theme in config.yaml
             echo "Using theme $theme"
-            sed -i "/THEME:/c\  THEME: $theme" config.yaml
+            sed -i '/THEME:/c\  THEME: "'"$theme"'"' config.yaml
     
             # For tests there is no real HW: use simulated LCD mode
             # Check if theme is for 5"
-            orientation=$(grep 'DISPLAY_SIZE' $dir/theme.yaml | sed 's/ //g')
+            orientation=$(grep 'DISPLAY_SIZE' "$dir/theme.yaml" | sed 's/ //g')
             if [ "$orientation" == "DISPLAY_SIZE:5\"" ]; then
               sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
             else
@@ -65,7 +65,7 @@ jobs:
         done
 
     - name: Archive screenshots
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: themes-screenshots
         path: |

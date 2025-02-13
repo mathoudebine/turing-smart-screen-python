@@ -19,13 +19,13 @@
 
 # This file is the system monitor configuration GUI
 
-
+import glob
 import os
 import subprocess
 import sys
 import webbrowser
 
-MIN_PYTHON = (3, 8)
+MIN_PYTHON = (3, 9)
 if sys.version_info < MIN_PYTHON:
     print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:
@@ -36,27 +36,25 @@ if sys.version_info < MIN_PYTHON:
 try:
     import tkinter.ttk as ttk
     from tkinter import *
-except:
-    print(
-        "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
+    from PIL import ImageTk
+    import psutil
+    import ruamel.yaml
+    import sv_ttk
+    from pathlib import Path
+    from PIL import Image
+    from serial.tools.list_ports import comports
+    from tktooltip import ToolTip
+except Exception as e:
+    print("""Import error: %s
+Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
+Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed""" % str(
+        e))
     try:
         sys.exit(0)
     except:
         os._exit(0)
 
-try:
-    import psutil
-    import ruamel.yaml
-    import sv_ttk
-    from PIL import Image, ImageTk
-    from serial.tools.list_ports import comports
-except:
-    print(
-        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+from library.sensors.sensors_python import sensors_fans, is_cpu_fan
 
 TURING_MODEL = "Turing Smart Screen"
 USBPCMONITOR_MODEL = "UsbPCMonitor"
@@ -98,18 +96,29 @@ model_and_size_to_revision_map = {
     (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU2.1',
     (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU3.5',
     (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU5',
-    (SIMULATED_MODEL, SIZE_8_8_INCH): 'SIMU8.8',
 }
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
 reverse_map = {False: "classic", True: "reverse"}
+weather_unit_map = {"metric": "metric - °C", "imperial": "imperial - °F", "standard": "standard - °K"}
+weather_lang_map = {"sq": "Albanian", "af": "Afrikaans", "ar": "Arabic", "az": "Azerbaijani", "eu": "Basque",
+                    "be": "Belarusian", "bg": "Bulgarian", "ca": "Catalan", "zh_cn": "Chinese Simplified",
+                    "zh_tw": "Chinese Traditional", "hr": "Croatian", "cz": "Czech", "da": "Danish", "nl": "Dutch",
+                    "en": "English", "fi": "Finnish", "fr": "French", "gl": "Galician", "de": "German", "el": "Greek",
+                    "he": "Hebrew", "hi": "Hindi", "hu": "Hungarian", "is": "Icelandic", "id": "Indonesian",
+                    "it": "Italian", "ja": "Japanese", "kr": "Korean", "ku": "Kurmanji (Kurdish)", "la": "Latvian",
+                    "lt": "Lithuanian", "mk": "Macedonian", "no": "Norwegian", "fa": "Persian (Farsi)", "pl": "Polish",
+                    "pt": "Portuguese", "pt_br": "Português Brasil", "ro": "Romanian", "ru": "Russian", "sr": "Serbian",
+                    "sk": "Slovak", "sl": "Slovenian", "sp": "Spanish", "sv": "Swedish", "th": "Thai", "tr": "Turkish",
+                    "ua": "Ukrainian", "vi": "Vietnamese", "zu": "Zulu"}
 
-themes_dir = 'res/themes'
+MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
+THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
 
-circular_mask = Image.open("res/backgrounds/circular-mask.png")
+circular_mask = Image.open(MAIN_DIRECTORY + "res/backgrounds/circular-mask.png")
 
 def get_theme_data(name: str):
-    dir = os.path.join(themes_dir, name)
+    dir = os.path.join(THEMES_DIR, name)
     # checking if it is a directory
     if os.path.isdir(dir):
         # Check if a theme.yaml file exists
@@ -124,7 +133,7 @@ def get_theme_data(name: str):
 
 def get_themes(size: str):
     themes = []
-    for filename in os.listdir(themes_dir):
+    for filename in os.listdir(THEMES_DIR):
         theme_data = get_theme_data(filename)
         if theme_data and theme_data['display'].get("DISPLAY_SIZE", '3.5"') == size:
             themes.append(filename)
@@ -150,14 +159,31 @@ def get_net_if():
     return if_list
 
 
+def get_fans():
+    fan_list = list()
+    auto_detected_cpu_fan = "None"
+    for name, entries in sensors_fans().items():
+        for entry in entries:
+            fan_list.append("%s/%s (%d%% - %d RPM)" % (name, entry.label, entry.percent, entry.current))
+            if (is_cpu_fan(entry.label) or is_cpu_fan(name)) and auto_detected_cpu_fan == "None":
+                auto_detected_cpu_fan = "Auto-detected: %s/%s" % (name, entry.label)
+
+    fan_list.insert(0, auto_detected_cpu_fan)  # Add manual entry on top if auto-detection succeeded
+    return fan_list
+
+
 class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("820x550")
-        self.window.iconphoto(True, PhotoImage(file="res/icons/monitor-icon-17865/64.png"))
+        self.window.geometry("820x570")
+        self.window.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
+        self.window.after(0, self.on_fan_speed_update)
+
+        # Subwindow for weather/ping config.
+        self.more_config_window = MoreConfigWindow(self)
 
         # Make TK look better with Sun Valley ttk theme
         sv_ttk.set_theme("light")
@@ -233,18 +259,33 @@ class TuringConfigWindow:
         self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=550, y=415, width=250)
 
+        # For Windows platform only
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
+        # For platform != Windows
+        self.cpu_fan_label = ttk.Label(self.window, text='CPU fan (？)')
+        self.cpu_fan_label.config(foreground="#a3a3ff", cursor="hand2")
+        self.cpu_fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
+
+        self.tooltip = ToolTip(self.cpu_fan_label,
+                               msg="If \"None\" is selected, CPU fan was not auto-detected.\n"
+                                   "Manually select your CPU fan from the list.\n\n"
+                                   "Fans missing from the list? Install lm-sensors package\n"
+                                   "and run 'sudo sensors-detect' command, then reboot.")
+
+        self.edit_theme_btn = ttk.Button(self.window, text="Weather & ping",
+                                         command=lambda: self.on_weatherping_click())
+        self.edit_theme_btn.place(x=220, y=510, height=50, width=130)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=360, y=490, height=50, width=130)
+        self.edit_theme_btn.place(x=360, y=510, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=500, y=490, height=50, width=130)
+        self.save_btn.place(x=500, y=510, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=640, y=490, height=50, width=130)
+        self.save_run_btn.place(x=640, y=510, height=50, width=130)
 
         self.config = None
         self.load_config_values()
@@ -256,13 +297,13 @@ class TuringConfigWindow:
         theme_data = get_theme_data(self.theme_cb.get())
 
         try:
-            theme_preview = Image.open("res/themes/" + self.theme_cb.get() + "/preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY + "res/themes/" + self.theme_cb.get() + "/preview.png")
 
             if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '2.1"':
                 # This is a circular screen: apply a circle mask over the preview
                 theme_preview.paste(circular_mask, mask=circular_mask)
         except:
-            theme_preview = Image.open("res/docs/no-preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY + "res/docs/no-preview.png")
         finally:
             theme_preview.thumbnail((320, 480), Image.Resampling.LANCZOS)
             self.theme_preview_img = ImageTk.PhotoImage(theme_preview)
@@ -272,21 +313,27 @@ class TuringConfigWindow:
             self.theme_author.config(text="Author: " + author_name)
             if author_name.startswith("@"):
                 self.theme_author.config(foreground="#a3a3ff", cursor="hand2")
-                self.theme_author.bind("<Button-1>", lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
+                self.theme_author.bind("<Button-1>",
+                                       lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
             else:
                 self.theme_author.config(foreground="#a3a3a3", cursor="")
                 self.theme_author.unbind("<Button-1>")
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
-        with open("config.yaml", "rt", encoding='utf8') as stream:
+        with open(MAIN_DIRECTORY + "config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
+
+        # Check if theme is valid
+        if get_theme_data(self.config['config']['THEME']) is None:
+            # Theme from config.yaml is not valid: use first theme available default size 3.5"
+            self.config['config']['THEME'] = get_themes(SIZE_3_5_INCH)[0]
 
         try:
             self.theme_cb.set(self.config['config']['THEME'])
         except:
-            self.theme_cb.current(0)
-        # self.load_theme_size()
+            self.theme_cb.set("")
+
         self.load_theme_preview()
 
         try:
@@ -342,12 +389,23 @@ class TuringConfigWindow:
         except:
             self.brightness_slider.set(50)
 
+        try:
+            if self.config['config']['CPU_FAN'] == "AUTO":
+                self.cpu_fan_cb.current(0)
+            else:
+                self.cpu_fan_cb.set(self.config['config']['CPU_FAN'])
+        except:
+            self.cpu_fan_cb.current(0)
+
         # Reload content on screen
         self.on_model_change()
         self.on_size_change()
         self.on_theme_change()
         self.on_brightness_change()
         self.on_hwlib_change()
+
+        # Load configuration to sub-window as well
+        self.more_config_window.load_config_values(self.config)
 
     def save_config_values(self):
         self.config['config']['THEME'] = self.theme_cb.get()
@@ -364,26 +422,45 @@ class TuringConfigWindow:
             self.config['config']['COM_PORT'] = "AUTO"
         else:
             self.config['config']['COM_PORT'] = self.com_cb.get()
+        if self.cpu_fan_cb.current() == 0:
+            self.config['config']['CPU_FAN'] = "AUTO"
+        else:
+            self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[0]
         self.config['display']['REVISION'] = model_and_size_to_revision_map[(self.model_cb.get(), self.size_cb.get())]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
-        with open("config.yaml", "w", encoding='utf-8') as file:
+        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
+            ruamel.yaml.YAML().dump(self.config, file)
+
+    def save_additional_config(self, ping: str, api_key: str, lat: str, long: str, unit: str, lang: str):
+        self.config['config']['PING'] = ping
+        self.config['config']['WEATHER_API_KEY'] = api_key
+        self.config['config']['WEATHER_LATITUDE'] = lat
+        self.config['config']['WEATHER_LONGITUDE'] = long
+        self.config['config']['WEATHER_UNITS'] = unit
+        self.config['config']['WEATHER_LANGUAGE'] = lang
+
+        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
-        # self.load_theme_size()
         self.load_theme_preview()
 
+    def on_weatherping_click(self):
+        self.more_config_window.show()
+
     def on_theme_editor_click(self):
-        subprocess.Popen(os.path.join(os.getcwd(), "theme-editor.py") + " \"" + self.theme_cb.get() + "\"", shell=True)
+        subprocess.Popen(
+            f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
+            shell=True)
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(os.path.join(os.getcwd(), "main.py"), shell=True)
+        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
         self.window.destroy()
 
     def on_brightness_change(self, e=None):
@@ -428,11 +505,18 @@ class TuringConfigWindow:
             import ctypes
             is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
             if (hwlib == "LHM" or hwlib == "AUTO") and not is_admin:
-                self.lhm_admin_warning.place(x=370, y=455)
+                self.lhm_admin_warning.place(x=370, y=460)
                 self.save_run_btn.state(["disabled"])
             else:
                 self.lhm_admin_warning.place_forget()
                 self.save_run_btn.state(["!disabled"])
+        else:
+            if hwlib == "PYTHON" or hwlib == "AUTO":
+                self.cpu_fan_label.place(x=370, y=460)
+                self.cpu_fan_cb.place(x=550, y=455, width=250)
+            else:
+                self.cpu_fan_label.place_forget()
+                self.cpu_fan_cb.place_forget()
 
     def show_hide_brightness_warning(self, e=None):
         if int(self.brightness_slider.get()) > 50 and self.model_cb.get() == TURING_MODEL and self.size_cb.get() == SIZE_3_5_INCH:
@@ -440,6 +524,147 @@ class TuringConfigWindow:
             self.brightness_warning_label.place(x=370, y=225)
         else:
             self.brightness_warning_label.place_forget()
+
+    def on_fan_speed_update(self):
+        # Update fan speed periodically
+        prev_value = self.cpu_fan_cb.current()  # Save currently selected index
+        self.cpu_fan_cb.config(values=get_fans())
+        if prev_value != -1:
+            self.cpu_fan_cb.current(prev_value)  # Force select same index to refresh displayed value
+        self.window.after(500, self.on_fan_speed_update)
+
+
+class MoreConfigWindow:
+    def __init__(self, main_window: TuringConfigWindow):
+        self.window = Toplevel()
+        self.window.withdraw()
+        self.window.title('Configure weather & ping')
+        self.window.geometry("750x400")
+
+        self.main_window = main_window
+
+        # Make TK look better with Sun Valley ttk theme
+        sv_ttk.set_theme("light")
+
+        self.ping_label = ttk.Label(self.window, text='Hostname / IP to ping')
+        self.ping_label.place(x=10, y=10)
+        self.ping_entry = ttk.Entry(self.window)
+        self.ping_entry.place(x=190, y=5, width=250)
+
+        weather_label = ttk.Label(self.window, text='Weather forecast (OpenWeatherMap API)', font='bold')
+        weather_label.place(x=10, y=70)
+
+        weather_info_label = ttk.Label(self.window,
+                                       text="To display weather forecast on themes that support it, you need an OpenWeatherMap \"One Call API 3.0\" key.\n"
+                                            "You will get 1,000 API calls per day for free. This program is configured to stay under this threshold (~300 calls/day).")
+        weather_info_label.place(x=10, y=100)
+        weather_api_link_label = ttk.Label(self.window,
+                                           text="Click here to subscribe to OpenWeatherMap One Call API 3.0.")
+        weather_api_link_label.place(x=10, y=140)
+        weather_api_link_label.config(foreground="#a3a3ff", cursor="hand2")
+        weather_api_link_label.bind("<Button-1>",
+                                    lambda e: webbrowser.open_new_tab("https://openweathermap.org/api"))
+
+        self.api_label = ttk.Label(self.window, text='OpenWeatherMap API key')
+        self.api_label.place(x=10, y=170)
+        self.api_entry = ttk.Entry(self.window)
+        self.api_entry.place(x=190, y=165, width=250)
+
+        latlong_label = ttk.Label(self.window,
+                                  text="You can use online services to get your latitude/longitude e.g. latlong.net (click here)")
+        latlong_label.place(x=10, y=210)
+        latlong_label.config(foreground="#a3a3ff", cursor="hand2")
+        latlong_label.bind("<Button-1>",
+                           lambda e: webbrowser.open_new_tab("https://www.latlong.net/"))
+
+        self.lat_label = ttk.Label(self.window, text='Latitude')
+        self.lat_label.place(x=10, y=250)
+        self.lat_entry = ttk.Entry(self.window, validate='key',
+                                   validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.lat_entry.place(x=80, y=245, width=100)
+
+        self.long_label = ttk.Label(self.window, text='Longitude')
+        self.long_label.place(x=270, y=250)
+        self.long_entry = ttk.Entry(self.window, validate='key',
+                                    validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.long_entry.place(x=340, y=245, width=100)
+
+        self.unit_label = ttk.Label(self.window, text='Units')
+        self.unit_label.place(x=10, y=290)
+        self.unit_cb = ttk.Combobox(self.window, values=list(weather_unit_map.values()), state='readonly')
+        self.unit_cb.place(x=190, y=285, width=250)
+
+        self.lang_label = ttk.Label(self.window, text='Language')
+        self.lang_label.place(x=10, y=330)
+        self.lang_cb = ttk.Combobox(self.window, values=list(weather_lang_map.values()), state='readonly')
+        self.lang_cb.place(x=190, y=325, width=250)
+
+        self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
+        self.save_btn.place(x=590, y=340, height=50, width=130)
+
+        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+    def validateCoord(self, coord: str):
+        if not coord:
+            return True
+        try:
+            float(coord)
+        except:
+            return False
+        return True
+
+    def show(self):
+        self.window.deiconify()
+
+    def on_closing(self):
+        self.window.withdraw()
+
+    def load_config_values(self, config):
+        self.config = config
+
+        try:
+            self.ping_entry.insert(0, self.config['config']['PING'])
+        except:
+            self.ping_entry.insert(0, "8.8.8.8")
+
+        try:
+            self.api_entry.insert(0, self.config['config']['WEATHER_API_KEY'])
+        except:
+            pass
+
+        try:
+            self.lat_entry.insert(0, self.config['config']['WEATHER_LATITUDE'])
+        except:
+            self.lat_entry.insert(0, "45.75")
+
+        try:
+            self.long_entry.insert(0, self.config['config']['WEATHER_LONGITUDE'])
+        except:
+            self.long_entry.insert(0, "45.75")
+
+        try:
+            self.unit_cb.set(weather_unit_map[self.config['config']['WEATHER_UNITS']])
+        except:
+            self.unit_cb.set(0)
+
+        try:
+            self.lang_cb.set(weather_lang_map[self.config['config']['WEATHER_LANGUAGE']])
+        except:
+            self.lang_cb.set(weather_lang_map["en"])
+
+    def on_save_click(self):
+        self.save_config_values()
+        self.on_closing()
+
+    def save_config_values(self):
+        ping = self.ping_entry.get()
+        api_key = self.api_entry.get()
+        lat = self.lat_entry.get()
+        long = self.long_entry.get()
+        unit = [k for k, v in weather_unit_map.items() if v == self.unit_cb.get()][0]
+        lang = [k for k, v in weather_lang_map.items() if v == self.lang_cb.get()][0]
+
+        self.main_window.save_additional_config(ping, api_key, lat, long, unit, lang)
 
 
 if __name__ == "__main__":

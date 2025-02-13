@@ -16,12 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import struct
 from enum import Enum
 
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import *
+from library.lcd.serialize import image_to_RGB565, chunked
 from library.log import logger
 
 
@@ -41,7 +41,7 @@ class Command(Enum):
 # This class is for Kipye Qiye Smart Display 3.5"
 class LcdCommRevD(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: D")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -50,7 +50,7 @@ class LcdCommRevD(LcdComm):
         self.closeSerial()
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
 
         for com_port in com_ports:
@@ -63,9 +63,9 @@ class LcdCommRevD(LcdComm):
         LcdComm.WriteData(self, byteBuffer)
 
         # Empty the input buffer after each write: we don't process acknowledgements the screen sends back
-        self.lcd_serial.reset_input_buffer()
+        self.serial_flush_input()
 
-    def SendCommand(self, cmd: Command, payload: bytearray = None, bypass_queue: bool = False):
+    def SendCommand(self, cmd: Command, payload: Optional[bytearray] = None, bypass_queue: bool = False):
         message = bytearray(cmd.value)
 
         if payload:
@@ -107,7 +107,7 @@ class LcdCommRevD(LcdComm):
         # Convert our brightness % to an absolute value.
         converted_level = level * 5
 
-        level_bytes = bytearray(converted_level.to_bytes(2))
+        level_bytes = bytearray(converted_level.to_bytes(2, "big"))
 
         # Send the command twice because sometimes it is not applied...
         self.SendCommand(cmd=Command.SETBL, payload=level_bytes)
@@ -125,7 +125,7 @@ class LcdCommRevD(LcdComm):
 
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
@@ -164,40 +164,22 @@ class LcdCommRevD(LcdComm):
             image_width, image_height = image_height, image_width
 
         # Send bitmap size
-        image_data = bytearray(x0.to_bytes(2))
-        image_data += bytearray(x1.to_bytes(2))
-        image_data += bytearray(y0.to_bytes(2))
-        image_data += bytearray(y1.to_bytes(2))
+        image_data = bytearray()
+        image_data += x0.to_bytes(2, "big")
+        image_data += x1.to_bytes(2, "big")
+        image_data += y0.to_bytes(2, "big")
+        image_data += y1.to_bytes(2, "big")
         self.SendCommand(cmd=Command.BLOCKWRITE, payload=image_data)
 
         # Prepare bitmap data transmission
         self.SendCommand(Command.INTOPICMODE)
 
-        pix = image.load()
-        line = bytes([80])
+        rgb565be = image_to_RGB565(image, "big")
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            for h in range(image_height):
-                for w in range(image_width):
-                    R = pix[w, h][0] >> 3
-                    G = pix[w, h][1] >> 2
-                    B = pix[w, h][2] >> 3
-
-                    # Color information is 0bRRRRRGGGGGGBBBBB
-                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
-                    # Revition B: Encode in Big-Endian
-                    rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('>H', rgb)
-
-                    # Send image data by multiple of 64 bytes + 1 command byte
-                    if len(line) >= 65:
-                        self.SendLine(line[0:64])
-                        line = bytes([80]) + line[64:]
-
-            # Write last line if needed
-            if len(line) > 0:
-                self.SendLine(line)
+            for chunk in chunked(rgb565be, 63):
+                self.SendLine(b"\x50" + chunk)
 
         # Indicate the complete bitmap has been transmitted
         self.SendCommand(Command.OUTPICMODE)

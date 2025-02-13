@@ -166,6 +166,8 @@ STATS:
         FONT_SIZE: 13
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 50, 50, 50
+        WIDTH: 130
+        ANCHOR: lt
     HOUR:
       TEXT:
         SHOW: True
@@ -175,3 +177,5 @@ STATS:
         FONT_SIZE: 18
         FONT_COLOR: 200, 200, 200
         BACKGROUND_COLOR: 50, 50, 50
+        WIDTH: 100
+        ANCHOR: lt

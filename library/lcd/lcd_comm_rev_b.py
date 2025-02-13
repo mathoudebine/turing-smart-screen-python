@@ -17,11 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import struct
-
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import *
+from library.lcd.serialize import image_to_RGB565, chunked
 from library.log import logger
 
 
@@ -51,7 +50,7 @@ class SubRevision(IntEnum):
 # This class is for XuanFang (rev. B & flagship) 3.5" screens
 class LcdCommRevB(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
-                 update_queue: queue.Queue = None):
+                 update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: B")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
         self.openSerial()
@@ -67,7 +66,7 @@ class LcdCommRevB(LcdComm):
         return self.sub_revision == SubRevision.A11 or self.sub_revision == SubRevision.A12
 
     @staticmethod
-    def auto_detect_com_port():
+    def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
 
         for com_port in com_ports:
@@ -110,8 +109,8 @@ class LcdCommRevB(LcdComm):
 
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.SendCommand(Command.HELLO, payload=hello, bypass_queue=True)
-        response = self.lcd_serial.read(10)
-        self.lcd_serial.flushInput()
+        response = self.serial_read(10)
+        self.serial_flush_input()
 
         if len(response) != 10:
             logger.warning("Device not recognised (short response to HELLO)")
@@ -178,9 +177,8 @@ class LcdCommRevB(LcdComm):
 
         self.SendCommand(Command.SET_BRIGHTNESS, payload=[converted_level])
 
-    def SetBackplateLedColor(self, led_color: Tuple[int, int, int] = (255, 255, 255)):
-        if isinstance(led_color, str):
-            led_color = tuple(map(int, led_color.split(', ')))
+    def SetBackplateLedColor(self, led_color: Color = (255, 255, 255)):
+        led_color = parse_color(led_color)
         if self.is_flagship():
             self.SendCommand(Command.SET_LIGHTING, payload=list(led_color))
         else:
@@ -195,9 +193,16 @@ class LcdCommRevB(LcdComm):
         else:
             self.SendCommand(Command.SET_ORIENTATION, payload=[OrientationValueRevB.ORIENTATION_LANDSCAPE])
 
+    def serialize_image(self, image: Image.Image, height: int, width: int) -> bytes:
+        if image.width != width or image.height != height:
+            image = image.crop((0, 0, width, height))
+        if self.orientation == Orientation.REVERSE_PORTRAIT or self.orientation == Orientation.REVERSE_LANDSCAPE:
+            image = image.rotate(180)
+        return image_to_RGB565(image, "big")
+
     def DisplayPILImage(
             self,
-            image: Image,
+            image: Image.Image,
             x: int = 0, y: int = 0,
             image_width: int = 0,
             image_height: int = 0
@@ -232,34 +237,18 @@ class LcdCommRevB(LcdComm):
                                   (y0 >> 8) & 255, y0 & 255,
                                   (x1 >> 8) & 255, x1 & 255,
                                   (y1 >> 8) & 255, y1 & 255])
-        pix = image.load()
-        line = bytes()
+
+        rgb565be = self.serialize_image(image, image_height, image_width)
 
         # Lock queue mutex then queue all the requests for the image data
         with self.update_queue_mutex:
-            for h in range(image_height):
-                for w in range(image_width):
-                    if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.LANDSCAPE:
-                        R = pix[w, h][0] >> 3
-                        G = pix[w, h][1] >> 2
-                        B = pix[w, h][2] >> 3
-                    else:
-                        # Manage reverse orientations from software, because display does not manage it
-                        R = pix[image_width - w - 1, image_height - h - 1][0] >> 3
-                        G = pix[image_width - w - 1, image_height - h - 1][1] >> 2
-                        B = pix[image_width - w - 1, image_height - h - 1][2] >> 3
+            # Send image data by multiple of "display width" bytes
+            for chunk in chunked(rgb565be, self.get_width() * 8):
+                self.SendLine(chunk)
 
-                    # Color information is 0bRRRRRGGGGGGBBBBB
-                    # Revision A: Encode in Little-Endian (native x86/ARM encoding)
-                    # Revition B: Encode in Big-Endian
-                    rgb = (R << 11) | (G << 5) | B
-                    line += struct.pack('>H', rgb)
-
-                    # Send image data by multiple of "display width" bytes
-                    if len(line) >= self.get_width() * 8:
-                        self.SendLine(line)
-                        line = bytes()
-
-            # Write last line if needed
-            if len(line) > 0:
-                self.SendLine(line)
+            # Implement a cooldown between two bitmaps, because we are not listening to events coming from the display
+            # Cooldown of 0.05 decreases "corrupted bitmap" significantly without slowing down too much
+            if self.update_queue:
+                self.update_queue.put((time.sleep, [0.05]))
+            else:
+                time.sleep(0.05)

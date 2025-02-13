@@ -8,7 +8,8 @@ on:
 
 jobs:
   system-monitor-theme-screenshot:
-  
+    name: Update themes screenshot and generate list
+
     # Don't run this action on forked repositories to avoid conflicts in PR...
     if: github.repository == 'mathoudebine/turing-smart-screen-python'
     
@@ -21,10 +22,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v5
       with:
-        python-version: "3.11"
+        python-version: "3.13"
 
     - name: Install dependencies
       run: |
@@ -42,15 +43,15 @@ jobs:
         do
           if test -f "$dir/theme.yaml"; then        
             # Keep only folder name
-            theme=`basename ${dir%*/}`
+            theme=`basename "${dir%*/}"`
           
             # Setup selected theme in config.yaml
             echo "Using theme $theme"
-            sed -i "/THEME:/c\  THEME: $theme" config.yaml
-    
+            sed -i '/THEME:/c\  THEME: "'"$theme"'"' config.yaml
+
             # For tests there is no real HW: use simulated LCD mode
             # Check if theme is for 5"
-            orientation=$(grep 'DISPLAY_SIZE' $dir/theme.yaml | sed 's/ //g')
+            orientation=$(grep 'DISPLAY_SIZE' "$dir/theme.yaml" | sed 's/ //g')
             if [ "$orientation" == "DISPLAY_SIZE:5\"" ]; then
               sed -i "/REVISION:/c\  REVISION: SIMU5" config.yaml
             else
@@ -72,7 +73,7 @@ jobs:
         python3 tools/theme-preview-generator.py
 
     - name: Commit theme previews
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "[GitHub Actions Bot] Update theme previews"
         file_pattern: 'res/themes/*/preview.png res/themes/themes.md'

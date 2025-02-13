@@ -23,10 +23,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # This file is the system monitor main program to display HW sensors on your screen using themes (see README)
+import glob
 import os
 import sys
 
-MIN_PYTHON = (3, 8)
+MIN_PYTHON = (3, 9)
 if sys.version_info < MIN_PYTHON:
     print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
     try:
@@ -41,6 +42,7 @@ try:
     import signal
     import subprocess
     import time
+    from pathlib import Path
     from PIL import Image
 
     if platform.system() == 'Windows':
@@ -48,21 +50,27 @@ try:
         import win32con
         import win32gui
 
-    try:
-        import pystray
-    except:
-        pass
-except:
-    print(
-        "[ERROR] Python dependencies not installed. Please follow start guide: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start")
+    from library.log import logger
+    import library.scheduler as scheduler
+    from library.display import display
+
+except Exception as e:
+    print("""Import error: %s
+Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
+Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed""" % str(
+        e))
     try:
         sys.exit(0)
     except:
         os._exit(0)
 
-from library.log import logger
-import library.scheduler as scheduler
-from library.display import display
+try:
+    import pystray
+except:
+    # If pystray cannot be loaded do not stop the program, just ignore it. The tray icon will not be displayed.
+    pass
+
+MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
 
 if __name__ == "__main__":
 
@@ -72,6 +80,17 @@ if __name__ == "__main__":
     logger.debug("Using Python %s" % sys.version)
 
 
+    def wait_for_empty_queue(timeout: int = 5):
+        # Waiting for all pending request to be sent to display
+        logger.info("Waiting for all pending request to be sent to display (%ds max)..." % timeout)
+
+        wait_time = 0
+        while not scheduler.is_queue_empty() and wait_time < timeout:
+            time.sleep(0.1)
+            wait_time = wait_time + 0.1
+
+        logger.debug("(Waited %.1fs)" % wait_time)
+
     def clean_stop(tray_icon=None):
         # Turn screen and LEDs off before stopping
         display.turn_off()
@@ -80,15 +99,8 @@ if __name__ == "__main__":
         # Instead, ask the scheduler to empty the action queue before stopping
         scheduler.STOPPING = True
 
-        # Allow 5 seconds max. delay in case scheduler is not responding
-        wait_time = 5
-        logger.info("Waiting for all pending request to be sent to display (%ds max)..." % wait_time)
-
-        while not scheduler.is_queue_empty() and wait_time > 0:
-            time.sleep(0.1)
-            wait_time = wait_time - 0.1
-
-        logger.debug("(%.1fs)" % (5 - wait_time))
+        # Waiting for all pending request to be sent to display
+        wait_for_empty_queue(5)
 
         # Remove tray icon just before exit
         if tray_icon:
@@ -108,7 +120,7 @@ if __name__ == "__main__":
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(os.path.join(os.getcwd(), "configure.py"), shell=True)
+        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
         clean_stop(tray_icon)
 
 
@@ -142,6 +154,9 @@ if __name__ == "__main__":
                 elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
                     logger.info("Computer is resuming from sleep, display will turn on")
                     display.turn_on()
+                    # Some models have troubles displaying back the previous bitmap after being turned off/on
+                    display.display_static_images()
+                    display.display_static_text()
             else:
                 # For any other events, the program will stop
                 logger.info("Program will now exit")
@@ -152,7 +167,7 @@ if __name__ == "__main__":
         tray_icon = pystray.Icon(
             name='Turing System Monitor',
             title='Turing System Monitor',
-            icon=Image.open("res/icons/monitor-icon-17865/64.png"),
+            icon=Image.open(MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"),
             menu=pystray.Menu(
                 pystray.MenuItem(
                     text='Configure',
@@ -183,7 +198,11 @@ if __name__ == "__main__":
         win32api.SetConsoleCtrlHandler(on_win32_ctrl_event, True)
 
     # Initialize the display
+    logger.info("Initialize display")
     display.initialize_display()
+
+    # Start serial queue handler
+    scheduler.QueueHandler()
 
     # Create all static images
     display.display_static_images()
@@ -191,25 +210,30 @@ if __name__ == "__main__":
     # Create all static texts
     display.display_static_text()
 
-    # Run our jobs that update data
+    # Wait for static images/text to be displayed before starting monitoring (to avoid filling the queue while waiting)
+    wait_for_empty_queue(10)
+
+    # Start sensor scheduled reading. Avoid starting them all at the same time to optimize load
+    logger.info("Starting system monitoring")
     import library.stats as stats
 
-    scheduler.CPUPercentage()
-    scheduler.CPUFrequency()
-    scheduler.CPULoad()
-    if stats.CPU.is_temperature_available():
-        scheduler.CPUTemperature()
-    else:
-        logger.warning("Your CPU temperature is not supported yet")
+    scheduler.CPUPercentage(); time.sleep(0.25)
+    scheduler.CPUFrequency(); time.sleep(0.25)
+    scheduler.CPULoad(); time.sleep(0.25)
+    scheduler.CPUTemperature(); time.sleep(0.25)
+    scheduler.CPUFanSpeed(); time.sleep(0.25)
     if stats.Gpu.is_available():
-        scheduler.GpuStats()
-    scheduler.MemoryStats()
-    scheduler.DiskStats()
-    scheduler.NetStats()
-    scheduler.DateStats()
-    scheduler.CustomStats()
-    scheduler.QueueHandler()
+        scheduler.GpuStats(); time.sleep(0.25)
+    scheduler.MemoryStats(); time.sleep(0.25)
+    scheduler.DiskStats(); time.sleep(0.25)
+    scheduler.NetStats(); time.sleep(0.25)
+    scheduler.DateStats(); time.sleep(0.25)
+    scheduler.SystemUptimeStats(); time.sleep(0.25)
+    scheduler.CustomStats(); time.sleep(0.25)
+    scheduler.WeatherStats(); time.sleep(0.25)
+    scheduler.PingStats(); time.sleep(0.25)
 
+    # OS-specific tasks
     if tray_icon and platform.system() == "Darwin":  # macOS-specific
         from AppKit import NSBundle, NSApp, NSApplicationActivationPolicyProhibited
 

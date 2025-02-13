@@ -225,6 +225,8 @@ STATS:
         FONT_SIZE: 18
         FONT_COLOR: 255, 239, 8
         BACKGROUND_IMAGE: background.png
+        WIDTH: 160
+        ANCHOR: lt
     HOUR:
       TEXT:
         SHOW: True
@@ -234,3 +236,5 @@ STATS:
         FONT_SIZE: 15
         FONT_COLOR: 255, 239, 8
         BACKGROUND_IMAGE: background.png
+        WIDTH: 100
+        ANCHOR: lt

@@ -1,0 +1,54 @@
+name: Generate Windows Installer
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  generate-windows-installer:
+    name: Generate Windows Installer
+    runs-on: windows-latest
+
+    steps:
+    - name: Git Checkout ${{github.event.release.tag_name}}
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Set version number for PyInstaller
+      run: |
+        python.exe tools\windows-installer\generate-version-info.py ${{github.event.release.tag_name}}
+
+    - name: Run PyInstaller to create binaries
+      run: |
+        pyinstaller.exe --noconfirm turing-system-monitor.spec
+
+    - name: Create InnoSetup installer from generated binaries
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
+      with:
+        path: tools/windows-installer/turing-system-monitor.iss
+        options: /O+
+
+    - name: '📦 Archive Windows installer'
+      uses: actions/upload-artifact@v4
+      with:
+        name: turing-system-monitor_${{github.event.release.tag_name}}
+        path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}.exe
+        if-no-files-found: error
+
+    - name: '📩 Publish Windows installer to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}.exe
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

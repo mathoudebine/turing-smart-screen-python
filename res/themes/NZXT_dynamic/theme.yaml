@@ -134,13 +134,14 @@ STATS:
       TEXT:
         FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
         SHOW: True
-        X: 552
+        X: 502
         Y: 432
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
         FONT_SIZE: 12
         FONT_COLOR: 255, 255, 255
-        # BACKGROUND_COLOR: 50, 50, 50
         BACKGROUND_IMAGE: background.png
+        WIDTH: 120
+        ANCHOR: rt
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
         FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
@@ -151,3 +152,5 @@ STATS:
         FONT_SIZE: 25
         FONT_COLOR: 255, 255, 255
         BACKGROUND_IMAGE: background.png
+        WIDTH: 160
+        ANCHOR: lt

@@ -134,6 +134,8 @@ STATS:
         FONT_SIZE: 22
         FONT_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+        WIDTH: 200
+        ANCHOR: lt
     HOUR: # Format (12/24h, timezone translations) will match your computer locale
       TEXT:
         FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
@@ -144,4 +146,6 @@ STATS:
         FONT_SIZE: 28
         FONT_COLOR: 0, 0, 0
         BACKGROUND_IMAGE: background.png
+        WIDTH: 200
+        ANCHOR: lt
 

@@ -116,13 +116,18 @@ STATS:
         FONT_SIZE: 20
         FONT_COLOR: 252, 255, 255
         BACKGROUND_IMAGE: background.png
+        WIDTH: 180
+        ANCHOR: lt
     HOUR:
       TEXT:
         FORMAT: short
         SHOW: True
         X: 14
-        Y: 30
+        Y: 26
         FONT: generale-mono/GeneraleMonoA.ttf
         FONT_SIZE: 26
         FONT_COLOR: 255, 255, 255
-        BACKGROUND_COLOR: 16, 28, 57  # In case hour is over the star in background
+        BACKGROUND_COLOR: 16, 24, 49
+        WIDTH: 115  # Increase to 160 if you need the time to cover the star (e.g. am/pm indicator) 
+        HEIGHT: 30
+        ANCHOR: lm

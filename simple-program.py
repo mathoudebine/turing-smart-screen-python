@@ -128,7 +128,7 @@ if __name__ == "__main__":
 
     # Display custom text with solid background
     lcd_comm.DisplayText("Custom italic multiline text\nright-aligned", 5, 120,
-                         font="roboto/Roboto-Italic.ttf",
+                         font="res/fonts/roboto/Roboto-Italic.ttf",
                          font_size=20,
                          font_color=(0, 0, 255),
                          background_color=(255, 255, 0),
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     # Display custom text with transparent background
     lcd_comm.DisplayText("Transparent bold text", 5, 180,
-                         font="geforce/GeForce-Bold.ttf",
+                         font="res/fonts/geforce/GeForce-Bold.ttf",
                          font_size=30,
                          font_color=(255, 255, 255),
                          background_image=background)
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     while not stop:
         start = time.perf_counter()
         lcd_comm.DisplayText(str(datetime.now().time()), 160, 2,
-                             font="roboto/Roboto-Bold.ttf",
+                             font="res/fonts/roboto/Roboto-Bold.ttf",
                              font_size=20,
                              font_color=(255, 0, 0),
                              background_image=background)
@@ -183,7 +183,7 @@ if __name__ == "__main__":
                                           value=bar_value,
                                           bar_color=(255, 255, 0),
                                           text=f"{10 * int(bar_value / 10)}°C",
-                                          font="geforce/GeForce-Bold.ttf",
+                                          font="res/fonts/geforce/GeForce-Bold.ttf",
                                           font_size=20,
                                           font_color=(255, 255, 0),
                                           background_image=background)
