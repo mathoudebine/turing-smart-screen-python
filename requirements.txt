@@ -1,7 +1,7 @@
 # Python packages requirements
 pyserial~=3.5          # Serial link to communicate with the display
 PyYAML~=6.0.2          # For themes files
-psutil~=6.1.1          # CPU / disk / network metrics
+psutil~=7.0.0          # CPU / disk / network metrics
 pystray~=0.19.5        # Tray icon (all OS)
 babel~=2.17.0          # Date/time formatting
 ruamel.yaml~=0.18.10    # For configuration editor
@@ -15,7 +15,7 @@ Pillow~=11.1.0         # Image generation
 
 # Efficient image serialization
 numpy~=2.0.2; python_version < "3.10"  # For Python 3.9, only numpy 2.0.x is supported as 2.1 only supports Python >=3.10
-numpy~=2.2.2; python_version >= "3.10"  # For Python >=3.10, any numpy 2.x is fine
+numpy~=2.2.3; python_version >= "3.10"  # For Python >=3.10, any numpy 2.x is fine
 
 # For Nvidia GPU on all platforms
 GPUtil~=1.4.0; python_version < "3.12"
