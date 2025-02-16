@@ -1,0 +1,77 @@
+---
+author: "@ChrisClark"
+# Also see theme_example.yaml
+
+display:
+  DISPLAY_SIZE: 2.8"
+  # DISPLAY_RESOLUTION - custom addition?
+  DISPLAY_RESOLUTION: 320, 240
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    # unclear what WIDTH, HEIGHT are used for. Crop, stretch, repeat, etc. - there are no other directives for this config type. If ommited, defaults to 0 (zero)
+    WIDTH: 320
+    HEIGHT: 240
+
+static_text:
+  TEXT:
+    TEXT: Hello World!
+    SHOW: True
+    #ANCHOR: mm   # works great as centered
+    #ANCHOR: la  # left
+    ANCHOR: ra  # right  # does not seem to work, unless this is right of text box? once Width is set this sort of works
+    #X: 32
+    #Y: 93
+    X: 0
+    Y: 93
+    WIDTH: 320
+    # Adding a width forces the size of the text box, rather than sizing to width of text string
+    FONT: roboto/Roboto-BoldItalic.ttf
+    FONT_SIZE: 20
+    FONT_COLOR: 0, 200, 200
+    BACKGROUND_COLOR: 0, 128, 0
+
+STATS:
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        # Centered
+        SHOW: True
+        X: 1
+        Y: 10
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 60
+        #FONT_SIZE: 20
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 0, 0, 0
+        WIDTH: 320
+        ANCHOR: mm
+    HOUR:
+      TEXT:
+        # In theme emulator, ALIGN appears to be ignored? ANCHOR seems to control this in Pillow
+        #ALIGN: left  # left / center / right
+        #ALIGN: center
+        #ANCHOR: lt   # does not work
+        #ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+        ANCHOR: mm   # works great as centered
+        #ANCHOR: la  # left
+        #ANCHOR: ra  # right
+        SHOW: True
+        # https://babel.pocoo.org/en/latest/api/dates.html  full, long, medium, or short, or a custom date/time pattern
+        # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
+        #FORMAT: medium
+        #FORMAT: short
+        FORMAT: HH:mm
+        X: 1
+        Y: 130
+        FONT: roboto/Roboto-BoldItalic.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 0, 0
+        WIDTH: 320
