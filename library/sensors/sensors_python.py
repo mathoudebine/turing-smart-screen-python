@@ -386,12 +386,15 @@ class GpuAmd(sensors.Gpu):
 
     @staticmethod
     def frequency() -> float:
-        if pyamdgpuinfo:
-            pyamdgpuinfo.detect_gpus()
-            return pyamdgpuinfo.get_gpu(0).query_sclk() / 1000000
-        elif pyadl:
-            return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentEngineClock()
-        else:
+        try:
+            if pyamdgpuinfo:
+                pyamdgpuinfo.detect_gpus()
+                return pyamdgpuinfo.get_gpu(0).query_sclk() / 1000000
+            elif pyadl:
+                return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentEngineClock()
+            else:
+                return math.nan
+        except:
             return math.nan
 
     @staticmethod
