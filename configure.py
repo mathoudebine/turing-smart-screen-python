@@ -21,6 +21,7 @@
 
 import glob
 import os
+import platform
 import subprocess
 import sys
 import webbrowser
@@ -176,7 +177,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("820x570")
+        self.window.geometry("820x580")
         self.window.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -274,18 +275,23 @@ class TuringConfigWindow:
                                    "Fans missing from the list? Install lm-sensors package\n"
                                    "and run 'sudo sensors-detect' command, then reboot.")
 
-        self.edit_theme_btn = ttk.Button(self.window, text="Weather & ping",
-                                         command=lambda: self.on_weatherping_click())
-        self.edit_theme_btn.place(x=220, y=510, height=50, width=130)
+        self.weather_ping_btn = ttk.Button(self.window, text="Weather & ping",
+                                           command=lambda: self.on_weatherping_click())
+        self.weather_ping_btn.place(x=80, y=520, height=50, width=130)
+
+
+        self.open_theme_folder_btn = ttk.Button(self.window, text="Open themes\nfolder",
+                                         command=lambda: self.on_open_theme_folder_click())
+        self.open_theme_folder_btn.place(x=220, y=520, height=50, width=130)
 
         self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=360, y=510, height=50, width=130)
+        self.edit_theme_btn.place(x=360, y=520, height=50, width=130)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=500, y=510, height=50, width=130)
+        self.save_btn.place(x=500, y=520, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=640, y=510, height=50, width=130)
+        self.save_run_btn.place(x=640, y=520, height=50, width=130)
 
         self.config = None
         self.load_config_values()
@@ -449,6 +455,15 @@ class TuringConfigWindow:
 
     def on_weatherping_click(self):
         self.more_config_window.show()
+
+    def on_open_theme_folder_click(self):
+        path = f'"{MAIN_DIRECTORY}res/themes"'
+        if platform.system() == "Windows":
+            os.startfile(path)
+        elif platform.system() == "Darwin":
+            subprocess.Popen(["open", path])
+        else:
+            subprocess.Popen(["xdg-open", path])
 
     def on_theme_editor_click(self):
         subprocess.Popen(
