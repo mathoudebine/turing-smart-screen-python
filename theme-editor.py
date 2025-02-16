@@ -76,14 +76,7 @@ config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argumen
 config.load_theme()
 
 # For theme editor, always use simulated LCD
-if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '5"':
-    config.CONFIG_DATA["display"]["REVISION"] = "SIMU5"
-elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
-    config.CONFIG_DATA["display"]["REVISION"] = "SIMU2.1"
-elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '8.8"':
-    config.CONFIG_DATA["display"]["REVISION"] = "SIMU8.8"
-else:
-    config.CONFIG_DATA["display"]["REVISION"] = "SIMU3.5"
+config.CONFIG_DATA["display"]["REVISION"] = "SIMU"
 
 from library.display import display  # Only import display after hardcoded config is set
 
@@ -231,9 +224,9 @@ if __name__ == "__main__":
     if platform.system() == 'Darwin':  # macOS
         subprocess.call(('open', config.MAIN_DIRECTORY / theme_file))
     elif platform.system() == 'Windows':  # Windows
-        os.startfile( config.MAIN_DIRECTORY / theme_file)
+        os.startfile(config.MAIN_DIRECTORY / theme_file)
     else:  # linux variants
-        subprocess.call(('xdg-open',  config.MAIN_DIRECTORY / theme_file))
+        subprocess.call(('xdg-open', config.MAIN_DIRECTORY / theme_file))
 
     # Load theme file and generate first preview
     refresh_theme()

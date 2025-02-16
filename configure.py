@@ -78,11 +78,10 @@ revision_and_size_to_model_map = {
     ('C', SIZE_5_INCH): TURING_MODEL,
     ('C', SIZE_8_8_INCH): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
-    ('SIMU2.1', SIZE_2_1_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_2_1_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
-    ('SIMU3.5', SIZE_3_5_INCH): SIMULATED_MODEL,
-    ('SIMU5', SIZE_5_INCH): SIMULATED_MODEL,
-    ('SIMU8.8', SIZE_8_8_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_5_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_8_8_INCH): SIMULATED_MODEL,
 }
 model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_3_5_INCH): 'A',
@@ -93,9 +92,10 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_5_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
-    (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU2.1',
-    (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU3.5',
-    (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU5',
+    (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_8_8_INCH): 'SIMU',
 }
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}

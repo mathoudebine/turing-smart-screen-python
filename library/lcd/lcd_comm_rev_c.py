@@ -19,6 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import queue
+import string
 import time
 from enum import Enum
 from math import ceil
@@ -80,7 +81,9 @@ class Command(Enum):
     START_DISPLAY_BITMAP = bytearray((0x2c,))
     PRE_UPDATE_BITMAP = bytearray((0x86, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     UPDATE_BITMAP = bytearray((0xcc, 0xef, 0x69, 0x00))
-    DISPLAY_BITMAP = bytearray((0xc8, 0xef, 0x69, 0x00))
+    DISPLAY_BITMAP_2INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x0E, 0x10))
+    DISPLAY_BITMAP_5INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x17, 0x70))
+    DISPLAY_BITMAP_8INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x38, 0x40))
 
     STARTMODE_DEFAULT = bytearray((0x00,))
     STARTMODE_IMAGE = bytearray((0x01,))
@@ -120,15 +123,15 @@ class SleepInterval(Enum):
 
 class SubRevision(Enum):
     UNKNOWN = ""
-    FIVEINCH = "chs_5inch.dev1_rom1.87"
-    TWOINCH = "chs_5inch.dev1_rom1.88"
-    EIGHTINCH = "chs_88inch.dev1_rom1.88"
+    REV_2INCH = "chs_21inch"
+    REV_5INCH = "chs_5inch"
+    REV_8INCH = "chs_88inch"
 
     def __init__(self, command):
         self.command = command
 
 
-# This class is for Turing Smart Screen 5" screens
+# This class is for Turing Smart Screen 2.1" / 5" / 8" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
                  update_queue: Optional[queue.Queue] = None):
@@ -210,22 +213,34 @@ class LcdCommRevC(LcdComm):
         self._send_command(Command.HELLO, bypass_queue=True)
         response = str(self.serial_read(23).decode())
         self.serial_flush_input()
-        if response.startswith(SubRevision.FIVEINCH.value):
-            self.sub_revision = SubRevision.FIVEINCH
-            self.display_width = 480
-            self.display_height = 800
-        elif response == SubRevision.TWOINCH.value:
-            self.sub_revision = SubRevision.TWOINCH
-            self.display_width = 480
-            self.display_height = 480
-        elif response == SubRevision.EIGHTINCH.value:
-            self.sub_revision = SubRevision.EIGHTINCH
-            self.display_width = 480
-            self.display_height = 1920
-        else:
-            logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
+        logger.debug("HW sub-revision returned: %s" % ''.join(filter(lambda x: x in set(string.printable), response)))
 
-        logger.debug("HW sub-revision: %s" % (str(self.sub_revision)))
+        # Note: sub-revisions returned by display are not reliable e.g. 2.1" displays return "chs_5inch"
+        # if response.startswith(SubRevision.REV_5INCH.value):
+        #     self.sub_revision = SubRevision.REV_5INCH
+        #     self.display_width = 480
+        #     self.display_height = 800
+        # elif response.startswith(SubRevision.REV_2INCH.value):
+        #     self.sub_revision = SubRevision.REV_2INCH
+        #     self.display_width = 480
+        #     self.display_height = 480
+        # elif response.startswith(SubRevision.REV_8INCH.value):
+        #     self.sub_revision = SubRevision.REV_8INCH
+        #     self.display_width = 480
+        #     self.display_height = 1920
+        # else:
+        #     logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
+        # logger.debug("HW sub-revision detected: %s" % (str(self.sub_revision)))
+
+        # Relay on width/height for sub-revision detection
+        if self.display_width == 480 and self.display_height == 480:
+            self.sub_revision = SubRevision.REV_2INCH
+        elif self.display_width == 480 and self.display_height == 800:
+            self.sub_revision = SubRevision.REV_5INCH
+        elif self.display_width == 480 and self.display_height == 1920:
+            self.sub_revision = SubRevision.REV_8INCH
+        else:
+            logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
 
     def InitializeComm(self):
         self._hello()
@@ -315,7 +330,15 @@ class LcdCommRevC(LcdComm):
             with self.update_queue_mutex:
                 self._send_command(Command.PRE_UPDATE_BITMAP)
                 self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
-                self._send_command(Command.DISPLAY_BITMAP,
+
+                if self.sub_revision == SubRevision.REV_5INCH:
+                    display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
+                elif self.sub_revision == SubRevision.REV_2INCH:
+                    display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
+                elif self.sub_revision == SubRevision.REV_8INCH:
+                    display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
+
+                self._send_command(display_bmp_cmd,
                                    payload=bytearray(int(self.display_width * self.display_width / 64).to_bytes(2)))
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image)),
@@ -342,7 +365,7 @@ class LcdCommRevC(LcdComm):
         return b'\x00'.join(chunked(bgra_data, 249))
 
     def _generate_update_image(
-        self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
+            self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
     ) -> Tuple[bytearray, bytearray]:
         x0, y0 = x, y
 
@@ -366,7 +389,7 @@ class LcdCommRevC(LcdComm):
             img_raw_data += int(image.width).to_bytes(2, "big")
             img_raw_data += line
 
-        image_size = int(len(img_raw_data) + 2).to_bytes(3, "big") # The +2 is for the "ef69" that will be added later.
+        image_size = int(len(img_raw_data) + 2).to_bytes(3, "big")  # The +2 is for the "ef69" that will be added later.
 
         # logger.debug("Render Count: {}".format(count))
         payload = bytearray()
