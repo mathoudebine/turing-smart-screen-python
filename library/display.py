@@ -60,9 +60,9 @@ def _get_theme_size() -> tuple[int, int]:
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '8.8"':
         return 480, 1920
     else:
-        logger.error(
-            f"Cannot find valid DISPLAY_SIZE property in selected theme {config.CONFIG_DATA['config']['THEME']}")
-        return 0, 0
+        logger.warning(
+            f'Cannot find valid DISPLAY_SIZE property in selected theme {config.CONFIG_DATA["config"]["THEME"]}, defaulting to 3.5"')
+        return 320, 480
 
 
 class Display:
