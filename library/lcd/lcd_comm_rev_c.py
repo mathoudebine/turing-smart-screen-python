@@ -296,8 +296,8 @@ class LcdCommRevC(LcdComm):
         #    b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
         #    self._send_command(Command.OPTIONS, payload=b)
         # else:
-        #    b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-        #    self._send_command(Command.OPTIONS, payload=b)
+        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        self._send_command(Command.OPTIONS, payload=b)
 
     def DisplayPILImage(
             self,
