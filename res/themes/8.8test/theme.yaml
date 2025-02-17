@@ -23,6 +23,6 @@ STATS:
         WIDTH: 303
         HEIGHT: 177
         FONT: generale-mono/GeneraleMonoA.ttf
-        FONT_SIZE: 10
-        FONT_COLOR: 255, 255, 255
+        FONT_SIZE: 100
+        FONT_COLOR: 0, 0, 0
         BACKGROUND_COLOR: 255, 255, 0
