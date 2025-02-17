@@ -211,7 +211,7 @@ class LcdCommRevC(LcdComm):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self._send_command(Command.HELLO, bypass_queue=True)
-        response = str(self.serial_read(23).decode())
+        response = str(self.serial_read(23).decode(errors="ignore"))
         self.serial_flush_input()
         logger.debug("HW sub-revision returned: %s" % ''.join(filter(lambda x: x in set(string.printable), response)))
 
@@ -292,12 +292,12 @@ class LcdCommRevC(LcdComm):
         self.orientation = orientation
         # logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
-        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
-            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
-            self._send_command(Command.OPTIONS, payload=b)
-        else:
-            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-            self._send_command(Command.OPTIONS, payload=b)
+        # if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+        #    b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
+        #    self._send_command(Command.OPTIONS, payload=b)
+        # else:
+        #    b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        #    self._send_command(Command.OPTIONS, payload=b)
 
     def DisplayPILImage(
             self,
@@ -353,12 +353,22 @@ class LcdCommRevC(LcdComm):
             Count.Start += 1
 
     def _generate_full_image(self, image: Image.Image) -> bytes:
-        if self.orientation == Orientation.PORTRAIT:
-            image = image.rotate(90, expand=True)
-        elif self.orientation == Orientation.REVERSE_PORTRAIT:
-            image = image.rotate(270, expand=True)
-        elif self.orientation == Orientation.REVERSE_LANDSCAPE:
-            image = image.rotate(180)
+        if self.sub_revision == SubRevision.REV_8INCH:
+            if self.orientation == Orientation.LANDSCAPE:
+                image = image.rotate(270, expand=True)
+            elif self.orientation == Orientation.REVERSE_LANDSCAPE:
+                image = image.rotate(90, expand=True)
+            elif self.orientation == Orientation.PORTRAIT:
+                image = image.rotate(180, expand=True)
+            elif self.orientation == Orientation.REVERSE_PORTRAIT:
+                pass
+        else:
+            if self.orientation == Orientation.PORTRAIT:
+                image = image.rotate(90, expand=True)
+            elif self.orientation == Orientation.REVERSE_PORTRAIT:
+                image = image.rotate(270, expand=True)
+            elif self.orientation == Orientation.REVERSE_LANDSCAPE:
+                image = image.rotate(180)
 
         bgra_data = image_to_BGRA(image)
 
@@ -368,24 +378,42 @@ class LcdCommRevC(LcdComm):
             self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
     ) -> Tuple[bytearray, bytearray]:
         x0, y0 = x, y
-
-        if self.orientation == Orientation.PORTRAIT:
-            image = image.rotate(90, expand=True)
-            x0 = self.get_width() - x - image.height
-        elif self.orientation == Orientation.REVERSE_PORTRAIT:
-            image = image.rotate(270, expand=True)
-            y0 = self.get_height() - y - image.width
-        elif self.orientation == Orientation.REVERSE_LANDSCAPE:
-            image = image.rotate(180, expand=True)
-            y0 = self.get_width() - x - image.width
-            x0 = self.get_height() - y - image.height
-        elif self.orientation == Orientation.LANDSCAPE:
-            x0, y0 = y, x
+        if self.sub_revision == SubRevision.REV_8INCH:
+            if self.orientation == Orientation.LANDSCAPE:
+                image = image.rotate(270, expand=True)
+            elif self.orientation == Orientation.REVERSE_LANDSCAPE:
+                image = image.rotate(90, expand=True)
+                x0 = self.get_width() - x - image.height
+                y0 = self.get_height() - y - image.width
+            elif self.orientation == Orientation.PORTRAIT:
+                image = image.rotate(180, expand=True)
+                x0 = self.get_height() - y - image.height
+                y0 = self.get_height() - x - image.width
+            elif self.orientation == Orientation.REVERSE_PORTRAIT:
+                x0 = y
+                y0 = x
+        else:
+            if self.orientation == Orientation.PORTRAIT:
+                image = image.rotate(90, expand=True)
+                x0 = self.get_width() - x - image.height
+            elif self.orientation == Orientation.REVERSE_PORTRAIT:
+                image = image.rotate(270, expand=True)
+                y0 = self.get_height() - y - image.width
+            elif self.orientation == Orientation.REVERSE_LANDSCAPE:
+                image = image.rotate(180)
+                y0 = self.get_width() - x - image.width
+                x0 = self.get_height() - y - image.height
+            elif self.orientation == Orientation.LANDSCAPE:
+                x0 = y
+                y0 = x
 
         img_raw_data = bytearray()
         bgr_data = image_to_BGR(image)
         for h, line in enumerate(chunked(bgr_data, image.width * 3)):
-            img_raw_data += int(((x0 + h) * self.display_height) + y0).to_bytes(3, "big")
+            if self.sub_revision == SubRevision.REV_8INCH:
+                img_raw_data += int(((x0 + h) * self.display_width) + y0).to_bytes(3, "big")
+            else:
+                img_raw_data += int(((x0 + h) * self.display_height) + y0).to_bytes(3, "big")
             img_raw_data += int(image.width).to_bytes(2, "big")
             img_raw_data += line
 
