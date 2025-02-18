@@ -74,11 +74,13 @@ class Display:
             self.lcd = LcdSimulated(display_width=480,
                                     display_height=800)
         else:
-            logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
+            logger.error("Unknown display revision '",
+                         config.CONFIG_DATA["display"]["REVISION"], "'")
 
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)
-        self.lcd.Reset()
+        if config.CONFIG_DATA["display"]["WORKAROUND_RESET"] != "Y":
+            self.lcd.Reset()
 
         # Send initialization commands
         self.lcd.InitializeComm()
@@ -97,7 +99,8 @@ class Display:
         self.lcd.SetBrightness(config.CONFIG_DATA["display"]["BRIGHTNESS"])
 
         # Set backplate RGB LED color (for supported HW only)
-        self.lcd.SetBackplateLedColor(config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
+        self.lcd.SetBackplateLedColor(
+            config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
 
     def turn_off(self):
         # Turn screen off
@@ -111,11 +114,14 @@ class Display:
             for image in config.THEME_DATA['static_images']:
                 logger.debug(f"Drawing Image: {image}")
                 self.lcd.DisplayBitmap(
-                    bitmap_path=config.THEME_DATA['PATH'] + config.THEME_DATA['static_images'][image].get("PATH"),
+                    bitmap_path=config.THEME_DATA['PATH'] +
+                    config.THEME_DATA['static_images'][image].get("PATH"),
                     x=config.THEME_DATA['static_images'][image].get("X", 0),
                     y=config.THEME_DATA['static_images'][image].get("Y", 0),
-                    width=config.THEME_DATA['static_images'][image].get("WIDTH", 0),
-                    height=config.THEME_DATA['static_images'][image].get("HEIGHT", 0)
+                    width=config.THEME_DATA['static_images'][image].get(
+                        "WIDTH", 0),
+                    height=config.THEME_DATA['static_images'][image].get(
+                        "HEIGHT", 0)
                 )
 
     def display_static_text(self):
@@ -126,17 +132,26 @@ class Display:
                     text=config.THEME_DATA['static_text'][text].get("TEXT"),
                     x=config.THEME_DATA['static_text'][text].get("X", 0),
                     y=config.THEME_DATA['static_text'][text].get("Y", 0),
-                    width=config.THEME_DATA['static_text'][text].get("WIDTH", 0),
-                    height=config.THEME_DATA['static_text'][text].get("HEIGHT", 0),
-                    font=config.FONTS_DIR + config.THEME_DATA['static_text'][text].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
-                    font_size=config.THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
-                    font_color=config.THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
-                    background_color=config.THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),
+                    width=config.THEME_DATA['static_text'][text].get(
+                        "WIDTH", 0),
+                    height=config.THEME_DATA['static_text'][text].get(
+                        "HEIGHT", 0),
+                    font=config.FONTS_DIR +
+                    config.THEME_DATA['static_text'][text].get(
+                        "FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                    font_size=config.THEME_DATA['static_text'][text].get(
+                        "FONT_SIZE", 10),
+                    font_color=config.THEME_DATA['static_text'][text].get(
+                        "FONT_COLOR", (0, 0, 0)),
+                    background_color=config.THEME_DATA['static_text'][text].get(
+                        "BACKGROUND_COLOR", (255, 255, 255)),
                     background_image=_get_full_path(config.THEME_DATA['PATH'],
                                                     config.THEME_DATA['static_text'][text].get("BACKGROUND_IMAGE",
                                                                                                None)),
-                    align=config.THEME_DATA['static_text'][text].get("ALIGN", "left"),
-                    anchor=config.THEME_DATA['static_text'][text].get("ANCHOR", "lt"),
+                    align=config.THEME_DATA['static_text'][text].get(
+                        "ALIGN", "left"),
+                    anchor=config.THEME_DATA['static_text'][text].get(
+                        "ANCHOR", "lt"),
                 )
 
 
