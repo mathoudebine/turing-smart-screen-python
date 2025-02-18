@@ -1,0 +1,111 @@
+---
+display:
+  DISPLAY_SIZE: 8.8"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 226, 21, 103
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 1920
+    HEIGHT: 480
+static_text:
+  DISK:
+   TEXT: DISK
+   X: 164
+   Y: 1804
+   FONT: roboto-mono/RobotoMono-Bold.ttf
+   FONT_SIZE: 64
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 240
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 130
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 134
+        Y: 154
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 720
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 130
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 134
+        Y: 635
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 146
+        Y: 1120
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 45
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 1192
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 130
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 146
+        Y: 1590
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 45
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 1664
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 130
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
