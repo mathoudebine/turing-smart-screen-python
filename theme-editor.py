@@ -85,6 +85,8 @@ RGB_LED_MARGIN = 12
 # Resize editor if display is too big (e.g. 8.8" displays are 1920x480)
 RESIZE_FACTOR = 2 if (display.lcd.get_width() > 1000 or display.lcd.get_height() > 1000) else 1
 
+ERROR_IN_THEME = Image.open("res/docs/error-in-theme.png")
+
 
 def refresh_theme():
     config.load_theme()
@@ -244,7 +246,12 @@ if __name__ == "__main__":
         subprocess.call(('xdg-open', config.MAIN_DIRECTORY / theme_file))
 
     # Load theme file and generate first preview
-    refresh_theme()
+    try:
+        refresh_theme()
+        error_in_theme = False
+    except Exception as e:
+        logger.error(f"Error in theme: {e}")
+        error_in_theme = True
 
     display_width, display_height = int(display.lcd.get_width() / RESIZE_FACTOR), int(
         display.lcd.get_height() / RESIZE_FACTOR)
@@ -268,12 +275,16 @@ if __name__ == "__main__":
     circular_mask = Image.open(config.MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
 
     # Display preview in the window
-    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
-        # This is a circular screen: apply a circle mask over the preview
-        display.lcd.screen_image.paste(circular_mask, mask=circular_mask)
-    screen_image = display.lcd.screen_image
-    display_image = ImageTk.PhotoImage(
-        screen_image.resize((int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+    if not error_in_theme:
+        screen_image = display.lcd.screen_image
+        if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+            # This is a circular screen: apply a circle mask over the preview
+            screen_image.paste(circular_mask, mask=circular_mask)
+        display_image = ImageTk.PhotoImage(
+            screen_image.resize((int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+    else:
+        size = display_width if display_width < display_height else display_height
+        display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((display_width, display_width)))
     viewer_picture = tkinter.Label(viewer, image=display_image, borderwidth=0)
     viewer_picture.place(x=RGB_LED_MARGIN, y=RGB_LED_MARGIN)
 
@@ -300,19 +311,29 @@ if __name__ == "__main__":
     while True:
         if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
             logger.debug("The theme file has been updated, the preview window will refresh")
-            refresh_theme()
+            try:
+                refresh_theme()
+                error_in_theme = False
+            except Exception as e:
+                logger.error(f"Error in theme: {e}")
+                error_in_theme = True
             last_edit_time = os.path.getmtime(theme_file)
 
             # Update the preview.png that is in the theme folder
             display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
 
             # Display new picture
-            if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
-                # This is a circular screen: apply a circle mask over the preview
-                display.lcd.screen_image.paste(circular_mask, mask=circular_mask)
-            screen_image = display.lcd.screen_image
-            display_image = ImageTk.PhotoImage(screen_image.resize(
-                (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+            if not error_in_theme:
+                screen_image = display.lcd.screen_image
+                if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+                    # This is a circular screen: apply a circle mask over the preview
+                    screen_image.paste(circular_mask, mask=circular_mask)
+                display_image = ImageTk.PhotoImage(
+                    screen_image.resize(
+                        (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+            else:
+                size = display_width if display_width < display_height else display_height
+                display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((display_width, display_width)))
             viewer_picture.config(image=display_image)
 
             # Refresh RGB backplate LEDs color
