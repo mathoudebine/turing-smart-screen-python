@@ -284,7 +284,7 @@ if __name__ == "__main__":
             screen_image.resize((int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
     else:
         size = display_width if display_width < display_height else display_height
-        display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((display_width, display_width)))
+        display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
     viewer_picture = tkinter.Label(viewer, image=display_image, borderwidth=0)
     viewer_picture.place(x=RGB_LED_MARGIN, y=RGB_LED_MARGIN)
 
@@ -333,7 +333,7 @@ if __name__ == "__main__":
                         (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
             else:
                 size = display_width if display_width < display_height else display_height
-                display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((display_width, display_width)))
+                display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
             viewer_picture.config(image=display_image)
 
             # Refresh RGB backplate LEDs color
