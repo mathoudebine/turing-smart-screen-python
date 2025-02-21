@@ -22,8 +22,11 @@ STATS:
       TEXT:
         FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
         SHOW: True
-        X: 150
-        Y: 284
+        X: 31
+        Y: 280
+        WIDTH: 419
+        HEIGHT: 34
+        ANCHOR: mm
         FONT: roboto-mono/RobotoMono-Regular.ttf
         FONT_SIZE: 30
         FONT_COLOR: 255, 255, 255
@@ -33,8 +36,11 @@ STATS:
       TEXT:
         FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
         SHOW: True
-        X: 90
-        Y: 193
+        X: 22
+        Y: 177
+        WIDTH: 437
+        HEIGHT: 96
+        ANCHOR: mm
         FONT: roboto-mono/RobotoMono-Bold.ttf
         FONT_SIZE: 100
         FONT_COLOR: 255, 255, 255
