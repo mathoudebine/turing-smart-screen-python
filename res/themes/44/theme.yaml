@@ -1,0 +1,52 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 2.1"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 255, 255, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 480
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 256
+        Y: 192
+        FONT: jetbrains-mono/JetBrainsMono-Light.ttf
+        FONT_SIZE: 26
+        FONT_COLOR: 96, 96, 96
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 159
+        Y: 219
+        WIDTH: 162
+        HEIGHT: 10
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 96, 96, 96
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 192, 192, 192
+    FREQUENCY:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 120
+        Y: 92
+        FONT: roboto-mono/RobotoMono-Light.ttf
+        FONT_SIZE: 100
+        FONT_COLOR: 96, 96, 96
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png

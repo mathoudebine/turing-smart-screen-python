@@ -65,14 +65,14 @@ class LcdCommRevA(LcdComm):
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
-        auto_com_port = None
 
         for com_port in com_ports:
             if com_port.serial_number == "USB35INCHIPSV2":
-                auto_com_port = com_port.device
-                break
+                return com_port.device
+            if com_port.vid == 0x1a86 and com_port.pid == 0x5722:
+                return com_port.device
 
-        return auto_com_port
+        return None
 
     def SendCommand(self, cmd: Command, x: int, y: int, ex: int, ey: int, bypass_queue: bool = False):
         byteBuffer = bytearray(6)

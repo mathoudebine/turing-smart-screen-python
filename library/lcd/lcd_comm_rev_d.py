@@ -52,14 +52,12 @@ class LcdCommRevD(LcdComm):
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
-        auto_com_port = None
 
         for com_port in com_ports:
             if com_port.vid == 0x454d and com_port.pid == 0x4e41:
-                auto_com_port = com_port.device
-                break
+                return com_port.device
 
-        return auto_com_port
+        return None
 
     def WriteData(self, byteBuffer: bytearray):
         LcdComm.WriteData(self, byteBuffer)

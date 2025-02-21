@@ -1,7 +1,5 @@
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-import os
-import sys
 
 # Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
 #
@@ -52,9 +50,25 @@ def _get_theme_orientation() -> Orientation:
         return Orientation.PORTRAIT
 
 
+def _get_theme_size() -> tuple[int, int]:
+    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '2.1"':
+        return 480, 480
+    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '3.5"':
+        return 320, 480
+    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '5"':
+        return 480, 800
+    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '8.8"':
+        return 480, 1920
+    else:
+        logger.warning(
+            f'Cannot find valid DISPLAY_SIZE property in selected theme {config.CONFIG_DATA["config"]["THEME"]}, defaulting to 3.5"')
+        return 320, 480
+
+
 class Display:
     def __init__(self):
         self.lcd = None
+        width, height = _get_theme_size()
         if config.CONFIG_DATA["display"]["REVISION"] == "A":
             self.lcd = LcdCommRevA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
@@ -62,17 +76,15 @@ class Display:
             self.lcd = LcdCommRevB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "C":
+            # Because of issue with Turing rev. C size auto-detection, manually configure screen width/height from theme
             self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   update_queue=config.update_queue)
+                                   update_queue=config.update_queue, display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
-            self.lcd = LcdSimulated(display_width=320,
-                                    display_height=480)
-        elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU5":
-            self.lcd = LcdSimulated(display_width=480,
-                                    display_height=800)
+            # Simulated display: always set width/height from theme
+            self.lcd = LcdSimulated(display_width=width, display_height=height)
         else:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
 
@@ -128,7 +140,8 @@ class Display:
                     y=config.THEME_DATA['static_text'][text].get("Y", 0),
                     width=config.THEME_DATA['static_text'][text].get("WIDTH", 0),
                     height=config.THEME_DATA['static_text'][text].get("HEIGHT", 0),
-                    font=config.FONTS_DIR + config.THEME_DATA['static_text'][text].get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
+                    font=config.FONTS_DIR + config.THEME_DATA['static_text'][text].get("FONT",
+                                                                                       "roboto-mono/RobotoMono-Regular.ttf"),
                     font_size=config.THEME_DATA['static_text'][text].get("FONT_SIZE", 10),
                     font_color=config.THEME_DATA['static_text'][text].get("FONT_COLOR", (0, 0, 0)),
                     background_color=config.THEME_DATA['static_text'][text].get("BACKGROUND_COLOR", (255, 255, 255)),

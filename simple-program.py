@@ -43,10 +43,19 @@ COM_PORT = "AUTO"
 # - B      for Xuanfang 3.5" (inc. flagship)
 # - C      for Turing 5"
 # - D      for Kipye Qiye Smart Display 3.5"
-# - SIMU   for 3.5" simulated LCD (image written in screencap.png)
-# - SIMU5  for 5" simulated LCD
+# - SIMU   for simulated display (image written in screencap.png)
 # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
 REVISION = "A"
+
+# Display width & height in pixels for portrait orientation
+# /!\ Do not switch width/height here for landscape, use lcd_comm.SetOrientation below
+# 320x480 for 3.5" models
+# 480x480 for 2.1" models
+# 480x800 for 5" models
+# 480x1920 for 8.8" models
+WIDTH, HEIGHT = 320, 480
+
+assert WIDTH <= HEIGHT, "Indicate display width/height for PORTRAIT orientation: width <= height"
 
 stop = False
 
@@ -69,22 +78,19 @@ if __name__ == "__main__":
     if REVISION == "A":
         logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\" & UsbPCMonitor 3.5\"/5\")")
         # NOTE: If you have UsbPCMonitor 5" you need to change the width/height to 480x800 below
-        lcd_comm = LcdCommRevA(com_port=COM_PORT, display_width=320, display_height=480)
+        lcd_comm = LcdCommRevA(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "B":
         logger.info("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
-        lcd_comm = LcdCommRevB(com_port=COM_PORT)
+        lcd_comm = LcdCommRevB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "C":
         logger.info("Selected Hardware Revision C (Turing Smart Screen 5\")")
-        lcd_comm = LcdCommRevC(com_port=COM_PORT)
+        lcd_comm = LcdCommRevC(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "D":
         logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")
-        lcd_comm = LcdCommRevD(com_port=COM_PORT)
+        lcd_comm = LcdCommRevD(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "SIMU":
-        logger.info("Selected 3.5\" Simulated LCD")
-        lcd_comm = LcdSimulated(display_width=320, display_height=480)
-    elif REVISION == "SIMU5":
-        logger.info("Selected 5\" Simulated LCD")
-        lcd_comm = LcdSimulated(display_width=480, display_height=800)
+        logger.info("Selected Simulated LCD")
+        lcd_comm = LcdSimulated(display_width=WIDTH, display_height=HEIGHT)
     else:
         logger.error("Unknown revision")
         try:

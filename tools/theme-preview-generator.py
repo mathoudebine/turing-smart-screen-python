@@ -21,6 +21,7 @@
 # and their associated preview
 
 import os
+
 import yaml
 
 
@@ -42,9 +43,25 @@ def get_themes(display_size: str):
     return sorted(themes, key=str.casefold)
 
 
+def write_theme_previews_to_file(themes, file, size):
+    file.write(f"\n## {size} themes\n")
+    file.write("<table>")
+    i = 0
+    for theme in themes:
+        file.write(
+            f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
+        i = i + 1
+        if i >= 5:
+            file.write("</table><table>")
+            i = 0
+    file.write("</table>\n")
+
+
 if __name__ == "__main__":
+    themes21inch = get_themes('2.1"')
     themes3inch = get_themes('3.5"')
     themes5inch = get_themes('5"')
+    themes88inch = get_themes('8.8"')
 
     with open("res/themes/themes.md", "w", encoding='utf-8') as file:
         file.write("<!--- This file is generated automatically by GitHub Actions, do not edit it! --->\n")
@@ -52,28 +69,12 @@ if __name__ == "__main__":
         file.write("# Turing Smart Screen themes\n")
         file.write("\n")
         file.write("ℹ️ Click on a preview to view full size\n\n")
+        file.write("[2.1\" themes](#21-themes)\n\n")
         file.write("[3.5\" themes](#35-themes)\n\n")
         file.write("[5\" themes](#5-themes)\n")
+        file.write("[8.8\" themes](#88-themes)\n")
 
-        file.write("\n## 3.5\" themes\n")
-        file.write("<table>")
-        i = 0
-        for theme in themes3inch:
-            file.write(f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
-            i = i + 1
-            if i >= 5:
-                file.write("</table><table>")
-                i = 0
-        file.write("</table>\n")
-
-        file.write("\n## 5\" themes\n")
-        file.write("<table>")
-        i = 0
-        for theme in themes5inch:
-            file.write(f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
-            i = i + 1
-            if i >= 5:
-                file.write("</table><table>")
-                i = 0
-        file.write("</table>\n")
-
+        write_theme_previews_to_file(themes21inch, file, "2.1\"")
+        write_theme_previews_to_file(themes3inch, file, "3.5\"")
+        write_theme_previews_to_file(themes5inch, file, "5\"")
+        write_theme_previews_to_file(themes88inch, file, "8.8\"")
