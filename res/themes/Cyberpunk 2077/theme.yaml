@@ -2,7 +2,7 @@
 display:
   DISPLAY_SIZE: 8.8"
   DISPLAY_ORIENTATION: landscape
-  DISPLAY_RGB_LED: 0, 0, 255
+  DISPLAY_RGB_LED: 255, 239, 47
 
 static_images:
   BACKGROUND:

@@ -314,7 +314,7 @@ if __name__ == "__main__":
         viewer_picture.bind("<B1-Motion>", on_button1_press_and_drag)
         viewer_picture.bind("<ButtonRelease-1>", on_button1_release)
 
-        # Allow to resize editor using mouse wheel
+        # Allow to resize editor using mouse wheel or buttons
         viewer.bind_all("<MouseWheel>", on_mousewheel)
 
         zoom_plus_btn = tkinter.Button(viewer, text="Zoom +", command=lambda: on_zoom_plus())
