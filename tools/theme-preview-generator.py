@@ -71,7 +71,7 @@ if __name__ == "__main__":
         file.write("ℹ️ Click on a preview to view full size\n\n")
         file.write("[2.1\" themes](#21-themes)\n\n")
         file.write("[3.5\" themes](#35-themes)\n\n")
-        file.write("[5\" themes](#5-themes)\n")
+        file.write("[5\" themes](#5-themes)\n\n")
         file.write("[8.8\" themes](#88-themes)\n")
 
         write_theme_previews_to_file(themes21inch, file, "2.1\"")
