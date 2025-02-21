@@ -82,7 +82,7 @@ from library.display import display  # Only import display after hardcoded confi
 
 RGB_LED_MARGIN = 12
 
-# Resize editor if display is too big (e.g. 8.8" displays are 1920x480)
+# Resize editor if display is too big (e.g. 8.8" displays are 1920x480), can be changed later by zoom buttons
 RESIZE_FACTOR = 2 if (display.lcd.get_width() > 1000 or display.lcd.get_height() > 1000) else 1
 
 ERROR_IN_THEME = Image.open("res/docs/error-in-theme.png")
@@ -225,6 +225,24 @@ if __name__ == "__main__":
         label_zone.place_forget()
 
 
+    def on_mousewheel(event):
+        global RESIZE_FACTOR
+        if event.delta > 0:
+            RESIZE_FACTOR = RESIZE_FACTOR - 0.2
+        else:
+            RESIZE_FACTOR = RESIZE_FACTOR + 0.2
+
+
+    def on_zoom_plus():
+        global RESIZE_FACTOR
+        RESIZE_FACTOR = RESIZE_FACTOR - 0.2
+
+
+    def on_zoom_minus():
+        global RESIZE_FACTOR
+        RESIZE_FACTOR = RESIZE_FACTOR + 0.2
+
+
     # Apply system locale to this program
     locale.setlocale(locale.LC_ALL, '')
 
@@ -253,97 +271,118 @@ if __name__ == "__main__":
         logger.error(f"Error in theme: {e}")
         error_in_theme = True
 
-    display_width, display_height = int(display.lcd.get_width() / RESIZE_FACTOR), int(
-        display.lcd.get_height() / RESIZE_FACTOR)
-
-    # Create preview window
-    logger.debug("Opening theme preview window with static data")
-    viewer = tkinter.Tk()
-    viewer.title("Turing SysMon Theme Editor")
-    viewer.iconphoto(True, tkinter.PhotoImage(file=config.MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png"))
-    viewer.geometry(str(display_width + 2 * RGB_LED_MARGIN) + "x" + str(display_height + 2 * RGB_LED_MARGIN + 40))
-    viewer.protocol("WM_DELETE_WINDOW", on_closing)
-    viewer.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
-    viewer.config(cursor="cross")
-
-    # Display RGB backplate LEDs color as background color
-    led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
-    if isinstance(led_color, str):
-        led_color = tuple(map(int, led_color.split(', ')))
-    viewer.configure(bg='#%02x%02x%02x' % led_color)
-
-    circular_mask = Image.open(config.MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
-
-    # Display preview in the window
-    if not error_in_theme:
-        screen_image = display.lcd.screen_image
-        if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
-            # This is a circular screen: apply a circle mask over the preview
-            screen_image.paste(circular_mask, mask=circular_mask)
-        display_image = ImageTk.PhotoImage(
-            screen_image.resize((int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
-    else:
-        size = display_width if display_width < display_height else display_height
-        display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
-    viewer_picture = tkinter.Label(viewer, image=display_image, borderwidth=0)
-    viewer_picture.place(x=RGB_LED_MARGIN, y=RGB_LED_MARGIN)
-
-    # Allow to click on preview to show coordinates and draw zones
-    viewer_picture.bind("<ButtonPress-1>", on_button1_press)
-    viewer_picture.bind("<B1-Motion>", on_button1_press_and_drag)
-    viewer_picture.bind("<ButtonRelease-1>", on_button1_release)
-
-    label_coord = tkinter.Label(viewer, text="Click or draw a zone to show coordinates")
-    label_coord.place(x=0, y=display_height + 2 * RGB_LED_MARGIN,
-                      width=display_width + 2 * RGB_LED_MARGIN)
-
-    label_info = tkinter.Label(viewer, text="This preview will reload when theme file is updated")
-    label_info.place(x=0, y=display_height + 2 * RGB_LED_MARGIN + 20,
-                     width=display_width + 2 * RGB_LED_MARGIN)
-
-    label_zone = tkinter.Label(viewer, bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
-    label_zone.bind("<ButtonRelease-1>", on_zone_click)
-    viewer.update()
-
-    logger.debug("You can now edit the theme file in the editor. When you save your changes, the preview window will "
-                 "update automatically")
-    # Every time the theme file is modified: reload preview
     while True:
-        if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
-            logger.debug("The theme file has been updated, the preview window will refresh")
-            try:
-                refresh_theme()
-                error_in_theme = False
-            except Exception as e:
-                logger.error(f"Error in theme: {e}")
-                error_in_theme = True
-            last_edit_time = os.path.getmtime(theme_file)
+        display_width, display_height = int(display.lcd.get_width() / RESIZE_FACTOR), int(
+            display.lcd.get_height() / RESIZE_FACTOR)
+        current_resize_factor = RESIZE_FACTOR
 
-            # Update the preview.png that is in the theme folder
-            display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
+        # Create preview window
+        logger.debug("Opening theme preview window with static data")
+        viewer = tkinter.Tk()
+        viewer.title("Turing SysMon Theme Editor")
+        viewer.iconphoto(True, tkinter.PhotoImage(file=config.MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png"))
+        viewer.geometry(str(display_width + 2 * RGB_LED_MARGIN) + "x" + str(display_height + 2 * RGB_LED_MARGIN + 80))
+        viewer.protocol("WM_DELETE_WINDOW", on_closing)
+        viewer.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
+        viewer.config(cursor="cross")
 
-            # Display new picture
-            if not error_in_theme:
-                screen_image = display.lcd.screen_image
-                if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
-                    # This is a circular screen: apply a circle mask over the preview
-                    screen_image.paste(circular_mask, mask=circular_mask)
-                display_image = ImageTk.PhotoImage(
-                    screen_image.resize(
-                        (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
-            else:
-                size = display_width if display_width < display_height else display_height
-                display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
-            viewer_picture.config(image=display_image)
+        # Display RGB backplate LEDs color as background color
+        led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
+        if isinstance(led_color, str):
+            led_color = tuple(map(int, led_color.split(', ')))
+        viewer.configure(bg='#%02x%02x%02x' % led_color)
 
-            # Refresh RGB backplate LEDs color
-            led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
-            if isinstance(led_color, str):
-                led_color = tuple(map(int, led_color.split(', ')))
-            viewer.configure(bg='#%02x%02x%02x' % led_color)
-            label_zone.configure(bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
+        circular_mask = Image.open(config.MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
 
-        # Regularly update the viewer window even if content unchanged
+        # Display preview in the window
+        if not error_in_theme:
+            screen_image = display.lcd.screen_image
+            if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+                # This is a circular screen: apply a circle mask over the preview
+                screen_image.paste(circular_mask, mask=circular_mask)
+            display_image = ImageTk.PhotoImage(
+                screen_image.resize(
+                    (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+        else:
+            size = display_width if display_width < display_height else display_height
+            display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
+        viewer_picture = tkinter.Label(viewer, image=display_image, borderwidth=0)
+        viewer_picture.place(x=RGB_LED_MARGIN, y=RGB_LED_MARGIN)
+
+        # Allow to click on preview to show coordinates and draw zones
+        viewer_picture.bind("<ButtonPress-1>", on_button1_press)
+        viewer_picture.bind("<B1-Motion>", on_button1_press_and_drag)
+        viewer_picture.bind("<ButtonRelease-1>", on_button1_release)
+
+        # Allow to resize editor using mouse wheel
+        viewer.bind_all("<MouseWheel>", on_mousewheel)
+
+        zoom_plus_btn = tkinter.Button(viewer, text="Zoom +", command=lambda: on_zoom_plus())
+        zoom_plus_btn.place(x=RGB_LED_MARGIN, y=display_height + 2 * RGB_LED_MARGIN, height=30,
+                            width=int(display_width / 2))
+
+        zoom_minus_btn = tkinter.Button(viewer, text="Zoom -", command=lambda: on_zoom_minus())
+        zoom_minus_btn.place(x=int(display_width / 2) + RGB_LED_MARGIN, y=display_height + 2 * RGB_LED_MARGIN,
+                             height=30, width=int(display_width / 2))
+
+        label_coord = tkinter.Label(viewer, text="Click or draw a zone to show coordinates")
+        label_coord.place(x=0, y=display_height + 2 * RGB_LED_MARGIN + 40,
+                          width=display_width + 2 * RGB_LED_MARGIN)
+
+        label_info = tkinter.Label(viewer, text="This preview will reload when theme file is updated")
+        label_info.place(x=0, y=display_height + 2 * RGB_LED_MARGIN + 60,
+                         width=display_width + 2 * RGB_LED_MARGIN)
+
+        label_zone = tkinter.Label(viewer, bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
+        label_zone.bind("<ButtonRelease-1>", on_zone_click)
         viewer.update()
 
-        time.sleep(0.1)
+        logger.debug(
+            "You can now edit the theme file in the editor. When you save your changes, the preview window will "
+            "update automatically")
+
+        while current_resize_factor == RESIZE_FACTOR:
+            # Every time the theme file is modified: reload preview
+            if os.path.exists(theme_file) and os.path.getmtime(theme_file) > last_edit_time:
+                logger.debug("The theme file has been updated, the preview window will refresh")
+                try:
+                    refresh_theme()
+                    error_in_theme = False
+                except Exception as e:
+                    logger.error(f"Error in theme: {e}")
+                    error_in_theme = True
+                last_edit_time = os.path.getmtime(theme_file)
+
+                # Update the preview.png that is in the theme folder
+                display.lcd.screen_image.save(config.THEME_DATA['PATH'] + "preview.png", "PNG")
+
+                # Display new picture
+                if not error_in_theme:
+                    screen_image = display.lcd.screen_image
+                    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+                        # This is a circular screen: apply a circle mask over the preview
+                        screen_image.paste(circular_mask, mask=circular_mask)
+                    display_image = ImageTk.PhotoImage(
+                        screen_image.resize(
+                            (int(screen_image.width / RESIZE_FACTOR), int(screen_image.height / RESIZE_FACTOR))))
+                else:
+                    size = display_width if display_width < display_height else display_height
+                    display_image = ImageTk.PhotoImage(ERROR_IN_THEME.resize((size, size)))
+                viewer_picture.config(image=display_image)
+
+                # Refresh RGB backplate LEDs color
+                led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
+                if isinstance(led_color, str):
+                    led_color = tuple(map(int, led_color.split(', ')))
+                viewer.configure(bg='#%02x%02x%02x' % led_color)
+                label_zone.configure(bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
+
+            # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
+            viewer.update()
+
+            time.sleep(0.1)
+
+        # Zoom level changed, reload editor
+        logger.info(
+            f"Zoom level changed from {current_resize_factor:.1f} to {RESIZE_FACTOR:.1f}, reloading theme editor")
+        viewer.destroy()
