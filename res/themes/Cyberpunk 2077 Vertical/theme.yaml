@@ -37,8 +37,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: False
-        X: 345
-        Y: 1662
+        X: 326
+        Y: 1655
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -59,8 +62,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: False
-        X: 345
-        Y: 1603
+        X: 326
+        Y: 1597
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -70,8 +76,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 254
-        Y: 1305
+        X: 244
+        Y: 1300
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 24
         FONT_COLOR: 0, 0, 0
@@ -94,8 +103,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: False
-        X: 345
-        Y: 1785
+        X: 326
+        Y: 1779
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -104,8 +116,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: False
-        X: 345
-        Y: 1727
+        X: 326
+        Y: 1722
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 40
         FONT_COLOR: 255, 255, 255
@@ -114,8 +129,11 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 254
-        Y: 1374
+        X: 244
+        Y: 1370
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
         FONT: racespace/RACESPACEREGULAR-Extended.otf
         FONT_SIZE: 24
         FONT_COLOR: 0, 0, 0
