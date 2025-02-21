@@ -381,10 +381,10 @@ class LcdCommRevC(LcdComm):
         if self.sub_revision == SubRevision.REV_8INCH:
             if self.orientation == Orientation.LANDSCAPE:
                 image = image.rotate(270, expand=True)
+                y0 = self.get_height() - y - image.width
             elif self.orientation == Orientation.REVERSE_LANDSCAPE:
                 image = image.rotate(90, expand=True)
                 x0 = self.get_width() - x - image.height
-                y0 = self.get_height() - y - image.width
             elif self.orientation == Orientation.PORTRAIT:
                 image = image.rotate(180, expand=True)
                 x0 = self.get_height() - y - image.height
