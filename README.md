@@ -50,7 +50,7 @@ If you haven't received your screen yet but want to start developing your theme 
 | ❔ _[SmartCool Lcd](https://aliexpress.com/item/1005005443609423.html) / [GeekTeches AD35](https://aliexpress.com/item/1005004858688084.html) / AIDA64 / AX206_                                   | ❌ _[(Fuldho?) 3.5" IPS Screen](https://aliexpress.com/item/1005005632018367.html)_ |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----|
 | <img src="res/docs/ax206.jpg" width="30%" height="30%" /> <img src="res/docs/geekteches_ad35.jpg" width="30%" height="30%" /> <img src="res/docs/smartcool_lcd.webp" width="30%" height="30%" /> | <img src="res/docs/fuldho_3.5.jpg"/> |
-| Not supported. Produced by multiple manufacturers, all use the same [Appotech AX206 hacked photo frame firmware](https://github.com/dreamlayers/dpf-ax). Supported by AIDA64 and lcd4linux       |  Managed by [proprietary Windows software `SmartMonitor.exe`](https://smartdisplay.lanzouo.com/b04jvavkb). Cannot be supported by this project: [see here](https://github.com/mathoudebine/turing-smart-screen-python/discussions/298). Use alternative library https://github.com/braewoods/hidss |
+| Not supported. Produced by multiple manufacturers, all use the same [Appotech AX206 hacked photo frame firmware](https://github.com/dreamlayers/dpf-ax). Supported by AIDA64 and lcd4linux       |  Managed by [proprietary Windows software `SmartMonitor.exe`](https://smartdisplay.lanzouo.com/b04jvavkb). Cannot be supported by this project: [see here](https://github.com/mathoudebine/turing-smart-screen-python/discussions/298). |
 
 
 ## How to start
