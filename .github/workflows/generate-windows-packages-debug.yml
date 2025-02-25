@@ -1,4 +1,4 @@
-name: Generate Windows Installer (Debug)
+name: Generate Windows Packages (Debug)
 
 on:
   release:
@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   generate-windows-installer:
-    name: Generate Windows Installer (Debug)
+    name: Generate Windows Packages (Debug)
     runs-on: windows-latest
 
     steps:
@@ -40,15 +40,34 @@ jobs:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+
 
+    - name: Create portable zip archive from generated binaries
+      run: |
+        rm -rf "res/themes/--Theme examples"
+        mv dist/turing-system-monitor dist/turing-system-monitor-${{github.event.release.tag_name}}-debug
+        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip dist/turing-system-monitor-${{github.event.release.tag_name}}-debug
+
     - name: '📦 Archive Windows installer'
       uses: actions/upload-artifact@v4
       with:
-        name: turing-system-monitor_${{github.event.release.tag_name}}
+        name: turing-system-monitor_${{github.event.release.tag_name}}-debug
         path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
+        if-no-files-found: error
+
+    - name: '📦 Archive Windows portable archive'
+      uses: actions/upload-artifact@v4
+      with:
+        name: turing-system-monitor_${{github.event.release.tag_name}}-portable-debug
+        path: turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
         if-no-files-found: error
 
     - name: '📩 Publish Windows installer to Release'
       run: |
         gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: '📩 Publish Windows portable zip to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
