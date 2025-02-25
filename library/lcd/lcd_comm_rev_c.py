@@ -339,7 +339,7 @@ class LcdCommRevC(LcdComm):
                     display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
 
                 self._send_command(display_bmp_cmd,
-                                   payload=bytearray(int(self.display_width * self.display_width / 64).to_bytes(2)))
+                                   payload=bytearray(int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image)),
                                    readsize=1024)
