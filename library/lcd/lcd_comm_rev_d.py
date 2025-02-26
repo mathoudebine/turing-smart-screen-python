@@ -89,7 +89,7 @@ class LcdCommRevD(LcdComm):
     def Clear(self):
         # HW revision D does not implement a Clear command: display a blank image on the whole screen
         color = 0xFFFF  # RGB565 White color
-        color_bytes = bytearray(color.to_bytes(2))
+        color_bytes = bytearray(color.to_bytes(2, "big"))
         self.SendCommand(cmd=Command.DISPCOLOR, payload=color_bytes)
 
     def ScreenOff(self):
