@@ -33,6 +33,7 @@ jobs:
     - name: Run PyInstaller to create binaries
       run: |
         pyinstaller.exe --noconfirm turing-system-monitor.spec
+        ${{github.event.release.tag_name}} | Out-File ".\dist\turing-system-monitor\version.txt"
 
     - name: Create InnoSetup installer from generated binaries
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
@@ -42,9 +43,8 @@ jobs:
 
     - name: Create portable zip archive from generated binaries
       run: |
-        rm -rf "res/themes/--Theme examples"
-        mv dist/turing-system-monitor dist/turing-system-monitor-${{github.event.release.tag_name}}
-        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable.zip dist/turing-system-monitor-${{github.event.release.tag_name}}
+        Remove-Item -r ".\res\themes\--Theme examples\"
+        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable.zip ".\dist\turing-system-monitor"
 
     - name: '📦 Archive Windows installer'
       uses: actions/upload-artifact@v4
