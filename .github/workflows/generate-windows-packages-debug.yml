@@ -33,6 +33,7 @@ jobs:
     - name: Run PyInstaller to create binaries
       run: |
         pyinstaller.exe --noconfirm turing-system-monitor-debug.spec
+        "${{github.event.release.tag_name}}-debug" | Out-File ".\dist\turing-system-monitor\version.txt"
 
     - name: Create InnoSetup installer from generated binaries
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
@@ -42,21 +43,20 @@ jobs:
 
     - name: Create portable zip archive from generated binaries
       run: |
-        rm -rf "res/themes/--Theme examples"
-        mv dist/turing-system-monitor dist/turing-system-monitor-${{github.event.release.tag_name}}-debug
-        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip dist/turing-system-monitor-${{github.event.release.tag_name}}-debug
+        Remove-Item -r ".\dist\turing-system-monitor\res\themes\--Theme examples\"
+        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip ".\dist\turing-system-monitor"
 
     - name: '📦 Archive Windows installer'
       uses: actions/upload-artifact@v4
       with:
-        name: turing-system-monitor_${{github.event.release.tag_name}}-debug
+        name: turing-system-monitor-${{github.event.release.tag_name}}-debug
         path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
         if-no-files-found: error
 
     - name: '📦 Archive Windows portable archive'
       uses: actions/upload-artifact@v4
       with:
-        name: turing-system-monitor_${{github.event.release.tag_name}}-portable-debug
+        name: turing-system-monitor-${{github.event.release.tag_name}}-portable-debug
         path: turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
         if-no-files-found: error
 
@@ -68,6 +68,6 @@ jobs:
 
     - name: '📩 Publish Windows portable zip to Release'
       run: |
-        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
+        gh release upload ${{github.event.release.tag_name}} turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
