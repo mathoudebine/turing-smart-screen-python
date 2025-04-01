@@ -191,9 +191,9 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
         background_image=get_theme_file_path(theme_data.get("BACKGROUND_IMAGE", None)),
         custom_bbox=theme_data.get("CUSTOM_BBOX", (0, 0, 0, 0)),
         text_offset=theme_data.get("TEXT_OFFSET", (0, 0)),
-        bar_background_color = theme_data.get("BAR_BACKGROUND_COLOR", (0, 0, 0)),
-        draw_bar_background = theme_data.get("DRAW_BAR_BACKGROUND", False),
-        bar_decoration = theme_data.get("BAR_DECORATION", "")
+        bar_background_color=theme_data.get("BAR_BACKGROUND_COLOR", (0, 0, 0)),
+        draw_bar_background=theme_data.get("DRAW_BAR_BACKGROUND", False),
+        bar_decoration=theme_data.get("BAR_DECORATION", "")
     )
 
 
@@ -742,11 +742,17 @@ class Date:
         else:
             date_now = datetime.datetime.now()
 
-        if platform.system() == "Windows":
-            # Windows does not have LC_TIME environment variable, use deprecated getdefaultlocale() that returns language code following RFC 1766
-            lc_time = locale.getdefaultlocale()[0]
-        else:
-            lc_time = babel.dates.LC_TIME
+        try:
+            if platform.system() == "Windows":
+                # Windows does not have LC_TIME environment variable, use deprecated getdefaultlocale() that returns language code following RFC 1766
+                lc_time = locale.getdefaultlocale()[0]
+            else:
+                lc_time = babel.dates.LC_TIME
+        except:
+            lc_time = None
+
+        if not lc_time:
+            lc_time = "en_US"
 
         date_theme_data = config.THEME_DATA['STATS']['DATE']
         day_theme_data = date_theme_data['DAY']['TEXT']
