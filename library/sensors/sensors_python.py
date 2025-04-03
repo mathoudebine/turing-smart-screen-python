@@ -24,7 +24,7 @@ import platform
 import sys
 from collections import namedtuple
 from enum import IntEnum, auto
-from typing import Tuple
+from typing import Tuple, List # Added List
 
 # Nvidia GPU
 import GPUtil
@@ -92,7 +92,15 @@ def sensors_fans():
                 min_rpm = int(bcat(base + '_min'))
             except:
                 min_rpm = 0  # Approximated: min fan speed is 0 RPM
-            percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
+
+            # Avoid division by zero if max_rpm equals min_rpm
+            if max_rpm > min_rpm:
+                percent = int((current_rpm - min_rpm) / (max_rpm - min_rpm) * 100)
+                # Clamp percentage between 0 and 100
+                percent = max(0, min(100, percent))
+            else:
+                percent = 0
+
         except (IOError, OSError) as err:
             continue
         unit_name = cat(os.path.join(os.path.dirname(base), 'name')).strip()
@@ -173,45 +181,105 @@ class Cpu(sensors.Cpu):
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+    def stats() -> List[Tuple[float, float, float, float, float]]:
+        # Returns list of: load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) per GPU
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.stats()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.stats()
         else:
-            return math.nan, math.nan, math.nan, math.nan, math.nan
+            return [] # Return empty list if no supported GPU
 
     @staticmethod
-    def fps() -> int:
+    def fps() -> List[int]:
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.fps()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.fps()
         else:
-            return -1
+            return []
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent() -> List[float]:
+        global DETECTED_GPU
+        num_gpus = 0
+        expected_fan_dev_names = []
+
+        # Determine number of GPUs and expected device names for fan lookup
+        if DETECTED_GPU == GpuType.NVIDIA:
+            try:
+                num_gpus = len(GPUtil.getGPUs())
+                expected_fan_dev_names = ['nouveau', 'nvidia']
+            except: return []
+        elif DETECTED_GPU == GpuType.AMD:
+            try:
+                if pyamdgpuinfo:
+                    num_gpus = pyamdgpuinfo.detect_gpus()
+                    expected_fan_dev_names = ['amdgpu', 'radeon']
+                elif pyadl:
+                    num_gpus = len(pyadl.ADLManager.getInstance().getDevices())
+                    expected_fan_dev_names = ['amdgpu', 'radeon']
+                else: return []
+            except: return []
+        else:
+            return []
+
+        fan_percentages = [math.nan] * num_gpus
+        
+        try:
+            if platform.system() == "Linux": # Linux : sensors_fans
+                fans = sensors_fans()
+                fans_found_for_type = []
+                # Find fans related to the GPU
+                for dev_name, entries in fans.items():
+                    if any(expected_name in dev_name.lower() for expected_name in expected_fan_dev_names):
+                        for entry in entries:
+                            if "gpu" in entry.label.lower() or "fan" in entry.label.lower(): # Broader check
+                                fans_found_for_type.append(entry.percent)
+
+                # Sequential mapping
+                for i in range(min(num_gpus, len(fans_found_for_type))):
+                    fan_percentages[i] = fans_found_for_type[i]
+        except Exception as e:
+            logger.debug(f"sensors_fans check failed or not applicable: {e}")
+            pass
+
+        if DETECTED_GPU == GpuType.AMD and pyadl and platform.system() == "Windows": # AMD gpu on Windows : pyadl
+            try:
+                devices = pyadl.ADLManager.getInstance().getDevices()
+                for i, device in enumerate(devices):
+                     if i < num_gpus and math.isnan(fan_percentages[i]): # Only overwrite if the previous method resulted in NaN
+                         try:
+                             fan_percentages[i] = device.getCurrentFanSpeed(pyadl.ADL_DEVICE_FAN_SPEED_TYPE_PERCENTAGE)
+                         except:
+                             fan_percentages[i] = math.nan # Keep nan if pyadl fails
+            except Exception as e:
+                logger.debug(f"pyadl fan check failed: {e}")
+                pass
+
+        return fan_percentages
+
+    @staticmethod
+    def get_gpu_names() -> List[str]:
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
-            return GpuAmd.fan_percent()
+            return GpuAmd.get_gpu_names()
         elif DETECTED_GPU == GpuType.NVIDIA:
-            return GpuNvidia.fan_percent()
+            return GpuNvidia.get_gpu_names()
         else:
-            return math.nan
+            return []
 
     @staticmethod
-    def frequency() -> float:
+    def frequency() -> List[float]:
         global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.frequency()
         elif DETECTED_GPU == GpuType.NVIDIA:
             return GpuNvidia.frequency()
         else:
-            return math.nan
+            return []
 
     @staticmethod
     def is_available() -> bool:
@@ -236,65 +304,62 @@ class Gpu(sensors.Gpu):
 
 class GpuNvidia(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
-        # Unlike other sensors, Nvidia GPU with GPUtil pulls in all the stats at once
-        nvidia_gpus = GPUtil.getGPUs()
-
+    def stats() -> List[Tuple[float, float, float, float, float]]:
+        # Returns list of: load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) per GPU
+        all_stats = []
         try:
-            memory_used_all = [item.memoryUsed for item in nvidia_gpus]
-            memory_used_mb = sum(memory_used_all) / len(memory_used_all)
-        except:
-            memory_used_mb = math.nan
+            nvidia_gpus = GPUtil.getGPUs()
+            for gpu in nvidia_gpus:
+                load = gpu.load * 100 if gpu.load is not None else math.nan
+                memory_used_mb = gpu.memoryUsed if gpu.memoryUsed is not None else math.nan
+                memory_total_mb = gpu.memoryTotal if gpu.memoryTotal is not None else math.nan
 
-        try:
-            memory_total_all = [item.memoryTotal for item in nvidia_gpus]
-            memory_total_mb = sum(memory_total_all) / len(memory_total_all)
-        except:
-            memory_total_mb = math.nan
+                if not math.isnan(memory_used_mb) and not math.isnan(memory_total_mb) and memory_total_mb > 0:
+                    memory_percentage = (memory_used_mb / memory_total_mb) * 100
+                else:
+                    memory_percentage = math.nan
 
-        try:
-            memory_percentage = (memory_used_mb / memory_total_mb) * 100
-        except:
-            memory_percentage = math.nan
-
-        try:
-            load_all = [item.load for item in nvidia_gpus]
-            load = (sum(load_all) / len(load_all)) * 100
-        except:
-            load = math.nan
-
-        try:
-            temperature_all = [item.temperature for item in nvidia_gpus]
-            temperature = sum(temperature_all) / len(temperature_all)
-        except:
-            temperature = math.nan
-
-        return load, memory_percentage, memory_used_mb, memory_total_mb, temperature
+                temperature = gpu.temperature if gpu.temperature is not None else math.nan
+                all_stats.append((load, memory_percentage, memory_used_mb, memory_total_mb, temperature))
+        except Exception as e:
+            logger.error(f"Error getting Nvidia stats with GPUtil: {e}")
+            # Return list of nans if GPUtil fails entirely
+            try: num_gpus = len(GPUtil.getGPUs()) # Try to get count even on error
+            except: num_gpus = 1 # Assume 1 if count fails
+            return [(math.nan, math.nan, math.nan, math.nan, math.nan)] * num_gpus
+        return all_stats
 
     @staticmethod
-    def fps() -> int:
-        # Not supported by Python libraries
-        return -1
-
-    @staticmethod
-    def fan_percent() -> float:
+    def get_gpu_names() -> List[str]:
+        names = []
         try:
-            fans = sensors_fans()
-            if fans:
-                for name, entries in fans.items():
-                    for entry in entries:
-                        if "gpu" in (entry.label.lower() or name.lower()):
-                            return entry.percent
-        except:
-            pass
-
-        return math.nan
+            nvidia_gpus = GPUtil.getGPUs()
+            for gpu in nvidia_gpus:
+                names.append(gpu.name if gpu.name else "NVIDIA GPU")
+        except Exception as e:
+            logger.error(f"Error getting Nvidia GPU names: {e}")
+        return names
 
     @staticmethod
-    def frequency() -> float:
-        # Not supported by Python libraries
-        return math.nan
+    def fps() -> List[int]:
+        # Not supported by the GPUtil library
+        try: num_gpus = len(GPUtil.getGPUs())
+        except: num_gpus = 0
+        return [-1] * num_gpus
+
+    @staticmethod
+    def fan_percent() -> List[float]:
+         # Fan speed is handled by the main Gpu.fan_percent() method using OS interfaces, GPUtil doesn't provide fan speed directly.
+        try: num_gpus = len(GPUtil.getGPUs())
+        except: num_gpus = 0
+        return [math.nan] * num_gpus
+
+    @staticmethod
+    def frequency() -> List[float]:
+        # Not supported by the GPUtil library
+        try: num_gpus = len(GPUtil.getGPUs())
+        except: num_gpus = 0
+        return [math.nan] * num_gpus
 
     @staticmethod
     def is_available() -> bool:
@@ -306,96 +371,137 @@ class GpuNvidia(sensors.Gpu):
 
 class GpuAmd(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+    def stats() -> List[Tuple[float, float, float, float, float]]:
+        # Returns list of: load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C) per GPU
+        all_stats = []
         if pyamdgpuinfo:
-            # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
-            pyamdgpuinfo.detect_gpus()
-            amd_gpu = pyamdgpuinfo.get_gpu(0)
-
             try:
-                memory_used_bytes = amd_gpu.query_vram_usage()
-                memory_used = memory_used_bytes / 1024 / 1024
-            except:
-                memory_used_bytes = math.nan
-                memory_used = math.nan
+                num_gpus = pyamdgpuinfo.detect_gpus()
+                for i in range(num_gpus):
+                    load, memory_percentage, memory_used, memory_total, temperature = math.nan, math.nan, math.nan, math.nan, math.nan
+                    try:
+                        amd_gpu = pyamdgpuinfo.get_gpu(i)
+                        try: memory_used_bytes = amd_gpu.query_vram_usage()
+                        except: memory_used_bytes = math.nan
+                        try: memory_total_bytes = amd_gpu.memory_info["vram_size"]
+                        except: memory_total_bytes = math.nan
 
-            try:
-                memory_total_bytes = amd_gpu.memory_info["vram_size"]
-                memory_total = memory_total_bytes / 1024 / 1024
-            except:
-                memory_total_bytes = math.nan
-                memory_total = math.nan
+                        if not math.isnan(memory_used_bytes) and not math.isnan(memory_total_bytes) and memory_total_bytes > 0:
+                             memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
+                             memory_used = memory_used_bytes / 1024 / 1024
+                             memory_total = memory_total_bytes / 1024 / 1024
+                        else:
+                             memory_percentage, memory_used, memory_total = math.nan, math.nan, math.nan
 
-            try:
-                memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
-            except:
-                memory_percentage = math.nan
+                        try: load = amd_gpu.query_load() * 100
+                        except: load = math.nan
+                        try: temperature = amd_gpu.query_temperature()
+                        except: temperature = math.nan
+                    except Exception as gpu_err:
+                        logger.debug(f"Error getting stats for AMD GPU {i} (pyamdgpuinfo): {gpu_err}")
+                    all_stats.append((load, memory_percentage, memory_used, memory_total, temperature))
+            except Exception as e:
+                 logger.error(f"Error detecting AMD GPUs with pyamdgpuinfo: {e}")
 
-            try:
-                load = amd_gpu.query_load() * 100
-            except:
-                load = math.nan
 
-            try:
-                temperature = amd_gpu.query_temperature()
-            except:
-                temperature = math.nan
-
-            return load, memory_percentage, memory_used, memory_total, temperature
         elif pyadl:
-            amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
-
             try:
-                load = amd_gpu.getCurrentUsage()
-            except:
-                load = math.nan
+                devices = pyadl.ADLManager.getInstance().getDevices()
+                for amd_gpu in devices:
+                    load, temperature = math.nan, math.nan
+                    try:
+                        try: load = amd_gpu.getCurrentUsage()
+                        except: load = math.nan
+                        try: temperature = amd_gpu.getCurrentTemperature()
+                        except: temperature = math.nan
+                    except Exception as gpu_err:
+                         logger.debug(f"Error getting stats for AMD GPU (pyadl): {gpu_err}")
+                    # pyadl doesn't easily provide memory details
+                    all_stats.append((load, math.nan, math.nan, math.nan, temperature))
+            except Exception as e:
+                logger.error(f"Error detecting AMD GPUs with pyadl: {e}")
 
-            try:
-                temperature = amd_gpu.getCurrentTemperature()
-            except:
-                temperature = math.nan
-
-            # GPU memory data not supported by pyadl
-            return load, math.nan, math.nan, math.nan, temperature
+        return all_stats
 
     @staticmethod
-    def fps() -> int:
+    def get_gpu_names() -> List[str]:
+        names = []
+        if pyamdgpuinfo:
+            try:
+                num_gpus = pyamdgpuinfo.detect_gpus()
+                for i in range(num_gpus):
+                    try:
+                        name = pyamdgpuinfo.get_gpu(i).marketing_name
+                        names.append(name if name else f"AMD GPU {i}")
+                    except:
+                        names.append(f"AMD GPU {i}")
+            except Exception as e:
+                 logger.error(f"Error getting AMD GPU names (pyamdgpuinfo): {e}")
+        elif pyadl:
+            try:
+                devices = pyadl.ADLManager.getInstance().getDevices()
+                for i, device in enumerate(devices):
+                    try:
+                        name = device.adapterName.decode('utf-8')
+                        names.append(name if name else f"AMD GPU {i}")
+                    except:
+                        names.append(f"AMD GPU {i}")
+            except Exception as e:
+                logger.error(f"Error getting AMD GPU names (pyadl): {e}")
+        return names
+
+    @staticmethod
+    def fps() -> List[int]:
         # Not supported by Python libraries
-        return -1
+        num_gpus = 0
+        try:
+             if pyamdgpuinfo: num_gpus = pyamdgpuinfo.detect_gpus()
+             elif pyadl: num_gpus = len(pyadl.ADLManager.getInstance().getDevices())
+        except: pass
+        return [-1] * num_gpus
 
     @staticmethod
-    def fan_percent() -> float:
+    def fan_percent() -> List[float]:
+         # Fan speed is handled by the main Gpu.fan_percent method using OS interfaces or pyadl
+        num_gpus = 0
         try:
-            # Try with psutil fans
-            fans = sensors_fans()
-            if fans:
-                for name, entries in fans.items():
-                    for entry in entries:
-                        if "gpu" in (entry.label.lower() or name.lower()):
-                            return entry.percent
-
-            # Try with pyadl if psutil did not find GPU fan
-            if pyadl:
-                return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentFanSpeed(
-                    pyadl.ADL_DEVICE_FAN_SPEED_TYPE_PERCENTAGE)
-        except:
-            pass
-
-        return math.nan
+             if pyamdgpuinfo: num_gpus = pyamdgpuinfo.detect_gpus()
+             elif pyadl: num_gpus = len(pyadl.ADLManager.getInstance().getDevices())
+        except: pass
+        return [math.nan] * num_gpus # Return list of nans, main method handles it
 
     @staticmethod
-    def frequency() -> float:
-        try:
-            if pyamdgpuinfo:
-                pyamdgpuinfo.detect_gpus()
-                return pyamdgpuinfo.get_gpu(0).query_sclk() / 1000000
-            elif pyadl:
-                return pyadl.ADLManager.getInstance().getDevices()[0].getCurrentEngineClock()
-            else:
-                return math.nan
-        except:
-            return math.nan
+    def frequency() -> List[float]: # Returns list of MHz
+        frequencies = []
+        if pyamdgpuinfo:
+            try:
+                num_gpus = pyamdgpuinfo.detect_gpus()
+                frequencies = [math.nan] * num_gpus
+                for i in range(num_gpus):
+                    try: frequencies[i] = pyamdgpuinfo.get_gpu(i).query_sclk()
+                    except: pass # Keep nan on error
+
+            except Exception as e:
+                 logger.error(f"Error detecting AMD GPU frequency with pyamdgpuinfo: {e}")
+                 try: num_gpus = pyamdgpuinfo.detect_gpus() # Try to determine num_gpus anyway
+                 except: num_gpus = 1 # Assume 1 if count fails
+                 return [math.nan] * num_gpus
+
+        elif pyadl:
+            try:
+                devices = pyadl.ADLManager.getInstance().getDevices()
+                frequencies = [math.nan] * len(devices)
+                for i, device in enumerate(devices):
+                    try: frequencies[i] = device.getCurrentEngineClock() # Returns MHz
+                    except: pass # Keep nan on error
+
+            except Exception as e:
+                logger.error(f"Error detecting AMD GPU frequency with pyadl: {e}")
+                try: num_gpus = len(pyadl.ADLManager.getInstance().getDevices()) # Try to determine num_gpus anyway
+                except: num_gpus = 1 # Assume 1 if count fails
+                return [math.nan] * num_gpus
+        return frequencies
+
 
     @staticmethod
     def is_available() -> bool:
@@ -484,18 +590,41 @@ class Net(sensors.Net):
             if if_name != "":
                 if if_name in pnic_after:
                     try:
-                        upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                        # Ensure interval is not zero and we have previous data
+                        if interval > 0 and if_name in PNIC_BEFORE:
+                           upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
+                           download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
+                           # Prevent negative rates if counters reset
+                           upload_rate = max(0, upload_rate)
+                           download_rate = max(0, download_rate)
+                        else:
+                            upload_rate = 0
+                            download_rate = 0
+
                         uploaded = pnic_after[if_name].bytes_sent
-                        download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
                         downloaded = pnic_after[if_name].bytes_recv
-                    except:
-                        # Interface might not be in PNIC_BEFORE for now
-                        pass
+
+                    except KeyError: # Handles the case where if_name is not in PNIC_BEFORE yet
+                         upload_rate = 0
+                         download_rate = 0
+                         uploaded = pnic_after[if_name].bytes_sent
+                         downloaded = pnic_after[if_name].bytes_recv
+                    except Exception as e:
+                         logger.debug(f"Error calculating net stats for {if_name}: {e}")
+                         upload_rate, uploaded, download_rate, downloaded = 0, 0, 0, 0
 
                     PNIC_BEFORE.update({if_name: pnic_after[if_name]})
                 else:
-                    logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
+                    # Log only once per missing interface to avoid spamming
+                    if not hasattr(Net, '_logged_missing') or if_name not in Net._logged_missing:
+                        logger.warning(f"Network interface '{if_name}' not found in psutil.net_io_counters(). Check names in config.yaml.")
+                        if not hasattr(Net, '_logged_missing'): Net._logged_missing = set()
+                        Net._logged_missing.add(if_name)
+                    upload_rate, uploaded, download_rate, downloaded = 0, 0, 0, 0
 
-            return upload_rate, uploaded, download_rate, downloaded
-        except:
+
+            return int(upload_rate), int(uploaded), int(download_rate), int(downloaded)
+        
+        except Exception as e:
+            logger.error(f"General error fetching network stats: {e}")
             return -1, -1, -1, -1

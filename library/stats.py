@@ -26,7 +26,7 @@ import math
 import os
 import platform
 import sys
-from typing import List
+from typing import List, Tuple, Callable  # Added List, Tuple, Callable
 
 import babel.dates
 import requests
@@ -119,18 +119,20 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
 
 
 def display_themed_percent_value(theme_data, value):
+    display_val = 0 if math.isnan(value) else int(value)
     display_themed_value(
         theme_data=theme_data,
-        value=int(value),
+        value=display_val,
         min_size=3,
         unit="%"
     )
 
 
 def display_themed_temperature_value(theme_data, value):
+    display_val = 0 if math.isnan(value) else int(value)
     display_themed_value(
         theme_data=theme_data,
-        value=int(value),
+        value=display_val,
         min_size=3,
         unit="°C"
     )
@@ -140,12 +142,13 @@ def display_themed_progress_bar(theme_data, value):
     if not theme_data.get("SHOW", False):
         return
 
+    display_val = 0 if math.isnan(value) else int(value)
     display.lcd.DisplayProgressBar(
         x=theme_data.get("X", 0),
         y=theme_data.get("Y", 0),
         width=theme_data.get("WIDTH", 0),
         height=theme_data.get("HEIGHT", 0),
-        value=int(value),
+        value=display_val, # Use the checked value
         min_value=theme_data.get("MIN_VALUE", 0),
         max_value=theme_data.get("MAX_VALUE", 100),
         bar_color=theme_data.get("BAR_COLOR", (0, 0, 0)),
@@ -159,11 +162,12 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
     if not theme_data.get("SHOW", False):
         return
 
+    display_val = 0 if math.isnan(value) else value
     if theme_data.get("SHOW_TEXT", False):
         if custom_text:
             text = custom_text
         else:
-            text = f"{{:>{min_size}}}".format(value)
+            text = f"{{:>{min_size}}}".format(int(display_val) if not isinstance(display_val, str) else display_val) # Ensure int for formatting if not already string
             if theme_data.get("SHOW_UNIT", True) and unit:
                 text += str(unit)
     else:
@@ -181,7 +185,7 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
         angle_steps=theme_data.get("ANGLE_STEPS", 1),
         angle_sep=theme_data.get("ANGLE_SEP", 0),
         clockwise=theme_data.get("CLOCKWISE", False),
-        value=value,
+        value=display_val,
         bar_color=theme_data.get("BAR_COLOR", (0, 0, 0)),
         text=text,
         font=config.FONTS_DIR + theme_data.get("FONT", "roboto-mono/RobotoMono-Regular.ttf"),
@@ -198,9 +202,10 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
 
 
 def display_themed_percent_radial_bar(theme_data, value):
+    display_val = 0 if math.isnan(value) else int(value)
     display_themed_radial_bar(
         theme_data=theme_data,
-        value=int(value),
+        value=display_val,
         unit="%",
         min_size=3
     )
@@ -372,6 +377,16 @@ class CPU:
 
 
 class Gpu:
+    loads = []
+    memory_percentages = []
+    memory_used_mbs = []
+    total_memory_mbs = []
+    temperatures = []
+    fps_values = []
+    fan_percents = []
+    frequencies_ghz = []
+    gpu_names = []  # Added GPU names storage array
+
     last_values_gpu_percentage = []
     last_values_gpu_mem_percentage = []
     last_values_gpu_temperature = []
@@ -381,37 +396,155 @@ class Gpu:
 
     @classmethod
     def stats(cls):
-        load, memory_percentage, memory_used_mb, total_memory_mb, temperature = sensors.Gpu.stats()
-        fps = sensors.Gpu.fps()
-        fan_percent = sensors.Gpu.fan_percent()
-        freq_ghz = sensors.Gpu.frequency() / 1000
+        """Main entry point for GPU statistics collection and display"""
+        # 1. Fetch data and prepare storage
+        num_gpus = cls._fetch_gpu_data()
+        
+        # 2. Process each GPU's data and update histories
+        for i in range(num_gpus):
+            cls._update_history(i)
+        
+        # 3. Render multi-GPU data (new structure with GPU0, GPU1, etc.)
+        cls._render_multi_gpu(num_gpus)
+        
+        # 4. Handle legacy/backward compatibility (first GPU)
+        if num_gpus > 0:
+            cls._render_legacy_gpu()
 
+    @classmethod
+    def _fetch_gpu_data(cls):
+        """Fetch GPU data and resize storage if needed"""
+        all_stats_tuples = sensors.Gpu.stats()
+        all_fps = sensors.Gpu.fps()
+        all_fan_percent = sensors.Gpu.fan_percent()
+        all_frequency_mhz = sensors.Gpu.frequency()
+        all_names = sensors.Gpu.get_gpu_names()
+        
+        num_gpus = len(all_stats_tuples)
+
+        if len(all_names) < num_gpus:
+             all_names.extend([f"GPU {i}" for i in range(len(all_names), num_gpus)])
+        elif len(all_names) > num_gpus:
+             all_names = all_names[:num_gpus]
+
+        if len(cls.loads) != num_gpus:
+            cls._resize_storage(num_gpus)
+            
+        for i in range(num_gpus):
+            if i < len(all_stats_tuples):
+                cls.loads[i], cls.memory_percentages[i], cls.memory_used_mbs[i], cls.total_memory_mbs[i], cls.temperatures[i] = all_stats_tuples[i]
+            else:
+                cls.loads[i], cls.memory_percentages[i], cls.memory_used_mbs[i], cls.total_memory_mbs[i], cls.temperatures[i] = [math.nan]*5
+            
+            cls.fps_values[i] = all_fps[i] if i < len(all_fps) else -1
+            cls.fan_percents[i] = all_fan_percent[i] if i < len(all_fan_percent) else math.nan
+            freq_mhz = all_frequency_mhz[i] if i < len(all_frequency_mhz) else math.nan
+            cls.frequencies_ghz[i] = freq_mhz / 1000.0 if freq_mhz is not None and not math.isnan(freq_mhz) else math.nan
+            cls.gpu_names[i] = all_names[i]
+            
+        return num_gpus
+
+    @classmethod
+    def _render_multi_gpu(cls, num_gpus):
+        """Render metrics for multiple GPUs using the GPU0, GPU1, etc. structure"""
+        theme_gpu_main_data = config.THEME_DATA['STATS']['GPU']
+        for i in range(num_gpus):
+            gpu_key = f"GPU{i}"
+            if gpu_key in theme_gpu_main_data:
+                gpu_theme_section = theme_gpu_main_data[gpu_key]
+                
+                # Render GPU name if configured in theme
+                if 'NAME' in gpu_theme_section and 'TEXT' in gpu_theme_section['NAME']:
+                    display_themed_value(gpu_theme_section['NAME']['TEXT'], cls.gpu_names[i])
+                
+                # Render stats using helper methods
+                cls._render_gpu_stat(gpu_theme_section, 'PERCENTAGE', cls.loads[i], 
+                                    cls.last_values_gpu_percentage[i], 
+                                    display_themed_percent_value, display_themed_percent_radial_bar)
+                                    
+                cls._render_gpu_stat(gpu_theme_section, 'MEMORY_PERCENT', cls.memory_percentages[i], 
+                                    cls.last_values_gpu_mem_percentage[i], 
+                                    display_themed_percent_value, display_themed_percent_radial_bar)
+                                    
+                cls._render_gpu_stat(gpu_theme_section, 'TEMPERATURE', cls.temperatures[i], 
+                                    cls.last_values_gpu_temperature[i], 
+                                    display_themed_temperature_value, display_themed_temperature_radial_bar)
+                                    
+                cls._render_gpu_stat(gpu_theme_section, 'FAN_SPEED', cls.fan_percents[i], 
+                                    cls.last_values_gpu_fan_speed[i], 
+                                    display_themed_percent_value, display_themed_percent_radial_bar)
+                                    
+                cls._render_gpu_stat_custom_format(gpu_theme_section, 'MEMORY_USED', 
+                                                cls.memory_used_mbs[i], unit=" M", min_size=5)
+                                                
+                cls._render_gpu_stat_custom_format(gpu_theme_section, 'MEMORY_TOTAL', 
+                                                cls.total_memory_mbs[i], unit=" M", min_size=5)
+                                                
+                cls._render_gpu_stat_custom_format(gpu_theme_section, 'FPS', cls.fps_values[i], 
+                                                unit=" FPS", min_size=4, 
+                                                history_list=cls.last_values_gpu_fps[i])
+                                                
+                cls._render_gpu_stat_custom_format(gpu_theme_section, 'FREQUENCY', cls.frequencies_ghz[i], 
+                                                unit=" GHz", min_size=4, format_str='{:.2f}', 
+                                                history_list=cls.last_values_gpu_frequency[i])
+
+
+    @classmethod
+    def _render_legacy_gpu(cls):
+        """Render metrics for the first GPU in the legacy format for backward compatibility"""
         theme_gpu_data = config.THEME_DATA['STATS']['GPU']
+        
+        # Extract data for the first GPU
+        load = cls.loads[0]
+        memory_percentage = cls.memory_percentages[0]
+        memory_used_mb = cls.memory_used_mbs[0]
+        total_memory_mb = cls.total_memory_mbs[0]
+        temperature = cls.temperatures[0]
+        fps = cls.fps_values[0]
+        fan_percent = cls.fan_percents[0]
+        freq_ghz = cls.frequencies_ghz[0]
+        
+        # Legacy memory section
+        cls._render_legacy_memory(theme_gpu_data, memory_percentage, memory_used_mb)
+        
+        # GPU load percentage
+        cls._render_legacy_percentage(theme_gpu_data, load)
+        
+        # GPU memory percentage
+        cls._render_legacy_memory_percent(theme_gpu_data, memory_percentage)
+        
+        # GPU memory used
+        cls._render_legacy_memory_used(theme_gpu_data, memory_used_mb)
+        
+        # GPU total memory
+        cls._render_legacy_memory_total(theme_gpu_data, total_memory_mb)
+        
+        # GPU temperature
+        cls._render_legacy_temperature(theme_gpu_data, temperature)
+        
+        # GPU FPS
+        cls._render_legacy_fps(theme_gpu_data, fps)
+        
+        # GPU fan speed
+        cls._render_legacy_fan_speed(theme_gpu_data, fan_percent)
+        
+        # GPU frequency
+        cls._render_legacy_frequency(theme_gpu_data, freq_ghz)
 
-        save_last_value(load, cls.last_values_gpu_percentage,
-                        theme_gpu_data['PERCENTAGE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        save_last_value(memory_percentage, cls.last_values_gpu_mem_percentage,
-                        theme_gpu_data['MEMORY_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        save_last_value(temperature, cls.last_values_gpu_temperature,
-                        theme_gpu_data['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        save_last_value(fps, cls.last_values_gpu_fps,
-                        theme_gpu_data['FPS']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        save_last_value(fan_percent, cls.last_values_gpu_fan_speed,
-                        theme_gpu_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        save_last_value(freq_ghz, cls.last_values_gpu_frequency,
-                        theme_gpu_data['FREQUENCY']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-
-        ################################ for backward compatibility only
+    @classmethod
+    def _render_legacy_memory(cls, theme_gpu_data, memory_percentage, memory_used_mb):
+        """Render legacy memory section"""
         gpu_mem_graph_data = theme_gpu_data['MEMORY']['GRAPH']
         gpu_mem_radial_data = theme_gpu_data['MEMORY']['RADIAL']
+        gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
+        
         if math.isnan(memory_percentage):
             memory_percentage = 0
             if gpu_mem_graph_data['SHOW'] or gpu_mem_radial_data['SHOW']:
                 logger.warning("Your GPU memory relative usage (%) is not supported yet")
                 gpu_mem_graph_data['SHOW'] = False
                 gpu_mem_radial_data['SHOW'] = False
-
-        gpu_mem_text_data = theme_gpu_data['MEMORY']['TEXT']
+                
         if math.isnan(memory_used_mb):
             memory_used_mb = 0
             if gpu_mem_text_data['SHOW']:
@@ -426,9 +559,10 @@ class Gpu:
             min_size=5,
             unit=" M"
         )
-        ################################ end of backward compatibility only
 
-        # GPU usage (%)
+    @classmethod
+    def _render_legacy_percentage(cls, theme_gpu_data, load):
+        """Render legacy GPU load percentage"""
         gpu_percent_graph_data = theme_gpu_data['PERCENTAGE']['GRAPH']
         gpu_percent_radial_data = theme_gpu_data['PERCENTAGE']['RADIAL']
         gpu_percent_text_data = theme_gpu_data['PERCENTAGE']['TEXT']
@@ -447,9 +581,11 @@ class Gpu:
         display_themed_progress_bar(gpu_percent_graph_data, load)
         display_themed_percent_radial_bar(gpu_percent_radial_data, load)
         display_themed_percent_value(gpu_percent_text_data, load)
-        display_themed_line_graph(gpu_percent_line_graph_data, cls.last_values_gpu_percentage)
+        display_themed_line_graph(gpu_percent_line_graph_data, cls.last_values_gpu_percentage[0])
 
-        # GPU mem. usage (%)
+    @classmethod
+    def _render_legacy_memory_percent(cls, theme_gpu_data, memory_percentage):
+        """Render legacy GPU memory percentage"""
         gpu_mem_percent_graph_data = theme_gpu_data['MEMORY_PERCENT']['GRAPH']
         gpu_mem_percent_radial_data = theme_gpu_data['MEMORY_PERCENT']['RADIAL']
         gpu_mem_percent_text_data = theme_gpu_data['MEMORY_PERCENT']['TEXT']
@@ -467,9 +603,11 @@ class Gpu:
         display_themed_progress_bar(gpu_mem_percent_graph_data, memory_percentage)
         display_themed_percent_radial_bar(gpu_mem_percent_radial_data, memory_percentage)
         display_themed_percent_value(gpu_mem_percent_text_data, memory_percentage)
-        display_themed_line_graph(gpu_mem_percent_line_graph_data, cls.last_values_gpu_mem_percentage)
+        display_themed_line_graph(gpu_mem_percent_line_graph_data, cls.last_values_gpu_mem_percentage[0])
 
-        # GPU mem. absolute usage (M)
+    @classmethod
+    def _render_legacy_memory_used(cls, theme_gpu_data, memory_used_mb):
+        """Render legacy GPU memory used"""
         gpu_mem_used_text_data = theme_gpu_data['MEMORY_USED']['TEXT']
         if math.isnan(memory_used_mb):
             memory_used_mb = 0
@@ -484,7 +622,9 @@ class Gpu:
             unit=" M"
         )
 
-        # GPU mem. total memory (M)
+    @classmethod
+    def _render_legacy_memory_total(cls, theme_gpu_data, total_memory_mb):
+        """Render legacy GPU total memory"""
         gpu_mem_total_text_data = theme_gpu_data['MEMORY_TOTAL']['TEXT']
         if math.isnan(total_memory_mb):
             total_memory_mb = 0
@@ -495,11 +635,13 @@ class Gpu:
         display_themed_value(
             theme_data=gpu_mem_total_text_data,
             value=int(total_memory_mb),
-            min_size=5,  # Adjust min_size as necessary for your display
-            unit=" M"  # Assuming the unit is in Megabytes
+            min_size=5,
+            unit=" M"
         )
 
-        # GPU temperature (°C)
+    @classmethod
+    def _render_legacy_temperature(cls, theme_gpu_data, temperature):
+        """Render legacy GPU temperature"""
         gpu_temp_text_data = theme_gpu_data['TEMPERATURE']['TEXT']
         gpu_temp_radial_data = theme_gpu_data['TEMPERATURE']['RADIAL']
         gpu_temp_graph_data = theme_gpu_data['TEMPERATURE']['GRAPH']
@@ -518,9 +660,11 @@ class Gpu:
         display_themed_temperature_value(gpu_temp_text_data, temperature)
         display_themed_progress_bar(gpu_temp_graph_data, temperature)
         display_themed_temperature_radial_bar(gpu_temp_radial_data, temperature)
-        display_themed_line_graph(gpu_temp_line_graph_data, cls.last_values_gpu_temperature)
+        display_themed_line_graph(gpu_temp_line_graph_data, cls.last_values_gpu_temperature[0])
 
-        # GPU FPS
+    @classmethod
+    def _render_legacy_fps(cls, theme_gpu_data, fps):
+        """Render legacy GPU FPS"""
         gpu_fps_text_data = theme_gpu_data['FPS']['TEXT']
         gpu_fps_radial_data = theme_gpu_data['FPS']['RADIAL']
         gpu_fps_graph_data = theme_gpu_data['FPS']['GRAPH']
@@ -549,9 +693,11 @@ class Gpu:
             min_size=4,
             unit=" FPS"
         )
-        display_themed_line_graph(gpu_fps_line_graph_data, cls.last_values_gpu_fps)
+        display_themed_line_graph(gpu_fps_line_graph_data, cls.last_values_gpu_fps[0])
 
-        # GPU Fan Speed (%)
+    @classmethod
+    def _render_legacy_fan_speed(cls, theme_gpu_data, fan_percent):
+        """Render legacy GPU fan speed"""
         gpu_fan_text_data = theme_gpu_data['FAN_SPEED']['TEXT']
         gpu_fan_radial_data = theme_gpu_data['FAN_SPEED']['RADIAL']
         gpu_fan_graph_data = theme_gpu_data['FAN_SPEED']['GRAPH']
@@ -570,13 +716,16 @@ class Gpu:
         display_themed_percent_value(gpu_fan_text_data, fan_percent)
         display_themed_progress_bar(gpu_fan_graph_data, fan_percent)
         display_themed_percent_radial_bar(gpu_fan_radial_data, fan_percent)
-        display_themed_line_graph(gpu_fan_line_graph_data, cls.last_values_gpu_fan_speed)
+        display_themed_line_graph(gpu_fan_line_graph_data, cls.last_values_gpu_fan_speed[0])
 
-        # GPU Frequency (Ghz)
+    @classmethod
+    def _render_legacy_frequency(cls, theme_gpu_data, freq_ghz):
+        """Render legacy GPU frequency"""
         gpu_freq_text_data = theme_gpu_data['FREQUENCY']['TEXT']
         gpu_freq_radial_data = theme_gpu_data['FREQUENCY']['RADIAL']
         gpu_freq_graph_data = theme_gpu_data['FREQUENCY']['GRAPH']
         gpu_freq_line_graph_data = theme_gpu_data['FREQUENCY']['LINE_GRAPH']
+        
         display_themed_value(
             theme_data=gpu_freq_text_data,
             value=f'{freq_ghz:.2f}',
@@ -590,12 +739,100 @@ class Gpu:
             unit=" GHz",
             min_size=4
         )
-        display_themed_line_graph(gpu_freq_line_graph_data, cls.last_values_gpu_frequency)
+        display_themed_line_graph(gpu_freq_line_graph_data, cls.last_values_gpu_frequency[0])
+        
+    @classmethod
+    def _resize_storage(cls, num_gpus):
+        """ Helper to initialize/resize GPU storage lists """
+        logger.info(f"Resizing GPU storage for {num_gpus} GPU(s).")
+        default_hist_size = DEFAULT_HISTORY_SIZE
+        try:
+            default_hist_size = config.THEME_DATA['STATS']['GPU'].get('GPU0',{}).get('PERCENTAGE',{}).get('LINE_GRAPH',{}).get('HISTORY_SIZE', DEFAULT_HISTORY_SIZE)
+        except:
+            pass
+            
+        # Initialize value lists
+        cls.loads = [math.nan] * num_gpus
+        cls.memory_percentages = [math.nan] * num_gpus
+        cls.memory_used_mbs = [math.nan] * num_gpus
+        cls.total_memory_mbs = [math.nan] * num_gpus
+        cls.temperatures = [math.nan] * num_gpus
+        cls.fps_values = [-1] * num_gpus
+        cls.fan_percents = [math.nan] * num_gpus
+        cls.frequencies_ghz = [math.nan] * num_gpus
+        cls.gpu_names = [""] * num_gpus  # Initialize GPU names array
+        
+        # Initialize history lists
+        cls.last_values_gpu_percentage = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+        cls.last_values_gpu_mem_percentage = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+        cls.last_values_gpu_temperature = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+        cls.last_values_gpu_fps = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+        cls.last_values_gpu_fan_speed = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+        cls.last_values_gpu_frequency = [last_values_list(default_hist_size) for _ in range(num_gpus)]
+
+
+    @classmethod
+    def _update_history(cls, gpu_index):
+        """ Helper to update history for a specific GPU """
+        if gpu_index >= len(cls.last_values_gpu_percentage):
+            return  # Safety check
+            
+        hist_size = len(cls.last_values_gpu_percentage[gpu_index])  # Get size from list itself
+        
+        save_last_value(cls.loads[gpu_index], cls.last_values_gpu_percentage[gpu_index], hist_size)
+        save_last_value(cls.memory_percentages[gpu_index], cls.last_values_gpu_mem_percentage[gpu_index], hist_size)
+        save_last_value(cls.temperatures[gpu_index], cls.last_values_gpu_temperature[gpu_index], hist_size)
+        save_last_value(float(cls.fps_values[gpu_index]), cls.last_values_gpu_fps[gpu_index], hist_size)
+        save_last_value(cls.fan_percents[gpu_index], cls.last_values_gpu_fan_speed[gpu_index], hist_size)
+        save_last_value(cls.frequencies_ghz[gpu_index], cls.last_values_gpu_frequency[gpu_index], hist_size)
+
+    @classmethod
+    def _render_gpu_stat(cls, gpu_theme_section, stat_key, value, history_list, text_func, radial_func):
+        """ Helper to render common stat types """
+        # Method remains unchanged
+        if stat_key in gpu_theme_section:
+            theme_def = gpu_theme_section[stat_key]
+            if theme_def:  # Check if theme definition exists
+                if 'TEXT' in theme_def:
+                    text_func(theme_def.get('TEXT',{}), value)
+                if 'GRAPH' in theme_def:
+                    display_themed_progress_bar(theme_def.get('GRAPH',{}), value)
+                if 'RADIAL' in theme_def:
+                    radial_func(theme_def.get('RADIAL',{}), value)
+                if 'LINE_GRAPH' in theme_def:
+                    display_themed_line_graph(theme_def.get('LINE_GRAPH',{}), history_list)
+
+    @classmethod
+    def _render_gpu_stat_custom_format(cls, gpu_theme_section, stat_key, value, unit, min_size, format_str='{}', history_list=None):
+        """ Helper to render stats requiring specific formatting """
+        if stat_key in gpu_theme_section:
+            theme_def = gpu_theme_section[stat_key] # Check if theme definition exists
+            
+            if theme_def:
+                is_nan_value = value is None or math.isnan(value)
+                display_value = 0 if is_nan_value else value
+
+                try: # Attempt to format the value
+                    formatted_val_str = "N/A" if is_nan_value else format_str.format(value)
+                except:
+                    formatted_val_str = "N/A"
+
+                if 'TEXT' in theme_def:
+                    display_themed_value(theme_def.get('TEXT',{}), formatted_val_str, unit=unit, min_size=min_size)
+                if 'GRAPH' in theme_def:
+                    display_themed_progress_bar(theme_def.get('GRAPH',{}), display_value)
+                if 'RADIAL' in theme_def:
+                    radial_text = "N/A"
+                    if not is_nan_value: # Only format if value is valid
+                        radial_text = f"{formatted_val_str}{unit}" if theme_def.get('RADIAL',{}).get("SHOW_UNIT", True) else formatted_val_str
+                    display_themed_radial_bar(theme_def.get('RADIAL',{}), display_value, custom_text=radial_text) # Pass the potentially 0 value
+                if 'LINE_GRAPH' in theme_def and history_list is not None:
+                    # Note: save_last_value already handles appending NaN to history
+                    display_themed_line_graph(theme_def.get('LINE_GRAPH',{}), history_list)
 
     @staticmethod
     def is_available():
         return sensors.Gpu.is_available()
-
 
 class Memory:
     last_values_memory_swap = []
