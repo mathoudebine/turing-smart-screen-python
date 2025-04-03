@@ -1,16 +1,15 @@
----
 config:
   # Configuration values to set up basic communication
   # Set your COM port e.g. COM3 for Windows, /dev/ttyACM0 for Linux...
   # Use AUTO for COM port auto-discovery (may not work on every setup)
   # COM_PORT: "/dev/ttyACM0"
   # COM_PORT: "COM3"
-  COM_PORT: "AUTO"
+  COM_PORT: AUTO
 
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
-  THEME: 3.5inchTheme2
+  THEME: MultiGPUTest_3.5
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -24,8 +23,8 @@ config:
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
   # For Windows use the interfaces pretty name: "Ethernet 2", "Wi-Fi", ...
   # Leave the fields empty if the card does not exist on your setup
-  ETH: "" # Ethernet Card
-  WLO: "" # Wi-Fi Card
+  ETH: '' # Ethernet Card
+  WLO: '' # Wi-Fi Card
 
   # CPU fan
   # For Linux/MacOS platforms, the CPU fan is amongst all fan sensors gathered from the motherboard chipset
@@ -41,7 +40,7 @@ config:
 
   # OpenWeatherMap API KEY. Can be obtained by creating a free account on https://home.openweathermap.org/users/sign_up.
   # You need to subscribe to the 3.0 OneCallAPI that has 1000 free daily calls
-  WEATHER_API_KEY: ""
+  WEATHER_API_KEY: ''
   # Location from which to display the weather. Use for example https://www.latlong.net/ to get latitude/longitude
   WEATHER_LATITUDE: 45.75
   WEATHER_LONGITUDE: 4.85
@@ -63,7 +62,7 @@ display:
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
   # Warning: revision A display can get hot at high brightness!
-  BRIGHTNESS: 20
+  BRIGHTNESS: 50
 
   # Display reverse: true/false
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
