@@ -54,7 +54,72 @@ STATS:
       LINE_GRAPH:
         SHOW: False
   GPU:
-    INTERVAL: 0
+    INTERVAL: 0 # Interval applies to fetching data for ALL GPUs
+
+    # --- Multi-GPU Structure Defaults ---
+    GPU0: # Default structure for the first detected GPU (index 0)
+      PERCENTAGE:
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      MEMORY_PERCENT:
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        TEXT:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      MEMORY_USED:
+        TEXT:
+          SHOW: False
+      MEMORY_TOTAL:
+        TEXT:
+          SHOW: False
+      TEMPERATURE:
+        TEXT:
+          SHOW: False
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      FPS:
+        TEXT:
+          SHOW: False
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      FAN_SPEED:
+        TEXT:
+          SHOW: False
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+      FREQUENCY:
+        TEXT:
+          SHOW: False
+        GRAPH:
+          SHOW: False
+        RADIAL:
+          SHOW: False
+        LINE_GRAPH:
+          SHOW: False
+
+    # --- Single-GPU Structure Defaults (kept for backwards compatibility) ---
     PERCENTAGE:
       GRAPH:
         SHOW: False
@@ -122,6 +187,7 @@ STATS:
         SHOW: False
       LINE_GRAPH:
         SHOW: False
+
   MEMORY:
     INTERVAL: 0
     SWAP:
@@ -139,11 +205,14 @@ STATS:
       LINE_GRAPH:
         SHOW: False
       USED:
-        SHOW: False
+        TEXT:
+          SHOW: False
       FREE:
-        SHOW: False
+        TEXT:
+          SHOW: False
       TOTAL:
-        SHOW: False
+        TEXT:
+          SHOW: False
       PERCENT_TEXT:
         SHOW: False
   DISK:

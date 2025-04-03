@@ -20,7 +20,7 @@
 # To be overriden by child sensors classes
 
 from abc import ABC, abstractmethod
-from typing import Tuple
+from typing import List, Tuple
 
 
 class Cpu(ABC):
@@ -77,6 +77,10 @@ class Gpu(ABC):
     def is_available() -> bool:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def get_gpu_names() -> List[str]:
+        pass
 
 class Memory(ABC):
     @staticmethod

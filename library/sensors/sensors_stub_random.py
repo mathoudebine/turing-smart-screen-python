@@ -20,7 +20,7 @@
 # For all platforms (Linux, Windows, macOS)
 
 import random
-from typing import Tuple
+from typing import Tuple, List
 
 import library.sensors.sensors as sensors
 
@@ -49,22 +49,26 @@ class Cpu(sensors.Cpu):
 
 class Gpu(sensors.Gpu):
     @staticmethod
-    def stats() -> Tuple[
-        float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
-        return random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), 16000.0, random.uniform(30,
-                                                                                                                   90)
+    def stats() -> List[Tuple[float, float, float, float, float]]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        gpu0 = (random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), 16000.0, random.uniform(30, 90))
+        gpu1 = (random.uniform(0, 100), random.uniform(0, 100), random.uniform(300, 16000), 16000.0, random.uniform(30, 90))
+        return [gpu0, gpu1]
 
     @staticmethod
-    def fps() -> int:
-        return random.randint(20, 120)
+    def get_gpu_names() -> List[str]:
+        return ["Dummy GPU 0 (Rand)", "Dummy GPU 1 (Rand)"]
 
     @staticmethod
-    def fan_percent() -> float:
-        return random.uniform(0, 100)
+    def fps() -> List[int]:
+        return [random.randint(20, 120), random.randint(20, 120)]
 
     @staticmethod
-    def frequency() -> float:
-        return random.uniform(800, 3400)
+    def fan_percent() -> List[float]:
+        return [random.uniform(0, 100), random.uniform(0, 100)]
+
+    @staticmethod
+    def frequency() -> List[float]:
+        return [random.uniform(800, 3400), random.uniform(800, 3400)]
 
     @staticmethod
     def is_available() -> bool:
