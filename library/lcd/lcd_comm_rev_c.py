@@ -146,21 +146,22 @@ class LcdCommRevC(LcdComm):
     def auto_detect_com_port() -> Optional[str]:
         com_ports = comports()
 
-        # Try to find awake device through serial number or vid/pid
+        # First, try to find sleeping device and wake it up
+        for com_port in com_ports:
+            if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
+                LcdCommRevC._connect_to_reset_device_name(com_port)
+                return LcdCommRevC.auto_detect_com_port()
+            if com_port.vid == 0x1a86 and com_port.pid == 0xca21:
+                LcdCommRevC._connect_to_reset_device_name(com_port)
+                return LcdCommRevC.auto_detect_com_port()
+
+        # Then try to find awake device through serial number or vid/pid
         for com_port in com_ports:
             if com_port.serial_number == '20080411':
                 return com_port.device
             if com_port.vid == 0x0525 and com_port.pid == 0xa4a7:
                 return com_port.device
             if com_port.vid == 0x1d6b and (com_port.pid == 0x0121 or com_port.pid == 0x0106):
-                return com_port.device
-
-        # Try to find sleeping device and wake it up
-        for com_port in com_ports:
-            if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
-                LcdCommRevC._connect_to_reset_device_name(com_port)
-                return LcdCommRevC.auto_detect_com_port()
-            if com_port.serial_number == '20080411':
                 return com_port.device
 
         return None
@@ -292,12 +293,12 @@ class LcdCommRevC(LcdComm):
         self.orientation = orientation
         # logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
-        # if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
-        #    b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
-        #    self._send_command(Command.OPTIONS, payload=b)
-        # else:
-        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-        self._send_command(Command.OPTIONS, payload=b)
+        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+           b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
+           self._send_command(Command.OPTIONS, payload=b)
+        else:
+            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+            self._send_command(Command.OPTIONS, payload=b)
 
     def DisplayPILImage(
             self,
