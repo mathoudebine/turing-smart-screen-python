@@ -66,9 +66,10 @@ SIMULATED_MODEL = "Simulated screen"
 SIZE_3_5_INCH = "3.5\""
 SIZE_5_INCH = "5\""
 SIZE_8_8_INCH = "8.8\""
+SIZE_8_8_INCH_USB = "8.8\" (V1.1)"
 SIZE_2_1_INCH = "2.1\""
 
-size_list = (SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
+size_list = (SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH, SIZE_8_8_INCH_USB)
 
 # Maps between config.yaml values and GUI description
 revision_and_size_to_model_map = {
@@ -78,6 +79,7 @@ revision_and_size_to_model_map = {
     ('C', SIZE_2_1_INCH): TURING_MODEL,
     ('C', SIZE_5_INCH): TURING_MODEL,
     ('C', SIZE_8_8_INCH): TURING_MODEL,
+    ('C_USB', SIZE_8_8_INCH_USB): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
     ('SIMU', SIZE_2_1_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
@@ -92,6 +94,7 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_2_1_INCH): 'C',
     (TURING_MODEL, SIZE_5_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
+    (TURING_MODEL, SIZE_8_8_INCH_USB): 'C_USB',
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
     (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
@@ -133,6 +136,7 @@ def get_theme_data(name: str):
 
 
 def get_themes(size: str):
+    size = size.split('"')[0] + '"'
     themes = []
     for filename in os.listdir(THEMES_DIR):
         theme_data = get_theme_data(filename)
@@ -374,6 +378,8 @@ class TuringConfigWindow:
         # Guess display size from theme in the configuration
         size = get_theme_size(self.config['config']['THEME'])
         try:
+            if size == SIZE_8_8_INCH and self.config['display']['REVISION'] == 'C_USB':
+                size = SIZE_8_8_INCH_USB
             self.size_cb.set(size)
         except:
             self.size_cb.current(0)

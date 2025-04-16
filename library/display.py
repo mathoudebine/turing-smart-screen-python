@@ -21,6 +21,7 @@ from library.lcd.lcd_comm import Orientation
 from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
+from library.lcd.lcd_comm_rev_c_usb import LcdCommRevCUSB
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
@@ -79,6 +80,9 @@ class Display:
             # Because of issue with Turing rev. C size auto-detection, manually configure screen width/height from theme
             self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue, display_width=width, display_height=height)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "C_USB":
+            # Because of issue with Turing rev. C size auto-detection, manually configure screen width/height from theme
+            self.lcd = LcdCommRevCUSB(display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
