@@ -11,7 +11,7 @@ uptime~=3.0.1          # For System Uptime
 requests~=2.32.3       # HTTP library
 ping3~=4.0.8           # ICMP ping implementation using raw socket
 pyinstaller~=6.12.0    # bundles a Python application and all its dependencies into a single package
-Pillow~=11.1.0         # Image generation
+Pillow~=11.2.1         # Image generation
 
 # Efficient image serialization
 numpy~=2.0.2; python_version < "3.10"  # For Python 3.9, only numpy 2.0.x is supported as 2.1 only supports Python >=3.10
