@@ -137,12 +137,16 @@ class LcdCommRevC(LcdComm):
         # First, try to find sleeping device and wake it up
         for com_port in com_ports:
             if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
-                LcdCommRevC._connect_to_reset_device_name(com_port)
+                LcdCommRevC._wake_up_device(com_port)
                 return LcdCommRevC.auto_detect_com_port()
             if com_port.vid == 0x1a86 and com_port.pid == 0xca21:
-                LcdCommRevC._connect_to_reset_device_name(com_port)
+                LcdCommRevC._wake_up_device(com_port)
                 return LcdCommRevC.auto_detect_com_port()
 
+        return LcdCommRevC._get_awake_com_port(com_ports)
+
+    @staticmethod
+    def _get_awake_com_port(com_ports) -> Optional[str]:
         # Then try to find awake device through serial number or vid/pid
         for com_port in com_ports:
             if com_port.serial_number == '20080411':
@@ -155,14 +159,21 @@ class LcdCommRevC(LcdComm):
         return None
 
     @staticmethod
-    def _connect_to_reset_device_name(com_port):
+    def _wake_up_device(com_port):
         # this device enumerates differently when off, we need to connect once to reset it to correct COM device
-        try:
-            logger.debug(f"Waiting for device {com_port} to be turned ON...")
-            serial.Serial(com_port.device, 115200, timeout=1, rtscts=True)
-        except serial.SerialException:
-            pass
-        time.sleep(10)
+        logger.debug(f"Waiting for device {com_port} to be turned ON...")
+
+        for i in range(15):
+            try:
+                # Try to connect every second, since it takes sometimes multiple connect to wake up the device
+                serial.Serial(com_port.device, 115200, timeout=1, rtscts=True)
+            except serial.SerialException:
+                pass
+
+            if LcdCommRevC._get_awake_com_port(comports()) is not None:
+                time.sleep(1)
+                return
+            time.sleep(1)
 
     def _send_command(self, cmd: Command, payload: Optional[bytearray] = None, padding: Optional[Padding] = None,
                       bypass_queue: bool = False, readsize: Optional[int] = None):
@@ -199,11 +210,20 @@ class LcdCommRevC(LcdComm):
     def _hello(self):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
+        self.serial_flush_input()
         self._send_command(Command.HELLO, bypass_queue=True)
         response = ''.join(
             filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
         self.serial_flush_input()
         logger.debug("Display ID returned: %s" % response)
+        while not response.startswith("chs_"):
+            logger.warning("Display returned invalid or unsupported ID, try again in 1 second")
+            time.sleep(1)
+            self._send_command(Command.HELLO, bypass_queue=True)
+            response = ''.join(
+                filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
+            self.serial_flush_input()
+            logger.debug("Display ID returned: %s" % response)
 
         # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
         # Rely on width/height for sub-revision detection
@@ -223,7 +243,7 @@ class LcdCommRevC(LcdComm):
                 logger.warning("ROM version %d may be invalid, use default ROM version 87" % self.rom_version)
                 self.rom_version = 87
         except:
-            logger.warning("Display returned invalid or unsupported ID on Hello answer, use default ROM version 87")
+            logger.warning("Display returned invalid or unsupported ID, use default ROM version 87")
             self.rom_version = 87
 
         logger.debug("HW sub-revision detected: %s, ROM version: %d" % ((str(self.sub_revision)), self.rom_version))
@@ -236,8 +256,15 @@ class LcdCommRevC(LcdComm):
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self._send_command(Command.RESTART, bypass_queue=True)
         self.closeSerial()
-        # Wait for display reset then reconnect
-        time.sleep(15)
+        # Wait for disconnection (max. 15 seconds)
+        for i in range(15):
+            if LcdCommRevC._get_awake_com_port(comports()) is not None:
+                time.sleep(1)
+        # Wait for reconnection (max. 15 seconds)
+        for i in range(15):
+            if LcdCommRevC._get_awake_com_port(comports()) is None:
+                time.sleep(1)
+        # Reconnect to device
         self.openSerial()
 
     def Clear(self):
@@ -403,7 +430,7 @@ class LcdCommRevC(LcdComm):
             # BGRA mode on 4 bytes : [B, G, R, A]
             img_data, pixel_size = image_to_BGRA(image)
         else:
-            # BGRA mode on 3 bytes: [6-bit B + 2-bit A, 6-bit G + 2-bit A, R]
+            # BGRA mode on 3 bytes: [6-bit B + 2-bit A, 6-bit G + 2-bit A, 8-bit R]
             img_data, pixel_size = image_to_compressed_BGRA(image)
 
         for h, line in enumerate(chunked(img_data, image.width * pixel_size)):
