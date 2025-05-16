@@ -30,7 +30,7 @@ from PIL import Image
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import Orientation, LcdComm
-from library.lcd.serialize import image_to_BGRA, image_to_BGR, chunked
+from library.lcd.serialize import image_to_BGRA, image_to_compressed_BGRA, chunked
 from library.log import logger
 
 
@@ -200,7 +200,8 @@ class LcdCommRevC(LcdComm):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self._send_command(Command.HELLO, bypass_queue=True)
-        response = ''.join(filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
+        response = ''.join(
+            filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
         self.serial_flush_input()
         logger.debug("Display ID returned: %s" % response)
 
@@ -252,13 +253,13 @@ class LcdCommRevC(LcdComm):
         self.SetOrientation(orientation=backup_orientation)
 
     def ScreenOff(self):
-        logger.info("Calling ScreenOff")
+        # logger.info("Calling ScreenOff")
         self._send_command(Command.STOP_VIDEO)
         self._send_command(Command.STOP_MEDIA, readsize=1024)
         self._send_command(Command.TURNOFF)
 
     def ScreenOn(self):
-        logger.info("Calling ScreenOn")
+        # logger.info("Calling ScreenOn")
         self._send_command(Command.STOP_VIDEO)
         self._send_command(Command.STOP_MEDIA, readsize=1024)
         # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]))
@@ -357,7 +358,7 @@ class LcdCommRevC(LcdComm):
             elif self.orientation == Orientation.REVERSE_LANDSCAPE:
                 image = image.rotate(180)
 
-        bgra_data = image_to_BGRA(image)
+        bgra_data, pixel_size = image_to_BGRA(image)
 
         return b'\x00'.join(chunked(bgra_data, 249))
 
@@ -397,15 +398,13 @@ class LcdCommRevC(LcdComm):
 
         img_raw_data = bytearray()
 
-        # Some screens require BGR for update image, some require BGRA
+        # Some screens require different RGBA encoding
         if self.rom_version > 88:
-            # BGRA mode
-            img_data = image_to_BGRA(image)
-            pixel_size = 4
+            # BGRA mode on 4 bytes : [B, G, R, A]
+            img_data, pixel_size = image_to_BGRA(image)
         else:
-            # BGR mode
-            img_data = image_to_BGR(image)
-            pixel_size = 3
+            # BGRA mode on 3 bytes: [6-bit B + 2-bit A, 6-bit G + 2-bit A, R]
+            img_data, pixel_size = image_to_compressed_BGRA(image)
 
         for h, line in enumerate(chunked(img_data, image.width * pixel_size)):
             if self.sub_revision == SubRevision.REV_8INCH:
