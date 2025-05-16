@@ -125,7 +125,8 @@ class SubRevision(Enum):
     UNKNOWN = ""
     REV_2INCH = "chs_21inch"
     REV_5INCH = "chs_5inch"
-    REV_8INCH = "chs_88inch"
+    REV_8INCH_V88 = "chs_88inch.dev1_rom1.88"
+    REV_8INCH_V90 = "chs_88inch.dev1_rom1.90"
 
     def __init__(self, command):
         self.command = command
@@ -216,32 +217,23 @@ class LcdCommRevC(LcdComm):
         self.serial_flush_input()
         logger.debug("HW sub-revision returned: %s" % ''.join(filter(lambda x: x in set(string.printable), response)))
 
-        # Note: sub-revisions returned by display are not reliable e.g. 2.1" displays return "chs_5inch"
-        # if response.startswith(SubRevision.REV_5INCH.value):
-        #     self.sub_revision = SubRevision.REV_5INCH
-        #     self.display_width = 480
-        #     self.display_height = 800
-        # elif response.startswith(SubRevision.REV_2INCH.value):
-        #     self.sub_revision = SubRevision.REV_2INCH
-        #     self.display_width = 480
-        #     self.display_height = 480
-        # elif response.startswith(SubRevision.REV_8INCH.value):
-        #     self.sub_revision = SubRevision.REV_8INCH
-        #     self.display_width = 480
-        #     self.display_height = 1920
-        # else:
-        #     logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
-        # logger.debug("HW sub-revision detected: %s" % (str(self.sub_revision)))
-
-        # Relay on width/height for sub-revision detection
+        # Note: sub-revisions returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
+        # Relay mainly on width/height for sub-revision detection, except for 8.8" where ROM version matters
         if self.display_width == 480 and self.display_height == 480:
             self.sub_revision = SubRevision.REV_2INCH
         elif self.display_width == 480 and self.display_height == 800:
             self.sub_revision = SubRevision.REV_5INCH
         elif self.display_width == 480 and self.display_height == 1920:
-            self.sub_revision = SubRevision.REV_8INCH
+            if response.startswith(SubRevision.REV_8INCH_V88.value):
+                self.sub_revision = SubRevision.REV_8INCH_V88
+            elif response.startswith(SubRevision.REV_8INCH_V90.value):
+                self.sub_revision = SubRevision.REV_8INCH_V90
+            else:
+                logger.warning("Display returned unknown sub-revision on Hello answer (%s)" % str(response))
         else:
             logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
+
+        logger.debug("HW sub-revision detected: %s" % (str(self.sub_revision)))
 
     def InitializeComm(self):
         self._hello()
@@ -293,12 +285,12 @@ class LcdCommRevC(LcdComm):
         self.orientation = orientation
         # logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
-        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
-           b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
-           self._send_command(Command.OPTIONS, payload=b)
-        else:
-            b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
-            self._send_command(Command.OPTIONS, payload=b)
+        # if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+        #   b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
+        #   self._send_command(Command.OPTIONS, payload=b)
+        # else:
+        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        self._send_command(Command.OPTIONS, payload=b)
 
     def DisplayPILImage(
             self,
@@ -336,11 +328,12 @@ class LcdCommRevC(LcdComm):
                     display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
                 elif self.sub_revision == SubRevision.REV_2INCH:
                     display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
-                elif self.sub_revision == SubRevision.REV_8INCH:
+                elif self.sub_revision == SubRevision.REV_8INCH_V88 or self.sub_revision == SubRevision.REV_8INCH_V90:
                     display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
 
                 self._send_command(display_bmp_cmd,
-                                   payload=bytearray(int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
+                                   payload=bytearray(
+                                       int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
                 self._send_command(Command.SEND_PAYLOAD,
                                    payload=bytearray(self._generate_full_image(image)),
                                    readsize=1024)
@@ -354,7 +347,7 @@ class LcdCommRevC(LcdComm):
             Count.Start += 1
 
     def _generate_full_image(self, image: Image.Image) -> bytes:
-        if self.sub_revision == SubRevision.REV_8INCH:
+        if self.sub_revision == SubRevision.REV_8INCH_V88 or self.sub_revision == SubRevision.REV_8INCH_V90:
             if self.orientation == Orientation.LANDSCAPE:
                 image = image.rotate(270, expand=True)
             elif self.orientation == Orientation.REVERSE_LANDSCAPE:
@@ -379,7 +372,7 @@ class LcdCommRevC(LcdComm):
             self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
     ) -> Tuple[bytearray, bytearray]:
         x0, y0 = x, y
-        if self.sub_revision == SubRevision.REV_8INCH:
+        if self.sub_revision == SubRevision.REV_8INCH_V88 or self.sub_revision == SubRevision.REV_8INCH_V90:
             if self.orientation == Orientation.LANDSCAPE:
                 image = image.rotate(270, expand=True)
                 y0 = self.get_height() - y - image.width
@@ -409,9 +402,19 @@ class LcdCommRevC(LcdComm):
                 y0 = x
 
         img_raw_data = bytearray()
-        bgr_data = image_to_BGR(image)
-        for h, line in enumerate(chunked(bgr_data, image.width * 3)):
-            if self.sub_revision == SubRevision.REV_8INCH:
+
+        # Some screens require BGR for update image, some require BGRA
+        if self.sub_revision == SubRevision.REV_8INCH_V90:
+            # BGRA mode
+            img_data = image_to_BGRA(image)
+            pixel_size = 4
+        else:
+            # BGR mode
+            img_data = image_to_BGR(image)
+            pixel_size = 3
+
+        for h, line in enumerate(chunked(img_data, image.width * pixel_size)):
+            if self.sub_revision == SubRevision.REV_8INCH_V88 or self.sub_revision == SubRevision.REV_8INCH_V90:
                 img_raw_data += int(((x0 + h) * self.display_width) + y0).to_bytes(3, "big")
             else:
                 img_raw_data += int(((x0 + h) * self.display_height) + y0).to_bytes(3, "big")
