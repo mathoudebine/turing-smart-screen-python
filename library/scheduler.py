@@ -56,7 +56,6 @@ def schedule(interval):
 
         def periodic(scheduler, periodic_interval, action, actionargs=()):
             """ Wrap the scheduler with our periodic interval """
-            global STOPPING
             if not STOPPING:
                 # If the program is not stopping: re-schedule the task for future execution
                 scheduler.enter(periodic_interval, 1, periodic,
@@ -188,7 +187,6 @@ def PingStats():
 @schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():
     # Do next action waiting in the queue
-    global STOPPING
     if STOPPING:
         # Empty the action queue to allow program to exit cleanly
         while not config.update_queue.empty():

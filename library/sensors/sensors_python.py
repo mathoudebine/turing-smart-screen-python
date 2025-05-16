@@ -175,7 +175,6 @@ class Gpu(sensors.Gpu):
     @staticmethod
     def stats() -> Tuple[
         float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
-        global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.stats()
         elif DETECTED_GPU == GpuType.NVIDIA:
@@ -185,7 +184,6 @@ class Gpu(sensors.Gpu):
 
     @staticmethod
     def fps() -> int:
-        global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.fps()
         elif DETECTED_GPU == GpuType.NVIDIA:
@@ -195,7 +193,6 @@ class Gpu(sensors.Gpu):
 
     @staticmethod
     def fan_percent() -> float:
-        global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.fan_percent()
         elif DETECTED_GPU == GpuType.NVIDIA:
@@ -205,7 +202,6 @@ class Gpu(sensors.Gpu):
 
     @staticmethod
     def frequency() -> float:
-        global DETECTED_GPU
         if DETECTED_GPU == GpuType.AMD:
             return GpuAmd.frequency()
         elif DETECTED_GPU == GpuType.NVIDIA:
@@ -471,7 +467,6 @@ class Net(sensors.Net):
     @staticmethod
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
-        global PNIC_BEFORE
         try:
             # Get current counters
             pnic_after = psutil.net_io_counters(pernic=True)

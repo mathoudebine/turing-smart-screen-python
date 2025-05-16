@@ -163,7 +163,6 @@ if __name__ == "__main__":
 
 
     def on_button1_press_and_drag(event):
-        global x0, y0
         display_width, display_height = int(display.lcd.get_width() / RESIZE_FACTOR), int(
             display.lcd.get_height() / RESIZE_FACTOR)
         x1, y1 = event.x, event.y
@@ -186,7 +185,6 @@ if __name__ == "__main__":
 
 
     def on_button1_release(event):
-        global x0, y0
         display_width, display_height = int(display.lcd.get_width() / RESIZE_FACTOR), int(
             display.lcd.get_height() / RESIZE_FACTOR)
         x1, y1 = event.x, event.y
