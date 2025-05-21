@@ -30,7 +30,7 @@ from PIL import Image
 from serial.tools.list_ports import comports
 
 from library.lcd.lcd_comm import Orientation, LcdComm
-from library.lcd.serialize import image_to_BGRA, image_to_compressed_BGRA, chunked
+from library.lcd.serialize import image_to_BGRA, image_to_BGR, chunked
 from library.log import logger
 
 
@@ -431,7 +431,9 @@ class LcdCommRevC(LcdComm):
             img_data, pixel_size = image_to_BGRA(image)
         else:
             # BGRA mode on 3 bytes: [6-bit B + 2-bit A, 6-bit G + 2-bit A, 8-bit R]
-            img_data, pixel_size = image_to_compressed_BGRA(image)
+            #img_data, pixel_size = image_to_compressed_BGRA(image)
+            # For now use simple BGR that is more optimized, because this program does not support transparent background
+            img_data, pixel_size = image_to_BGR(image)
 
         for h, line in enumerate(chunked(img_data, image.width * pixel_size)):
             if self.sub_revision == SubRevision.REV_8INCH:
