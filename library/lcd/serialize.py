@@ -6,7 +6,7 @@ from PIL import Image
 
 def chunked(data: bytes, chunk_size: int) -> Iterator[bytes]:
     for i in range(0, len(data), chunk_size):
-        yield data[i : i + chunk_size]
+        yield data[i: i + chunk_size]
 
 
 def image_to_RGB565(image: Image.Image, endianness: Literal["big", "little"]) -> bytes:
@@ -39,20 +39,35 @@ def image_to_RGB565(image: Image.Image, endianness: Literal["big", "little"]) ->
     return rgb565.astype(typ).tobytes()
 
 
-def image_to_BGR(image: Image.Image) -> bytes:
+def image_to_BGR(image: Image.Image) -> (bytes, int):
     if image.mode not in ["RGB", "RGBA"]:
         # we need the first 3 channels to be R, G and B
         image = image.convert("RGB")
     rgb = np.asarray(image)
     # same as rgb[:, :, [2, 1, 0]] but faster
     bgr = np.take(rgb, (2, 1, 0), axis=-1)
-    return bgr.tobytes()
+    return bgr.tobytes(), 3
 
 
-def image_to_BGRA(image: Image.Image) -> bytes:
+def image_to_BGRA(image: Image.Image) -> (bytes, int):
     if image.mode != "RGBA":
         image = image.convert("RGBA")
     rgba = np.asarray(image)
     # same as rgba[:, :, [2, 1, 0, 3]] but faster
     bgra = np.take(rgba, (2, 1, 0, 3), axis=-1)
-    return bgra.tobytes()
+    return bgra.tobytes(), 4
+
+
+# FIXME: to optimize like other functions above
+def image_to_compressed_BGRA(image: Image.Image) -> (bytes, int):
+    compressed_bgra = bytearray()
+    image_data = image.convert("RGBA").load()
+    for h in range(image.height):
+        for w in range(image.width):
+            # r = pixel[0], g = pixel[1], b = pixel[2], a = pixel[3]
+            pixel = image_data[w, h]
+            a = pixel[3] >> 4
+            compressed_bgra.append(pixel[2] & 0xFC | a >> 2)
+            compressed_bgra.append(pixel[1] & 0xFC | a & 2)
+            compressed_bgra.append(pixel[0])
+    return bytes(compressed_bgra), 3
