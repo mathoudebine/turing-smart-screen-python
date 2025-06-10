@@ -67,7 +67,7 @@ jobs:
         python3 tools/theme-preview-generator.py
 
     - name: Commit theme previews
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@v6
       with:
         commit_message: "[GitHub Actions Bot] Update theme previews"
         file_pattern: 'res/themes/*/preview.png res/themes/themes.md'
