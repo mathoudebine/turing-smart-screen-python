@@ -10,7 +10,7 @@ tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
 uptime~=3.0.1          # For System Uptime 
 requests~=2.32.4       # HTTP library
 ping3~=4.0.8           # ICMP ping implementation using raw socket
-pyinstaller~=6.13.0    # bundles a Python application and all its dependencies into a single package
+pyinstaller~=6.14.1    # bundles a Python application and all its dependencies into a single package
 Pillow~=11.2.1         # Image generation
 
 # Efficient image serialization
