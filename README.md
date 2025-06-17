@@ -25,7 +25,7 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 | ⚠️ Turing Smart Screen 8.8"                  | ✅ Turing Smart Screen 2.1"                                       |
 |---------------------------------------------|------------------------------------------------------------------|
 | <img src="res/docs/turing8inch.webp"/>      | <img src="res/docs/turing2inch.webp"  width="60%" height="60%"/> |
-| basic support (no video or storage for now)<br/>⚠️ [New revision V1.1 not supported!](https://github.com/mathoudebine/turing-smart-screen-python/issues/727)<br/>⚠️ [Current issues with first revision](https://github.com/mathoudebine/turing-smart-screen-python/issues/724) | basic support (no video or storage for now)                      |
+| basic support (no video or storage for now)<br/>⚠️ [New revision V1.1 not supported!](https://github.com/mathoudebine/turing-smart-screen-python/issues/727) | basic support (no video or storage for now)                      |
 
 | ✅ [UsbPCMonitor 3.5" / 5"](https://aliexpress.com/item/1005003931363455.html)                       | ✅ [Kipye Qiye Smart Display 3.5"](https://www.aliexpress.us/item/3256803899049957.html) |
 |-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|

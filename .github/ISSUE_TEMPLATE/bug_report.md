@@ -25,6 +25,11 @@ Steps to reproduce the behavior:
 **Expected behavior**  
 A clear and concise description of what you expected to happen.
 
+**Logs**  
+```
+Add logs either from the console output or the log.log file in the program main folder.
+```
+
 **Screenshots / photos of the Turing screen**  
 Add screenshots or photos of the rendering on the smart screen to help explain your problem.
 You can drag and drop photos here to add them to the description.
