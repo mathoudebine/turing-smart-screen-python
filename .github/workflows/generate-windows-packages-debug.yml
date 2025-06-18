@@ -36,7 +36,7 @@ jobs:
         "${{github.event.release.tag_name}}-debug" | Out-File ".\dist\turing-system-monitor\version.txt"
 
     - name: Create InnoSetup installer from generated binaries
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.5
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
       with:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+
