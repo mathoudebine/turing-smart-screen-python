@@ -728,12 +728,15 @@ class MoreConfigWindow:
         cb_entries = []
         for entry in request.json():
             name = entry['name']
-            state = entry['state']
+            state = entry.get('state', None)
             lat = entry['lat']
             long = entry['lon']
             country_code = entry['country'].upper()
             country = babel.Locale(lang).territories[country_code]
-            full_name = f"{name}, {state}, {country}"
+            if state is not None:
+                full_name = f"{name}, {state}, {country}"
+            else:
+                full_name = f"{name}, {country}"
             self._city_entries.append({"full_name": full_name, "lat": str(lat), "long": str(long)})
             cb_entries.append(full_name)
 
