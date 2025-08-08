@@ -2,6 +2,48 @@
 # Simple Image Slideshow for Turing Smart Screen
 # Based on turing-smart-screen-python library
 
+"""
+Turing Smart Screen Image Slideshow
+
+Description:
+This script displays an automated slideshow of images on a Turing Smart Screen display.
+It supports both portrait and landscape images, automatically resizing and formatting them
+to fit the display. Portrait images are displayed in pairs side-by-side.
+
+Features:
+- Automatic image rotation at configurable intervals
+- Support for multiple display hardware revisions (A, B, C, D, SIMU)
+- Time and date overlay on displayed images
+- Recursive directory searching for images
+- Automatic creation of default image if none found
+
+Configuration:
+1. Command Line Arguments:
+   --debug       : Enable debug output (more verbose logging)
+   --images PATH : Specify directory containing images (default: './images')
+   --recursive   : Search for images recursively in subdirectories
+
+2. Hardcoded Configuration (modify in code):
+   - COM_PORT: Serial port for display ("AUTO" for auto-detection)
+   - REVISION: Display hardware revision (A, B, C, D, or SIMU)
+   - IMAGE_ROTATION_INTERVAL: Seconds between image changes (default: 30)
+   - WIDTH, HEIGHT: Display dimensions in portrait mode (default: 320x480)
+
+Usage:
+1. Place images in the 'images' directory (or specify custom path with --images)
+2. Run script: python3 picture_frame.py [options]
+3. Press Ctrl+C to exit gracefully
+
+Image Requirements:
+- Supported formats: PNG, JPG/JPEG, BMP, GIF
+- Any orientation (portrait or landscape)
+- Will be automatically resized and formatted for display
+
+Note:
+Creates a '.images' directory for processed versions of source images.
+First run may be slow as it processes all images.
+"""
+
 import os
 import signal
 import sys
