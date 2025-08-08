@@ -224,8 +224,9 @@ class ImageManager:
             draw.line([(0, y), (self.display_width, y)], fill=(r, g, b))
 
         # Add some text
+        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # Example path
         try:
-            font = ImageFont.truetype("arial.ttf", 40)
+            font = ImageFont.truetype(font_path, 40)
         except:
             font = ImageFont.load_default()
 
