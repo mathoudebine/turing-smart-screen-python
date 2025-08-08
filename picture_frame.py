@@ -75,6 +75,9 @@ IMAGE_ROTATION_INTERVAL = 30  # Seconds between background changes
 # Verbosity configuration - will be set by command line args
 VERBOSE_LEVEL = "INFO"  # Default to INFO level
 
+# Set your font file style to use
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+
 def configure_logging(verbose_level):
     """Configure both custom and library logging levels"""
     # Configure the library's logger
@@ -226,9 +229,8 @@ class ImageManager:
             draw.line([(0, y), (self.display_width, y)], fill=(r, g, b))
 
         # Add some text
-        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"  # Example path
         try:
-            font = ImageFont.truetype(font_path, 40)
+            font = ImageFont.truetype(FONT_PATH, 40)
         except:
             font = ImageFont.load_default()
 
@@ -480,7 +482,8 @@ def display_slideshow_content(background_image, force_background_refresh=False):
                            lcd_comm.get_width() - 120, lcd_comm.get_height() - 30,
                            font_size=20,
                            font_color=(255, 255, 255),
-                           background_image=background_image)
+                           background_image=background_image,
+                           font=FONT_PATH)
 
         # Only redraw static content when background changes
         if background_changed or force_background_refresh:
@@ -494,14 +497,16 @@ def display_slideshow_content(background_image, force_background_refresh=False):
                                lcd_comm.get_width() - 120, lcd_comm.get_height() - 55,
                                font_size=16,
                                font_color=(200, 200, 200),
-                               background_image=background_image)
+                               background_image=background_image,
+                               font=FONT_PATH)
 
             # Day of week - bottom right corner, above date
             lcd_comm.DisplayText(day_name,
                                lcd_comm.get_width() - 120, lcd_comm.get_height() - 75,
                                font_size=14,
                                font_color=(180, 180, 180),
-                               background_image=background_image)
+                               background_image=background_image,
+                               font=FONT_PATH)
 
         logger.debug("Slideshow content display completed successfully")
 
