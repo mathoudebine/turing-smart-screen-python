@@ -39,7 +39,7 @@ Image Requirements:
 - Any orientation (portrait or landscape)
 - Will be automatically resized and formatted for display
 
-Note:
+Notes:
 - To run picture_frame.py from any PATH environment folder (copied this script to run globally),
   must copy library/ folder to /home/${USER}/.local/lib/python<version>/site-packages/
 - script creates a '.images' directory automatically for processed versions of source images.
