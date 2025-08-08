@@ -76,7 +76,7 @@ IMAGE_ROTATION_INTERVAL = 30  # Seconds between background changes
 VERBOSE_LEVEL = "INFO"  # Default to INFO level
 
 # Set your font file style to use
-FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+FONT_PATH = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 def configure_logging(verbose_level):
     """Configure both custom and library logging levels"""
@@ -480,7 +480,7 @@ def display_slideshow_content(background_image, force_background_refresh=False):
         current_time = datetime.now().strftime("%H:%M:%S")
         lcd_comm.DisplayText(current_time,
                            lcd_comm.get_width() - 120, lcd_comm.get_height() - 30,
-                           font_size=20,
+                           font_size=22,
                            font_color=(255, 255, 255),
                            background_image=background_image,
                            font=FONT_PATH)
@@ -494,17 +494,17 @@ def display_slideshow_content(background_image, force_background_refresh=False):
             day_name = datetime.now().strftime("%A")
 
             lcd_comm.DisplayText(current_date,
-                               lcd_comm.get_width() - 120, lcd_comm.get_height() - 55,
+                               lcd_comm.get_width() - 120, lcd_comm.get_height() - 50,
                                font_size=16,
-                               font_color=(200, 200, 200),
+                               font_color=(0, 255, 255),
                                background_image=background_image,
                                font=FONT_PATH)
 
             # Day of week - bottom right corner, above date
             lcd_comm.DisplayText(day_name,
-                               lcd_comm.get_width() - 120, lcd_comm.get_height() - 75,
+                               lcd_comm.get_width() - 120, lcd_comm.get_height() - 70,
                                font_size=14,
-                               font_color=(180, 180, 180),
+                               font_color=(0, 255, 255),
                                background_image=background_image,
                                font=FONT_PATH)
 
