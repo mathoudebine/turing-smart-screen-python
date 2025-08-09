@@ -25,6 +25,8 @@ import platform
 import subprocess
 import sys
 import webbrowser
+import requests
+import babel
 
 MIN_PYTHON = (3, 9)
 if sys.version_info < MIN_PYTHON:
@@ -554,7 +556,7 @@ class MoreConfigWindow:
         self.window = Toplevel()
         self.window.withdraw()
         self.window.title('Configure weather & ping')
-        self.window.geometry("750x400")
+        self.window.geometry("750x680")
 
         self.main_window = main_window
 
@@ -614,10 +616,38 @@ class MoreConfigWindow:
         self.lang_cb = ttk.Combobox(self.window, values=list(weather_lang_map.values()), state='readonly')
         self.lang_cb.place(x=190, y=325, width=250)
 
+        self.citysearch1_label = ttk.Label(self.window, text='Location search', font='bold')
+        self.citysearch1_label.place(x=80, y=370)
+
+        self.citysearch2_label = ttk.Label(self.window, text="Enter location to automatically get coordinates (latitude/longitude).\n"
+                                                             "For example \"Berlin\" \"London, GB\", \"London, Quebec\".\n"
+                                                             "Remember to set valid API key and pick language first!")
+        self.citysearch2_label.place(x=10, y=396)
+
+        self.citysearch3_label = ttk.Label(self.window, text="Enter location")
+        self.citysearch3_label.place(x=10, y=474)
+        self.citysearch_entry = ttk.Entry(self.window)
+        self.citysearch_entry.place(x=140, y=470, width=300)
+        self.citysearch_btn = ttk.Button(self.window, text="Search", command=lambda: self.on_search_click())
+        self.citysearch_btn.place(x=450, y=468, height=40, width=130)
+
+        self.citysearch4_label = ttk.Label(self.window, text="Select location\n(use after Search)")
+        self.citysearch4_label.place(x=10, y=540)
+        self.citysearch_cb = ttk.Combobox(self.window, values=[], state='readonly')
+        self.citysearch_cb.place(x=140, y=544, width=360)
+        self.citysearch_btn2 = ttk.Button(self.window, text="Fill in lat/long", command=lambda: self.on_filllatlong_click())
+        self.citysearch_btn2.place(x=520, y=540, height=40, width=130)
+
+        self.citysearch_warn_label = ttk.Label(self.window, text="")
+        self.citysearch_warn_label.place(x=20, y=600)
+        self.citysearch_warn_label.config(foreground="#ff0000")
+
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=590, y=340, height=50, width=130)
+        self.save_btn.place(x=590, y=620, height=50, width=130)
 
         self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+
+        self._city_entries = []
 
     def validateCoord(self, coord: str):
         if not coord:
@@ -666,6 +696,67 @@ class MoreConfigWindow:
             self.lang_cb.set(weather_lang_map[self.config['config']['WEATHER_LANGUAGE']])
         except:
             self.lang_cb.set(weather_lang_map["en"])
+    
+    def citysearch_show_warning(self, warning):
+        self.citysearch_warn_label.config(text=warning)
+		
+    def on_search_click(self):
+        OPENWEATHER_GEOAPI_URL = "http://api.openweathermap.org/geo/1.0/direct"
+        api_key = self.api_entry.get()
+        lang = [k for k, v in weather_lang_map.items() if v == self.lang_cb.get()][0]
+        city = self.citysearch_entry.get()
+
+        if len(api_key) == 0 or len(city) == 0:
+            self.citysearch_show_warning("API key and city name cannot be empty.")
+            return
+
+        try:
+            request = requests.get(OPENWEATHER_GEOAPI_URL, timeout=5, params={"appid": api_key, "lang": lang, 
+                                   "q": city, "limit": 10})
+        except:
+            self.citysearch_show_warning("Error fetching OpenWeatherMap Geo API")
+            return
+
+        if request.status_code == 401:
+            self.citysearch_show_warning("Invalid OpenWeatherMap API key.")
+            return
+        elif request.status_code != 200:
+            self.citysearch_show_warning(f"Error #{request.status_code} fetching OpenWeatherMap Geo API.")
+            return
+        
+        self._city_entries = []
+        cb_entries = []
+        for entry in request.json():
+            name = entry['name']
+            state = entry.get('state', None)
+            lat = entry['lat']
+            long = entry['lon']
+            country_code = entry['country'].upper()
+            country = babel.Locale(lang).territories[country_code]
+            if state is not None:
+                full_name = f"{name}, {state}, {country}"
+            else:
+                full_name = f"{name}, {country}"
+            self._city_entries.append({"full_name": full_name, "lat": str(lat), "long": str(long)})
+            cb_entries.append(full_name)
+
+        self.citysearch_cb.config(values = cb_entries)
+        if len(cb_entries) == 0:
+            self.citysearch_show_warning("No given city found.")
+        else:
+            self.citysearch_cb.current(0)
+            self.citysearch_show_warning("Select your city now from list and apply \"Fill in lat/long\".")
+
+    def on_filllatlong_click(self):
+        if len(self._city_entries) == 0:
+            self.citysearch_show_warning("No city selected or no search results.")
+            return
+        city = [i for i in self._city_entries if i['full_name'] == self.citysearch_cb.get()][0]
+        self.lat_entry.delete(0, END)
+        self.lat_entry.insert(0, city['lat'])
+        self.long_entry.delete(0, END)
+        self.long_entry.insert(0, city['long'])
+        self.citysearch_show_warning(f"Lat/long values filled for {city['full_name']}")
 
     def on_save_click(self):
         self.save_config_values()
