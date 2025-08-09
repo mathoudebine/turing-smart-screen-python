@@ -9,7 +9,7 @@ sv-ttk~=2.6.1          # Tk Sun Valley theme for configuration editor
 tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
 uptime~=3.0.1          # For System Uptime 
 requests~=2.32.4       # HTTP library
-ping3~=4.0.8           # ICMP ping implementation using raw socket
+ping3~=5.1.3           # ICMP ping implementation using raw socket
 pyinstaller~=6.15.0    # bundles a Python application and all its dependencies into a single package
 Pillow~=11.3.0         # Image generation
 
