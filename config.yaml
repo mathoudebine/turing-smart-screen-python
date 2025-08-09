@@ -69,3 +69,9 @@ display:
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
   # Note: Display basic orientation (portrait or landscape) is defined by the theme you have selected
   DISPLAY_REVERSE: false
+
+  # Reset display on startup: true/false
+  # By default, this program resets the display on startup, in case it is in a degraded state from previous runs.
+  # This behavior causes the display to disconnect/reconnect, and the COM port to change.
+  # On some displays (like rev. A) it can be an issue, in this case change the value to "false".
+  RESET_ON_STARTUP: true
