@@ -90,8 +90,8 @@ class Display:
 
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)
-        # Can be disabled by config. option
-        if config.CONFIG_DATA["display"].get("RESET_ON_STARTUP", False):
+        # Can be disabled by config. option. Assume true if key not present in config.yaml
+        if config.CONFIG_DATA["display"].get("RESET_ON_STARTUP", True):
             self.lcd.Reset()
         else:
             logger.debug("RESET_ON_STARTUP is false: display will not be reset")
