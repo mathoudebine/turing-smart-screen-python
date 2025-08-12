@@ -30,6 +30,7 @@ TEMPERATURE_SENSOR_VALUE = 67.3
 
 # Define other sensors
 CPU_FREQ_MHZ = 2400.0
+CPU_FAN_SPEED = 63.7
 DISK_TOTAL_SIZE_GB = 1000
 MEMORY_TOTAL_SIZE_GB = 64
 GPU_MEM_TOTAL_SIZE_GB = 32
@@ -54,6 +55,10 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def temperature() -> float:
         return TEMPERATURE_SENSOR_VALUE
+
+    @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        return CPU_FAN_SPEED
 
     @staticmethod
     def fan_percent(fan_name: str = None) -> float:
@@ -86,6 +91,18 @@ class Gpu(sensors.Gpu):
     def is_available() -> bool:
         return True
 
+class System(sensors.System):
+    @staticmethod
+    def fan_percent(fan_name: str = None) -> float:
+        return PERCENTAGE_SENSOR_VALUE
+
+    @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        return FAN_SPEED
+
+    @staticmethod
+    def temperature(sys_temp: str = None) -> float:
+        return TEMPERATURE_SENSOR_VALUE
 
 class Memory(sensors.Memory):
     @staticmethod

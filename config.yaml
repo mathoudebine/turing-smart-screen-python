@@ -10,7 +10,7 @@ config:
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
-  THEME: 3.5inchTheme2
+  THEME: 3.5inchThemeSystem
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -31,8 +31,20 @@ config:
   # For Linux/MacOS platforms, the CPU fan is amongst all fan sensors gathered from the motherboard chipset
   # If value is AUTO the system monitor will try to auto-select the CPU fan
   # If auto-detection fails, it might be necessary to manually indicate which fan is the CPU fan
-  # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
+  # Value must be 'controller/fan' e.g. 'it8628/fan1'. Use configuration wizard for help in selection
   CPU_FAN: AUTO
+
+  # SYSTEM fan
+  # For Linux/MacOS platforms, the System fan is amongst all fan sensors gathered from the motherboard chipset
+  # If value is AUTO the system monitor will try to auto-select the System fan
+  # If auto-detection fails, it might be necessary to manually indicate which fan is the System fan
+  # Value must be 'controller/fan' e.g. 'nct6798/fan2'. Use configuration wizard for help in selection
+  SYS_FAN: it8628/fan5
+
+  # SYSTEM temperature sensor
+  # For Linux/MacOS platforms, the System temperature is amongst all temperature sensors gathered from the motherboard chipset
+  # Value must be 'controller/index' e.g. 'nct6798/0'. Use configuration wizard for help in selection
+  SYS_TEMP: it8628/0
 
   # Address used for ping sensor. Can be internal/external IP (e.g. 8.8.8.8 or 192.168.0.1) or hostname (google.com)
   PING: 8.8.8.8

@@ -43,7 +43,9 @@ DEFAULT_HISTORY_SIZE = 10
 ETH_CARD = config.CONFIG_DATA["config"].get("ETH", "")
 WLO_CARD = config.CONFIG_DATA["config"].get("WLO", "")
 HW_SENSORS = config.CONFIG_DATA["config"].get("HW_SENSORS", "AUTO")
-CPU_FAN = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
+CPU_FAN   = config.CONFIG_DATA["config"].get("CPU_FAN", "AUTO")
+SYS_FAN   = config.CONFIG_DATA["config"].get("SYS_FAN", "AUTO")
+SYS_TEMP  = config.CONFIG_DATA["config"].get("SYS_TEMP", "")
 PING_DEST = config.CONFIG_DATA["config"].get("PING", "127.0.0.1")
 
 if HW_SENSORS == "PYTHON":
@@ -256,10 +258,11 @@ def last_values_list(size: int) -> List[float]:
 
 
 class CPU:
-    last_values_cpu_percentage = []
+    last_values_cpu_percentage  = []
     last_values_cpu_temperature = []
-    last_values_cpu_fan_speed = []
-    last_values_cpu_frequency = []
+    last_values_cpu_fan_speed   = []
+    last_values_cpu_fan_percent = []
+    last_values_cpu_frequency   = []
 
     @classmethod
     def percentage(cls):
@@ -339,11 +342,11 @@ class CPU:
     @classmethod
     def fan_speed(cls):
         if CPU_FAN != "AUTO":
-            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
+            fan_speed = sensors.Cpu.fan_speed(CPU_FAN)
         else:
-            fan_percent = sensors.Cpu.fan_percent()
+            fan_speed = sensors.Cpu.fan_speed()
 
-        save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
+        save_last_value(fan_speed, cls.last_values_cpu_fan_speed,
                         config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
                                                                                          DEFAULT_HISTORY_SIZE))
 
@@ -351,6 +354,45 @@ class CPU:
         cpu_fan_radial_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['RADIAL']
         cpu_fan_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['GRAPH']
         cpu_fan_line_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH']
+
+        if math.isnan(fan_speed):
+            fan_speed = 0
+            if cpu_fan_text_data['SHOW'] or cpu_fan_radial_data['SHOW'] or cpu_fan_graph_data[
+                'SHOW'] or cpu_fan_line_graph_data['SHOW']:
+                if sys.platform == "win32":
+                    logger.warning("Your CPU Fan sensor could not be auto-detected")
+                else:
+                    logger.warning("Your CPU Fan sensor could not be auto-detected. Select it from Configuration UI.")
+                cpu_fan_text_data['SHOW'] = False
+                cpu_fan_radial_data['SHOW'] = False
+                cpu_fan_graph_data['SHOW'] = False
+                cpu_fan_line_graph_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=cpu_fan_text_data,
+            value=int(fan_speed),
+            unit="rpm",
+            min_size=4
+        )
+        display_themed_progress_bar(cpu_fan_graph_data, fan_speed)
+        display_themed_percent_radial_bar(cpu_fan_radial_data, fan_speed)
+        display_themed_line_graph(cpu_fan_line_graph_data, cls.last_values_cpu_fan_speed)
+
+    @classmethod
+    def fan_percent(cls):
+        if CPU_FAN != "AUTO":
+            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
+        else:
+            fan_percent = sensors.Cpu.fan_percent()
+
+        save_last_value(fan_percent, cls.last_values_cpu_fan_percent,
+                        config.THEME_DATA['STATS']['CPU']['FAN_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE",
+                                                                                         DEFAULT_HISTORY_SIZE))
+
+        cpu_fan_text_data = config.THEME_DATA['STATS']['CPU']['FAN_PERCENT']['TEXT']
+        cpu_fan_radial_data = config.THEME_DATA['STATS']['CPU']['FAN_PERCENT']['RADIAL']
+        cpu_fan_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_PERCENT']['GRAPH']
+        cpu_fan_line_graph_data = config.THEME_DATA['STATS']['CPU']['FAN_PERCENT']['LINE_GRAPH']
 
         if math.isnan(fan_percent):
             fan_percent = 0
@@ -370,6 +412,102 @@ class CPU:
         display_themed_percent_radial_bar(cpu_fan_radial_data, fan_percent)
         display_themed_line_graph(cpu_fan_line_graph_data, cls.last_values_cpu_fan_speed)
 
+class System:
+    last_values_system_fan_percent = []
+    last_values_system_fan_speed   = []
+    last_values_system_temperature = []
+
+    @classmethod
+    def stats(cls):
+        if SYS_FAN != "AUTO":
+            fan_percent = sensors.System.fan_percent(SYS_FAN)
+            fan_speed   = sensors.System.fan_speed(SYS_FAN)
+        else:
+            fan_percent = sensors.System.fan_percent()
+            fan_speed   = sensors.System.fan_speed()
+
+        if SYS_TEMP != "":
+            sys_temp = sensors.System.temperature(SYS_TEMP)
+        else:
+            sys_temp = 0
+  
+
+        theme_system_data = config.THEME_DATA['STATS']['SYSTEM']
+
+        save_last_value(fan_percent, cls.last_values_system_fan_percent,
+                        theme_system_data['FAN_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(fan_speed, cls.last_values_system_fan_speed,
+                        theme_system_data['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+        save_last_value(sys_temp, cls.last_values_system_temperature,
+                        theme_system_data['TEMPERATURE']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
+
+        # System Fan Speed (%)
+        system_fan_per_text_data   = theme_system_data['FAN_PERCENT']['TEXT']
+        system_fan_per_radial_data = theme_system_data['FAN_PERCENT']['RADIAL']
+        system_fan_per_graph_data  = theme_system_data['FAN_PERCENT']['GRAPH']
+        system_fan_per_line_graph_data = theme_system_data['FAN_PERCENT']['LINE_GRAPH']
+
+        if math.isnan(fan_percent):
+            fan_percent = 0
+            if system_fan_per_text_data['SHOW'] or system_fan_per_radial_data['SHOW'] or system_fan_per_graph_data[
+                'SHOW'] or system_fan_per_line_graph_data['SHOW']:
+                logger.warning("Your System Fan Speed percent is not supported yet")
+                system_fan_per_text_data['SHOW']   = False
+                system_fan_per_radial_data['SHOW'] = False
+                system_fan_per_graph_data['SHOW']  = False
+                system_fan_per_line_graph_data['SHOW'] = False
+
+        display_themed_percent_value(system_fan_per_text_data, fan_percent)
+        display_themed_progress_bar(system_fan_per_radial_data, fan_percent)
+        display_themed_percent_radial_bar(system_fan_per_graph_data, fan_percent)
+        display_themed_line_graph(system_fan_per_line_graph_data, cls.last_values_system_fan_percent)
+
+        # System Fan Speed (RPM)
+        system_fan_rpm_text_data   = theme_system_data['FAN_SPEED']['TEXT']
+        system_fan_rpm_radial_data = theme_system_data['FAN_SPEED']['RADIAL']
+        system_fan_rpm_graph_data  = theme_system_data['FAN_SPEED']['GRAPH']
+        system_fan_rpm_line_graph_data = theme_system_data['FAN_SPEED']['LINE_GRAPH']
+
+        if math.isnan(fan_speed):
+            fan_speed = 0
+            if system_fan_rpm_text_data['SHOW'] or system_fan_rpm_radial_data['SHOW'] or system_fan_rpm_graph_data[
+                'SHOW'] or system_fan_rpm_line_graph_data['SHOW']:
+                logger.warning("Your System Fan Speed RPM is not supported yet")
+                system_fan_rpm_text_data['SHOW']   = False
+                system_fan_rpm_radial_data['SHOW'] = False
+                system_fan_rpm_graph_data['SHOW']  = False
+                system_fan_rpm_line_graph_data['SHOW'] = False
+
+        display_themed_value(
+            theme_data=system_fan_rpm_text_data,
+            value=int(fan_speed),
+            unit=" rpm",
+            min_size=4
+        )
+        display_themed_progress_bar(system_fan_rpm_radial_data, fan_speed)
+        display_themed_percent_radial_bar(system_fan_rpm_graph_data, fan_speed)
+        display_themed_line_graph(system_fan_rpm_line_graph_data, cls.last_values_system_fan_speed)
+
+        # System temperature
+        system_temp_text_data   = theme_system_data['TEMPERATURE']['TEXT']
+        system_temp_radial_data = theme_system_data['TEMPERATURE']['RADIAL']
+        system_temp_graph_data  = theme_system_data['TEMPERATURE']['GRAPH']
+        system_temp_line_graph_data = theme_system_data['TEMPERATURE']['LINE_GRAPH']
+
+        if math.isnan(sys_temp):
+            sys_temp = 0
+            if system_temp_text_data['SHOW'] or system_temp_radial_data['SHOW'] or system_temp_graph_data[
+                'SHOW'] or system_temp_line_graph_data['SHOW']:
+                logger.warning("Your System temperature is not supported yet")
+                system_temp_text_data['SHOW']   = False
+                system_temp_radial_data['SHOW'] = False
+                system_temp_graph_data['SHOW']  = False
+                system_temp_line_graph_data['SHOW'] = False
+
+        display_themed_temperature_value(system_temp_text_data, sys_temp)
+        display_themed_progress_bar(system_temp_radial_data, sys_temp)
+        display_themed_percent_radial_bar(system_temp_graph_data, sys_temp)
+        display_themed_line_graph(system_temp_line_graph_data, cls.last_values_system_temperature)
 
 class Gpu:
     last_values_gpu_percentage = []

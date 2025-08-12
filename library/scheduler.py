@@ -118,6 +118,12 @@ def CPUFanSpeed():
     # logger.debug("Refresh CPU Fan Speed")
     stats.CPU.fan_speed()
 
+@async_job("CPU_FanPercent")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS']['CPU']['FAN_PERCENT'].get("INTERVAL", 0)).total_seconds())
+def CPUFanPercent():
+    """ Refresh the CPU Fan Speed % """
+    # logger.debug("Refresh CPU Fan Speed %")
+    stats.CPU.fan_percent()
 
 @async_job("GPU_Stats")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('GPU', {}).get("INTERVAL", 0)).total_seconds())
@@ -126,6 +132,12 @@ def GpuStats():
     # logger.debug("Refresh GPU Stats")
     stats.Gpu.stats()
 
+@async_job("System_Stats")
+@schedule(timedelta(seconds=config.THEME_DATA['STATS'].get("SYSTEM", {}).get("INTERVAL", 0)).total_seconds())
+def SystemStats():
+    """ Refresh the System stats """
+    # logger.debug("Refresh System stats")
+    stats.System.stats()
 
 @async_job("Memory_Stats")
 @schedule(timedelta(seconds=config.THEME_DATA['STATS'].get('MEMORY', {}).get("INTERVAL", 0)).total_seconds())

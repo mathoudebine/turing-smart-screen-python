@@ -153,6 +153,24 @@ class Cpu(sensors.Cpu):
         return cpu_temp
 
     @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        try:
+            fans = sensors_fans()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.current
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
+                            return entry.current
+        except:
+            pass
+
+        return math.nan
+
+    @staticmethod
     def fan_percent(fan_name: str = None) -> float:
         try:
             fans = sensors_fans()
@@ -169,7 +187,6 @@ class Cpu(sensors.Cpu):
             pass
 
         return math.nan
-
 
 class Gpu(sensors.Gpu):
     @staticmethod
@@ -404,6 +421,60 @@ class GpuAmd(sensors.Gpu):
                 return False
         except:
             return False
+
+class System(sensors.System):
+    @staticmethod
+    def fan_percent(fan_name: str = None) -> float:
+        try:
+            fans = sensors_fans()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.percent
+
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
+                            return entry.percent
+        except:
+            pass
+
+        return math.nan
+
+    @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        try:
+            fans = sensors_fans()
+            if fans:
+                for name, entries in fans.items():
+                    for entry in entries:
+                        if fan_name is not None and fan_name == "%s/%s" % (name, entry.label):
+                            # Manually selected fan
+                            return entry.current
+
+                        elif is_cpu_fan(entry.label) or is_cpu_fan(name):
+                            # Auto-detected fan
+                            return entry.current
+        except:
+            pass
+
+        return math.nan
+
+    @staticmethod
+    def temperature(sys_temp: str = None) -> float:
+        try:
+            sensors_temps = psutil.sensors_temperatures()
+            if sensors_temps:
+                arr_sys_temp = sys_temp.split("/")
+                if sensors_temps[arr_sys_temp[0]]:
+                    if sensors_temps[arr_sys_temp[0]][int(arr_sys_temp[1])]:
+                        return sensors_temps[arr_sys_temp[0]][int(arr_sys_temp[1])].current
+
+        except:
+            pass
+
+        return math.nan
 
 
 class Memory(sensors.Memory):
