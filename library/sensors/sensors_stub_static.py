@@ -93,12 +93,19 @@ class Gpu(sensors.Gpu):
 
 class System(sensors.System):
     @staticmethod
+    def stats() -> Tuple[
+        float, float, float]:  # fan (%) / fan speed / temp (°C)
+        return (PERCENTAGE_SENSOR_VALUE,
+                CPU_FAN_SPEED,
+                TEMPERATURE_SENSOR_VALUE)
+
+    @staticmethod
     def fan_percent(fan_name: str = None) -> float:
         return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
     def fan_speed(fan_name: str = None) -> float:
-        return FAN_SPEED
+        return CPU_FAN_SPEED
 
     @staticmethod
     def temperature(sys_temp: str = None) -> float:

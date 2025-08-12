@@ -433,7 +433,6 @@ class System:
   
 
         theme_system_data = config.THEME_DATA['STATS']['SYSTEM']
-
         save_last_value(fan_percent, cls.last_values_system_fan_percent,
                         theme_system_data['FAN_PERCENT']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         save_last_value(fan_speed, cls.last_values_system_fan_speed,
