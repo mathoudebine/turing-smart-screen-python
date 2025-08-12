@@ -10,7 +10,7 @@ config:
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
-  THEME: 3.5inchThemeSystem
+  THEME: 3.5inchTheme2
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
