@@ -112,8 +112,12 @@ def refresh_theme():
         stats.CPU.temperature()
     if config.THEME_DATA['STATS']['CPU']['FAN_SPEED'].get("INTERVAL", 0) > 0:
         stats.CPU.fan_speed()
+    if config.THEME_DATA['STATS']['CPU']['FAN_PERCENT'].get("INTERVAL", 0) > 0:
+        stats.CPU.fan_percent()
     if config.THEME_DATA['STATS']['GPU'].get("INTERVAL", 0) > 0:
         stats.Gpu.stats()
+    if config.THEME_DATA['STATS']['SYSTEM'].get("INTERVAL", 0) > 0:
+        stats.System.stats()
     if config.THEME_DATA['STATS']['MEMORY'].get("INTERVAL", 0) > 0:
         stats.Memory.stats()
     if config.THEME_DATA['STATS']['DISK'].get("INTERVAL", 0) > 0:
