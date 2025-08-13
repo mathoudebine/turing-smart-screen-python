@@ -84,10 +84,19 @@ def sensors_fans():
     for base in basenames:
         try:
             current_rpm = int(bcat(base + '_input'))
+
             try:
                 max_rpm = int(bcat(base + '_max'))
             except:
-                max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
+                max_rpm = False  # Real maximum speed not found
+            if not max_rpm:
+                if current_rpm > 2200:
+                    max_rpm = 3000  # AIO Pumps are usualy 3000 RPM
+                elif current_rpm > 1500:
+                    max_rpm = 2200  # High speed fans are usualy 2200 RPM
+                else
+                    max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
+
             try:
                 min_rpm = int(bcat(base + '_min'))
             except:
