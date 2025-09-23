@@ -14,10 +14,10 @@ jobs:
 
     steps:
     - name: Git Checkout ${{github.event.release.tag_name}}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v6
       with:
         python-version: '3.13'
 
@@ -36,7 +36,7 @@ jobs:
         "${{github.event.release.tag_name}}-debug" | Out-File ".\dist\turing-system-monitor\version.txt"
 
     - name: Create InnoSetup installer from generated binaries
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.6
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
       with:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+
