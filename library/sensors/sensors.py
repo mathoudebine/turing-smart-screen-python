@@ -49,6 +49,10 @@ class Cpu(ABC):
     def fan_percent(fan_name: str = None) -> float:
         pass
 
+    @staticmethod
+    @abstractmethod
+    def fan_speed(fan_name: str = None) -> float:
+        pass
 
 class Gpu(ABC):
     @staticmethod
@@ -77,6 +81,21 @@ class Gpu(ABC):
     def is_available() -> bool:
         pass
 
+class System(ABC):
+    @staticmethod
+    @abstractmethod
+    def fan_percent(fan_name: str = None) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def fan_speed(fan_name: str = None) -> float:
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def temperature(sys_name: str = None) -> float:
+        pass
 
 class Memory(ABC):
     @staticmethod
