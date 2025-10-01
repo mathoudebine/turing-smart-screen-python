@@ -94,7 +94,7 @@ def sensors_fans():
                     max_rpm = 3000  # AIO Pumps are usualy 3000 RPM
                 elif current_rpm > 1500:
                     max_rpm = 2200  # High speed fans are usualy 2200 RPM
-                else
+                else:
                     max_rpm = 1500  # Approximated: max fan speed is 1500 RPM
 
             try:
