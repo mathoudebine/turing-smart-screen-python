@@ -19,6 +19,9 @@
 
 # This file is a simple Python test program using the library code to display custom content on screen (see README)
 
+from library.pythoncheck import check_python_version
+check_python_version()
+
 import os
 import signal
 import sys
