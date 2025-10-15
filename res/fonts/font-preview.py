@@ -22,16 +22,6 @@
 # This file generate PNG previews for available fonts
 
 import os
-import sys
-
-MIN_PYTHON = (3, 9)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
-
 from PIL import Image, ImageDraw, ImageFont
 import math
 from pathlib import Path

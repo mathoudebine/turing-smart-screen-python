@@ -21,6 +21,9 @@
 
 # This file is the system monitor configuration GUI
 
+from library.pythoncheck import check_python_version
+check_python_version()
+
 import glob
 import os
 import platform
@@ -29,14 +32,6 @@ import sys
 import webbrowser
 import requests
 import babel
-
-MIN_PYTHON = (3, 9)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 try:
     import tkinter.ttk as ttk

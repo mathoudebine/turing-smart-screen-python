@@ -22,6 +22,9 @@
 # theme-editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
 # The preview window is refreshed as soon as the theme file is modified
 
+from library.pythoncheck import check_python_version
+check_python_version()
+
 import locale
 import logging
 import os
@@ -29,14 +32,6 @@ import platform
 import subprocess
 import sys
 import time
-
-MIN_PYTHON = (3, 8)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 try:
     import tkinter
