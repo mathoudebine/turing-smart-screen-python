@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # Use this file to display all hardware & sensors available from LibreHardwareMonitor on your computer
 # Windows only - needs administrative rights
 import ctypes
