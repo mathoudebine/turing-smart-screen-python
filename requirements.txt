@@ -16,7 +16,7 @@ Pillow~=11.3.0         # Image generation
 # Efficient image serialization
 numpy~=2.0.2; python_version < "3.10"   # For Python 3.9, only numpy 2.0.x is supported
 numpy~=2.2.6; python_version == "3.10"  # For Python 3.10, only numpy 2.2.x is supported
-numpy~=2.3.3; python_version > "3.10"   # For Python > 3.10, any numpy 2.x is fine
+numpy~=2.3.4; python_version > "3.10"   # For Python > 3.10, any numpy 2.x is fine
 
 # For Nvidia GPU on all platforms
 GPUtil~=1.4.0; python_version < "3.12"
