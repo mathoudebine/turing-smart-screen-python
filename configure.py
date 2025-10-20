@@ -456,9 +456,9 @@ class TuringConfigWindow:
         self.more_config_window.show()
 
     def on_open_theme_folder_click(self):
-        path = f'"{MAIN_DIRECTORY}res/themes"'
+        path = f'{MAIN_DIRECTORY}res/themes'
         if platform.system() == "Windows":
-            os.startfile(path)
+            os.startfile(f'"{path}"')
         elif platform.system() == "Darwin":
             subprocess.Popen(["open", path])
         else:
