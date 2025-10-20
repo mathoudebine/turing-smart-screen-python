@@ -66,6 +66,6 @@ for dir in os.listdir(FONTS_DIR):
     if os.path.isdir(font_dir):
         for font in os.listdir(font_dir):
             font_file = os.path.join(font_dir, font)
-            if os.path.isfile(font_file) and (font_file.endswith(".ttf") or font_file.endswith(".otf")):
+            if os.path.isfile(font_file) and (font_file.endswith(".ttf") or font_file.endswith(".otf") or font_file.endswith(".TTF") or font_file.endswith(".OTF")):
                 print(f"Found font {dir}/{font}")
                 generate_preview(font_dir, font, "40%", font_size=60)
