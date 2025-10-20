@@ -1,4 +1,5 @@
 # Copyright (C) 2024-2024  WeAct Studio
+# Imported from https://github.com/WeActStudio/WeActStudio.SystemMonitor
 
 import struct
 
