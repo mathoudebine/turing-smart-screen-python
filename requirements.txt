@@ -1,7 +1,7 @@
 # Python packages requirements
 pyserial~=3.5          # Serial link to communicate with the display
 PyYAML~=6.0.3          # For themes files
-psutil~=7.1.0          # CPU / disk / network metrics
+psutil~=7.1.1          # CPU / disk / network metrics
 pystray~=0.19.5        # Tray icon (all OS)
 babel~=2.17.0          # Date/time formatting
 ruamel.yaml~=0.18.15    # For configuration editor
