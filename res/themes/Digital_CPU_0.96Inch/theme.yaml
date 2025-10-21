@@ -21,7 +21,7 @@ static_text:
     Y: 0
     WIDTH: 75
     HEIGHT: 0
-    FONT: digital\DIGITAL-7.TTF
+    FONT: digital/DIGITAL-7.TTF
     FONT_SIZE: 20
     FONT_COLOR: 20, 240, 116
     ALIGN: center
@@ -32,7 +32,7 @@ static_text:
     TEXT: CPU TEMP
     X: 0
     Y: 0
-    FONT: digital\DIGITAL-7.TTF
+    FONT: digital/DIGITAL-7.TTF
     FONT_SIZE: 20
     BACKGROUND_IMAGE: background.png
     ALIGN: center
@@ -60,7 +60,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: digital\DIGITAL-7.TTF
+        FONT: digital/DIGITAL-7.TTF
         FONT_SIZE: 55
         FONT_COLOR: 20, 240, 116
         BACKGROUND_IMAGE: background.png
@@ -85,7 +85,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: digital\DIGITAL-7.TTF
+        FONT: digital/DIGITAL-7.TTF
         FONT_SIZE: 55
         FONT_COLOR: 248, 195, 34
         BACKGROUND_COLOR: 0, 0, 0

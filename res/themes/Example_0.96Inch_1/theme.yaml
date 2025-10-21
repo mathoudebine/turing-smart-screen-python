@@ -27,7 +27,7 @@ static_text:
     Y: 90
     WIDTH: 0
     HEIGHT: 0
-    FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
     FONT_SIZE: 10
     FONT_COLOR: 255, 255, 255
     BACKGROUND_COLOR: 255, 255, 255
@@ -40,7 +40,7 @@ static_text:
     Y: 110
     WIDTH: 0
     HEIGHT: 0
-    FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
     FONT_SIZE: 10
     FONT_COLOR: 255, 255, 255
     BACKGROUND_COLOR: 255, 255, 255
@@ -53,7 +53,7 @@ static_text:
     Y: 130
     WIDTH: 0
     HEIGHT: 0
-    FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
     FONT_SIZE: 10
     FONT_COLOR: 255, 255, 255
     BACKGROUND_COLOR: 255, 255, 255
@@ -79,7 +79,7 @@ STATS:
         # To avoid this use one of these 2 methods (or both):
         #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
-        FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
@@ -116,7 +116,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 255, 255, 255
@@ -154,7 +154,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
@@ -193,7 +193,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
@@ -214,7 +214,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
         FONT_SIZE: 10
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
@@ -236,7 +236,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
-        FONT: fusion-pixel\fusion-pixel-12px-monospaced-zh_hans.otf
+        FONT: fusion-pixel/fusion-pixel-12px-monospaced-zh_hans.otf
         FONT_SIZE: 12
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
@@ -260,7 +260,7 @@ STATS:
           #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           WIDTH: 0   # Uncomment to force a static width
           HEIGHT: 0   # Uncomment to force static height
-          FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+          FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
           FONT_SIZE: 10
           FONT_COLOR: 128, 255, 128
           BACKGROUND_COLOR: 0, 0, 0
@@ -281,7 +281,7 @@ STATS:
           #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           WIDTH: 0   # Uncomment to force a static width
           HEIGHT: 0   # Uncomment to force static height
-          FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+          FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
           FONT_SIZE: 10
           FONT_COLOR: 255, 128, 0
           BACKGROUND_COLOR: 0, 0, 0
@@ -303,7 +303,7 @@ STATS:
           #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           WIDTH: 0   # Uncomment to force a static width
           HEIGHT: 0   # Uncomment to force static height
-          FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+          FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
           FONT_SIZE: 10
           FONT_COLOR: 128, 255, 128
           BACKGROUND_COLOR: 0, 0, 0
@@ -324,7 +324,7 @@ STATS:
           #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           WIDTH: 0   # Uncomment to force a static width
           HEIGHT: 0   # Uncomment to force static height
-          FONT: fusion-pixel\fusion-pixel-10px-monospaced-zh_hans.otf
+          FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
           FONT_SIZE: 10
           FONT_COLOR: 255, 128, 0
           BACKGROUND_COLOR: 0, 0, 0

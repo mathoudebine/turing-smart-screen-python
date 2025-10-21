@@ -49,7 +49,7 @@ STATS:
         #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 160 # Uncomment to force a static width
         HEIGHT: 38   # Uncomment to force static height
-        FONT: geforce\GeForce-Bold.ttf
+        FONT: geforce/GeForce-Bold.ttf
         FONT_SIZE: 38
         FONT_COLOR: 255, 255, 255
         BACKGROUND_COLOR: 0, 0, 0
