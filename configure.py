@@ -60,14 +60,16 @@ TURING_MODEL = "Turing Smart Screen"
 USBPCMONITOR_MODEL = "UsbPCMonitor"
 XUANFANG_MODEL = "XuanFang rev. B & flagship"
 KIPYE_MODEL = "Kipye Qiye Smart Display"
+WEACT_MODEL = "WeAct Studio Display FS V1"
 SIMULATED_MODEL = "Simulated screen"
 
 SIZE_3_5_INCH = "3.5\""
 SIZE_5_INCH = "5\""
 SIZE_8_8_INCH = "8.8\""
 SIZE_2_1_INCH = "2.1\""
+SIZE_0_96_INCH = "0.96\""
 
-size_list = (SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
+size_list = (SIZE_0_96_INCH, SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
 
 # Maps between config.yaml values and GUI description
 revision_and_size_to_model_map = {
@@ -78,6 +80,9 @@ revision_and_size_to_model_map = {
     ('C', SIZE_5_INCH): TURING_MODEL,
     ('C', SIZE_8_8_INCH): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
+    ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
+    ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
+    ('SIMU', SIZE_0_96_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_2_1_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_5_INCH): SIMULATED_MODEL,
@@ -92,6 +97,9 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_5_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
+    (WEACT_MODEL, SIZE_3_5_INCH): 'WEACT_A',
+    (WEACT_MODEL, SIZE_0_96_INCH): 'WEACT_B',
+    (SIMULATED_MODEL, SIZE_0_96_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU',

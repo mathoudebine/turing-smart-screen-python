@@ -24,6 +24,8 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_weact_a import LcdCommWeActA
+from library.lcd.lcd_comm_weact_b import LcdCommWeActB
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -53,6 +55,8 @@ def _get_theme_orientation() -> Orientation:
 
 
 def _get_theme_size() -> tuple[int, int]:
+    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '0.96"':
+        return 80, 160
     if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '2.1"':
         return 480, 480
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '3.5"':
@@ -83,6 +87,12 @@ class Display:
                                    update_queue=config.update_queue, display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "WEACT_A":
+            self.lcd = LcdCommWeActA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                   update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] == "WEACT_B":
+            self.lcd = LcdCommWeActB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             # Simulated display: always set width/height from theme
