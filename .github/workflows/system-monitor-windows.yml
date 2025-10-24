@@ -71,7 +71,7 @@ jobs:
         cp screencap.png screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}.png
 
     - name: Archive a screenshot
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}
         path: screenshot-*.png
