@@ -22,7 +22,7 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 | <img src="res/docs/turing.webp"/>                    | <img src="res/docs/xuanfang.webp"/>               | <img src="res/docs/turing5inch.png"/>       |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now) |
 
-| ⚠️ Turing Smart Screen 8.8"                  | ✅ Turing Smart Screen 2.1"                                       |
+| ⚠️ Turing Smart Screen 8.8"                  | ✅ Turing Smart Screen 2.1" / 2.8"                                 |
 |---------------------------------------------|------------------------------------------------------------------|
 | <img src="res/docs/turing8inch.webp"/>      | <img src="res/docs/turing2inch.webp"  width="60%" height="60%"/> |
 | basic support (no video or storage for now)<br/>⚠️ [New revision V1.1 not supported!](https://github.com/mathoudebine/turing-smart-screen-python/issues/727) | basic support (no video or storage for now)                      |
@@ -135,4 +135,3 @@ If you have trouble running the program as described in the wiki, please check [
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=mathoudebine/turing-smart-screen-python&type=Date)](https://star-history.com/#mathoudebine/turing-smart-screen-python&Date)
-

@@ -54,7 +54,7 @@ display:
   # Display revision:
   # - A         for Turing 3.5" and UsbPCMonitor 3.5"/5"
   # - B         for Xuanfang 3.5" (inc. flagship)
-  # - C         for Turing 2.1"/5"/8.8"
+  # - C         for Turing 2.1"/2.8"/5"/8.8"
   # - D         for Kipye Qiye Smart Display 3.5"
   # - WEACT_A   for WeAct Studio Display FS V1 3.5"
   # - WEACT_B   for WeAct Studio Display FS V1 0.96"

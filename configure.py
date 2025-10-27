@@ -66,24 +66,25 @@ SIMULATED_MODEL = "Simulated screen"
 SIZE_3_5_INCH = "3.5\""
 SIZE_5_INCH = "5\""
 SIZE_8_8_INCH = "8.8\""
-SIZE_2_1_INCH = "2.1\""
+SIZE_2_1_INCH = "2.1\""  # Only for retro compatibility
+SIZE_2_x_INCH = "2.1\" / 2.8\""
 SIZE_0_96_INCH = "0.96\""
 
-size_list = (SIZE_0_96_INCH, SIZE_2_1_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
+size_list = (SIZE_0_96_INCH, SIZE_2_x_INCH, SIZE_3_5_INCH, SIZE_5_INCH, SIZE_8_8_INCH)
 
 # Maps between config.yaml values and GUI description
 revision_and_size_to_model_map = {
     ('A', SIZE_3_5_INCH): TURING_MODEL,  # Can also be UsbPCMonitor 3.5, does not matter since protocol is the same
     ('A', SIZE_5_INCH): USBPCMONITOR_MODEL,
     ('B', SIZE_3_5_INCH): XUANFANG_MODEL,
-    ('C', SIZE_2_1_INCH): TURING_MODEL,
+    ('C', SIZE_2_x_INCH): TURING_MODEL,
     ('C', SIZE_5_INCH): TURING_MODEL,
     ('C', SIZE_8_8_INCH): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
     ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
     ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
     ('SIMU', SIZE_0_96_INCH): SIMULATED_MODEL,
-    ('SIMU', SIZE_2_1_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_2_x_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_3_5_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_5_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_8_8_INCH): SIMULATED_MODEL,
@@ -93,14 +94,14 @@ model_and_size_to_revision_map = {
     (USBPCMONITOR_MODEL, SIZE_3_5_INCH): 'A',
     (USBPCMONITOR_MODEL, SIZE_5_INCH): 'A',
     (XUANFANG_MODEL, SIZE_3_5_INCH): 'B',
-    (TURING_MODEL, SIZE_2_1_INCH): 'C',
+    (TURING_MODEL, SIZE_2_x_INCH): 'C',
     (TURING_MODEL, SIZE_5_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
     (WEACT_MODEL, SIZE_3_5_INCH): 'WEACT_A',
     (WEACT_MODEL, SIZE_0_96_INCH): 'WEACT_B',
     (SIMULATED_MODEL, SIZE_0_96_INCH): 'SIMU',
-    (SIMULATED_MODEL, SIZE_2_1_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_2_x_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_3_5_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_5_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_8_8_INCH): 'SIMU',
@@ -312,7 +313,7 @@ class TuringConfigWindow:
         try:
             theme_preview = Image.open(MAIN_DIRECTORY + "res/themes/" + self.theme_cb.get() + "/preview.png")
 
-            if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == '2.1"':
+            if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == SIZE_2_1_INCH:
                 # This is a circular screen: apply a circle mask over the preview
                 theme_preview.paste(circular_mask, mask=circular_mask)
         except:
@@ -380,6 +381,7 @@ class TuringConfigWindow:
 
         # Guess display size from theme in the configuration
         size = get_theme_size(self.config['config']['THEME'])
+        size = size.replace(SIZE_2_1_INCH, SIZE_2_x_INCH)   # If a theme is for 2.1" then it also is for 2.8"
         try:
             self.size_cb.set(size)
         except:
@@ -505,6 +507,7 @@ class TuringConfigWindow:
 
     def on_size_change(self, e=None):
         size = self.size_cb.get()
+        size = size.replace(SIZE_2_x_INCH, SIZE_2_1_INCH)  # For '2.1" / 2.8"' size, keep '2.1"' as size to get themes for
         themes = get_themes(size)
         self.theme_cb.config(values=themes)
 
