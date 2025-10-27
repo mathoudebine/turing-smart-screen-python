@@ -115,16 +115,16 @@ class SleepInterval(Enum):
 
 
 class SubRevision(Enum):
-    UNKNOWN = ""
-    REV_2INCH = "chs_21inch"
-    REV_5INCH = "chs_5inch"
-    REV_8INCH = "chs_88inch"
+    UNKNOWN = 0
+    REV_2INCH = 1  # For 2.1" and 2.8" models
+    REV_5INCH = 2
+    REV_8INCH = 3
 
 
 WAKE_RETRIES = 15
 
 
-# This class is for Turing Smart Screen 2.1" / 5" / 8" screens
+# This class is for Turing Smart Screen 2.1" / 2.8" / 5" / 8" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
                  update_queue: Optional[queue.Queue] = None):
@@ -431,7 +431,7 @@ class LcdCommRevC(LcdComm):
         img_raw_data = bytearray()
 
         # Some screens require different RGBA encoding
-        if self.rom_version > 88:
+        if self.sub_revision != SubRevision.REV_2INCH and self.rom_version > 88:
             # BGRA mode on 4 bytes : [B, G, R, A]
             img_data, pixel_size = image_to_BGRA(image)
         else:
