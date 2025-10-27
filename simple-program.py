@@ -35,6 +35,8 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_weact_a import LcdCommWeActA
+from library.lcd.lcd_comm_weact_b import LcdCommWeActB
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -93,6 +95,12 @@ if __name__ == "__main__":
     elif REVISION == "D":
         logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")
         lcd_comm = LcdCommRevD(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION == "WEACT_A":
+        logger.info("Selected Hardware WeAct Studio Display FS V1 3.5\"")
+        lcd_comm = LcdCommWeActA(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION == "WEACT_B":
+        logger.info("Selected Hardware WeAct Studio Display FS V1 0.96\"")
+        lcd_comm = LcdCommWeActB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "SIMU":
         logger.info("Selected Simulated LCD")
         lcd_comm = LcdSimulated(display_width=WIDTH, display_height=HEIGHT)

@@ -1,0 +1,266 @@
+# Copyright (C) 2024-2024  WeAct Studio
+# Imported from https://github.com/WeActStudio/WeActStudio.SystemMonitor
+author: '@WeActStudio'
+display:
+  DISPLAY_SIZE: 0.96"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 85, 85, 85
+
+static_images:
+  background:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 160
+    HEIGHT: 80
+  picture:
+    PATH: Photos/logo/013-sun umbrella.png
+    X: 2
+    Y: 2
+    WIDTH: 76
+    HEIGHT: 76
+
+static_text:
+  CPU:
+    TEXT: 'CPU:'
+    X: 85
+    Y: 5
+    WIDTH: 0
+    HEIGHT: 0
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT_SIZE: 10
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+    ALIGN: left
+    ANCHOR: lt
+  RAM:
+    TEXT: 'RAM:'
+    X: 85
+    Y: 22
+    WIDTH: 0
+    HEIGHT: 0
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT_SIZE: 10
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+    ALIGN: left
+    ANCHOR: lt
+  GPU:
+    TEXT: 'GPU:'
+    X: 85
+    Y: 40
+    WIDTH: 0
+    HEIGHT: 0
+    FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+    FONT_SIZE: 10
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 255, 255, 255
+    BACKGROUND_IMAGE: background.png
+    ALIGN: left
+    ANCHOR: lt
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: true
+        SHOW_UNIT: true
+        UNIT_ML: false
+        MIN_SIZE: 0
+        X: 130
+        Y: 5
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+      GRAPH:
+        SHOW: true
+        X: 85
+        Y: 15
+        WIDTH: 70
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: true
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 5
+      TEXT:
+        SHOW: true
+        SHOW_UNIT: true
+        UNIT_ML: false
+        MIN_SIZE: 0
+        X: 155
+        Y: 4
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+  MEMORY:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: true
+        X: 85
+        Y: 32
+        WIDTH: 70
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 255, 0
+        BAR_OUTLINE: true
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: true
+        SHOW_UNIT: true
+        UNIT_ML: false
+        MIN_SIZE: 0
+        X: 130
+        Y: 25
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rm   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+  GPU:
+    # In seconds. Longer intervals cause this to refresh more slowly.
+    # Setting to lower values will display near real time data,
+    # but may cause significant CPU usage or the display not to update properly
+    # Note: refresh interval is common to all GPU sensors
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: true
+        X: 85
+        Y: 50
+        WIDTH: 70
+        HEIGHT: 5
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 128, 0
+        BAR_OUTLINE: true
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: true
+        SHOW_UNIT: true
+        UNIT_ML: false
+        MIN_SIZE: 0
+        X: 130
+        Y: 40
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+    TEMPERATURE:
+      TEXT:
+        SHOW: true
+        SHOW_UNIT: true
+        UNIT_ML: false
+        MIN_SIZE: 0
+        X: 155
+        Y: 39
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
+        SHOW: true
+        X: 155
+        Y: 62
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rm   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: medium # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023) / custom pattern e.g. "yyyy.MM.dd" (2024.02.20)
+        SHOW: true
+        X: 155
+        Y: 70
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
+        WIDTH: 0   # Uncomment to force a static width
+        HEIGHT: 0   # Uncomment to force static height
+        FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
+        FONT_SIZE: 10
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
