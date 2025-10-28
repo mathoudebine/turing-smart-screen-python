@@ -326,14 +326,14 @@ class LcdCommRevCUSB(LcdComm):
         base_image = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
 
         for (x, y), part in self.image_parts.items():
-            base_image.paste(part, (x, y), mask=part)
+            base_image.paste(part, (x, y))
 
         if self.orientation == Orientation.LANDSCAPE:
-            base_image = base_image.transpose(Image.ROTATE_270)
+            base_image = base_image.transpose(Image.Transpose.ROTATE_270)
         elif self.orientation == Orientation.REVERSE_LANDSCAPE:
-            base_image = base_image.transpose(Image.ROTATE_90)
+            base_image = base_image.transpose(Image.Transpose.ROTATE_90)
         elif self.orientation == Orientation.PORTRAIT:
-            base_image = base_image.transpose(Image.ROTATE_180)
+            base_image = base_image.transpose(Image.Transpose.ROTATE_180)
         elif self.orientation == Orientation.REVERSE_PORTRAIT:
             pass
 

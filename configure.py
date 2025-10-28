@@ -513,6 +513,7 @@ class TuringConfigWindow:
     def on_size_change(self, e=None):
         size = self.size_cb.get()
         size = size.replace(SIZE_2_x_INCH, SIZE_2_1_INCH)  # For '2.1" / 2.8"' size, keep '2.1"' as size to get themes for
+        size = size.replace(SIZE_8_8_INCH_USB, SIZE_8_8_INCH)
         themes = get_themes(size)
         self.theme_cb.config(values=themes)
 
