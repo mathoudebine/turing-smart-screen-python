@@ -1,24 +1,22 @@
+import platform
+import queue
+import struct
+import subprocess
+import time
 from io import BytesIO
-from PIL import Image
+from pathlib import Path
+from typing import Optional
+
 import usb.core
 import usb.util
-import struct
-import time
-import argparse
 from Crypto.Cipher import DES
 from PIL import Image
-import time
-import subprocess
-from pathlib import Path
-import platform
+
 from library.lcd.lcd_comm import Orientation, LcdComm
-from library.lcd.serialize import image_to_BGRA, image_to_BGR, chunked
-from library.log import logger
-from typing import Optional, Tuple
-import queue
 
 VENDOR_ID = 0x1cbe
 PRODUCT_ID = 0x0088
+
 
 def build_command_packet_header(a0: int) -> bytearray:
     packet = bytearray(500)
@@ -29,11 +27,13 @@ def build_command_packet_header(a0: int) -> bytearray:
     packet[4:8] = struct.pack('<I', timestamp)
     return packet
 
+
 def encrypt_with_des(key: bytes, data: bytes) -> bytes:
     cipher = DES.new(key, DES.MODE_CBC, key)
     padded_len = (len(data) + 7) // 8 * 8
     padded_data = data.ljust(padded_len, b'\x00')
     return cipher.encrypt(padded_data)
+
 
 def encrypt_command_packet(data: bytearray) -> bytearray:
     des_key = b'slv3tuzx'
@@ -43,6 +43,7 @@ def encrypt_command_packet(data: bytearray) -> bytearray:
     final_packet[510] = 161
     final_packet[511] = 26
     return final_packet
+
 
 def find_usb_device():
     dev = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
@@ -63,6 +64,7 @@ def find_usb_device():
 
     return dev
 
+
 def read_flush(ep_in, max_attempts=5):
     """
     Flush the USB IN endpoint by reading available data until timeout or max attempts reached.
@@ -74,24 +76,27 @@ def read_flush(ep_in, max_attempts=5):
             if e.errno == 110 or e.args[0] == 'Operation timed out':
                 break
             else:
-                #print("Flush read error:", e)
+                # print("Flush read error:", e)
                 break
+
 
 def write_to_device(dev, data, timeout=2000):
     cfg = dev.get_active_configuration()
     intf = usb.util.find_descriptor(cfg, bInterfaceNumber=0)
     if intf is None:
         raise RuntimeError("USB interface 0 not found")
-    ep_out = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
-    ep_in = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN)
+    ep_out = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(
+        e.bEndpointAddress) == usb.util.ENDPOINT_OUT)
+    ep_in = usb.util.find_descriptor(intf, custom_match=lambda e: usb.util.endpoint_direction(
+        e.bEndpointAddress) == usb.util.ENDPOINT_IN)
     assert ep_out is not None and ep_in is not None, "Could not find USB endpoints"
-    
+
     try:
         ep_out.write(data, timeout)
     except usb.core.USBError as e:
         print("USB write error:", e)
         return None
-    
+
     try:
         response = ep_in.read(512, timeout)
         read_flush(ep_in)
@@ -100,18 +105,22 @@ def write_to_device(dev, data, timeout=2000):
         print("USB read error:", e)
         return None
 
+
 def delay_sync(dev):
     send_sync_command(dev)
     time.sleep(0.2)
+
 
 def send_sync_command(dev):
     print("Sending Sync Command (ID 10)...")
     cmd_packet = build_command_packet_header(10)
     return write_to_device(dev, encrypt_command_packet(cmd_packet))
 
+
 def send_restart_device_command(dev):
     print("Sending Restart Command (ID 11)...")
     return write_to_device(dev, encrypt_command_packet(build_command_packet_header(11)))
+
 
 def send_brightness_command(dev, brightness: int):
     print(f"Sending Brightness Command (ID 14)...")
@@ -120,6 +129,7 @@ def send_brightness_command(dev, brightness: int):
     cmd_packet[8] = brightness
     return write_to_device(dev, encrypt_command_packet(cmd_packet))
 
+
 def send_frame_rate_command(dev, frame_rate: int):
     print(f"Sending Frame Rate Command (ID 15)...")
     print(f"  Frame Rate = {frame_rate}")
@@ -127,11 +137,13 @@ def send_frame_rate_command(dev, frame_rate: int):
     cmd_packet[8] = frame_rate
     return write_to_device(dev, encrypt_command_packet(cmd_packet))
 
+
 def format_bytes(val):
     if val > 1024 * 1024:
         return f"{val / (1024 * 1024):.2f} GB"
     else:
         return f"{val / 1024:.2f} MB"
+
 
 def send_refresh_storage_command(dev):
     print("Sending Refresh Storage Command (ID 100)...")
@@ -144,6 +156,7 @@ def send_refresh_storage_command(dev):
     print(f"  Card Total = {total}")
     print(f"  Card Used = {used}")
     print(f"  Card Valid = {valid}")
+
 
 def send_save_settings_command(dev, brightness=0, startup=0, reserved=0, rotation=0, sleep=0, offline=0):
     print("Sending Save Settings Command (ID 125)...")
@@ -162,6 +175,7 @@ def send_save_settings_command(dev, brightness=0, startup=0, reserved=0, rotatio
     cmd_packet[13] = offline
     return write_to_device(dev, encrypt_command_packet(cmd_packet))
 
+
 def send_image(dev, png_data: bytes):
     img_size = len(png_data)
 
@@ -174,19 +188,17 @@ def send_image(dev, png_data: bytes):
     full_payload = encrypt_command_packet(cmd_packet) + png_data
     return write_to_device(dev, full_payload)
 
+
 def clear_image(dev):
-    img_data = bytearray([
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
-        0x00, 0x00, 0x01, 0xe0, 0x00, 0x00, 0x07, 0x80, 0x08, 0x06, 0x00, 0x00, 0x00, 0x16, 0xf0, 0x84,
-        0xf5, 0x00, 0x00, 0x00, 0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0xae, 0xce, 0x1c, 0xe9, 0x00, 0x00,
-        0x00, 0x04, 0x67, 0x41, 0x4d, 0x41, 0x00, 0x00, 0xb1, 0x8f, 0x0b, 0xfc, 0x61, 0x05, 0x00, 0x00,
-        0x00, 0x09, 0x70, 0x48, 0x59, 0x73, 0x00, 0x00, 0x0e, 0xc3, 0x00, 0x00, 0x0e, 0xc3, 0x01, 0xc7,
-        0x6f, 0xa8, 0x64, 0x00, 0x00, 0x0e, 0x0c, 0x49, 0x44, 0x41, 0x54, 0x78, 0x5e, 0xed, 0xc1, 0x01,
-        0x0d, 0x00, 0x00, 0x00, 0xc2, 0xa0, 0xf7, 0x4f, 0x6d, 0x0f, 0x07, 0x14, 0x00, 0x00, 0x00, 0x00,
-    ] + [0x00] * 3568 + [
-        0x00, 0xf0, 0x66, 0x4a, 0xc8, 0x00, 0x01, 0x11, 0x9d, 0x82, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x49,
-        0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82
-    ])
+    img_data = bytearray(
+        [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52, 0x00, 0x00,
+            0x01, 0xe0, 0x00, 0x00, 0x07, 0x80, 0x08, 0x06, 0x00, 0x00, 0x00, 0x16, 0xf0, 0x84, 0xf5, 0x00, 0x00, 0x00,
+            0x01, 0x73, 0x52, 0x47, 0x42, 0x00, 0xae, 0xce, 0x1c, 0xe9, 0x00, 0x00, 0x00, 0x04, 0x67, 0x41, 0x4d, 0x41,
+            0x00, 0x00, 0xb1, 0x8f, 0x0b, 0xfc, 0x61, 0x05, 0x00, 0x00, 0x00, 0x09, 0x70, 0x48, 0x59, 0x73, 0x00, 0x00,
+            0x0e, 0xc3, 0x00, 0x00, 0x0e, 0xc3, 0x01, 0xc7, 0x6f, 0xa8, 0x64, 0x00, 0x00, 0x0e, 0x0c, 0x49, 0x44, 0x41,
+            0x54, 0x78, 0x5e, 0xed, 0xc1, 0x01, 0x0d, 0x00, 0x00, 0x00, 0xc2, 0xa0, 0xf7, 0x4f, 0x6d, 0x0f, 0x07, 0x14,
+            0x00, 0x00, 0x00, 0x00, ] + [0x00] * 3568 + [0x00, 0xf0, 0x66, 0x4a, 0xc8, 0x00, 0x01, 0x11, 0x9d, 0x82,
+            0x0a, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82])
     img_size = len(img_data)
     print(f"  Chunk Size: {img_size} bytes")
 
@@ -199,6 +211,7 @@ def clear_image(dev):
     full_payload = encrypt_command_packet(cmd_packet) + img_data
     return write_to_device(dev, full_payload)
 
+
 def delay(dev, rst):
     time.sleep(0.05)
     print("Sending Delay Command (ID 122)...")
@@ -207,20 +220,19 @@ def delay(dev, rst):
     if response and response[8] > rst:
         delay(dev, rst)
 
+
 def extract_h264_from_mp4(mp4_path: str):
     input_path = Path(mp4_path)
     if not input_path.exists():
         raise FileNotFoundError(f"Input file not found: {input_path}")
 
     output_path = input_path.with_suffix(".h264")
-    
+
     if output_path.exists():
         print(f"{output_path.name} already exists. Skipping extraction.")
         return output_path
 
-    cmd = [
-        "ffmpeg",
-        "-y",  # overwrite without asking
+    cmd = ["ffmpeg", "-y",  # overwrite without asking
         "-i", str(input_path),  # input file
         "-c:v", "copy",  # copy video stream
         "-bsf:v", "h264_mp4toannexb",  # convert to Annex-B
@@ -232,21 +244,22 @@ def extract_h264_from_mp4(mp4_path: str):
     print(f"Extracting H.264 from {input_path.name}...")
     subprocess.run(cmd, check=True)
     print(f"Done. Saved as {output_path.name}")
-    return output_path        
+    return output_path
+
 
 def send_video(dev, video_path, loop=False):
     output_path = extract_h264_from_mp4(video_path)
     write_to_device(dev, encrypt_command_packet(build_command_packet_header(111)))
     write_to_device(dev, encrypt_command_packet(build_command_packet_header(112)))
     write_to_device(dev, encrypt_command_packet(build_command_packet_header(13)))
-    send_brightness_command(dev, 32) #14
+    send_brightness_command(dev, 32)  # 14
     write_to_device(dev, encrypt_command_packet(build_command_packet_header(41)))
-    clear_image(dev) #102, 3703
-    send_frame_rate_command(dev, 25) #15
+    clear_image(dev)  # 102, 3703
+    send_frame_rate_command(dev, 25)  # 15
     # send_image(dev, './102_25011_payload.png') #102, 25011
     print("Sending Send Video Command (ID 121)...")
     try:
-        while(True):
+        while (True):
             with open(output_path, 'rb') as f:
                 while True:
                     data = f.read(202752)
@@ -274,13 +287,16 @@ def send_video(dev, video_path, loop=False):
     finally:
         write_to_device(dev, encrypt_command_packet(build_command_packet_header(123)))
 
+
+# This class is for Turing Smart Screen newer models (5.2" / 8" / 8.8" HW rev 1.x / 9.2")
 class LcdCommRevCUSB(LcdComm):
-    def __init__(self, com_port: str = "USB", display_width: int = 480, display_height: int = 1920,
+    def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 1920,
                  update_queue: Optional[queue.Queue] = None):
         super().__init__(com_port, display_width, display_height, update_queue)
         self.dev = find_usb_device()
-        self.image_parts = {}
-    
+        # Store the current screen state as an image that will be continuously updated and sent
+        self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 255))
+
     def auto_detect_com_port(self):
         pass
 
@@ -288,6 +304,7 @@ class LcdCommRevCUSB(LcdComm):
         send_sync_command(self.dev)
 
     def Reset(self):
+        # Do not enable the reset command for now on Turing USB models
         # send_restart_device_command(self.dev)
         pass
 
@@ -295,13 +312,16 @@ class LcdCommRevCUSB(LcdComm):
         clear_image(self.dev)
 
     def ScreenOff(self):
-        pass
+        # Turing USB models do not implement a "screen off" command (that we know of): use SetBrightness(0) instead
+        self.Clear()
+        self.SetBrightness(0)
 
     def ScreenOn(self):
-        pass
+        # Turing USB models do not implement a "screen off" command (that we know of): using SetBrightness() instead
+        self.SetBrightness()
 
-    def SetBrightness(self, level: int):
-        assert 0 <= level <= 100, 'Brightness must be 0~100'
+    def SetBrightness(self, level: int = 25):
+        assert 0 <= level <= 100, 'Brightness level must be [0-100]'
         converted = int(level / 100 * 102)
         send_brightness_command(self.dev, converted)
 
@@ -322,23 +342,22 @@ class LcdCommRevCUSB(LcdComm):
         if image_width != image.size[0] or image_height != image.size[1]:
             image = image.crop((0, 0, image_width, image_height))
 
-        self.image_parts[(x, y)] = image
-        base_image = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
+        # Paste new image over existing screen state
+        self.current_state.paste(image, (x, y))
 
-        for (x, y), part in self.image_parts.items():
-            base_image.paste(part, (x, y))
-
+        # Rotate image before sending to screen: all images sent to the screen are in portrait mode
         if self.orientation == Orientation.LANDSCAPE:
-            base_image = base_image.transpose(Image.Transpose.ROTATE_270)
+            base_image = self.current_state.transpose(Image.Transpose.ROTATE_270)
         elif self.orientation == Orientation.REVERSE_LANDSCAPE:
-            base_image = base_image.transpose(Image.Transpose.ROTATE_90)
+            base_image = self.current_state.transpose(Image.Transpose.ROTATE_90)
         elif self.orientation == Orientation.PORTRAIT:
-            base_image = base_image.transpose(Image.Transpose.ROTATE_180)
-        elif self.orientation == Orientation.REVERSE_PORTRAIT:
-            pass
+            base_image = self.current_state.transpose(Image.Transpose.ROTATE_180)
+        else:  # Orientation.REVERSE_PORTRAIT is initial screen orientation
+            base_image = self.current_state
 
+        # Save as PNG format with headers
         buffer = BytesIO()
         base_image.save(buffer, format="PNG")
-        png_data = buffer.getvalue()
 
-        send_image(self.dev, png_data)
+        # Send PNG data
+        send_image(self.dev, buffer.getvalue())

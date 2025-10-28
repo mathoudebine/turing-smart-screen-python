@@ -87,7 +87,7 @@ class Display:
             self.lcd = LcdCommRevC(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue, display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "C_USB":
-            # Because of issue with Turing rev. C size auto-detection, manually configure screen width/height from theme
+            # On all USB models, manually configure screen width/height from theme
             self.lcd = LcdCommRevCUSB(display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
