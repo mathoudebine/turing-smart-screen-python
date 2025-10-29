@@ -43,16 +43,26 @@ STATS:
         SHOW: False
       LINE_GRAPH:
         SHOW: False
+    FAN_PERCENT:
+      INTERVAL: 0
+      TEXT:
+        SHOW: false
+      GRAPH:
+        SHOW: false
+      RADIAL:
+        SHOW: false
+      LINE_GRAPH:
+        SHOW: false
     FAN_SPEED:
       INTERVAL: 0
       TEXT:
-        SHOW: False
+        SHOW: false
       GRAPH:
-        SHOW: False
+        SHOW: false
       RADIAL:
-        SHOW: False
+        SHOW: false
       LINE_GRAPH:
-        SHOW: False
+        SHOW: false
   GPU:
     INTERVAL: 0
     PERCENTAGE:
@@ -122,6 +132,35 @@ STATS:
         SHOW: False
       LINE_GRAPH:
         SHOW: False
+  SYSTEM:
+    INTERVAL: 0
+    FAN_PERCENT:
+      TEXT:
+        SHOW: false
+      GRAPH:
+        SHOW: false
+      RADIAL:
+        SHOW: false
+      LINE_GRAPH:
+        SHOW: false
+    FAN_SPEED:
+      TEXT:
+        SHOW: false
+      GRAPH:
+        SHOW: false
+      RADIAL:
+        SHOW: false
+      LINE_GRAPH:
+        SHOW: false
+    TEMPERATURE:
+      TEXT:
+        SHOW: false
+      GRAPH:
+        SHOW: false
+      RADIAL:
+        SHOW: false
+      LINE_GRAPH:
+        SHOW: false
   MEMORY:
     INTERVAL: 0
     SWAP:
