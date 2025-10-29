@@ -115,7 +115,11 @@ If you don't want to use your screen for system monitoring, you can just use thi
 - Set backplate RGB LEDs color (on supported hardware rev.) 
 
 This project will act as an abstraction library to handle specific protocols and capabilities of each supported smart screen models in a transparent way for the user.
-Check `simple-program.py` as an example.
+
+Example scripts included:
+- `simple-program.py` - Basic example showing core display functions
+- `demo.py` - Interactive demonstration of all display capabilities
+- `picture_frame.py` - Automated image slideshow with time/date overlay
 
 ### [> Control the display from your code](https://github.com/mathoudebine/turing-smart-screen-python/wiki/Control-screen-from-your-own-code)
 
