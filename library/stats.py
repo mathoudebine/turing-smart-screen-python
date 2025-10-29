@@ -647,37 +647,45 @@ class Disk:
 
     @classmethod
     def stats(cls):
-        used = sensors.Disk.disk_used()
-        free = sensors.Disk.disk_free()
+        if 'MOUNTS' not in config.THEME_DATA['STATS']['DISK']:
+            mountpoints = [ {"/": config.THEME_DATA['STATS']['DISK'] }]
+        else:
+            mountpoints = config.THEME_DATA['STATS']['DISK']['MOUNTS']
 
-        disk_theme_data = config.THEME_DATA['STATS']['DISK']
+        for mount in mountpoints:
+            mountpoint = [k for k, v in mount.items()][0]
+            disk_theme_data = mount[mountpoint]
+            if not os.path.exists(mountpoint):
+                logger.warning('Invalid mount point in config: "%s"' % mountpoint)
+            else:
+                used = sensors.Disk.disk_used(mountpoint)
+                free = sensors.Disk.disk_free(mountpoint)
 
-        disk_usage_percent = sensors.Disk.disk_usage_percent()
-        save_last_value(disk_usage_percent, cls.last_values_disk_usage,
-                        disk_theme_data['USED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
-        display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
-        display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
-        display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
-        display_themed_line_graph(disk_theme_data['USED']['LINE_GRAPH'], cls.last_values_disk_usage)
+            disk_usage_percent = sensors.Disk.disk_usage_percent(mountpoint)
+            save_last_value(disk_usage_percent, cls.last_values_disk_usage, DEFAULT_HISTORY_SIZE)
+            #display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
+            #display_themed_percent_radial_bar(disk_theme_data['USED']['RADIAL'], disk_usage_percent)
+            display_themed_percent_value(disk_theme_data['USED']['PERCENT_TEXT'], disk_usage_percent)
+            #display_themed_line_graph(disk_theme_data['USED']['LINE_GRAPH'], cls.last_values_disk_usage)
 
-        display_themed_value(
-            theme_data=disk_theme_data['USED']['TEXT'],
-            value=int(used / 1000000000),
-            min_size=5,
-            unit=" G"
-        )
-        display_themed_value(
-            theme_data=disk_theme_data['TOTAL']['TEXT'],
-            value=int((free + used) / 1000000000),
-            min_size=5,
-            unit=" G"
-        )
-        display_themed_value(
-            theme_data=disk_theme_data['FREE']['TEXT'],
-            value=int(free / 1000000000),
-            min_size=5,
-            unit=" G"
-        )
+            display_themed_value(
+                theme_data=disk_theme_data['USED']['TEXT'],
+                value=int(used / 1000000000),
+                min_size=5,
+                unit=" G"
+            )
+            display_themed_value(
+                theme_data=disk_theme_data['TOTAL']['TEXT'],
+                value=int((free + used) / 1000000000),
+                min_size=5,
+                unit=" G"
+            )
+            display_themed_value(
+                theme_data=disk_theme_data['FREE']['TEXT'],
+                value=int(free / 1000000000),
+                min_size=5,
+                unit=" G"
+            )
 
 
 class Net:

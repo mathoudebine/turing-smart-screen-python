@@ -450,16 +450,16 @@ class Memory(sensors.Memory):
 # This is because LHM is a hardware-oriented library, whereas used/free/total space is for partitions, not disks
 class Disk(sensors.Disk):
     @staticmethod
-    def disk_usage_percent() -> float:
-        return psutil.disk_usage("/").percent
+    def disk_usage_percent(path) -> float:
+        return psutil.disk_usage(path).percent
 
     @staticmethod
-    def disk_used() -> int:  # In bytes
-        return psutil.disk_usage("/").used
+    def disk_used(path) -> int:  # In bytes
+        return psutil.disk_usage(path).used
 
     @staticmethod
-    def disk_free() -> int:  # In bytes
-        return psutil.disk_usage("/").free
+    def disk_free(path) -> int:  # In bytes
+        return psutil.disk_usage(path).free
 
 
 class Net(sensors.Net):
