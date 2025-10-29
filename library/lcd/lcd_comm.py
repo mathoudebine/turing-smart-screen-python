@@ -50,6 +50,7 @@ class LcdComm(ABC):
         self.lcd_serial = None
 
         # String containing absolute path to serial port e.g. "COM3", "/dev/ttyACM1" or "AUTO" for auto-discovery
+        # Ignored for USB HID screens
         self.com_port = com_port
 
         # Display always start in portrait orientation by default
@@ -180,8 +181,8 @@ class LcdComm(ABC):
             return self.serial_read(readSize)
 
     @staticmethod
-    @abstractmethod
     def auto_detect_com_port() -> Optional[str]:
+        # To implement only for screens that use serial commands
         pass
 
     @abstractmethod

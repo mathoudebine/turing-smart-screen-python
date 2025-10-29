@@ -1,3 +1,24 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
+# https://github.com/mathoudebine/turing-smart-screen-python/
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import math
 import platform
 import queue
 import struct
@@ -12,10 +33,14 @@ import usb.util
 from Crypto.Cipher import DES
 from PIL import Image
 
+from library.log import logger
 from library.lcd.lcd_comm import Orientation, LcdComm
 
 VENDOR_ID = 0x1cbe
 PRODUCT_ID = 0x0088
+
+
+MAX_CHUNK_BYTES = 1024*1024  # Data sent to screen cannot exceed 1024MB or there will be a timeout
 
 
 def build_command_packet_header(a0: int) -> bytearray:
@@ -288,17 +313,185 @@ def send_video(dev, video_path, loop=False):
         write_to_device(dev, encrypt_command_packet(build_command_packet_header(123)))
 
 
+def _encode_png(image: Image.Image) -> bytes:
+    buffer = BytesIO()
+    image.save(buffer, format="PNG", compress_level=9)
+    return buffer.getvalue()
+
+
+def compress_image(image: Image.Image, ratio: float) -> Image.Image:
+    width, height = image.size
+    image = image.resize((int(width * ratio*0.5), int(height * ratio*0.5)),
+                                   resample=Image.Resampling.LANCZOS)
+    image = image.resize((width, height))
+    return image
+
+
+
+def upload_file(dev, file_path: str) -> bool:
+    local_path = Path(file_path)
+    if not local_path.exists():
+        logger.error("Error: File does not exist: %s", file_path)
+        return False
+
+    ext = local_path.suffix.lower()
+    if ext == ".png":
+        device_path = f"/tmp/sdcard/mmcblk0p1/img/{local_path.name}"
+        logger.info("Uploading PNG: %s → %s", file_path, device_path)
+    elif ext == ".mp4":
+        h264_path = extract_h264_from_mp4(file_path)
+        device_path = f"/tmp/sdcard/mmcblk0p1/video/{h264_path.name}"
+        local_path = h264_path  # Update local path to .h264
+        logger.info("Uploading MP4 as H264: %s → %s", local_path, device_path)
+    else:
+        logger.error("Error: Unsupported file type. Only .png and .mp4 are allowed.")
+        return False
+
+    if not _open_file_command(dev, device_path):
+        logger.error("Failed to open remote file for writing.")
+        return False
+
+    if not _write_file_command(dev, str(local_path)):
+        logger.error("Failed to write file data.")
+        return False
+
+    logger.info("Upload completed successfully.")
+    return True
+
+
+def _open_file_command(dev, path: str):
+    logger.info("Opening remote file: %s", path)
+
+    path_bytes = path.encode("ascii")
+    length = len(path_bytes)
+
+    packet = build_command_packet_header(38)
+
+    packet[8] = (length >> 24) & 0xFF
+    packet[9] = (length >> 16) & 0xFF
+    packet[10] = (length >> 8) & 0xFF
+    packet[11] = length & 0xFF
+    packet[12:16] = b"\x00\x00\x00\x00"
+    packet[16 : 16 + length] = path_bytes
+
+    return write_to_device(dev, encrypt_command_packet(packet))
+
+
+def _delete_command(dev, file_path: str):
+    logger.info("Deleting remote file: %s", file_path)
+
+    path_bytes = file_path.encode("ascii")
+    length = len(path_bytes)
+
+    packet = build_command_packet_header(40)
+    packet[8] = (length >> 24) & 0xFF
+    packet[9] = (length >> 16) & 0xFF
+    packet[10] = (length >> 8) & 0xFF
+    packet[11] = length & 0xFF
+    packet[12:16] = b"\x00\x00\x00\x00"
+    packet[16 : 16 + length] = path_bytes
+
+    return write_to_device(dev, encrypt_command_packet(packet))
+
+
+def _play_command(dev, file_path: str):
+    logger.info("Requesting playback for: %s", file_path)
+
+    path_bytes = file_path.encode("ascii")
+    length = len(path_bytes)
+
+    packet = build_command_packet_header(98)
+
+    packet[8] = (length >> 24) & 0xFF
+    packet[9] = (length >> 16) & 0xFF
+    packet[10] = (length >> 8) & 0xFF
+    packet[11] = length & 0xFF
+    packet[12:16] = b"\x00\x00\x00\x00"
+    packet[16 : 16 + length] = path_bytes
+
+    return write_to_device(dev, encrypt_command_packet(packet))
+
+
+def _play2_command(dev, file_path: str):
+    logger.info("Requesting alternate playback for: %s", file_path)
+
+    path_bytes = file_path.encode("ascii")
+    length = len(path_bytes)
+
+    packet = build_command_packet_header(110)
+
+    packet[8] = (length >> 24) & 0xFF
+    packet[9] = (length >> 16) & 0xFF
+    packet[10] = (length >> 8) & 0xFF
+    packet[11] = length & 0xFF
+    packet[12:16] = b"\x00\x00\x00\x00"
+    packet[16 : 16 + length] = path_bytes
+
+    return write_to_device(dev, encrypt_command_packet(packet))
+
+
+def _play3_command(dev, file_path: str):
+    logger.info("Requesting image playback for: %s", file_path)
+
+    path_bytes = file_path.encode("ascii")
+    length = len(path_bytes)
+
+    packet = build_command_packet_header(113)
+
+    packet[8] = (length >> 24) & 0xFF
+    packet[9] = (length >> 16) & 0xFF
+    packet[10] = (length >> 8) & 0xFF
+    packet[11] = length & 0xFF
+    packet[12:16] = b"\x00\x00\x00\x00"
+    packet[16 : 16 + length] = path_bytes
+
+    return write_to_device(dev, encrypt_command_packet(packet))
+
+
+def _write_file_command(dev, file_path: str) -> bool:
+    logger.info("Writing remote file from: %s", file_path)
+
+    try:
+        with open(file_path, "rb") as fh:
+            chunk_index = 0
+            while True:
+                data_chunk = fh.read(202752)
+                if not data_chunk:
+                    break
+
+                chunk_size = len(data_chunk)
+                chunk_index += 1
+                logger.debug("Chunk %d size: %d bytes", chunk_index, chunk_size)
+
+                cmd_packet = build_command_packet_header(39)
+                cmd_packet[8] = (chunk_size >> 24) & 0xFF
+                cmd_packet[9] = (chunk_size >> 16) & 0xFF
+                cmd_packet[10] = (chunk_size >> 8) & 0xFF
+                cmd_packet[11] = chunk_size & 0xFF
+
+                response = write_to_device(dev, encrypt_command_packet(cmd_packet) + data_chunk)
+                if response is None:
+                    logger.error("Write command failed at chunk %d", chunk_index)
+                    return False
+
+        logger.info("File write completed successfully (%d chunks).", chunk_index)
+        return True
+    except FileNotFoundError:
+        logger.error("File not found: %s", file_path)
+        return False
+    except Exception as exc:
+        logger.error("Error writing file: %s", exc)
+        return False
+
 # This class is for Turing Smart Screen newer models (5.2" / 8" / 8.8" HW rev 1.x / 9.2")
-class LcdCommRevCUSB(LcdComm):
+# These models are not detected as serial ports but as (Win)USB devices
+class LcdCommTuringUSB(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 1920,
                  update_queue: Optional[queue.Queue] = None):
         super().__init__(com_port, display_width, display_height, update_queue)
         self.dev = find_usb_device()
         # Store the current screen state as an image that will be continuously updated and sent
-        self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 255))
-
-    def auto_detect_com_port(self):
-        pass
+        self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
 
     def InitializeComm(self):
         send_sync_command(self.dev)
@@ -327,6 +520,8 @@ class LcdCommRevCUSB(LcdComm):
 
     def SetOrientation(self, orientation: Orientation):
         self.orientation = orientation
+        # Recreate new state with correct width/height now that screen orientation has changed
+        self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
 
     def DisplayPILImage(self, image: Image.Image, x: int = 0, y: int = 0, image_width: int = 0, image_height: int = 0):
         if not image_height:
@@ -355,9 +550,22 @@ class LcdCommRevCUSB(LcdComm):
         else:  # Orientation.REVERSE_PORTRAIT is initial screen orientation
             base_image = self.current_state
 
-        # Save as PNG format with headers
-        buffer = BytesIO()
-        base_image.save(buffer, format="PNG")
+        # total_size = len(_encode_png(base_image))
+        # print("total size =", total_size/1024)
+        #
+        # if total_size > 1024*1024:
+        #
+        #     # If bitmap is > 1024MB operation will timeout: compress it
+        #     size_overflow = total_size - 1024*1024
+        #     ratio = 1- (size_overflow / total_size)
+        #     print("ratio = ", ratio)
+        #
+        #     base_image = compress_image(base_image, ratio)
+        #
+        #     new_size = len(_encode_png(base_image))
+        #     print("new_size =", new_size/1024)
+
 
         # Send PNG data
-        send_image(self.dev, buffer.getvalue())
+        encoded = _encode_png(base_image)
+        send_image(self.dev, encoded)

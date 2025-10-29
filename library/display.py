@@ -23,7 +23,7 @@ from library.lcd.lcd_comm import Orientation
 from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
-from library.lcd.lcd_comm_rev_c_usb import LcdCommRevCUSB
+from library.lcd.lcd_comm_turing_usb import LcdCommTuringUSB
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_comm_weact_a import LcdCommWeActA
 from library.lcd.lcd_comm_weact_b import LcdCommWeActB
@@ -88,7 +88,7 @@ class Display:
                                    update_queue=config.update_queue, display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "C_USB":
             # On all USB models, manually configure screen width/height from theme
-            self.lcd = LcdCommRevCUSB(display_width=width, display_height=height)
+            self.lcd = LcdCommTuringUSB(display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "D":
             self.lcd = LcdCommRevD(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
