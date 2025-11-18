@@ -1,7 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -188,11 +190,6 @@ class LcdCommRevA(LcdComm):
         if not image_width:
             image_width = image.size[0]
 
-        assert x <= width, 'Image X coordinate must be <= display width'
-        assert y <= height, 'Image Y coordinate must be <= display height'
-        assert image_height > 0, 'Image height must be > 0'
-        assert image_width > 0, 'Image width must be > 0'
-
         # If our image size + the (x, y) position offsets are bigger than
         # our display, reduce the image size to fit our screen
         if x + image_width > width:
@@ -202,6 +199,11 @@ class LcdCommRevA(LcdComm):
 
         if image_width != image.size[0] or image_height != image.size[1]:
             image = image.crop((0, 0, image_width, image_height))
+
+        assert x <= width, 'Image X coordinate must be <= display width'
+        assert y <= height, 'Image Y coordinate must be <= display height'
+        assert image_height > 0, 'Image height must be > 0'
+        assert image_width > 0, 'Image width must be > 0'
 
         (x0, y0) = (x, y)
         (x1, y1) = (x + image_width - 1, y + image_height - 1)

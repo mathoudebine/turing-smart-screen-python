@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,14 +28,6 @@ import sys
 
 PNG_SIGNATURE = b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'
 PNG_IEND = b'\x49\x45\x4E\x44\xAE\x42\x60\x82'
-
-MIN_PYTHON = (3, 8)
-if sys.version_info < MIN_PYTHON:
-    print("[ERROR] Python %s.%s or later is required." % MIN_PYTHON)
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
 
 if len(sys.argv) != 2:
     print("Usage :")

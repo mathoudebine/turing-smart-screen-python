@@ -22,7 +22,7 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 | <img src="res/docs/turing.webp"/>                    | <img src="res/docs/xuanfang.webp"/>               | <img src="res/docs/turing5inch.png"/>       |
 | also improperly called "revision A" by the resellers | revision B & flagship (with backplate & RGB LEDs) | basic support (no video or storage for now) |
 
-| ⚠️ Turing Smart Screen 8.8"                  | ✅ Turing Smart Screen 2.1"                                       |
+| ⚠️ Turing Smart Screen 8.8"                  | ✅ Turing Smart Screen 2.1" / 2.8"                                 |
 |---------------------------------------------|------------------------------------------------------------------|
 | <img src="res/docs/turing8inch.webp"/>      | <img src="res/docs/turing2inch.webp"  width="60%" height="60%"/> |
 | basic support (no video or storage for now)<br/>⚠️ [New revision V1.1 not supported!](https://github.com/mathoudebine/turing-smart-screen-python/issues/727) | basic support (no video or storage for now)                      |
@@ -31,6 +31,10 @@ Supported operating systems : macOS, Windows, Linux (incl. Raspberry Pi), basica
 |-----------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
 | <img src="res/docs/UsbPCMonitor_5inch.webp" width="60%" height="60%"/>                              | <img src="res/docs/kipye-qiye-35.webp" width="60%" height="60%"/>                       |
 | Unknown manufacturer, visually similar to Turing 3.5" / 5". Original software is `UsbPCMonitor.exe` | Front panel has an engraved inscription "奇叶智显" Qiye Zhixian (Qiye Smart Display)        |
+
+| ✅ WeAct Studio Display FS V1 0.96"                            | ✅ WeAct Studio Display FS V1 3.5"                            |
+|---------------------------------------------------------------|--------------------------------------------------------------|
+| <img src="res/docs/weact_0.96.jpg" width="60%" height="60%"/> | <img src="res/docs/weact_3.5.png" width="60%" height="60%"/> |
 
 <details>
 
@@ -131,4 +135,3 @@ If you have trouble running the program as described in the wiki, please check [
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=mathoudebine/turing-smart-screen-python&type=Date)](https://star-history.com/#mathoudebine/turing-smart-screen-python&Date)
-

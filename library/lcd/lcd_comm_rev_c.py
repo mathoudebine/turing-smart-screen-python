@@ -1,9 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
-# Copyright (C) 2023-2023  Alex W. Baulé (alexwbaule)
-# Copyright (C) 2023-2023  Arthur Ferrai (arthurferrai)
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2023 Alex W. Baulé (alexwbaule)
+# Copyright (C) 2023 Arthur Ferrai (arthurferrai)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -113,13 +115,16 @@ class SleepInterval(Enum):
 
 
 class SubRevision(Enum):
-    UNKNOWN = ""
-    REV_2INCH = "chs_21inch"
-    REV_5INCH = "chs_5inch"
-    REV_8INCH = "chs_88inch"
+    UNKNOWN = 0
+    REV_2INCH = 1  # For 2.1" and 2.8" models
+    REV_5INCH = 2
+    REV_8INCH = 3
 
 
-# This class is for Turing Smart Screen 2.1" / 5" / 8" screens
+WAKE_RETRIES = 15
+
+
+# This class is for Turing Smart Screen 2.1" / 2.8" / 5" / 8" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
                  update_queue: Optional[queue.Queue] = None):
@@ -132,22 +137,18 @@ class LcdCommRevC(LcdComm):
 
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
-        com_ports = comports()
-
-        # First, try to find sleeping device and wake it up
-        for com_port in com_ports:
+        # If sleeping device is detected through serial number or vid/pid, try to wake it up
+        for com_port in comports():
             if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
                 LcdCommRevC._wake_up_device(com_port)
-                return LcdCommRevC.auto_detect_com_port()
-            if com_port.vid == 0x1a86 and com_port.pid == 0xca21:
+            elif com_port.vid == 0x1a86 and com_port.pid == 0xca21:
                 LcdCommRevC._wake_up_device(com_port)
-                return LcdCommRevC.auto_detect_com_port()
 
-        return LcdCommRevC._get_awake_com_port(com_ports)
+        return LcdCommRevC._get_awake_com_port(comports())
 
     @staticmethod
     def _get_awake_com_port(com_ports) -> Optional[str]:
-        # Then try to find awake device through serial number or vid/pid
+        # Try to find awake device through serial number or vid/pid
         for com_port in com_ports:
             if com_port.serial_number == '20080411':
                 return com_port.device
@@ -160,10 +161,10 @@ class LcdCommRevC(LcdComm):
 
     @staticmethod
     def _wake_up_device(com_port):
-        # this device enumerates differently when off, we need to connect once to reset it to correct COM device
+        # Connect to the device to wake it up
         logger.debug(f"Waiting for device {com_port} to be turned ON...")
 
-        for i in range(15):
+        for i in range(WAKE_RETRIES):
             try:
                 # Try to connect every second, since it takes sometimes multiple connect to wake up the device
                 serial.Serial(com_port.device, 115200, timeout=1, rtscts=True)
@@ -172,8 +173,12 @@ class LcdCommRevC(LcdComm):
 
             if LcdCommRevC._get_awake_com_port(comports()) is not None:
                 time.sleep(1)
+                logger.debug(f"Detected screen turned ON")
                 return
+
             time.sleep(1)
+
+        logger.error(f"Could not turn screen on after {WAKE_RETRIES} seconds, aborting.")
 
     def _send_command(self, cmd: Command, payload: Optional[bytearray] = None, padding: Optional[Padding] = None,
                       bypass_queue: bool = False, readsize: Optional[int] = None):
@@ -426,12 +431,12 @@ class LcdCommRevC(LcdComm):
         img_raw_data = bytearray()
 
         # Some screens require different RGBA encoding
-        if self.rom_version > 88:
+        if self.sub_revision != SubRevision.REV_2INCH and self.rom_version > 88:
             # BGRA mode on 4 bytes : [B, G, R, A]
             img_data, pixel_size = image_to_BGRA(image)
         else:
             # BGRA mode on 3 bytes: [6-bit B + 2-bit A, 6-bit G + 2-bit A, 8-bit R]
-            #img_data, pixel_size = image_to_compressed_BGRA(image)
+            # img_data, pixel_size = image_to_compressed_BGRA(image)
             # For now use simple BGR that is more optimized, because this program does not support transparent background
             img_data, pixel_size = image_to_BGR(image)
 

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,6 +21,9 @@
 
 # This file is a simple Python test program using the library code to display custom content on screen (see README)
 
+from library.pythoncheck import check_python_version
+check_python_version()
+
 import os
 import signal
 import sys
@@ -30,6 +35,8 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_weact_a import LcdCommWeActA
+from library.lcd.lcd_comm_weact_b import LcdCommWeActB
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -88,6 +95,12 @@ if __name__ == "__main__":
     elif REVISION == "D":
         logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")
         lcd_comm = LcdCommRevD(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION == "WEACT_A":
+        logger.info("Selected Hardware WeAct Studio Display FS V1 3.5\"")
+        lcd_comm = LcdCommWeActA(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION == "WEACT_B":
+        logger.info("Selected Hardware WeAct Studio Display FS V1 0.96\"")
+        lcd_comm = LcdCommWeActB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "SIMU":
         logger.info("Selected Simulated LCD")
         lcd_comm = LcdSimulated(display_width=WIDTH, display_height=HEIGHT)

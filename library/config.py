@@ -1,9 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
-# Copyright (C) 2022-2023  Rollbacke
-# Copyright (C) 2022-2023  Ebag333
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
+# Copyright (C) 2022 Rollbacke
+# Copyright (C) 2022 Ebag333
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

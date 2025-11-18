@@ -1,7 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
 # turing-smart-screen-python - a Python system monitor and library for USB-C displays like Turing Smart Screen or XuanFang
 # https://github.com/mathoudebine/turing-smart-screen-python/
-
-# Copyright (C) 2021-2023  Matthieu Houdebine (mathoudebine)
+#
+# Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -122,6 +124,10 @@ class LcdComm(ABC):
         assert self.lcd_serial is not None
         return self.lcd_serial.read(size)
 
+    def serial_readall(self) -> bytes:
+        assert self.lcd_serial is not None
+        return self.lcd_serial.readall()
+
     def serial_flush_input(self):
         if self.lcd_serial is not None:
             self.lcd_serial.reset_input_buffer()
@@ -221,6 +227,12 @@ class LcdComm(ABC):
 
     def DisplayBitmap(self, bitmap_path: str, x: int = 0, y: int = 0, width: int = 0, height: int = 0):
         image = self.open_image(bitmap_path)
+
+        # Resize the picture if custom width/height provided
+        if width != 0 and height != 0:
+            if width != image.size[0] or height != image.size[1]:
+                image = image.resize((width, height))
+
         self.DisplayPILImage(image, x, y, width, height)
 
     def DisplayText(

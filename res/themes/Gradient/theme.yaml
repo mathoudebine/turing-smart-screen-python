@@ -11,8 +11,8 @@ static_images:
     PATH: background.png
     X: 0
     Y: 0
-    WIDTH: 1920
-    HEIGHT: 480
+    WIDTH: 480
+    HEIGHT: 1920
 static_text:
   DISK:
    TEXT: DISK
