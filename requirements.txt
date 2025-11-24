@@ -10,7 +10,7 @@ tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
 uptime~=3.0.1          # For System Uptime 
 requests~=2.32.5       # HTTP library
 ping3~=5.1.5           # ICMP ping implementation using raw socket
-pyinstaller~=6.16.0    # bundles a Python application and all its dependencies into a single package
+pyinstaller~=6.17.0    # bundles a Python application and all its dependencies into a single package
 
 # Image generation
 Pillow~=11.3.0; python_version < "3.10"   # For Python 3.9, only Pillow 11.x is supported
