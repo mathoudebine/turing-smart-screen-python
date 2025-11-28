@@ -332,6 +332,16 @@ class LcdComm(ABC):
         bar_color = parse_color(bar_color)
         background_color = parse_color(background_color)
 
+        inverse = False
+        # Assume we want to invert the direction is width or height are negative
+        if width < 0:
+            inverse = True
+            width = width * -1
+
+        if height < 0:
+            inverse = True
+            height = height * -1
+
         assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
         assert x + width <= self.get_width(), 'Progress bar width exceeds display width'
@@ -366,9 +376,15 @@ class LcdComm(ABC):
                 bar_filled_height = 0
         draw = ImageDraw.Draw(bar_image)
         if width > height:
-            draw.rectangle([0, 0, bar_filled_width, height - 1], fill=bar_color, outline=bar_color)
+            if inverse is True:
+                draw.rectangle([width - bar_filled_width, 0, width -1, height - 1], fill=bar_color, outline=bar_color)
+            else:
+                draw.rectangle([0, 0, bar_filled_width, height - 1], fill=bar_color, outline=bar_color)
         else:
-            draw.rectangle([0, height - bar_filled_height, width - 1, height - 1], fill=bar_color, outline=bar_color)
+            if inverse is True:
+                draw.rectangle([0, 0, width - 1, height - bar_filled_height], fill=bar_color, outline=bar_color)
+            else:
+                draw.rectangle([0, bar_filled_height, width - 1, height - 1], fill=bar_color, outline=bar_color)
 
         if bar_outline:
             # Draw outline
