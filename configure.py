@@ -127,11 +127,11 @@ THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
 circular_mask = Image.open(MAIN_DIRECTORY + "res/backgrounds/circular-mask.png")
 
 def get_theme_data(name: str):
-    dir = os.path.join(THEMES_DIR, name)
+    folder = os.path.join(THEMES_DIR, name)
     # checking if it is a directory
-    if os.path.isdir(dir):
+    if os.path.isdir(folder):
         # Check if a theme.yaml file exists
-        theme = os.path.join(dir, 'theme.yaml')
+        theme = os.path.join(folder, 'theme.yaml')
         if os.path.isfile(theme):
             # Get display size from theme.yaml
             with open(theme, "rt", encoding='utf8') as stream:
@@ -181,15 +181,15 @@ def get_fans():
     return fan_list
 
 
-class TuringConfigWindow:
+class TuringConfigWindow(Tk):
     def __init__(self):
-        self.window = Tk()
-        self.window.title('Turing System Monitor configuration')
-        self.window.geometry("820x580")
-        self.window.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
+        super().__init__()
+        self.title('Turing System Monitor configuration')
+        self.geometry("820x580")
+        self.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
-        self.window.bind("<FocusIn>", self.on_theme_change)
-        self.window.after(0, self.on_fan_speed_update)
+        self.bind("<FocusIn>", self.on_theme_change)
+        self.after(0, self.on_fan_speed_update)
 
         # Subwindow for weather/ping config.
         self.more_config_window = MoreConfigWindow(self)
@@ -198,84 +198,84 @@ class TuringConfigWindow:
         sv_ttk.set_theme("light")
 
         self.theme_preview_img = None
-        self.theme_preview = ttk.Label(self.window)
+        self.theme_preview = ttk.Label(self)
         self.theme_preview.place(x=10, y=10)
 
-        self.theme_author = ttk.Label(self.window)
+        self.theme_author = ttk.Label(self)
 
-        sysmon_label = ttk.Label(self.window, text='Display configuration', font='bold')
+        sysmon_label = ttk.Label(self, text='Display configuration', font='bold')
         sysmon_label.place(x=370, y=0)
 
-        self.model_label = ttk.Label(self.window, text='Smart screen model')
+        self.model_label = ttk.Label(self, text='Smart screen model')
         self.model_label.place(x=370, y=35)
-        self.model_cb = ttk.Combobox(self.window, values=list(dict.fromkeys((revision_and_size_to_model_map.values()))),
+        self.model_cb = ttk.Combobox(self, values=list(dict.fromkeys((revision_and_size_to_model_map.values()))),
                                      state='readonly')
         self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
         self.model_cb.place(x=550, y=30, width=250)
 
-        self.size_label = ttk.Label(self.window, text='Smart screen size')
+        self.size_label = ttk.Label(self, text='Smart screen size')
         self.size_label.place(x=370, y=75)
-        self.size_cb = ttk.Combobox(self.window, values=size_list, state='readonly')
+        self.size_cb = ttk.Combobox(self, values=size_list, state='readonly')
         self.size_cb.bind('<<ComboboxSelected>>', self.on_size_change)
         self.size_cb.place(x=550, y=70, width=250)
 
-        self.com_label = ttk.Label(self.window, text='COM port')
+        self.com_label = ttk.Label(self, text='COM port')
         self.com_label.place(x=370, y=115)
-        self.com_cb = ttk.Combobox(self.window, values=get_com_ports(), state='readonly')
+        self.com_cb = ttk.Combobox(self, values=get_com_ports(), state='readonly')
         self.com_cb.place(x=550, y=110, width=250)
 
-        self.orient_label = ttk.Label(self.window, text='Orientation')
+        self.orient_label = ttk.Label(self, text='Orientation')
         self.orient_label.place(x=370, y=155)
-        self.orient_cb = ttk.Combobox(self.window, values=list(reverse_map.values()), state='readonly')
+        self.orient_cb = ttk.Combobox(self, values=list(reverse_map.values()), state='readonly')
         self.orient_cb.place(x=550, y=150, width=250)
 
         self.brightness_string = StringVar()
-        self.brightness_label = ttk.Label(self.window, text='Brightness')
+        self.brightness_label = ttk.Label(self, text='Brightness')
         self.brightness_label.place(x=370, y=195)
-        self.brightness_slider = ttk.Scale(self.window, from_=0, to=100, orient=HORIZONTAL,
+        self.brightness_slider = ttk.Scale(self, from_=0, to=100, orient=HORIZONTAL,
                                            command=self.on_brightness_change)
         self.brightness_slider.place(x=600, y=195, width=180)
-        self.brightness_val_label = ttk.Label(self.window, textvariable=self.brightness_string)
+        self.brightness_val_label = ttk.Label(self, textvariable=self.brightness_string)
         self.brightness_val_label.place(x=550, y=195)
-        self.brightness_warning_label = ttk.Label(self.window,
+        self.brightness_warning_label = ttk.Label(self,
                                                   text="⚠ Turing 3.5\" displays can get hot at high brightness!",
                                                   foreground='#ff8c00')
 
-        sysmon_label = ttk.Label(self.window, text='System Monitor Configuration', font='bold')
+        sysmon_label = ttk.Label(self, text='System Monitor Configuration', font='bold')
         sysmon_label.place(x=370, y=260)
 
-        self.theme_label = ttk.Label(self.window, text='Theme')
+        self.theme_label = ttk.Label(self, text='Theme')
         self.theme_label.place(x=370, y=300)
-        self.theme_cb = ttk.Combobox(self.window, state='readonly')
+        self.theme_cb = ttk.Combobox(self, state='readonly')
         self.theme_cb.place(x=550, y=295, width=250)
         self.theme_cb.bind('<<ComboboxSelected>>', self.on_theme_change)
 
-        self.hwlib_label = ttk.Label(self.window, text='Hardware monitoring')
+        self.hwlib_label = ttk.Label(self, text='Hardware monitoring')
         self.hwlib_label.place(x=370, y=340)
         if sys.platform != "win32":
             del hw_lib_map["LHM"]  # LHM is for Windows platforms only
-        self.hwlib_cb = ttk.Combobox(self.window, values=list(hw_lib_map.values()), state='readonly')
+        self.hwlib_cb = ttk.Combobox(self, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=550, y=335, width=250)
         self.hwlib_cb.bind('<<ComboboxSelected>>', self.on_hwlib_change)
 
-        self.eth_label = ttk.Label(self.window, text='Ethernet interface')
+        self.eth_label = ttk.Label(self, text='Ethernet interface')
         self.eth_label.place(x=370, y=380)
-        self.eth_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
+        self.eth_cb = ttk.Combobox(self, values=get_net_if(), state='readonly')
         self.eth_cb.place(x=550, y=375, width=250)
 
-        self.wl_label = ttk.Label(self.window, text='Wi-Fi interface')
+        self.wl_label = ttk.Label(self, text='Wi-Fi interface')
         self.wl_label.place(x=370, y=420)
-        self.wl_cb = ttk.Combobox(self.window, values=get_net_if(), state='readonly')
+        self.wl_cb = ttk.Combobox(self, values=get_net_if(), state='readonly')
         self.wl_cb.place(x=550, y=415, width=250)
 
         # For Windows platform only
-        self.lhm_admin_warning = ttk.Label(self.window,
+        self.lhm_admin_warning = ttk.Label(self,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
                                            foreground='#f00')
         # For platform != Windows
-        self.cpu_fan_label = ttk.Label(self.window, text='CPU fan (？)')
+        self.cpu_fan_label = ttk.Label(self, text='CPU fan (？)')
         self.cpu_fan_label.config(foreground="#a3a3ff", cursor="hand2")
-        self.cpu_fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
+        self.cpu_fan_cb = ttk.Combobox(self, values=get_fans(), state='readonly')
 
         self.tooltip = ToolTip(self.cpu_fan_label,
                                msg="If \"None\" is selected, CPU fan was not auto-detected.\n"
@@ -283,29 +283,29 @@ class TuringConfigWindow:
                                    "Fans missing from the list? Install lm-sensors package\n"
                                    "and run 'sudo sensors-detect' command, then reboot.")
 
-        self.weather_ping_btn = ttk.Button(self.window, text="Weather & ping",
+        self.weather_ping_btn = ttk.Button(self, text="Weather & ping",
                                            command=lambda: self.on_weatherping_click())
         self.weather_ping_btn.place(x=80, y=520, height=50, width=130)
 
 
-        self.open_theme_folder_btn = ttk.Button(self.window, text="Open themes\nfolder",
+        self.open_theme_folder_btn = ttk.Button(self, text="Open themes\nfolder",
                                          command=lambda: self.on_open_theme_folder_click())
         self.open_theme_folder_btn.place(x=220, y=520, height=50, width=130)
 
-        self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
+        self.edit_theme_btn = ttk.Button(self, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=360, y=520, height=50, width=130)
 
-        self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
+        self.save_btn = ttk.Button(self, text="Save settings", command=lambda: self.on_save_click())
         self.save_btn.place(x=500, y=520, height=50, width=130)
 
-        self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
+        self.save_run_btn = ttk.Button(self, text="Save and run", command=lambda: self.on_saverun_click())
         self.save_run_btn.place(x=640, y=520, height=50, width=130)
 
         self.config = None
         self.load_config_values()
 
     def run(self):
-        self.window.mainloop()
+        self.mainloop()
 
     def load_theme_preview(self):
         theme_data = get_theme_data(self.theme_cb.get())
@@ -485,7 +485,7 @@ class TuringConfigWindow:
     def on_saverun_click(self):
         self.save_config_values()
         subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
-        self.window.destroy()
+        self.destroy()
 
     def on_brightness_change(self, e=None):
         self.brightness_string.set(str(int(self.brightness_slider.get())) + "%")
@@ -556,104 +556,104 @@ class TuringConfigWindow:
         self.cpu_fan_cb.config(values=get_fans())
         if prev_value != -1:
             self.cpu_fan_cb.current(prev_value)  # Force select same index to refresh displayed value
-        self.window.after(500, self.on_fan_speed_update)
+        self.after(500, self.on_fan_speed_update)
 
 
-class MoreConfigWindow:
+class MoreConfigWindow(Toplevel):
     def __init__(self, main_window: TuringConfigWindow):
-        self.window = Toplevel()
-        self.window.withdraw()
-        self.window.title('Configure weather & ping')
-        self.window.geometry("750x680")
+        super().__init__(main_window)
+        self.withdraw()
+        self.title('Configure weather & ping')
+        self.geometry("750x680")
 
         self.main_window = main_window
 
         # Make TK look better with Sun Valley ttk theme
         sv_ttk.set_theme("light")
 
-        self.ping_label = ttk.Label(self.window, text='Hostname / IP to ping')
+        self.ping_label = ttk.Label(self, text='Hostname / IP to ping')
         self.ping_label.place(x=10, y=10)
-        self.ping_entry = ttk.Entry(self.window)
+        self.ping_entry = ttk.Entry(self)
         self.ping_entry.place(x=190, y=5, width=250)
 
-        weather_label = ttk.Label(self.window, text='Weather forecast (OpenWeatherMap API)', font='bold')
+        weather_label = ttk.Label(self, text='Weather forecast (OpenWeatherMap API)', font='bold')
         weather_label.place(x=10, y=70)
 
-        weather_info_label = ttk.Label(self.window,
+        weather_info_label = ttk.Label(self,
                                        text="To display weather forecast on themes that support it, you need an OpenWeatherMap \"One Call API 3.0\" key.\n"
                                             "You will get 1,000 API calls per day for free. This program is configured to stay under this threshold (~300 calls/day).")
         weather_info_label.place(x=10, y=100)
-        weather_api_link_label = ttk.Label(self.window,
+        weather_api_link_label = ttk.Label(self,
                                            text="Click here to subscribe to OpenWeatherMap One Call API 3.0.")
         weather_api_link_label.place(x=10, y=140)
         weather_api_link_label.config(foreground="#a3a3ff", cursor="hand2")
         weather_api_link_label.bind("<Button-1>",
                                     lambda e: webbrowser.open_new_tab("https://openweathermap.org/api"))
 
-        self.api_label = ttk.Label(self.window, text='OpenWeatherMap API key')
+        self.api_label = ttk.Label(self, text='OpenWeatherMap API key')
         self.api_label.place(x=10, y=170)
-        self.api_entry = ttk.Entry(self.window)
+        self.api_entry = ttk.Entry(self)
         self.api_entry.place(x=190, y=165, width=250)
 
-        latlong_label = ttk.Label(self.window,
+        latlong_label = ttk.Label(self,
                                   text="You can use online services to get your latitude/longitude e.g. latlong.net (click here)")
         latlong_label.place(x=10, y=210)
         latlong_label.config(foreground="#a3a3ff", cursor="hand2")
         latlong_label.bind("<Button-1>",
                            lambda e: webbrowser.open_new_tab("https://www.latlong.net/"))
 
-        self.lat_label = ttk.Label(self.window, text='Latitude')
+        self.lat_label = ttk.Label(self, text='Latitude')
         self.lat_label.place(x=10, y=250)
-        self.lat_entry = ttk.Entry(self.window, validate='key',
-                                   validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.lat_entry = ttk.Entry(self, validate='key',
+                                   validatecommand=(self.register(self.validateCoord), '%P'))
         self.lat_entry.place(x=80, y=245, width=100)
 
-        self.long_label = ttk.Label(self.window, text='Longitude')
+        self.long_label = ttk.Label(self, text='Longitude')
         self.long_label.place(x=270, y=250)
-        self.long_entry = ttk.Entry(self.window, validate='key',
-                                    validatecommand=(self.window.register(self.validateCoord), '%P'))
+        self.long_entry = ttk.Entry(self, validate='key',
+                                    validatecommand=(self.register(self.validateCoord), '%P'))
         self.long_entry.place(x=340, y=245, width=100)
 
-        self.unit_label = ttk.Label(self.window, text='Units')
+        self.unit_label = ttk.Label(self, text='Units')
         self.unit_label.place(x=10, y=290)
-        self.unit_cb = ttk.Combobox(self.window, values=list(weather_unit_map.values()), state='readonly')
+        self.unit_cb = ttk.Combobox(self, values=list(weather_unit_map.values()), state='readonly')
         self.unit_cb.place(x=190, y=285, width=250)
 
-        self.lang_label = ttk.Label(self.window, text='Language')
+        self.lang_label = ttk.Label(self, text='Language')
         self.lang_label.place(x=10, y=330)
-        self.lang_cb = ttk.Combobox(self.window, values=list(weather_lang_map.values()), state='readonly')
+        self.lang_cb = ttk.Combobox(self, values=list(weather_lang_map.values()), state='readonly')
         self.lang_cb.place(x=190, y=325, width=250)
 
-        self.citysearch1_label = ttk.Label(self.window, text='Location search', font='bold')
+        self.citysearch1_label = ttk.Label(self, text='Location search', font='bold')
         self.citysearch1_label.place(x=80, y=370)
 
-        self.citysearch2_label = ttk.Label(self.window, text="Enter location to automatically get coordinates (latitude/longitude).\n"
+        self.citysearch2_label = ttk.Label(self, text="Enter location to automatically get coordinates (latitude/longitude).\n"
                                                              "For example \"Berlin\" \"London, GB\", \"London, Quebec\".\n"
                                                              "Remember to set valid API key and pick language first!")
         self.citysearch2_label.place(x=10, y=396)
 
-        self.citysearch3_label = ttk.Label(self.window, text="Enter location")
+        self.citysearch3_label = ttk.Label(self, text="Enter location")
         self.citysearch3_label.place(x=10, y=474)
-        self.citysearch_entry = ttk.Entry(self.window)
+        self.citysearch_entry = ttk.Entry(self)
         self.citysearch_entry.place(x=140, y=470, width=300)
-        self.citysearch_btn = ttk.Button(self.window, text="Search", command=lambda: self.on_search_click())
+        self.citysearch_btn = ttk.Button(self, text="Search", command=lambda: self.on_search_click())
         self.citysearch_btn.place(x=450, y=468, height=40, width=130)
 
-        self.citysearch4_label = ttk.Label(self.window, text="Select location\n(use after Search)")
+        self.citysearch4_label = ttk.Label(self, text="Select location\n(use after Search)")
         self.citysearch4_label.place(x=10, y=540)
-        self.citysearch_cb = ttk.Combobox(self.window, values=[], state='readonly')
+        self.citysearch_cb = ttk.Combobox(self, values=[], state='readonly')
         self.citysearch_cb.place(x=140, y=544, width=360)
-        self.citysearch_btn2 = ttk.Button(self.window, text="Fill in lat/long", command=lambda: self.on_filllatlong_click())
+        self.citysearch_btn2 = ttk.Button(self, text="Fill in lat/long", command=lambda: self.on_filllatlong_click())
         self.citysearch_btn2.place(x=520, y=540, height=40, width=130)
 
-        self.citysearch_warn_label = ttk.Label(self.window, text="")
+        self.citysearch_warn_label = ttk.Label(self, text="")
         self.citysearch_warn_label.place(x=20, y=600)
         self.citysearch_warn_label.config(foreground="#ff0000")
 
-        self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
+        self.save_btn = ttk.Button(self, text="Save settings", command=lambda: self.on_save_click())
         self.save_btn.place(x=590, y=620, height=50, width=130)
 
-        self.window.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self._city_entries = []
 
@@ -667,10 +667,10 @@ class MoreConfigWindow:
         return True
 
     def show(self):
-        self.window.deiconify()
+        self.deiconify()
 
     def on_closing(self):
-        self.window.withdraw()
+        self.withdraw()
 
     def load_config_values(self, config):
         self.config = config

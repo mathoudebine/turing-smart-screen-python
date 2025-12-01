@@ -198,11 +198,11 @@ class LcdCommWeActA(LcdComm):
         if self.lcd_serial.in_waiting > 0:
             cmd = self.ReadData(1)
             if (
-                cmd != None
-                and cmd[0] == Command.CMD_ENABLE_HUMITURE_REPORT | Command.CMD_READ
+                cmd is not None
+                    and cmd[0] == Command.CMD_ENABLE_HUMITURE_REPORT | Command.CMD_READ
             ):
                 data = self.ReadData(5)
-                if data != None and len(data) == 5 and data[4] == Command.CMD_END:
+                if data is not None and len(data) == 5 and data[4] == Command.CMD_END:
                     unpack = struct.unpack("<Hh", data[0:4])
                     self.temperature = float(unpack[0]) / 100
                     self.humidness = float(unpack[1]) / 100
