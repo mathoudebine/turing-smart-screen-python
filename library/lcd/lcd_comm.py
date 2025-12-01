@@ -325,22 +325,13 @@ class LcdComm(ABC):
                            bar_color: Color = (0, 0, 0),
                            bar_outline: bool = True,
                            background_color: Color = (255, 255, 255),
-                           background_image: Optional[str] = None):
+                           background_image: Optional[str] = None,
+                           inverse_direction: Optional[bool] = False):
         # Generate a progress bar and display it
         # Provide the background image path to display progress bar with transparent background
 
         bar_color = parse_color(bar_color)
         background_color = parse_color(background_color)
-
-        inverse = False
-        # Assume we want to invert the direction is width or height are negative
-        if width < 0:
-            inverse = True
-            width = width * -1
-
-        if height < 0:
-            inverse = True
-            height = height * -1
 
         assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
@@ -375,16 +366,24 @@ class LcdComm(ABC):
             if bar_filled_height < 0:
                 bar_filled_height = 0
         draw = ImageDraw.Draw(bar_image)
+
+        # most common setting
+        x1 = 0
+        y1 = 0
+        x2 = width - 1
+        y2 = height - 1
+
         if width > height:
-            if inverse is True:
-                draw.rectangle([width - bar_filled_width, 0, width -1, height - 1], fill=bar_color, outline=bar_color)
+            if inverse_direction is True:
+                x1 = width - bar_filled_width
             else:
-                draw.rectangle([0, 0, bar_filled_width, height - 1], fill=bar_color, outline=bar_color)
+                x1 = bar_filled_width
         else:
-            if inverse is True:
-                draw.rectangle([0, 0, width - 1, height - bar_filled_height], fill=bar_color, outline=bar_color)
+            if inverse_direction is True:
+                y2 = height - bar_filled_height
             else:
-                draw.rectangle([0, bar_filled_height, width - 1, height - 1], fill=bar_color, outline=bar_color)
+                y1 = bar_filled_height
+        draw.rectangle([x1, y1, x2, y2], fill=bar_color, outline=bar_color)
 
         if bar_outline:
             # Draw outline
