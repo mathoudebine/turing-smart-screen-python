@@ -28,46 +28,46 @@ import sys
 
 PNG_SIGNATURE = b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'
 PNG_IEND = b'\x49\x45\x4E\x44\xAE\x42\x60\x82'
+def main(file_path):
+    found_png = 0
 
-if len(sys.argv) != 2:
-    print("Usage :")
-    print("        turing-theme-extractor.py path/to/theme-file.data")
-    print("Examples : ")
-    print("        turing-theme-extractor.py \"Dragon Ball.data\"")
-    print("        turing-theme-extractor.py \"Pikachu theme.data\"")
-    print("        turing-theme-extractor.py NZXT_BLUR.data")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+    with open(file_path, "r+b") as theme_file:
+        mm = mmap.mmap(theme_file.fileno(), 0)
 
-found_png = 0
+        # Find PNG signature in binary data
+        start_pos = 0
+        header_found = mm.find(PNG_SIGNATURE, 0)
 
-with open(sys.argv[1], "r+b") as theme_file:
-    mm = mmap.mmap(theme_file.fileno(), 0)
+        while header_found != -1:
+            print("\nFound PNG header at 0x%06x" % header_found)
 
-    # Find PNG signature in binary data
-    start_pos=0
-    header_found = mm.find(PNG_SIGNATURE, 0)
+            # Find PNG IEND chunk (= end of file)
+            iend_found = mm.find(PNG_IEND, header_found)
+            print("Found PNG end-of-file at 0x%06x" % iend_found)
 
-    while header_found != -1:
-        print("\nFound PNG header at 0x%06x" % header_found)
+            # Extract PNG data to a file
+            theme_file.seek(header_found)
+            with open(f'theme_res_{str(header_found)}.png', 'wb') as png_file:
+                png_file.write(theme_file.read(iend_found - header_found + len(PNG_IEND)))
 
-        # Find PNG IEND chunk (= end of file)
-        iend_found = mm.find(PNG_IEND, header_found)
-        print("Found PNG end-of-file at 0x%06x" % iend_found)
+            print("PNG extracted to theme_res_%s.png" % str(header_found))
+            found_png = found_png + 1
 
-        # Extract PNG data to a file
-        theme_file.seek(header_found)
-        png_file = open('theme_res_' + str(header_found) + '.png', 'wb')
-        png_file.write(theme_file.read(iend_found - header_found + len(PNG_IEND)))
-        png_file.close()
+            # Find next PNG signature (if any)
+            header_found = mm.find(PNG_SIGNATURE, iend_found)
 
-        print("PNG extracted to theme_res_%s.png" % str(header_found))
-        found_png = found_png + 1
+        print(f"\n{found_png} PNG files extracted from theme to current directory")
 
-        # Find next PNG signature (if any)
-        header_found = mm.find(PNG_SIGNATURE, iend_found)
-
-    print("\n%d PNG files extracted from theme to current directory" % found_png)
-
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage :")
+        print("        turing-theme-extractor.py path/to/theme-file.data")
+        print("Examples : ")
+        print("        turing-theme-extractor.py \"Dragon Ball.data\"")
+        print("        turing-theme-extractor.py \"Pikachu theme.data\"")
+        print("        turing-theme-extractor.py NZXT_BLUR.data")
+        try:
+            sys.exit(0)
+        except:
+            os._exit(0)
+    main(sys.argv[1])
