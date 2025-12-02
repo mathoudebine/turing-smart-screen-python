@@ -40,7 +40,7 @@ MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
 FONTS_DIR = str(MAIN_DIRECTORY / "res" / "fonts") + "/"
 CONFIG_DATA = load_yaml(MAIN_DIRECTORY / "config.yaml")
 THEME_DEFAULT = load_yaml(MAIN_DIRECTORY / "res/themes/default.yaml")
-THEME_DATA = None
+THEME_DATA: dict = {}
 
 
 def copy_default(default, theme):
