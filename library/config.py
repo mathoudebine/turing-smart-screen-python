@@ -48,7 +48,7 @@ def copy_default(default, theme):
     for k, v in default.items():
         if k not in theme:
             theme[k] = v
-        if type(v) == type({}):
+        if isinstance(v, dict):
             copy_default(default[k], theme[k])
 
 
