@@ -489,7 +489,7 @@ class TuringConfigWindow(Tk):
         self.destroy()
 
     def on_brightness_change(self):
-        self.brightness_string.set(str(int(self.brightness_slider.get())) + "%")
+        self.brightness_string.set(f"{int(self.brightness_slider.get())} %")
         self.show_hide_brightness_warning()
 
     def on_model_change(self):
@@ -569,9 +569,6 @@ class MoreConfigWindow(Toplevel):
         self.geometry("750x680")
 
         self.main_window = main_window
-        self.app_theme = StringVar(value='light')
-        # Make TK look better with Sun Valley ttk theme
-        sv_ttk.set_theme(self.app_theme.get())
 
         self.ping_label = ttk.Label(self, text='Hostname / IP to ping')
         self.ping_label.place(x=10, y=10)
