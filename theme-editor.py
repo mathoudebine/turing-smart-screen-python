@@ -38,6 +38,7 @@ try:
     import tkinter
     from PIL import ImageTk, Image
     from tkinter import Tk
+    from tkinter.ttk import Button, Label
 except:
     print(
         "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
@@ -171,7 +172,7 @@ class Viewer(Tk):
         else:
             size = self.display_width if self.display_width < self.display_height else self.display_height
             self.display_image = ImageTk.PhotoImage(self.ERROR_IN_THEME.resize((size, size)))
-        self.viewer_picture = tkinter.Label(self, image=self.display_image, borderwidth=0)
+        self.viewer_picture = Label(self, image=self.display_image, borderwidth=0)
         self.viewer_picture.place(x=self.RGB_LED_MARGIN, y=self.RGB_LED_MARGIN)
 
         # Allow to click on preview to show coordinates and draw zones
@@ -182,20 +183,20 @@ class Viewer(Tk):
         # Allow to resize editor using mouse wheel or buttons
         self.bind_all("<MouseWheel>", self.on_mousewheel)
 
-        zoom_plus_btn = tkinter.Button(self, text="Zoom +", command=lambda: self.on_zoom_plus())
+        zoom_plus_btn = Button(self, text="Zoom +", command=lambda: self.on_zoom_plus())
         zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
                             width=int(self.display_width / 2))
 
-        zoom_minus_btn = tkinter.Button(self, text="Zoom -", command=lambda: self.on_zoom_minus())
+        zoom_minus_btn = Button(self, text="Zoom -", command=lambda: self.on_zoom_minus())
         zoom_minus_btn.place(x=int(self.display_width / 2) + self.RGB_LED_MARGIN,
                              y=self.display_height + 2 * self.RGB_LED_MARGIN,
                              height=30, width=int(self.display_width / 2))
 
-        self.label_coord = tkinter.Label(self, text="Click or draw a zone to show coordinates")
+        self.label_coord = Label(self, text="Click or draw a zone to show coordinates")
         self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
                                width=self.display_width + 2 * self.RGB_LED_MARGIN)
 
-        label_info = tkinter.Label(self, text="This preview will reload when theme file is updated")
+        label_info = Label(self, text="This preview will reload when theme file is updated")
         label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
                          width=self.display_width + 2 * self.RGB_LED_MARGIN)
 
