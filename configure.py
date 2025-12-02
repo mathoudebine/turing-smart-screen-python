@@ -196,7 +196,8 @@ class TuringConfigWindow(Tk):
         self.more_config_window = MoreConfigWindow(self)
 
         # Make TK look better with Sun Valley ttk theme
-        sv_ttk.set_theme("light")
+        self.app_theme = StringVar(value='light')
+        sv_ttk.set_theme(self.app_theme.get())
 
         self.theme_preview_img = None
         self.theme_preview = ttk.Label(self)
@@ -300,6 +301,8 @@ class TuringConfigWindow(Tk):
 
         self.save_run_btn = ttk.Button(self, text="Save and run", command=lambda: self.on_saverun_click())
         self.save_run_btn.place(x=640, y=520, height=50, width=130)
+        self.change_app_theme = ttk.Button(self, textvariable=self.app_theme, command=lambda: self.on_change_theme())
+        self.change_app_theme.place(x=5, y=520, height=50, width=70)
 
         self.config = None
         self.load_config_values()
@@ -473,6 +476,13 @@ class TuringConfigWindow(Tk):
             f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
             shell=True)
 
+    def on_change_theme(self):
+        if self.app_theme.get() == 'light':
+            self.app_theme.set('dark')
+        else:
+            self.app_theme.set('light')
+        sv_ttk.set_theme(self.app_theme.get())
+
     def on_saverun_click(self):
         self.save_config_values()
         subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
@@ -559,9 +569,9 @@ class MoreConfigWindow(Toplevel):
         self.geometry("750x680")
 
         self.main_window = main_window
-
+        self.app_theme = StringVar(value='light')
         # Make TK look better with Sun Valley ttk theme
-        sv_ttk.set_theme("light")
+        sv_ttk.set_theme(self.app_theme.get())
 
         self.ping_label = ttk.Label(self, text='Hostname / IP to ping')
         self.ping_label.place(x=10, y=10)
