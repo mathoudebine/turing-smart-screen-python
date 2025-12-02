@@ -220,7 +220,7 @@ class LcdCommRevC(LcdComm):
         response = ''.join(
             filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
         self.serial_flush_input()
-        logger.debug("Display ID returned: %s" % response)
+        logger.debug(f"Display ID returned: {response}")
         while not response.startswith("chs_"):
             logger.warning("Display returned invalid or unsupported ID, try again in 1 second")
             time.sleep(1)
@@ -232,13 +232,13 @@ class LcdCommRevC(LcdComm):
 
         # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
         # Rely on width/height for sub-revision detection
-        if self.display_width == 480 and self.display_height == 480:
-            self.sub_revision = SubRevision.REV_2INCH
-        elif self.display_width == 480 and self.display_height == 800:
-            self.sub_revision = SubRevision.REV_5INCH
-        elif self.display_width == 480 and self.display_height == 1920:
-            self.sub_revision = SubRevision.REV_8INCH
-        else:
+        sub_revisions = {
+            (480, 480):SubRevision.REV_2INCH,
+            (480,800):SubRevision.REV_5INCH,
+            (480,1920):SubRevision.REV_8INCH
+        }
+        self.sub_revision = sub_revisions.get((self.display_width, self.display_height), SubRevision.UNKNOWN)
+        if self.sub_revision == SubRevision.UNKNOWN:
             logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
 
         # Detect ROM version
