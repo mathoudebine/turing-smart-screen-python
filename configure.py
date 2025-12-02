@@ -22,6 +22,7 @@
 # This file is the system monitor configuration GUI
 
 from library.pythoncheck import check_python_version
+
 check_python_version()
 
 import glob
@@ -126,6 +127,7 @@ THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
 
 circular_mask = Image.open(MAIN_DIRECTORY + "res/backgrounds/circular-mask.png")
 
+
 def get_theme_data(name: str):
     folder = os.path.join(THEMES_DIR, name)
     # checking if it is a directory
@@ -187,7 +189,7 @@ class TuringConfigWindow(Tk):
         self.geometry("820x580")
         self.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
-        self.bind("<FocusIn>", lambda *_:self.on_theme_change())
+        self.bind("<FocusIn>", lambda *_: self.load_theme_preview())
         self.after(0, self.on_fan_speed_update)
 
         # Subwindow for weather/ping config.
@@ -209,13 +211,13 @@ class TuringConfigWindow(Tk):
         self.model_label.place(x=370, y=35)
         self.model_cb = ttk.Combobox(self, values=list(dict.fromkeys((revision_and_size_to_model_map.values()))),
                                      state='readonly')
-        self.model_cb.bind('<<ComboboxSelected>>', self.on_model_change)
+        self.model_cb.bind('<<ComboboxSelected>>', lambda *_: self.on_model_change())
         self.model_cb.place(x=550, y=30, width=250)
 
         self.size_label = ttk.Label(self, text='Smart screen size')
         self.size_label.place(x=370, y=75)
         self.size_cb = ttk.Combobox(self, values=size_list, state='readonly')
-        self.size_cb.bind('<<ComboboxSelected>>', lambda *_:self.on_size_change())
+        self.size_cb.bind('<<ComboboxSelected>>', lambda *_: self.on_size_change())
         self.size_cb.place(x=550, y=70, width=250)
 
         self.com_label = ttk.Label(self, text='COM port')
@@ -232,7 +234,7 @@ class TuringConfigWindow(Tk):
         self.brightness_label = ttk.Label(self, text='Brightness')
         self.brightness_label.place(x=370, y=195)
         self.brightness_slider = ttk.Scale(self, from_=0, to=100, orient=HORIZONTAL,
-                                           command=lambda *_:self.on_brightness_change())
+                                           command=lambda *_: self.on_brightness_change())
         self.brightness_slider.place(x=600, y=195, width=180)
         self.brightness_val_label = ttk.Label(self, textvariable=self.brightness_string)
         self.brightness_val_label.place(x=550, y=195)
@@ -247,7 +249,7 @@ class TuringConfigWindow(Tk):
         self.theme_label.place(x=370, y=300)
         self.theme_cb = ttk.Combobox(self, state='readonly')
         self.theme_cb.place(x=550, y=295, width=250)
-        self.theme_cb.bind('<<ComboboxSelected>>', lambda *_:self.on_theme_change())
+        self.theme_cb.bind('<<ComboboxSelected>>', lambda *_: self.load_theme_preview())
 
         self.hwlib_label = ttk.Label(self, text='Hardware monitoring')
         self.hwlib_label.place(x=370, y=340)
@@ -255,7 +257,7 @@ class TuringConfigWindow(Tk):
             del hw_lib_map["LHM"]  # LHM is for Windows platforms only
         self.hwlib_cb = ttk.Combobox(self, values=list(hw_lib_map.values()), state='readonly')
         self.hwlib_cb.place(x=550, y=335, width=250)
-        self.hwlib_cb.bind('<<ComboboxSelected>>', lambda *_:self.on_hwlib_change())
+        self.hwlib_cb.bind('<<ComboboxSelected>>', lambda *_: self.on_hwlib_change())
 
         self.eth_label = ttk.Label(self, text='Ethernet interface')
         self.eth_label.place(x=370, y=380)
@@ -283,18 +285,17 @@ class TuringConfigWindow(Tk):
                                    "and run 'sudo sensors-detect' command, then reboot.")
 
         self.weather_ping_btn = ttk.Button(self, text="Weather & ping",
-                                           command=lambda: self.on_weatherping_click())
+                                           command=lambda: self.more_config_window.deiconify())
         self.weather_ping_btn.place(x=80, y=520, height=50, width=130)
 
-
         self.open_theme_folder_btn = ttk.Button(self, text="Open themes\nfolder",
-                                         command=lambda: self.on_open_theme_folder_click())
+                                                command=lambda: self.on_open_theme_folder_click())
         self.open_theme_folder_btn.place(x=220, y=520, height=50, width=130)
 
         self.edit_theme_btn = ttk.Button(self, text="Edit theme", command=lambda: self.on_theme_editor_click())
         self.edit_theme_btn.place(x=360, y=520, height=50, width=130)
 
-        self.save_btn = ttk.Button(self, text="Save settings", command=lambda: self.on_save_click())
+        self.save_btn = ttk.Button(self, text="Save settings", command=lambda: self.save_config_values())
         self.save_btn.place(x=500, y=520, height=50, width=130)
 
         self.save_run_btn = ttk.Button(self, text="Save and run", command=lambda: self.on_saverun_click())
@@ -380,7 +381,7 @@ class TuringConfigWindow(Tk):
 
         # Guess display size from theme in the configuration
         size = get_theme_size(self.config['config']['THEME'])
-        size = size.replace(SIZE_2_1_INCH, SIZE_2_x_INCH)   # If a theme is for 2.1" then it also is for 2.8"
+        size = size.replace(SIZE_2_1_INCH, SIZE_2_x_INCH)  # If a theme is for 2.1" then it also is for 2.8"
         try:
             self.size_cb.set(size)
         except:
@@ -414,7 +415,7 @@ class TuringConfigWindow(Tk):
         # Reload content on screen
         self.on_model_change()
         self.on_size_change()
-        self.on_theme_change()
+        self.load_theme_preview()
         self.on_brightness_change()
         self.on_hwlib_change()
 
@@ -458,12 +459,6 @@ class TuringConfigWindow(Tk):
         with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
-    def on_theme_change(self):
-        self.load_theme_preview()
-
-    def on_weatherping_click(self):
-        self.more_config_window.show()
-
     def on_open_theme_folder_click(self):
         path = f'"{MAIN_DIRECTORY}res/themes"'
         if platform.system() == "Windows":
@@ -477,9 +472,6 @@ class TuringConfigWindow(Tk):
         subprocess.Popen(
             f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
             shell=True)
-
-    def on_save_click(self):
-        self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
@@ -506,7 +498,8 @@ class TuringConfigWindow(Tk):
 
     def on_size_change(self):
         size = self.size_cb.get()
-        size = size.replace(SIZE_2_x_INCH, SIZE_2_1_INCH)  # For '2.1" / 2.8"' size, keep '2.1"' as size to get themes for
+        size = size.replace(SIZE_2_x_INCH,
+                            SIZE_2_1_INCH)  # For '2.1" / 2.8"' size, keep '2.1"' as size to get themes for
         themes = get_themes(size)
         self.theme_cb.config(values=themes)
 
@@ -518,7 +511,7 @@ class TuringConfigWindow(Tk):
 
     def on_hwlib_change(self):
         hwlib = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
-        if hwlib == "STUB" or hwlib == "STATIC":
+        if hwlib in ["STUB", "STATIC"]:
             self.eth_cb.configure(state="disabled", foreground="#C0C0C0")
             self.wl_cb.configure(state="disabled", foreground="#C0C0C0")
         else:
@@ -626,9 +619,10 @@ class MoreConfigWindow(Toplevel):
         self.citysearch1_label = ttk.Label(self, text='Location search', font='bold')
         self.citysearch1_label.place(x=80, y=370)
 
-        self.citysearch2_label = ttk.Label(self, text="Enter location to automatically get coordinates (latitude/longitude).\n"
-                                                             "For example \"Berlin\" \"London, GB\", \"London, Quebec\".\n"
-                                                             "Remember to set valid API key and pick language first!")
+        self.citysearch2_label = ttk.Label(self,
+                                           text="Enter location to automatically get coordinates (latitude/longitude).\n"
+                                                "For example \"Berlin\" \"London, GB\", \"London, Quebec\".\n"
+                                                "Remember to set valid API key and pick language first!")
         self.citysearch2_label.place(x=10, y=396)
 
         self.citysearch3_label = ttk.Label(self, text="Enter location")
@@ -652,7 +646,7 @@ class MoreConfigWindow(Toplevel):
         self.save_btn = ttk.Button(self, text="Save settings", command=lambda: self.on_save_click())
         self.save_btn.place(x=590, y=620, height=50, width=130)
 
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.protocol("WM_DELETE_WINDOW", self.withdraw)
 
         self._city_entries = []
 
@@ -664,12 +658,6 @@ class MoreConfigWindow(Toplevel):
         except:
             return False
         return True
-
-    def show(self):
-        self.deiconify()
-
-    def on_closing(self):
-        self.withdraw()
 
     def load_config_values(self, config):
         self.config = config
@@ -703,10 +691,10 @@ class MoreConfigWindow(Toplevel):
             self.lang_cb.set(weather_lang_map[self.config['config']['WEATHER_LANGUAGE']])
         except:
             self.lang_cb.set(weather_lang_map["en"])
-    
+
     def citysearch_show_warning(self, warning):
         self.citysearch_warn_label.config(text=warning)
-		
+
     def on_search_click(self):
         OPENWEATHER_GEOAPI_URL = "http://api.openweathermap.org/geo/1.0/direct"
         api_key = self.api_entry.get()
@@ -718,8 +706,8 @@ class MoreConfigWindow(Toplevel):
             return
 
         try:
-            request = requests.get(OPENWEATHER_GEOAPI_URL, timeout=5, params={"appid": api_key, "lang": lang, 
-                                   "q": city, "limit": 10})
+            request = requests.get(OPENWEATHER_GEOAPI_URL, timeout=5, params={"appid": api_key, "lang": lang,
+                                                                              "q": city, "limit": 10})
         except:
             self.citysearch_show_warning("Error fetching OpenWeatherMap Geo API")
             return
@@ -730,7 +718,7 @@ class MoreConfigWindow(Toplevel):
         elif request.status_code != 200:
             self.citysearch_show_warning(f"Error #{request.status_code} fetching OpenWeatherMap Geo API.")
             return
-        
+
         self._city_entries = []
         cb_entries = []
         for entry in request.json():
@@ -747,7 +735,7 @@ class MoreConfigWindow(Toplevel):
             self._city_entries.append({"full_name": full_name, "lat": str(lat), "long": str(long)})
             cb_entries.append(full_name)
 
-        self.citysearch_cb.config(values = cb_entries)
+        self.citysearch_cb.config(values=cb_entries)
         if len(cb_entries) == 0:
             self.citysearch_show_warning("No given city found.")
         else:
@@ -767,7 +755,7 @@ class MoreConfigWindow(Toplevel):
 
     def on_save_click(self):
         self.save_config_values()
-        self.on_closing()
+        self.withdraw()
 
     def save_config_values(self):
         ping = self.ping_entry.get()
