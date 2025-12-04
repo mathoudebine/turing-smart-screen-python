@@ -363,7 +363,10 @@ class Viewer(Tk):
         self.RESIZE_FACTOR += 0.2
 
     def on_zoom_minus(self):
-        self.RESIZE_FACTOR -= 0.2
+        if self.RESIZE_FACTOR >= 0.2:
+            self.RESIZE_FACTOR -= 0.2
+        else:
+            self.RESIZE_FACTOR = 0.2
 
 
 if __name__ == "__main__":
