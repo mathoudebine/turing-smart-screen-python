@@ -37,8 +37,8 @@ import time
 try:
     import tkinter
     from PIL import ImageTk, Image
-    from tkinter import Tk
-    from tkinter.ttk import Button, Label
+    from tkinter import Tk, DoubleVar
+    from tkinter.ttk import Button, Label, Scale
 except:
     print(
         "[ERROR] Tkinter dependency not installed. Please follow troubleshooting page: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Troubleshooting#all-os-tkinter-dependency-not-installed")
@@ -182,15 +182,18 @@ class Viewer(Tk):
 
         # Allow to resize editor using mouse wheel or buttons
         self.bind_all("<MouseWheel>", self.on_mousewheel)
+        self.zoom_level = DoubleVar(value=self.RESIZE_FACTOR)
+        self.zoom_scale = Scale(self, from_=0.6, to=1.6, variable=self.zoom_level, orient="horizontal",
+                                command=self.on_zoom_level_change)
+        self.zoom_scale.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                              width=int(self.display_width / 2))
+        self.zoom_label = Label(self, text=f"Zoom Level:{self.RESIZE_FACTOR}")
+        self.zoom_label.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                              width=int(self.display_width / 2))
 
-        self.zoom_plus_btn = Button(self, text="Zoom +", command=lambda: self.on_zoom_plus())
-        self.zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
-                            width=int(self.display_width / 2))
-
-        self.zoom_minus_btn = Button(self, text="Zoom -", command=lambda: self.on_zoom_minus())
-        self.zoom_minus_btn.place(x=int(self.display_width / 2) + self.RGB_LED_MARGIN,
-                             y=self.display_height + 2 * self.RGB_LED_MARGIN,
-                             height=30, width=int(self.display_width / 2))
+        self.zoom_scale.place(x=int(self.display_width / 2) + self.RGB_LED_MARGIN,
+                              y=self.display_height + 2 * self.RGB_LED_MARGIN,
+                              height=30, width=int(self.display_width / 2))
 
         self.label_coord = Label(self, text="Click or draw a zone to show coordinates")
         self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
@@ -198,7 +201,7 @@ class Viewer(Tk):
 
         self.label_info = Label(self, text="This preview will reload when theme file is updated")
         self.label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
-                         width=self.display_width + 2 * self.RGB_LED_MARGIN)
+                              width=self.display_width + 2 * self.RGB_LED_MARGIN)
 
         self.label_zone = tkinter.Label(self, bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
         self.label_zone.bind("<ButtonRelease-1>", self.on_zone_click)
@@ -242,15 +245,15 @@ class Viewer(Tk):
         self.geometry(
             str(self.display_width + 2 * self.RGB_LED_MARGIN) + "x" + str(
                 self.display_height + 2 * self.RGB_LED_MARGIN + 80))
-        self.zoom_minus_btn.place(x=self.RGB_LED_MARGIN + int(self.display_width / 2), y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
-                                 width=int(self.display_width / 2))
-        self.zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+        self.zoom_scale.place(x=self.RGB_LED_MARGIN + int(self.display_width / 2),
+                                  y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                                  width=int(self.display_width / 2))
+        self.zoom_label.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
                                  width=int(self.display_width / 2))
         self.label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
                               width=self.display_width + 2 * self.RGB_LED_MARGIN)
         self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
                                width=self.display_width + 2 * self.RGB_LED_MARGIN)
-
 
     def refresh(self, force_fresh: bool = False):
         if os.path.exists(self.theme_file) and os.path.getmtime(
@@ -370,20 +373,19 @@ class Viewer(Tk):
         except:
             os._exit(0)
 
+    def on_zoom_level_change(self, value):
+        level = self.zoom_level.get()
+        if not level % 0.2:
+            self.zoom_level.set(level - (level % 0.2))
+        self.zoom_label.config(text=f"Zoom Level:{self.zoom_level.get():.1f}")
+        self.RESIZE_FACTOR = round(self.zoom_level.get(), 1)
+
     def on_mousewheel(self, event):
         if event.delta > 0:
             self.RESIZE_FACTOR += 0.2
         else:
             self.RESIZE_FACTOR -= 0.2
-
-    def on_zoom_plus(self):
-        self.RESIZE_FACTOR += 0.2
-
-    def on_zoom_minus(self):
-        if self.RESIZE_FACTOR >= 0.2:
-            self.RESIZE_FACTOR -= 0.2
-        else:
-            self.RESIZE_FACTOR = 0.2
+        self.zoom_scale.set(self.RESIZE_FACTOR)
 
 
 if __name__ == "__main__":
