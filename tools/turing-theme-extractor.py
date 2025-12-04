@@ -22,17 +22,19 @@
 # turing-theme-extractor.py: Extract resources from a Turing Smart Screen theme (.data files) made for Windows app
 # This program will search and extract PNGs from the theme data and extract theme in the current directory
 # The PNG can then be re-used to create a theme for System Monitor python program (see Wiki for theme creation)
-import mmap
+from mmap import mmap
 import os
 import sys
 
 PNG_SIGNATURE = b'\x89\x50\x4E\x47\x0D\x0A\x1A\x0A'
 PNG_IEND = b'\x49\x45\x4E\x44\xAE\x42\x60\x82'
+
+
 def main(file_path):
     found_png = 0
 
     with open(file_path, "r+b") as theme_file:
-        mm = mmap.mmap(theme_file.fileno(), 0)
+        mm = mmap(theme_file.fileno(), 0)
 
         # Find PNG signature in binary data
         header_found = mm.find(PNG_SIGNATURE, 0)
@@ -50,12 +52,13 @@ def main(file_path):
                 png_file.write(theme_file.read(iend_found - header_found + len(PNG_IEND)))
 
             print("PNG extracted to theme_res_%s.png" % str(header_found))
-            found_png = found_png + 1
+            found_png += 1
 
             # Find next PNG signature (if any)
             header_found = mm.find(PNG_SIGNATURE, iend_found)
 
         print(f"\n{found_png} PNG files extracted from theme to current directory")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
