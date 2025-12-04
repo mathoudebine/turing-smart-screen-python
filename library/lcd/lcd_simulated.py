@@ -45,14 +45,14 @@ class SimulatedLcdWebServer(BaseHTTPRequestHandler):
             self.wfile.write(bytes(f"    myImageElement.src = '{SCREENSHOT_FILE}?rand=' + Math.random();", "utf-8"))
             self.wfile.write(bytes("}, 250);", "utf-8"))
             self.wfile.write(bytes("</script>", "utf-8"))
-        elif self.path.startswith("/" + SCREENSHOT_FILE):
-            imgfile = open(SCREENSHOT_FILE, 'rb').read()
-            mimetype = mimetypes.MimeTypes().guess_type(SCREENSHOT_FILE)[0]
-            self.send_response(200)
-            if mimetype is not None:
-                self.send_header('Content-type', mimetype)
-            self.end_headers()
-            self.wfile.write(imgfile)
+        elif self.path.startswith(f"/{SCREENSHOT_FILE}"):
+            with open(SCREENSHOT_FILE, 'rb') as imgfile:
+                mimetype = mimetypes.MimeTypes().guess_type(SCREENSHOT_FILE)[0]
+                self.send_response(200)
+                if mimetype is not None:
+                    self.send_header('Content-type', mimetype)
+                self.end_headers()
+                self.wfile.write(imgfile.read())
 
 
 # Simulated display: write on a file instead of serial port

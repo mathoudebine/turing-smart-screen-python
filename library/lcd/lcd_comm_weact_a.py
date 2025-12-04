@@ -51,7 +51,7 @@ class LcdCommWeActA(LcdComm):
         for com_port in com_ports:
             if com_port.vid == 0x1a86 and com_port.pid == 0xfe0c:
                 return com_port.device
-            if type(com_port.serial_number) == str:
+            if isinstance(com_port.serial_number, str):
                 if com_port.serial_number.startswith("AB"):
                     return com_port.device
 
@@ -178,7 +178,7 @@ class LcdCommWeActA(LcdComm):
         byteBuffer[2] = Command.CMD_END
         self.SendCommand(byteBuffer)
 
-    def SetSensorReportTime(self, time_ms: int):
+    def SetSensorReportTime(self, time_ms: int) -> bool:
         if time_ms > 0xFFFF or (time_ms < 500 and time_ms != 0):
             return False
         byteBuffer = bytearray(4)
@@ -187,6 +187,7 @@ class LcdCommWeActA(LcdComm):
         byteBuffer[2] = time_ms >> 8 & 0xFF
         byteBuffer[3] = Command.CMD_END
         self.SendCommand(byteBuffer)
+        return True
 
     def Free(self):
         byteBuffer = bytearray(2)

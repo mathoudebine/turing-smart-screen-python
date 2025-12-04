@@ -35,7 +35,6 @@ def main(file_path):
         mm = mmap.mmap(theme_file.fileno(), 0)
 
         # Find PNG signature in binary data
-        start_pos = 0
         header_found = mm.find(PNG_SIGNATURE, 0)
 
         while header_found != -1:

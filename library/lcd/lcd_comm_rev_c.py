@@ -233,9 +233,9 @@ class LcdCommRevC(LcdComm):
         # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
         # Rely on width/height for sub-revision detection
         sub_revisions = {
-            (480, 480):SubRevision.REV_2INCH,
-            (480,800):SubRevision.REV_5INCH,
-            (480,1920):SubRevision.REV_8INCH
+            (480, 480): SubRevision.REV_2INCH,
+            (480, 800): SubRevision.REV_5INCH,
+            (480, 1920): SubRevision.REV_8INCH
         }
         self.sub_revision = sub_revisions.get((self.display_width, self.display_height), SubRevision.UNKNOWN)
         if self.sub_revision == SubRevision.UNKNOWN:

@@ -120,7 +120,7 @@ class LcdCommRevD(LcdComm):
         # Basic orientations (portrait / landscape) are software-managed because screen commands only support portrait
         self.orientation = orientation
 
-        if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
+        if self.orientation in [Orientation.REVERSE_LANDSCAPE, Orientation.REVERSE_PORTRAIT]:
             self.SendCommand(cmd=Command.SET180)
         else:
             self.SendCommand(cmd=Command.SETORG)
