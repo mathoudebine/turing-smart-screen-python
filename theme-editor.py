@@ -183,12 +183,12 @@ class Viewer(Tk):
         # Allow to resize editor using mouse wheel or buttons
         self.bind_all("<MouseWheel>", self.on_mousewheel)
 
-        zoom_plus_btn = Button(self, text="Zoom +", command=lambda: self.on_zoom_plus())
-        zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+        self.zoom_plus_btn = Button(self, text="Zoom +", command=lambda: self.on_zoom_plus())
+        self.zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
                             width=int(self.display_width / 2))
 
-        zoom_minus_btn = Button(self, text="Zoom -", command=lambda: self.on_zoom_minus())
-        zoom_minus_btn.place(x=int(self.display_width / 2) + self.RGB_LED_MARGIN,
+        self.zoom_minus_btn = Button(self, text="Zoom -", command=lambda: self.on_zoom_minus())
+        self.zoom_minus_btn.place(x=int(self.display_width / 2) + self.RGB_LED_MARGIN,
                              y=self.display_height + 2 * self.RGB_LED_MARGIN,
                              height=30, width=int(self.display_width / 2))
 
@@ -196,8 +196,8 @@ class Viewer(Tk):
         self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
                                width=self.display_width + 2 * self.RGB_LED_MARGIN)
 
-        label_info = Label(self, text="This preview will reload when theme file is updated")
-        label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
+        self.label_info = Label(self, text="This preview will reload when theme file is updated")
+        self.label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
                          width=self.display_width + 2 * self.RGB_LED_MARGIN)
 
         self.label_zone = tkinter.Label(self, bg='#%02x%02x%02x' % tuple(map(lambda x: 255 - x, led_color)))
@@ -236,8 +236,25 @@ class Viewer(Tk):
             self.error_in_theme = True
         self.inited = True
 
-    def refresh(self):
-        if os.path.exists(self.theme_file) and os.path.getmtime(self.theme_file) > self.last_edit_time:
+    def refresh_window(self):
+        self.display_width, self.display_height = int(display.lcd.get_width() / self.RESIZE_FACTOR), int(
+            display.lcd.get_height() / self.RESIZE_FACTOR)
+        self.geometry(
+            str(self.display_width + 2 * self.RGB_LED_MARGIN) + "x" + str(
+                self.display_height + 2 * self.RGB_LED_MARGIN + 80))
+        self.zoom_minus_btn.place(x=self.RGB_LED_MARGIN + int(self.display_width / 2), y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                                 width=int(self.display_width / 2))
+        self.zoom_plus_btn.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                                 width=int(self.display_width / 2))
+        self.label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
+                              width=self.display_width + 2 * self.RGB_LED_MARGIN)
+        self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
+                               width=self.display_width + 2 * self.RGB_LED_MARGIN)
+
+
+    def refresh(self, force_fresh: bool = False):
+        if os.path.exists(self.theme_file) and os.path.getmtime(
+                self.theme_file) > self.last_edit_time or force_fresh:
             logger.debug("The theme file has been updated, the preview window will refresh")
             try:
                 refresh_theme()
@@ -370,25 +387,23 @@ class Viewer(Tk):
 
 
 if __name__ == "__main__":
+    # Create preview window
+    logger.debug("Opening theme preview window with static data")
+    viewer = Viewer()
+    current_resize_factor = viewer.RESIZE_FACTOR
+    logger.debug(
+        "You can now edit the theme file in the editor. When you save your changes, the preview window will "
+        "update automatically")
+
     while True:
-        # Create preview window
-        logger.debug("Opening theme preview window with static data")
-        viewer = Viewer()
+        if current_resize_factor != viewer.RESIZE_FACTOR:
+            logger.info(
+                f"Zoom level changed from {current_resize_factor:.1f} to {viewer.RESIZE_FACTOR:.1f}, reloading theme editor")
+            viewer.refresh(True)
+            viewer.refresh_window()
+            current_resize_factor = viewer.RESIZE_FACTOR
+        # Every time the theme file is modified: reload preview
+        viewer.refresh()
+        # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
         viewer.update()
-
-        current_resize_factor = viewer.RESIZE_FACTOR
-        logger.debug(
-            "You can now edit the theme file in the editor. When you save your changes, the preview window will "
-            "update automatically")
-
-        while current_resize_factor == viewer.RESIZE_FACTOR:
-            # Every time the theme file is modified: reload preview
-            viewer.refresh()
-            # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
-            viewer.update()
-            time.sleep(0.1)
-
-        # Zoom level changed, reload editor
-        logger.info(
-            f"Zoom level changed from {current_resize_factor:.1f} to {viewer.RESIZE_FACTOR:.1f}, reloading theme editor")
-        viewer.destroy()
+        time.sleep(0.1)
