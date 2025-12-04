@@ -82,12 +82,7 @@ else:
 
 import library.sensors.sensors_custom as sensors_custom
 
-
-def get_theme_file_path(name):
-    if name:
-        return os.path.join(config.THEME_DATA['PATH'], name)
-    else:
-        return None
+get_theme_file_path = lambda name: os.path.join(config.THEME_DATA['PATH'], name) if name else None
 
 
 def display_themed_value(theme_data, value, min_size=0, unit=''):
@@ -157,7 +152,7 @@ def display_themed_progress_bar(theme_data, value):
     )
 
 
-def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_text=None):
+def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_text:str=None):
     if not theme_data.get("SHOW", False):
         return
 
@@ -340,11 +335,7 @@ class CPU:
 
     @classmethod
     def fan_speed(cls):
-        if CPU_FAN != "AUTO":
-            fan_percent = sensors.Cpu.fan_percent(CPU_FAN)
-        else:
-            fan_percent = sensors.Cpu.fan_percent()
-
+        fan_percent = sensors.Cpu.fan_percent(CPU_FAN if CPU_FAN != "AUTO" else None)
         save_last_value(fan_percent, cls.last_values_cpu_fan_speed,
                         config.THEME_DATA['STATS']['CPU']['FAN_SPEED']['LINE_GRAPH'].get("HISTORY_SIZE",
                                                                                          DEFAULT_HISTORY_SIZE))
