@@ -68,7 +68,7 @@ logger = logging.getLogger('turing-editor')
 logger.setLevel(logging.DEBUG)
 
 # Hardcode specific configuration for theme editor
-from library import config
+from library.config import config
 
 config.CONFIG_DATA["config"]["HW_SENSORS"] = "STATIC"  # For theme editor always use stub data
 config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argument

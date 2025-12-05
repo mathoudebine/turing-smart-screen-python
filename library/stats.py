@@ -36,7 +36,7 @@ from ping3 import ping
 from psutil._common import bytes2human
 from uptime import uptime
 
-import library.config as config
+from library.config import config
 from library.display import display
 from library.log import logger
 
