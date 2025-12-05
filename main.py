@@ -51,6 +51,7 @@ try:
 
     from library.log import logger
     import library.scheduler as scheduler
+    from library.config import config
     from library.display import display
 
 except Exception as e:
@@ -84,7 +85,7 @@ class Main:
         logger.info("Waiting for all pending request to be sent to display (%ds max)..." % timeout)
 
         wait_time = 0
-        while not scheduler.is_queue_empty() and wait_time < timeout:
+        while not config.update_queue.empty() and wait_time < timeout:
             time.sleep(0.1)
             wait_time += 0.1
 

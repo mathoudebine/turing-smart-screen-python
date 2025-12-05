@@ -199,7 +199,3 @@ def QueueHandler():
         f, args = config.update_queue.get()
         if f:
             f(*args)
-
-
-def is_queue_empty() -> bool:
-    return config.update_queue.empty()
