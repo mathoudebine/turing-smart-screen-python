@@ -21,11 +21,9 @@
 
 # theme-editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
 # The preview window is refreshed as soon as the theme file is modified
-
 from library.pythoncheck import check_python_version
 
 check_python_version()
-
 import locale
 import logging
 import os
@@ -46,44 +44,23 @@ except:
         sys.exit(0)
     except:
         os._exit(0)
-
-if len(sys.argv) != 2:
-    print("Usage :")
-    print("        theme-editor.py theme-name")
-    print("Examples : ")
-    print("        theme-editor.py 3.5inchTheme2")
-    print("        theme-editor.py Landscape6Grid")
-    print("        theme-editor.py Cyberpunk")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
-
 import library.log
 
 library.log.logger.setLevel(logging.NOTSET)  # Disable system monitor logging for the editor
-
 # Create a logger for the editor
 logger = logging.getLogger('turing-editor')
 logger.setLevel(logging.DEBUG)
-
 # Hardcode specific configuration for theme editor
 from library.config import config
 
 config.CONFIG_DATA["config"]["HW_SENSORS"] = "STATIC"  # For theme editor always use stub data
-config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argument
-
 config.load_theme()
-
 # For theme editor, always use simulated LCD
 config.CONFIG_DATA["display"]["REVISION"] = "SIMU"
-
 from library.display import display  # Only import display after hardcoded config is set
 
 
 # Resize editor if display is too big (e.g. 8.8" displays are 1920x480), can be changed later by zoom buttons
-
-
 def refresh_theme():
     config.load_theme()
 
@@ -129,8 +106,10 @@ def refresh_theme():
 
 
 class Viewer(Tk):
-    def __init__(self):
+    def __init__(self, theme: str = None):
         super().__init__()
+        if theme:
+            config.CONFIG_DATA["config"]["THEME"] = theme  # Theme is given as argument
         self.last_edit_time = 0
         self.theme_file = None
         self.error_in_theme = False
@@ -246,10 +225,10 @@ class Viewer(Tk):
             str(self.display_width + 2 * self.RGB_LED_MARGIN) + "x" + str(
                 self.display_height + 2 * self.RGB_LED_MARGIN + 80))
         self.zoom_scale.place(x=self.RGB_LED_MARGIN + int(self.display_width / 2),
-                                  y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
-                                  width=int(self.display_width / 2))
+                              y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
+                              width=int(self.display_width / 2))
         self.zoom_label.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
-                                 width=int(self.display_width / 2))
+                              width=int(self.display_width / 2))
         self.label_info.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 60,
                               width=self.display_width + 2 * self.RGB_LED_MARGIN)
         self.label_coord.place(x=0, y=self.display_height + 2 * self.RGB_LED_MARGIN + 40,
@@ -388,10 +367,10 @@ class Viewer(Tk):
         self.zoom_scale.set(self.RESIZE_FACTOR)
 
 
-if __name__ == "__main__":
+def main(theme: str = None):
     # Create preview window
     logger.debug("Opening theme preview window with static data")
-    viewer = Viewer()
+    viewer = Viewer(theme)
     current_resize_factor = viewer.RESIZE_FACTOR
     logger.debug(
         "You can now edit the theme file in the editor. When you save your changes, the preview window will "
@@ -409,3 +388,18 @@ if __name__ == "__main__":
         # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
         viewer.update()
         time.sleep(0.1)
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print("Usage :")
+        print("        theme-editor.py theme-name")
+        print("Examples : ")
+        print("        theme-editor.py 3.5inchTheme2")
+        print("        theme-editor.py Landscape6Grid")
+        print("        theme-editor.py Cyberpunk")
+        try:
+            sys.exit(1)
+        except:
+            os._exit(1)
+    main(sys.argv[1])
