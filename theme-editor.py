@@ -183,7 +183,7 @@ class Viewer(Tk):
         # Allow to resize editor using mouse wheel or buttons
         self.bind_all("<MouseWheel>", self.on_mousewheel)
         self.zoom_level = DoubleVar(value=self.RESIZE_FACTOR)
-        self.zoom_scale = Scale(self, from_=0.6, to=1.6, variable=self.zoom_level, orient="horizontal",
+        self.zoom_scale = Scale(self, from_=0.2, to=2, variable=self.zoom_level, orient="horizontal",
                                 command=self.on_zoom_level_change)
         self.zoom_scale.place(x=self.RGB_LED_MARGIN, y=self.display_height + 2 * self.RGB_LED_MARGIN, height=30,
                               width=int(self.display_width / 2))
