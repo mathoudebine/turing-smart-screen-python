@@ -472,9 +472,8 @@ class TuringConfigWindow(Tk):
             subprocess.Popen(["xdg-open", path])
 
     def on_theme_editor_click(self):
-        subprocess.Popen(
-            f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
-            shell=True)
+        from theme_editor import main
+        main(self.theme_cb.get())
 
     def on_change_theme(self):
         if self.app_theme.get() == 'light':

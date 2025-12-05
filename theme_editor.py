@@ -19,7 +19,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# theme-editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
+# theme_editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
 # The preview window is refreshed as soon as the theme file is modified
 from library.pythoncheck import check_python_version
 
@@ -35,7 +35,7 @@ import time
 try:
     import tkinter
     from PIL import ImageTk, Image
-    from tkinter import Tk, DoubleVar
+    from tkinter import Tk, DoubleVar, Toplevel
     from tkinter.ttk import Button, Label, Scale
 except:
     print(
@@ -105,7 +105,7 @@ def refresh_theme():
         stats.Ping.stats()
 
 
-class Viewer(Tk):
+class Viewer(Tk if __name__ == '__main__' else Toplevel):
     def __init__(self, theme: str = None):
         super().__init__()
         if theme:
@@ -129,8 +129,9 @@ class Viewer(Tk):
         self.geometry(
             str(self.display_width + 2 * self.RGB_LED_MARGIN) + "x" + str(
                 self.display_height + 2 * self.RGB_LED_MARGIN + 80))
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        self.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
+        if hasattr(self, 'call'):
+            self.protocol("WM_DELETE_WINDOW", self.on_closing)
+            self.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
         self.config(cursor="cross")
         led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
         if isinstance(led_color, str):
@@ -393,11 +394,11 @@ def main(theme: str = None):
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage :")
-        print("        theme-editor.py theme-name")
+        print("        theme_editor.py theme-name")
         print("Examples : ")
-        print("        theme-editor.py 3.5inchTheme2")
-        print("        theme-editor.py Landscape6Grid")
-        print("        theme-editor.py Cyberpunk")
+        print("        theme_editor.py 3.5inchTheme2")
+        print("        theme_editor.py Landscape6Grid")
+        print("        theme_editor.py Cyberpunk")
         try:
             sys.exit(1)
         except:
