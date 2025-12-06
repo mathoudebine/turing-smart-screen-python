@@ -126,11 +126,12 @@ class Viewer(Tk if __name__ == '__main__' else Toplevel):
         self.iconphoto(True, tkinter.PhotoImage(file=config.MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png"))
         self.display_width, self.display_height = int(display.lcd.get_width() / self.RESIZE_FACTOR), int(
             display.lcd.get_height() / self.RESIZE_FACTOR)
+        self.current_resize_factor = self.RESIZE_FACTOR
         self.geometry(
             str(self.display_width + 2 * self.RGB_LED_MARGIN) + "x" + str(
                 self.display_height + 2 * self.RGB_LED_MARGIN + 80))
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
         if hasattr(self, 'call'):
-            self.protocol("WM_DELETE_WINDOW", self.on_closing)
             self.call('wm', 'attributes', '.', '-topmost', '1')  # Preview window always on top
         self.config(cursor="cross")
         led_color = config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255))
@@ -367,29 +368,28 @@ class Viewer(Tk if __name__ == '__main__' else Toplevel):
             self.RESIZE_FACTOR -= 0.2
         self.zoom_scale.set(self.RESIZE_FACTOR)
 
+    def loop(self):
+        if self.current_resize_factor != self.RESIZE_FACTOR:
+            logger.info(
+                f"Zoom level changed from {self.current_resize_factor:.1f} to {self.RESIZE_FACTOR:.1f}, reloading theme editor")
+            self.refresh(True)
+            self.refresh_window()
+            self.current_resize_factor = self.RESIZE_FACTOR
+        # Every time the theme file is modified: reload preview
+        self.refresh()
+        # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
+        self.update()
+
 
 def main(theme: str = None):
     # Create preview window
     logger.debug("Opening theme preview window with static data")
     viewer = Viewer(theme)
-    current_resize_factor = viewer.RESIZE_FACTOR
     logger.debug(
         "You can now edit the theme file in the editor. When you save your changes, the preview window will "
         "update automatically")
-
     while True:
-        if current_resize_factor != viewer.RESIZE_FACTOR:
-            logger.info(
-                f"Zoom level changed from {current_resize_factor:.1f} to {viewer.RESIZE_FACTOR:.1f}, reloading theme editor")
-            viewer.refresh(True)
-            viewer.refresh_window()
-            current_resize_factor = viewer.RESIZE_FACTOR
-        # Every time the theme file is modified: reload preview
-        viewer.refresh()
-        # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
-        viewer.update()
-        time.sleep(0.1)
-
+        viewer.loop()
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
