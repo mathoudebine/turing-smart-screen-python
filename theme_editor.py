@@ -18,6 +18,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+import time
 
 # theme_editor.py: Allow to easily edit themes for System Monitor (main.py) in a preview window on the computer
 # The preview window is refreshed as soon as the theme file is modified
@@ -30,7 +31,6 @@ import os
 import platform
 import subprocess
 import sys
-import time
 
 try:
     import tkinter
@@ -379,6 +379,7 @@ class Viewer(Tk if __name__ == '__main__' else Toplevel):
         self.refresh()
         # Regularly update the viewer window even if content unchanged, or it will appear as "not responding"
         self.update()
+        time.sleep(0.1)
 
 
 def main(theme: str = None):
