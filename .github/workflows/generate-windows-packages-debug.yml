@@ -47,14 +47,14 @@ jobs:
         7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip ".\dist\turing-system-monitor"
 
     - name: '📦 Archive Windows installer'
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: turing-system-monitor-${{github.event.release.tag_name}}-debug
         path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug.exe
         if-no-files-found: error
 
     - name: '📦 Archive Windows portable archive'
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         name: turing-system-monitor-${{github.event.release.tag_name}}-portable-debug
         path: turing-system-monitor-${{github.event.release.tag_name}}-portable-debug.zip
