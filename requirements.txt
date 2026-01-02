@@ -14,7 +14,7 @@ pyinstaller~=6.16.0    # bundles a Python application and all its dependencies i
 
 # Image generation
 Pillow~=11.3.0; python_version < "3.10"   # For Python 3.9, only Pillow 11.x is supported
-Pillow~=12.0.0; python_version >= "3.10"  # For Python 3.10+, any Pillow 12.x is fine
+Pillow~=12.1.0; python_version >= "3.10"  # For Python 3.10+, any Pillow 12.x is fine
 
 # Efficient image serialization
 numpy~=2.0.2; python_version < "3.10"   # For Python 3.9, only numpy 2.0.x is supported
