@@ -451,7 +451,7 @@ class TuringConfigWindow(Tk):
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_open_theme_folder_click(self):
-        path = f'"{MAIN_DIRECTORY}res/themes"'
+        path = f'{MAIN_DIRECTORY}/res/themes'
         if platform.system() == "Windows":
             os.startfile(path)
         elif platform.system() == "Darwin":
@@ -481,8 +481,7 @@ class TuringConfigWindow(Tk):
 
     def on_model_change(self):
         self.show_hide_brightness_warning()
-        model = self.model_cb.get()
-        if model == SIMULATED_MODEL:
+        if self.model_cb.get() == SIMULATED_MODEL:
             self.com_cb.configure(state="disabled", foreground="#C0C0C0")
             self.orient_cb.configure(state="disabled", foreground="#C0C0C0")
             self.brightness_slider.configure(state="disabled")
