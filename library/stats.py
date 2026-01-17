@@ -647,12 +647,16 @@ class Disk:
 
     @classmethod
     def stats(cls):
-        used = sensors.Disk.disk_used()
-        free = sensors.Disk.disk_free()
-
         disk_theme_data = config.THEME_DATA['STATS']['DISK']
+        
+        path = "/"
+        if disk_theme_data['PATH'] is not None:
+            path = disk_theme_data['PATH']
 
-        disk_usage_percent = sensors.Disk.disk_usage_percent()
+        used = sensors.Disk.disk_used(path)
+        free = sensors.Disk.disk_free(path)
+
+        disk_usage_percent = sensors.Disk.disk_usage_percent(path)
         save_last_value(disk_usage_percent, cls.last_values_disk_usage,
                         disk_theme_data['USED']['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         display_themed_progress_bar(disk_theme_data['USED']['GRAPH'], disk_usage_percent)
