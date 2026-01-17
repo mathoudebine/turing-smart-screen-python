@@ -78,7 +78,7 @@ class Main:
         # Apply system locale to this program
         locale.setlocale(locale.LC_ALL, '')
 
-        logger.debug("Using Python %s" % sys.version)
+        logger.debug(f"Using Python {sys.version}")
 
     def wait_for_empty_queue(self, timeout: int = 5):
         # Waiting for all pending request to be sent to display
@@ -118,7 +118,7 @@ class Main:
 
     def on_configure_tray(self, tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
+        subprocess.Popen([f'{MAIN_DIRECTORY}/{glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0]}'], shell=True)
         self.clean_stop(tray_icon)
 
     def on_exit_tray(self, tray_icon, item):
@@ -163,7 +163,7 @@ class Main:
             tray_icon = pystray.Icon(
                 name='Turing System Monitor',
                 title='Turing System Monitor',
-                icon=Image.open(MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"),
+                icon=Image.open(f"{MAIN_DIRECTORY}/res/icons/monitor-icon-17865/64.png"),
                 menu=pystray.Menu(
                     pystray.MenuItem(
                         text='Configure',
@@ -211,36 +211,24 @@ class Main:
         # Start sensor scheduled reading. Avoid starting them all at the same time to optimize load
         logger.info("Starting system monitoring")
         import library.stats as stats
-
-        scheduler.CPUPercentage()
-        time.sleep(0.25)
-        scheduler.CPUFrequency()
-        time.sleep(0.25)
-        scheduler.CPULoad()
-        time.sleep(0.25)
-        scheduler.CPUTemperature()
-        time.sleep(0.25)
-        scheduler.CPUFanSpeed()
-        time.sleep(0.25)
-        if stats.Gpu.is_available():
-            scheduler.GpuStats()
+        for func in [
+            scheduler.CPUPercentage,
+            scheduler.CPUFrequency,
+            scheduler.CPULoad,
+            scheduler.CPUTemperature,
+            scheduler.CPUFanSpeed,
+            scheduler.GpuStats if stats.Gpu.is_available() else lambda : ...,
+            scheduler.MemoryStats,
+            scheduler.DiskStats,
+            scheduler.NetStats,
+            scheduler.DateStats,
+            scheduler.SystemUptimeStats,
+            scheduler.CustomStats,
+            scheduler.WeatherStats,
+            scheduler.PingStats
+        ]:
+            func()
             time.sleep(0.25)
-        scheduler.MemoryStats()
-        time.sleep(0.25)
-        scheduler.DiskStats()
-        time.sleep(0.25)
-        scheduler.NetStats()
-        time.sleep(0.25)
-        scheduler.DateStats()
-        time.sleep(0.25)
-        scheduler.SystemUptimeStats()
-        time.sleep(0.25)
-        scheduler.CustomStats()
-        time.sleep(0.25)
-        scheduler.WeatherStats()
-        time.sleep(0.25)
-        scheduler.PingStats()
-        time.sleep(0.25)
 
         # OS-specific tasks
         if tray_icon and platform.system() == "Darwin":  # macOS-specific
