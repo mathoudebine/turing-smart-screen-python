@@ -115,22 +115,11 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
     )
 
 
-def display_themed_percent_value(theme_data, value):
-    display_themed_value(
-        theme_data=theme_data,
-        value=int(value),
-        min_size=3,
-        unit="%"
-    )
-
-
-def display_themed_temperature_value(theme_data, value):
-    display_themed_value(
-        theme_data=theme_data,
-        value=int(value),
-        min_size=3,
-        unit="°C"
-    )
+display_themed_percent_value = lambda theme_data, value: display_themed_value(theme_data=theme_data, value=int(value),
+                                                                              min_size=3, unit="%")
+display_themed_temperature_value = lambda theme_data, value: display_themed_value(theme_data=theme_data,
+                                                                                  value=int(value), min_size=3,
+                                                                                  unit="°C")
 
 
 def display_themed_progress_bar(theme_data, value):
@@ -152,7 +141,7 @@ def display_themed_progress_bar(theme_data, value):
     )
 
 
-def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_text:str=None):
+def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_text: str = None):
     if not theme_data.get("SHOW", False):
         return
 
