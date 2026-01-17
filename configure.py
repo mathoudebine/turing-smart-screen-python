@@ -187,7 +187,7 @@ class TuringConfigWindow(Tk):
         super().__init__()
         self.title('Turing System Monitor configuration')
         self.geometry("820x580")
-        self.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
+        self.iconphoto(True, PhotoImage(file=f"{MAIN_DIRECTORY}/res/icons/monitor-icon-17865/64.png"))
         # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.bind("<FocusIn>", lambda *_: self.load_theme_preview())
         self.after(0, self.on_fan_speed_update)
@@ -428,22 +428,10 @@ class TuringConfigWindow(Tk):
     def save_config_values(self):
         self.config['config']['THEME'] = self.theme_cb.get()
         self.config['config']['HW_SENSORS'] = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
-        if self.eth_cb.current() == 0:
-            self.config['config']['ETH'] = ""
-        else:
-            self.config['config']['ETH'] = self.eth_cb.get()
-        if self.wl_cb.current() == 0:
-            self.config['config']['WLO'] = ""
-        else:
-            self.config['config']['WLO'] = self.wl_cb.get()
-        if self.com_cb.current() == 0:
-            self.config['config']['COM_PORT'] = "AUTO"
-        else:
-            self.config['config']['COM_PORT'] = self.com_cb.get()
-        if self.cpu_fan_cb.current() == 0:
-            self.config['config']['CPU_FAN'] = "AUTO"
-        else:
-            self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[0]
+        self.config['config']['ETH'] = self.eth_cb.get() if self.eth_cb.current() != 0 else ""
+        self.config['config']['WLO'] = self.wl_cb.get() if self.wl_cb.current() != 0 else ""
+        self.config['config']['COM_PORT'] = self.com_cb.get() if self.com_cb.current() != 0 else "AUTO"
+        self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[0] if self.cpu_fan_cb.current() != 0 else "AUTO"
         self.config['display']['REVISION'] = model_and_size_to_revision_map[(self.model_cb.get(), self.size_cb.get())]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
