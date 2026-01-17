@@ -729,14 +729,14 @@ class MoreConfigWindow(Toplevel):
             cb_entries.append(full_name)
 
         self.citysearch_cb.config(values=cb_entries)
-        if len(cb_entries) == 0:
+        if not cb_entries:
             self.citysearch_show_warning("No given city found.")
         else:
             self.citysearch_cb.current(0)
             self.citysearch_show_warning("Select your city now from list and apply \"Fill in lat/long\".")
 
     def on_filllatlong_click(self):
-        if len(self._city_entries) == 0:
+        if not self._city_entries:
             self.citysearch_show_warning("No city selected or no search results.")
             return
         city = [i for i in self._city_entries if i['full_name'] == self.citysearch_cb.get()][0]
