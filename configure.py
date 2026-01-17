@@ -431,7 +431,8 @@ class TuringConfigWindow(Tk):
         self.config['config']['ETH'] = self.eth_cb.get() if self.eth_cb.current() != 0 else ""
         self.config['config']['WLO'] = self.wl_cb.get() if self.wl_cb.current() != 0 else ""
         self.config['config']['COM_PORT'] = self.com_cb.get() if self.com_cb.current() != 0 else "AUTO"
-        self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[0] if self.cpu_fan_cb.current() != 0 else "AUTO"
+        self.config['config']['CPU_FAN'] = self.cpu_fan_cb.get().split(' ')[
+            0] if self.cpu_fan_cb.current() != 0 else "AUTO"
         self.config['display']['REVISION'] = model_and_size_to_revision_map[(self.model_cb.get(), self.size_cb.get())]
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
@@ -652,28 +653,16 @@ class MoreConfigWindow(Toplevel):
             return False
         return True
 
-    def load_config_values(self, config):
-        self.config = config
-
-        try:
-            self.ping_entry.insert(0, self.config['config']['PING'])
-        except:
-            self.ping_entry.insert(0, "8.8.8.8")
+    def load_config_values(self, config: dict):
+        self.config: dict = config
+        self.ping_entry.insert(0, self.config['config'].get('PING', '8.8.8.8'))
 
         try:
             self.api_entry.insert(0, self.config['config']['WEATHER_API_KEY'])
         except:
             pass
-
-        try:
-            self.lat_entry.insert(0, self.config['config']['WEATHER_LATITUDE'])
-        except:
-            self.lat_entry.insert(0, "45.75")
-
-        try:
-            self.long_entry.insert(0, self.config['config']['WEATHER_LONGITUDE'])
-        except:
-            self.long_entry.insert(0, "45.75")
+        self.lat_entry.insert(0, self.config['config'].get('WEATHER_LATITUDE', '45.75'))
+        self.long_entry.insert(0, self.config['config'].get('WEATHER_LONGITUDE', '45.75'))
 
         try:
             self.unit_cb.set(weather_unit_map[self.config['config']['WEATHER_UNITS']])
