@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from typing import Iterator, Literal
+from typing import Iterator, Literal, Tuple
 
 import numpy as np
 from PIL import Image
@@ -40,7 +40,7 @@ def image_to_RGB565(image: Image.Image, endianness: Literal["big", "little"]) ->
     return rgb565.astype(typ).tobytes()
 
 
-def image_to_BGR(image: Image.Image) -> (bytes, int):
+def image_to_BGR(image: Image.Image) -> Tuple[bytes, int]:
     if image.mode not in ["RGB", "RGBA"]:
         # we need the first 3 channels to be R, G and B
         image = image.convert("RGB")
@@ -50,7 +50,7 @@ def image_to_BGR(image: Image.Image) -> (bytes, int):
     return bgr.tobytes(), 3
 
 
-def image_to_BGRA(image: Image.Image) -> (bytes, int):
+def image_to_BGRA(image: Image.Image) -> Tuple[bytes, int]:
     if image.mode != "RGBA":
         image = image.convert("RGBA")
     rgba = np.asarray(image)
@@ -60,7 +60,7 @@ def image_to_BGRA(image: Image.Image) -> (bytes, int):
 
 
 # FIXME: to optimize like other functions above
-def image_to_compressed_BGRA(image: Image.Image) -> (bytes, int):
+def image_to_compressed_BGRA(image: Image.Image) -> Tuple[bytes, int]:
     compressed_bgra = bytearray()
     image_data = image.convert("RGBA").load()
     for h in range(image.height):

@@ -27,15 +27,15 @@ import os
 import yaml
 
 
-def get_themes(display_size: str):
+def get_themes(display_size: str) -> list:
     themes = []
     directory = 'res/themes/'
     for filename in os.listdir('res/themes'):
-        dir = os.path.join(directory, filename)
+        folder = os.path.join(directory, filename)
         # checking if it is a directory
-        if os.path.isdir(dir):
+        if os.path.isdir(folder):
             # Check if a theme.yaml file exists
-            theme = os.path.join(dir, 'theme.yaml')
+            theme = os.path.join(folder, 'theme.yaml')
             if os.path.isfile(theme):
                 # Get display size from theme.yaml
                 with open(theme, "rt", encoding='utf8') as stream:
@@ -45,25 +45,21 @@ def get_themes(display_size: str):
     return sorted(themes, key=str.casefold)
 
 
-def write_theme_previews_to_file(themes, file, size):
+def write_theme_previews_to_file(themes: list, file, size: str):
     file.write(f"\n## {size} themes\n")
     file.write("<table>")
     i = 0
     for theme in themes:
         file.write(
             f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
-        i = i + 1
-        if i >= 5:
+        i += 1
+        if not i % 5:
             file.write("</table><table>")
             i = 0
     file.write("</table>\n")
 
 
 if __name__ == "__main__":
-    themes21inch = get_themes('2.1"')
-    themes3inch = get_themes('3.5"')
-    themes5inch = get_themes('5"')
-    themes88inch = get_themes('8.8"')
 
     with open("res/themes/themes.md", "w", encoding='utf-8') as file:
         file.write("<!--- This file is generated automatically by GitHub Actions, do not edit it! --->\n")
@@ -75,8 +71,5 @@ if __name__ == "__main__":
         file.write("[3.5\" themes](#35-themes)\n\n")
         file.write("[5\" themes](#5-themes)\n\n")
         file.write("[8.8\" themes](#88-themes)\n")
-
-        write_theme_previews_to_file(themes21inch, file, "2.1\"")
-        write_theme_previews_to_file(themes3inch, file, "3.5\"")
-        write_theme_previews_to_file(themes5inch, file, "5\"")
-        write_theme_previews_to_file(themes88inch, file, "8.8\"")
+        for i in ["2.1\"", "3.5\"", "5\"", "8.8\""]:
+            write_theme_previews_to_file(get_themes(i), file, i)

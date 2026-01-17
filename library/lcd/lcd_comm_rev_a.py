@@ -18,9 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import time
 from enum import Enum
-from typing import Optional
 
 from serial.tools.list_ports import comports
 

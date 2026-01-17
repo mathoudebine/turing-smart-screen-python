@@ -48,7 +48,7 @@ class LcdCommWeActB(LcdComm):
         for com_port in com_ports:
             if com_port.vid == 0x1a86 and com_port.pid == 0xfe0c:
                 return com_port.device
-            if type(com_port.serial_number) == str:
+            if isinstance(com_port.serial_number, str):
                 if com_port.serial_number.startswith("AD"):
                     return com_port.device
 
