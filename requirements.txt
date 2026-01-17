@@ -23,6 +23,7 @@ numpy~=2.3.4; python_version > "3.10"   # For Python > 3.10, any numpy 2.x is fi
 
 # For Nvidia GPU on all platforms
 GPUtil~=1.4.0; python_version < "3.12"
+GPUtil~=1.4.0; python_version >= "3.13"
 # GPUtil is broken for Python 3.12+ and not maintained anymore: fetch it from a fork where it is fixed
 GPUtil @ git+https://github.com/mathoudebine/gputil.git@1.4.1-py3.13 ; python_version >= "3.12"
 
