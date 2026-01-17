@@ -44,7 +44,7 @@ try:
     from pathlib import Path
     from PIL import Image
     from serial.tools.list_ports import comports
-    from tktooltip import ToolTip
+    from TkToolTip.tooltip import ToolTip
 except Exception as e:
     print("""Import error: %s
 Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
