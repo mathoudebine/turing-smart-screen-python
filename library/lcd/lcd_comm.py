@@ -381,28 +381,55 @@ class LcdComm(ABC):
                          axis_font_size: int = 10,
                          background_color: Color = (255, 255, 255),
                          background_image: Optional[str] = None,
-                         axis_minmax_format: str = "{:0.0f}"):
+                         axis_minmax_format: str = "{:0.0f}",
+                         fill: bool = False,
+                         fill_color: Optional[Color] = None,
+                         antialias: bool = False):
         # Generate a plot graph and display it
         # Provide the background image path to display plot graph with transparent background
+        # fill: if True, fills the area under the line graph
+        # fill_color: color for the fill area (with optional alpha for transparency)
+        # antialias: if True, uses 2x supersampling for smoother lines
 
         line_color = parse_color(line_color)
         axis_color = parse_color(axis_color)
         background_color = parse_color(background_color)
+        if fill_color is not None:
+            fill_color = parse_color(fill_color, allow_alpha=True)
+        else:
+            # Default fill color: line color with 50% opacity
+            fill_color = line_color
 
         assert x <= self.get_width(), 'Progress bar X coordinate must be <= display width'
         assert y <= self.get_height(), 'Progress bar Y coordinate must be <= display height'
         assert x + width <= self.get_width(), 'Progress bar width exceeds display width'
         assert y + height <= self.get_height(), 'Progress bar height exceeds display height'
 
+        # For antialiasing, work at 2x resolution
+        scale = 2 if antialias else 1
+        work_width = width * scale
+        work_height = height * scale
+        work_line_width = line_width * scale
+
+        original_background = None
         if background_image is None:
             # A bitmap is created with solid background
-            graph_image = Image.new('RGB', (width, height), background_color)
+            graph_image = Image.new('RGB', (work_width, work_height), background_color)
         else:
             # A bitmap is created from provided background image
             graph_image = self.open_image(background_image)
-
             # Crop bitmap to keep only the plot graph background
             graph_image = graph_image.crop(box=(x, y, x + width, y + height))
+            if antialias:
+                graph_image = graph_image.resize(
+                    (work_width, work_height), Image.Resampling.LANCZOS
+                )
+            graph_image = graph_image.convert('RGB')
+
+        # Keep a copy of the background for fill compositing
+        if fill:
+            original_background = graph_image.copy()
+            graph_image = graph_image.convert('RGBA')
 
         # if autoscale is enabled, define new min/max value to "zoom" the graph
         if autoscale:
@@ -419,16 +446,16 @@ class LcdComm(ABC):
                 min_value = max(trueMin - 5, min_value)
                 max_value = min(trueMax + 5, max_value)
 
-        step = width / len(values)
+        step = work_width / len(values)
         # pre compute yScale multiplier value
-        yScale = (height / (max_value - min_value)) if (max_value - min_value) != 0 else 0
+        yScale = ((work_height - 1) / (max_value - min_value)) if (max_value - min_value) != 0 else 1
 
         plotsX = []
         plotsY = []
         count = 0
         for value in values:
             if not math.isnan(value):
-                # Don't let the set value exceed our min or max value, this is bad :)                
+                # Don't let the set value exceed our min or max value, this is bad :)
                 if value < min_value:
                     value = min_value
                 elif max_value < value:
@@ -437,31 +464,70 @@ class LcdComm(ABC):
                 assert min_value <= value <= max_value, 'Plot point value shall be between min and max'
 
                 plotsX.append(count * step)
-                plotsY.append(height - (value - min_value) * yScale)
+                # Calculate Y position: 0 at top (max_value), work_height-1 at bottom (min_value)
+                plotsY.append((work_height - 1) - (value - min_value) * yScale)
 
                 count += 1
 
         # Draw plot graph
-        draw = ImageDraw.Draw(graph_image)
-        draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=line_width)
+        draw = ImageDraw.Draw(graph_image, 'RGBA' if fill else None)
+
+        # Fill area under the line if enabled
+        if fill and len(plotsX) > 1:
+            # Create polygon points: line points + bottom corners
+            fill_points = list(zip(plotsX, plotsY))
+            # Add bottom-right and bottom-left corners to close the polygon
+            # Use work_height (not work_height-1) to ensure fill reaches the very bottom
+            fill_points.append((plotsX[-1], work_height))
+            fill_points.append((plotsX[0], work_height))
+            # Draw filled polygon with semi-transparent color
+            if len(fill_color) == 3:
+                # Add alpha channel for transparency (default 80 opacity)
+                fill_rgba = (fill_color[0], fill_color[1], fill_color[2], 80)
+            elif len(fill_color) == 4:
+                fill_rgba = fill_color
+            else:
+                fill_rgba = (*fill_color[:3], 80)
+            draw.polygon(fill_points, fill=fill_rgba)
+
+        # Draw the line on top
+        if len(plotsX) > 1:
+            draw.line(list(zip(plotsX, plotsY)), fill=line_color, width=work_line_width)
 
         if graph_axis:
             # Draw axis
-            draw.line([0, height - 1, width - 1, height - 1], fill=axis_color)
-            draw.line([0, 0, 0, height - 1], fill=axis_color)
+            draw.line([0, work_height - 1, work_width - 1, work_height - 1], fill=axis_color)
+            draw.line([0, 0, 0, work_height - 1], fill=axis_color)
 
             # Draw Legend
-            draw.line([0, 0, 1, 0], fill=axis_color)
+            draw.line([0, 0, 1 * scale, 0], fill=axis_color)
             text = axis_minmax_format.format(max_value)
-            ttfont = self.open_font(axis_font, axis_font_size)
+            ttfont = self.open_font(axis_font, axis_font_size * scale)
             _, top, right, bottom = ttfont.getbbox(text)
-            draw.text((2, 0 - top), text,
+            draw.text((2 * scale, 0 - top), text,
                       font=ttfont, fill=axis_color)
 
             text = axis_minmax_format.format(min_value)
             _, top, right, bottom = ttfont.getbbox(text)
-            draw.text((width - 1 - right, height - 2 - bottom), text,
+            draw.text((work_width - 1 - right, work_height - 2 * scale - bottom), text,
                       font=ttfont, fill=axis_color)
+
+        # Scale down for antialiasing
+        if antialias:
+            graph_image = graph_image.resize((width, height), Image.Resampling.LANCZOS)
+            if original_background is not None:
+                original_background = original_background.resize((width, height), Image.Resampling.LANCZOS)
+
+        # Convert back to RGB if needed
+        if fill and graph_image.mode == 'RGBA':
+            # Composite with original background (not solid color)
+            if original_background is not None:
+                original_background.paste(graph_image, mask=graph_image.split()[3])
+                graph_image = original_background
+            else:
+                bg = Image.new('RGB', graph_image.size, background_color)
+                bg.paste(graph_image, mask=graph_image.split()[3])
+                graph_image = bg
 
         self.DisplayPILImage(graph_image, x, y)
 
