@@ -403,7 +403,8 @@ class LcdComm(ABC):
                          axis_font: str = "./res/fonts/roboto/Roboto-Black.ttf",
                          axis_font_size: int = 10,
                          background_color: Color = (255, 255, 255),
-                         background_image: Optional[str] = None):
+                         background_image: Optional[str] = None,
+                         axis_minmax_format: str = "{:0.0f}"):
         # Generate a plot graph and display it
         # Provide the background image path to display plot graph with transparent background
 
@@ -443,7 +444,7 @@ class LcdComm(ABC):
 
         step = width / len(values)
         # pre compute yScale multiplier value
-        yScale = height / (max_value - min_value)
+        yScale = (height / (max_value - min_value)) if (max_value - min_value) != 0 else 0
 
         plotsX = []
         plotsY = []
@@ -474,13 +475,13 @@ class LcdComm(ABC):
 
             # Draw Legend
             draw.line([0, 0, 1, 0], fill=axis_color)
-            text = f"{int(max_value)}"
+            text = axis_minmax_format.format(max_value)
             ttfont = self.open_font(axis_font, axis_font_size)
             _, top, right, bottom = ttfont.getbbox(text)
             draw.text((2, 0 - top), text,
                       font=ttfont, fill=axis_color)
 
-            text = f"{int(min_value)}"
+            text = axis_minmax_format.format(min_value)
             _, top, right, bottom = ttfont.getbbox(text)
             draw.text((width - 1 - right, height - 2 - bottom), text,
                       font=ttfont, fill=axis_color)

@@ -81,6 +81,7 @@ Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{group}\Turing System Monitor"; Filename: "{app}\configure.exe"
 
 [Code]
+(* Detect if the program is already installed or if it is the first installation *)
 function IsUpgrade: Boolean;
 var
     Value: string;
@@ -98,8 +99,105 @@ begin
   Result := (PageID = wpSelectComponents) and not IsUpgrade;
 end;
 
+(* Custom page to offer to install PawnIO driver *)
+var
+	PagePawnIO: TWizardPage;
+	InstallPawnIOCheckBox: TNewCheckBox;
+  InfoText: TNewStaticText;
+  LinkLabel: TNewStaticText;
+  
+procedure CreatePagePawnIO;
+begin
+  PagePawnIO := CreateCustomPage(
+    wpInstalling,
+    'Install PawnIO driver',
+    'Recommended for best experience'
+  );
+
+  InfoText := TNewStaticText.Create(PagePawnIO);
+  InfoText.Parent := PagePawnIO.Surface;
+  InfoText.Left := ScaleX(0);
+  InfoText.Top := ScaleY(10);
+  InfoText.Width := PagePawnIO.SurfaceWidth;
+  InfoText.Height := ScaleY(60);
+  InfoText.WordWrap := True;
+  InfoText.Caption :=
+    'PawnIO is an open-source scriptable universal kernel driver, allowing hardware access to a wide variety of programs.' + #13#10 +
+    'It is used by LibreHardwareMonitor as a replacement to the old WinRing0 driver that was vulnerable.' + #13#10 +
+    'If you do not install it, some hardware metrics such as clocks, temperatures, etc. will be limited or unavailable.' + #13#10 +
+    'More information: https://pawnio.eu/';
+
+  { Création de la case à cocher }
+  InstallPawnIOCheckBox := TNewCheckBox.Create(PagePawnIO);
+  InstallPawnIOCheckBox.Parent := PagePawnIO.Surface;
+  InstallPawnIOCheckBox.Caption := 'Install / update PawnIO driver (admin. rights needed)';
+  InstallPawnIOCheckBox.Left := ScaleX(0);
+  InstallPawnIOCheckBox.Top := InfoText.Top + InfoText.Height + ScaleY(20);
+  InstallPawnIOCheckBox.Width := PagePawnIO.SurfaceWidth;
+  InstallPawnIOCheckBox.Font.Style := [fsBold];
+  InstallPawnIOCheckBox.Checked := True;
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+var
+  ResultCode: Integer;
+begin
+  (* Do not remove !*)
+  Result := True;
+    
+  if CurPageID = PagePawnIO.ID then
+  begin
+    if InstallPawnIOCheckBox.Checked then
+    begin
+      if not FileExists(ExpandConstant('{app}\external\PawnIO\PawnIO_setup.exe')) then
+      begin
+        MsgBox(ExpandConstant('{app}\external\PawnIO\PawnIO_setup.exe not found'), mbError, MB_OK);
+      end
+      else
+      begin
+        if not ShellExec(
+          '',
+          ExpandConstant('{app}\external\PawnIO\PawnIO_setup.exe'),
+          '-uninstall -silent',
+          ExpandConstant('{app}'),
+          SW_SHOWNORMAL,
+          ewWaitUntilTerminated,
+          ResultCode
+        ) then
+        begin
+          MsgBox(
+            'Failed to run PawnIO_setup.exe.'#13#10 +
+            'Error code :' + IntToStr(ResultCode),
+            mbError,
+            MB_OK
+          );
+        end;
+        
+        if not ShellExec(
+          '',
+          ExpandConstant('{app}\external\PawnIO\PawnIO_setup.exe'),
+          '-install -silent',
+          ExpandConstant('{app}'),
+          SW_SHOWNORMAL,
+          ewWaitUntilTerminated,
+          ResultCode
+        ) then
+        begin
+          MsgBox(
+            'Failed to run PawnIO_setup.exe.'#13#10 +
+            'Error code :' + IntToStr(ResultCode),
+            mbError,
+            MB_OK
+          );
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure InitializeWizard;
 begin
+  (* If update do not install themes and config by default to avoid overwriting user changes *)
   if IsUpgrade then begin
     Log('Upgrade detected');
     WizardSelectComponents('program !themes, !config');
@@ -108,4 +206,6 @@ begin
     Log('First installation');
     WizardSelectComponents('program themes config');
   end;
+  
+  CreatePagePawnIO();
 end;
