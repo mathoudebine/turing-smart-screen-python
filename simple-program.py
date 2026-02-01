@@ -35,6 +35,7 @@ from library.lcd.lcd_comm_rev_a import LcdCommRevA, Orientation
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
 from library.lcd.lcd_comm_rev_c import LcdCommRevC
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
+from library.lcd.lcd_comm_turing_usb import LcdCommTuringUSB
 from library.lcd.lcd_comm_weact_a import LcdCommWeActA
 from library.lcd.lcd_comm_weact_b import LcdCommWeActB
 from library.lcd.lcd_simulated import LcdSimulated
@@ -52,7 +53,7 @@ COM_PORT = "AUTO"
 # - D      for Kipye Qiye Smart Display 3.5"
 # - SIMU   for simulated display (image written in screencap.png)
 # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-REVISION = "A"
+REVISION = "USB_C"
 
 # Display width & height in pixels for portrait orientation
 # /!\ Do not switch width/height here for landscape, use lcd_comm.SetOrientation below
@@ -60,7 +61,7 @@ REVISION = "A"
 # 480x480 for 2.1" models
 # 480x800 for 5" models
 # 480x1920 for 8.8" models
-WIDTH, HEIGHT = 320, 480
+WIDTH, HEIGHT = 480, 1920
 
 assert WIDTH <= HEIGHT, "Indicate display width/height for PORTRAIT orientation: width <= height"
 
@@ -101,6 +102,9 @@ if __name__ == "__main__":
     elif REVISION == "WEACT_B":
         logger.info("Selected Hardware WeAct Studio Display FS V1 0.96\"")
         lcd_comm = LcdCommWeActB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION == "USB_C":
+        logger.info("Selected Hardware Revision USB C (Turing Smart Screen 8.8\" or 9.2\")")
+        lcd_comm = LcdCommTuringUSB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "SIMU":
         logger.info("Selected Simulated LCD")
         lcd_comm = LcdSimulated(display_width=WIDTH, display_height=HEIGHT)

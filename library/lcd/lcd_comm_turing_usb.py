@@ -37,7 +37,7 @@ from library.log import logger
 from library.lcd.lcd_comm import Orientation, LcdComm
 
 VENDOR_ID = 0x1cbe
-PRODUCT_ID = 0x0088
+PRODUCT_ID = [0x0088, 0x0092]   # 8.8", 9.2"
 
 
 MAX_CHUNK_BYTES = 1024*1024  # Data sent to screen cannot exceed 1024MB or there will be a timeout
@@ -71,9 +71,11 @@ def encrypt_command_packet(data: bytearray) -> bytearray:
 
 
 def find_usb_device():
-    dev = usb.core.find(idVendor=VENDOR_ID, idProduct=PRODUCT_ID)
+    for pid in PRODUCT_ID:
+        dev = usb.core.find(idVendor=VENDOR_ID, idProduct=pid)
     if dev is None:
-        raise ValueError('USB device not found')
+        raise ValueError(f'USB device not found')
+    
 
     try:
         dev.set_configuration()
