@@ -68,7 +68,7 @@ except:
     # If pystray cannot be loaded do not stop the program, just ignore it. The tray icon will not be displayed.
     pass
 
-MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
+MAIN_DIRECTORY = Path(__file__).resolve().parent
 
 if __name__ == "__main__":
 
@@ -110,17 +110,20 @@ if __name__ == "__main__":
         except:
             os._exit(0)
 
-
     def on_signal_caught(signum, frame=None):
         logger.info("Caught signal %d, exiting" % signum)
         clean_stop()
 
-
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
-        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("configure.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
-        clean_stop(tray_icon)
 
+        configure_file = next(MAIN_DIRECTORY.glob("configure.*"))
+
+        if platform.system() == "Windows":
+            subprocess.Popen([str(configure_file)], shell=True)
+        else:
+            subprocess.Popen([str(configure_file)])
+        clean_stop(tray_icon)
 
     def on_exit_tray(tray_icon, item):
         logger.info("Exit from tray icon")
@@ -165,7 +168,7 @@ if __name__ == "__main__":
         tray_icon = pystray.Icon(
             name='Turing System Monitor',
             title='Turing System Monitor',
-            icon=Image.open(MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"),
+            icon=Image.open(MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png"),
             menu=pystray.Menu(
                 pystray.MenuItem(
                     text='Configure',

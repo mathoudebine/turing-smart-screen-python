@@ -66,7 +66,7 @@ SIMULATED_MODEL = "Simulated screen"
 SIZE_3_5_INCH = "3.5\""
 SIZE_5_INCH = "5\""
 SIZE_8_8_INCH = "8.8\""
-SIZE_8_8_INCH_USB = "8.8\" (V1.1)"
+SIZE_8_8_INCH_USB = "8.8\" (V1.1) or 9.2\""
 SIZE_2_1_INCH = "2.1\""  # Only for retro compatibility
 SIZE_2_x_INCH = "2.1\" / 2.8\""
 SIZE_0_96_INCH = "0.96\""
@@ -124,20 +124,20 @@ weather_lang_map = {"sq": "Albanian", "af": "Afrikaans", "ar": "Arabic", "az": "
                     "sk": "Slovak", "sl": "Slovenian", "sp": "Spanish", "sv": "Swedish", "th": "Thai", "tr": "Turkish",
                     "ua": "Ukrainian", "vi": "Vietnamese", "zu": "Zulu"}
 
-MAIN_DIRECTORY = str(Path(__file__).parent.resolve()) + "/"
-THEMES_DIR = MAIN_DIRECTORY + 'res/themes'
+MAIN_DIRECTORY = Path(__file__).resolve().parent
+THEMES_DIR = MAIN_DIRECTORY / "res/themes"
 
-circular_mask = Image.open(MAIN_DIRECTORY + "res/backgrounds/circular-mask.png")
+
+circular_mask = Image.open(MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
 
 def get_theme_data(name: str):
-    dir = os.path.join(THEMES_DIR, name)
+    dir = THEMES_DIR / name
+
     # checking if it is a directory
-    if os.path.isdir(dir):
-        # Check if a theme.yaml file exists
-        theme = os.path.join(dir, 'theme.yaml')
-        if os.path.isfile(theme):
-            # Get display size from theme.yaml
-            with open(theme, "rt", encoding='utf8') as stream:
+    if dir.is_dir():
+        theme = dir / "theme.yaml"
+        if theme.is_file():
+            with open(theme, "rt", encoding="utf8") as stream:
                 theme_data, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
                 return theme_data
     return None
@@ -189,8 +189,7 @@ class TuringConfigWindow:
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
         self.window.geometry("820x580")
-        self.window.iconphoto(True, PhotoImage(file=MAIN_DIRECTORY + "res/icons/monitor-icon-17865/64.png"))
-        # When window gets focus again, reload theme preview in case it has been updated by theme editor
+        self.window.iconphoto(True,PhotoImage(file=str(MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png")))       # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
         self.window.after(0, self.on_fan_speed_update)
 
@@ -313,14 +312,17 @@ class TuringConfigWindow:
     def load_theme_preview(self):
         theme_data = get_theme_data(self.theme_cb.get())
 
+        if theme_data and theme_data['display'].get("DISPLAY_SIZE", '3.5"') == SIZE_2_1_INCH:
+            theme_preview.paste(circular_mask, mask=circular_mask)
+
         try:
-            theme_preview = Image.open(MAIN_DIRECTORY + "res/themes/" + self.theme_cb.get() + "/preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY / "res" / "themes" / self.theme_cb.get() / "preview.png")
 
             if theme_data['display'].get("DISPLAY_SIZE", '3.5"') == SIZE_2_1_INCH:
                 # This is a circular screen: apply a circle mask over the preview
                 theme_preview.paste(circular_mask, mask=circular_mask)
         except:
-            theme_preview = Image.open(MAIN_DIRECTORY + "res/docs/no-preview.png")
+            theme_preview = Image.open(MAIN_DIRECTORY / "res/docs/no-preview.png")
         finally:
             theme_preview.thumbnail((320, 480), Image.Resampling.LANCZOS)
             self.theme_preview_img = ImageTk.PhotoImage(theme_preview)
@@ -338,7 +340,7 @@ class TuringConfigWindow:
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
-        with open(MAIN_DIRECTORY + "config.yaml", "rt", encoding='utf8') as stream:
+        with open(MAIN_DIRECTORY / "config.yaml", "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
         # Check if theme is valid
@@ -450,7 +452,7 @@ class TuringConfigWindow:
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
-        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
+        with open(MAIN_DIRECTORY / "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def save_additional_config(self, ping: str, api_key: str, lat: str, long: str, unit: str, lang: str):
@@ -461,7 +463,7 @@ class TuringConfigWindow:
         self.config['config']['WEATHER_UNITS'] = unit
         self.config['config']['WEATHER_LANGUAGE'] = lang
 
-        with open(MAIN_DIRECTORY + "config.yaml", "w", encoding='utf-8') as file:
+        with open(MAIN_DIRECTORY / "config.yaml", "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):
@@ -471,25 +473,44 @@ class TuringConfigWindow:
         self.more_config_window.show()
 
     def on_open_theme_folder_click(self):
-        path = f'"{MAIN_DIRECTORY}res/themes"'
+        #path = f'"{MAIN_DIRECTORY}res/themes"'
+        #if platform.system() == "Windows":
+        #    os.startfile(path)
+        #elif platform.system() == "Darwin":
+        #    subprocess.Popen(["open", path])
+        #else:
+        #    subprocess.Popen(["xdg-open", path])
+        path = MAIN_DIRECTORY / "res/themes"
+
         if platform.system() == "Windows":
             os.startfile(path)
         elif platform.system() == "Darwin":
-            subprocess.Popen(["open", path])
+            subprocess.Popen(["open", str(path)])
         else:
-            subprocess.Popen(["xdg-open", path])
+            subprocess.Popen(["xdg-open", str(path)])
+
 
     def on_theme_editor_click(self):
-        subprocess.Popen(
-            f'"{MAIN_DIRECTORY}{glob.glob("theme-editor.*", root_dir=MAIN_DIRECTORY)[0]}" "{self.theme_cb.get()}"',
-            shell=True)
+        theme_editor = next(MAIN_DIRECTORY.glob("theme-editor.*"))
+
+        if platform.system() == "Windows":
+            subprocess.Popen([str(theme_editor), self.theme_cb.get()], shell=True)
+        else:
+            subprocess.Popen([str(theme_editor), self.theme_cb.get()])
+
 
     def on_save_click(self):
         self.save_config_values()
 
     def on_saverun_click(self):
         self.save_config_values()
-        subprocess.Popen(f'"{MAIN_DIRECTORY}{glob.glob("main.*", root_dir=MAIN_DIRECTORY)[0]}"', shell=True)
+        main_file = next(MAIN_DIRECTORY.glob("main.*"))
+
+        if platform.system() == "Windows":
+            subprocess.Popen([str(main_file)], shell=True)
+        else:
+            subprocess.Popen([str(main_file)])
+        
         self.window.destroy()
 
     def on_brightness_change(self, e=None):
