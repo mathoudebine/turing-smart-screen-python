@@ -220,8 +220,10 @@ if __name__ == "__main__":
     scheduler.CPULoad(); time.sleep(0.25)
     scheduler.CPUTemperature(); time.sleep(0.25)
     scheduler.CPUFanSpeed(); time.sleep(0.25)
+    scheduler.CPUFanPercent(); time.sleep(0.25)
     if stats.Gpu.is_available():
         scheduler.GpuStats(); time.sleep(0.25)
+    scheduler.SystemStats(); time.sleep(0.25)
     scheduler.MemoryStats(); time.sleep(0.25)
     scheduler.DiskStats(); time.sleep(0.25)
     scheduler.NetStats(); time.sleep(0.25)

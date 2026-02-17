@@ -66,6 +66,7 @@ if ctypes.windll.shell32.IsUserAnAdmin() == 0:
 handle = Hardware.Computer()
 handle.IsCpuEnabled = True
 handle.IsGpuEnabled = True
+handle.IsSystemEnabled = True
 handle.IsMemoryEnabled = True
 handle.IsMotherboardEnabled = True  # For CPU Fan Speed
 handle.IsControllerEnabled = True  # For CPU Fan Speed
@@ -241,6 +242,22 @@ class Cpu(sensors.Cpu):
         return math.nan
 
     @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
+        try:
+            for sh in mb.SubHardware:
+                sh.Update()
+                for sensor in sh.Sensors:
+                    if sensor.SensorType == Hardware.SensorType.Control and "#2" in str(
+                            sensor.Name) and sensor.Value is not None:  # Is Motherboard #2 Fan always the CPU Fan ?
+                        return float(sensor.Value)
+        except:
+            pass
+
+        # No Fan Speed sensor for this CPU model
+        return math.nan
+
+    @staticmethod
     def fan_percent(fan_name: str = None) -> float:
         mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
         try:
@@ -377,6 +394,38 @@ class Gpu(sensors.Gpu):
         cls.gpu_name = get_gpu_name()
         return bool(cls.gpu_name)
 
+class System(sensors.System):
+    @staticmethod
+    def fan_percent(fan_name: str = None) -> float:
+        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
+        try:
+            for sh in mb.SubHardware:
+                sh.Update()
+                for sensor in sh.Sensors:
+                    if sensor.SensorType == Hardware.SensorType.Control and "#1" in str(
+                            sensor.Name) and sensor.Value is not None:  # Is Motherboard #1 Fan always the System Fan ?
+                        return float(sensor.Value)
+        except:
+            pass
+
+        # No Fan Speed sensor for this CPU model
+        return math.nan
+
+    @staticmethod
+    def fan_speed(fan_name: str = None) -> float:
+        mb = get_hw_and_update(Hardware.HardwareType.Motherboard)
+        try:
+            for sh in mb.SubHardware:
+                sh.Update()
+                for sensor in sh.Sensors:
+                    if sensor.SensorType == Hardware.SensorType.Control and "#1" in str(
+                            sensor.Name) and sensor.Value is not None:  # Is Motherboard #1 Fan always the System Fan ?
+                        return float(sensor.Value)
+        except:
+            pass
+
+        # No Fan Speed sensor for this CPU model
+        return math.nan
 
 class Memory(sensors.Memory):
     @staticmethod
