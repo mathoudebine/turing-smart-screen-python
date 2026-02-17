@@ -22,6 +22,7 @@
 # This file is a simple Python test program using the library code to display custom content on screen (see README)
 
 from library.pythoncheck import check_python_version
+
 check_python_version()
 
 import os
@@ -64,24 +65,19 @@ WIDTH, HEIGHT = 320, 480
 
 assert WIDTH <= HEIGHT, "Indicate display width/height for PORTRAIT orientation: width <= height"
 
-stop = False
 
-if __name__ == "__main__":
-
-    def sighandler(signum, frame):
-        global stop
-        stop = True
-
-
+def main():
+    stop = False
     # Set the signal handlers, to send a complete frame to the LCD before exit
+    def sighandler(signum, frame):
+        nonlocal stop
+        stop = True
     signal.signal(signal.SIGINT, sighandler)
     signal.signal(signal.SIGTERM, sighandler)
-    is_posix = os.name == 'posix'
-    if is_posix:
+    if os.name == 'posix':
         signal.signal(signal.SIGQUIT, sighandler)
 
     # Build your LcdComm object based on the HW revision
-    lcd_comm = None
     if REVISION == "A":
         logger.info("Selected Hardware Revision A (Turing Smart Screen 3.5\" & UsbPCMonitor 3.5\"/5\")")
         # NOTE: If you have UsbPCMonitor 5" you need to change the width/height to 480x800 below
@@ -207,3 +203,6 @@ if __name__ == "__main__":
 
     # Close serial connection at exit
     lcd_comm.closeSerial()
+
+if __name__ == "__main__":
+    main()

@@ -24,7 +24,7 @@ import sys
 
 # Oldest / newest version supported
 MIN_PYTHON = (3, 9)
-MAX_PYTHON = (3, 13)
+MAX_PYTHON = (3, 14)
 
 
 def check_python_version():

@@ -12,6 +12,7 @@ RECORD_GOLDEN = bool(os.getenv("RECORD_GOLDEN"))
 # mostly representative of the serialization time.
 BENCHMARK = bool(os.getenv("BENCHMARK"))
 
+
 class MockSerial(Mock):
     def expect_golden(self, tc: unittest.TestCase, fn: str):
         golden_dir = os.path.join(os.path.dirname(__file__), "golden")
@@ -27,11 +28,9 @@ class MockSerial(Mock):
                         assert len(args) == 1
                         f.write(f"read {args[0]}\n")
                     # don't record the other methods
-
         else:
             with open(full_path, "r", encoding="ascii") as f:
                 expected = list(filter(lambda l: l.strip() != "", f.readlines()))
-
                 mock_calls = []
                 for method, args, _ in self.mock_calls:
                     if method not in ["write", "read"]:
@@ -47,6 +46,7 @@ class MockSerial(Mock):
                         tc.assertEqual(call_args, (bytes.fromhex(exp_arg),))
                     elif call_name == "read":
                         tc.assertEqual(call_args, (int(exp_arg),))
+
 
 class NoopSerial:
     def write(self, data):
@@ -66,7 +66,4 @@ class NoopSerial:
 
 
 def new_testing_serial():
-    if BENCHMARK:
-        return NoopSerial()
-    else:
-        return MockSerial()
+    return NoopSerial() if BENCHMARK else MockSerial()

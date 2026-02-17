@@ -6,7 +6,8 @@ import ctypes
 import os
 import sys
 from pathlib import Path
-
+if os.name != 'nt':
+    raise Exception("This script is only for Windows")
 import clr  # Clr is from pythonnet package. Do not install clr package
 from win32api import *
 

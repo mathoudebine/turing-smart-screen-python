@@ -79,7 +79,7 @@ class LcdCommRevB(LcdComm):
 
         return None
 
-    def SendCommand(self, cmd: Command, payload=None, bypass_queue: bool = False):
+    def SendCommand(self, cmd: Command, payload: list = None, bypass_queue: bool = False):
         # New protocol (10 byte packets, framed with the command, 8 data bytes inside)
         if payload is None:
             payload = [0] * 8

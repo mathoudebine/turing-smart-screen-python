@@ -6,6 +6,7 @@
 # Copyright (C) 2021 Matthieu Houdebine (mathoudebine)
 # Copyright (C) 2022 Rollbacke
 # Copyright (C) 2022 Ebag333
+# Copyright (C) 2025 ColdWindScholar
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,67 +22,63 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import os
-import queue
+from queue import Queue
 import sys
 from pathlib import Path
-import yaml
-
+from yaml import safe_load
 from library.log import logger
 
 
-def load_yaml(configfile):
-    with open(configfile, "rt", encoding='utf8') as stream:
-        yamlconfig = yaml.safe_load(stream)
-        return yamlconfig
+class Config:
+    def __init__(self):
+        self.MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
+        self.FONTS_DIR = str(self.MAIN_DIRECTORY / "res" / "fonts") + "/"
+        self.CONFIG_DATA = self.load_yaml(self.MAIN_DIRECTORY / "config.yaml")
+        self.THEME_DEFAULT = self.load_yaml(self.MAIN_DIRECTORY / "res/themes/default.yaml")
+        self.THEME_DATA: dict = {}
+        # Load theme on import
+        self.load_theme()
+        # Queue containing the serial requests to send to the screen
+        self.update_queue = Queue()
 
+    @staticmethod
+    def load_yaml(configfile: str | Path):
+        with open(configfile, "rt", encoding='utf8') as stream:
+            return safe_load(stream)
 
-PATH = sys.path[0]
-MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
-FONTS_DIR = str(MAIN_DIRECTORY / "res" / "fonts") + "/"
-CONFIG_DATA = load_yaml(MAIN_DIRECTORY / "config.yaml")
-THEME_DEFAULT = load_yaml(MAIN_DIRECTORY / "res/themes/default.yaml")
-THEME_DATA = None
+    def copy_default(self, default: dict, theme: dict):
+        """recursively supply default values into a dict of dicts of dicts ...."""
+        for k, v in default.items():
+            if k not in theme:
+                theme[k] = v
+            if isinstance(v, dict):
+                self.copy_default(default[k], theme[k])
 
-
-def copy_default(default, theme):
-    """recursively supply default values into a dict of dicts of dicts ...."""
-    for k, v in default.items():
-        if k not in theme:
-            theme[k] = v
-        if type(v) == type({}):
-            copy_default(default[k], theme[k])
-
-
-def load_theme():
-    global THEME_DATA
-    try:
-        theme_path = Path("res/themes/" + CONFIG_DATA['config']['THEME'])
-        logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path / "theme.yaml"))
-        THEME_DATA = load_yaml(MAIN_DIRECTORY / theme_path / "theme.yaml")
-        THEME_DATA['PATH'] = str(MAIN_DIRECTORY / theme_path) + "/"
-    except:
-        logger.error("Theme not found or contains errors!")
+    def load_theme(self):
         try:
-            sys.exit(0)
+            theme_path = Path(f"res/themes/{self.CONFIG_DATA['config']['THEME']}")
+            logger.info(f"Loading theme {self.CONFIG_DATA['config']['THEME']} from {theme_path / 'theme.yaml'}")
+            self.THEME_DATA = self.load_yaml(self.MAIN_DIRECTORY / theme_path / "theme.yaml")
+            self.THEME_DATA['PATH'] = str(self.MAIN_DIRECTORY / theme_path) + "/"
         except:
-            os._exit(0)
+            logger.error("Theme not found or contains errors!")
+            logger.exception('load_theme')
+            try:
+                sys.exit(0)
+            except:
+                os._exit(0)
 
-    copy_default(THEME_DEFAULT, THEME_DATA)
+        self.copy_default(self.THEME_DEFAULT, self.THEME_DATA)
+
+    def check_theme_compatible(self, display_size: str):
+        # Check if theme is compatible with hardware revision
+        if display_size != self.THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
+            logger.error(
+                f"The selected theme {self.CONFIG_DATA['config']['THEME']} is not compatible with your display revision {self.CONFIG_DATA["display"]["REVISION"]}")
+            try:
+                sys.exit(0)
+            except:
+                os._exit(0)
 
 
-def check_theme_compatible(display_size: str):
-    # Check if theme is compatible with hardware revision
-    if display_size != THEME_DATA['display'].get("DISPLAY_SIZE", '3.5"'):
-        logger.error("The selected theme " + CONFIG_DATA['config'][
-            'THEME'] + " is not compatible with your display revision " + CONFIG_DATA["display"]["REVISION"])
-        try:
-            sys.exit(0)
-        except:
-            os._exit(0)
-
-
-# Load theme on import
-load_theme()
-
-# Queue containing the serial requests to send to the screen
-update_queue = queue.Queue()
+config = Config()

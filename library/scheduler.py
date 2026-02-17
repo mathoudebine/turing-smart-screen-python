@@ -26,7 +26,7 @@ import time
 from datetime import timedelta
 from functools import wraps
 
-import library.config as config
+from library.config import config
 import library.stats as stats
 
 STOPPING = False
@@ -199,7 +199,3 @@ def QueueHandler():
         f, args = config.update_queue.get()
         if f:
             f(*args)
-
-
-def is_queue_empty() -> bool:
-    return config.update_queue.empty()

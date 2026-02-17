@@ -51,7 +51,7 @@ class LcdCommWeActA(LcdComm):
         for com_port in com_ports:
             if com_port.vid == 0x1a86 and com_port.pid == 0xfe0c:
                 return com_port.device
-            if type(com_port.serial_number) == str:
+            if isinstance(com_port.serial_number, str):
                 if com_port.serial_number.startswith("AB"):
                     return com_port.device
 
@@ -178,7 +178,7 @@ class LcdCommWeActA(LcdComm):
         byteBuffer[2] = Command.CMD_END
         self.SendCommand(byteBuffer)
 
-    def SetSensorReportTime(self, time_ms: int):
+    def SetSensorReportTime(self, time_ms: int) -> bool:
         if time_ms > 0xFFFF or (time_ms < 500 and time_ms != 0):
             return False
         byteBuffer = bytearray(4)
@@ -187,6 +187,7 @@ class LcdCommWeActA(LcdComm):
         byteBuffer[2] = time_ms >> 8 & 0xFF
         byteBuffer[3] = Command.CMD_END
         self.SendCommand(byteBuffer)
+        return True
 
     def Free(self):
         byteBuffer = bytearray(2)
@@ -198,11 +199,11 @@ class LcdCommWeActA(LcdComm):
         if self.lcd_serial.in_waiting > 0:
             cmd = self.ReadData(1)
             if (
-                cmd != None
-                and cmd[0] == Command.CMD_ENABLE_HUMITURE_REPORT | Command.CMD_READ
+                cmd is not None
+                    and cmd[0] == Command.CMD_ENABLE_HUMITURE_REPORT | Command.CMD_READ
             ):
                 data = self.ReadData(5)
-                if data != None and len(data) == 5 and data[4] == Command.CMD_END:
+                if data is not None and len(data) == 5 and data[4] == Command.CMD_END:
                     unpack = struct.unpack("<Hh", data[0:4])
                     self.temperature = float(unpack[0]) / 100
                     self.humidness = float(unpack[1]) / 100

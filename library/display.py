@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-from library import config
+from library.config import config
 from library.lcd.lcd_comm import Orientation
 from library.lcd.lcd_comm_rev_a import LcdCommRevA
 from library.lcd.lcd_comm_rev_b import LcdCommRevB
@@ -33,8 +33,7 @@ from library.log import logger
 def _get_full_path(path, name):
     if name:
         return path + name
-    else:
-        return None
+    return None
 
 
 def _get_theme_orientation() -> Orientation:
@@ -55,20 +54,17 @@ def _get_theme_orientation() -> Orientation:
 
 
 def _get_theme_size() -> tuple[int, int]:
-    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '0.96"':
-        return 80, 160
-    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '2.1"':
-        return 480, 480
-    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '3.5"':
-        return 320, 480
-    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '5"':
-        return 480, 800
-    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '8.8"':
-        return 480, 1920
-    else:
+    sizes = {
+        '0.96"': (80, 160),
+        '2.1"': (480, 480),
+        '3.5"': (320, 480),
+        '5"': (480, 800),
+        '8.8"': (480, 1920),
+    }
+    if config.THEME_DATA["display"].get("DISPLAY_SIZE", '') not in sizes.keys():
         logger.warning(
             f'Cannot find valid DISPLAY_SIZE property in selected theme {config.CONFIG_DATA["config"]["THEME"]}, defaulting to 3.5"')
-        return 320, 480
+    return sizes.get(config.THEME_DATA["display"].get("DISPLAY_SIZE", ''), (320, 480))
 
 
 class Display:
@@ -90,10 +86,10 @@ class Display:
                                    update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "WEACT_A":
             self.lcd = LcdCommWeActA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   update_queue=config.update_queue)
+                                     update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "WEACT_B":
             self.lcd = LcdCommWeActB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   update_queue=config.update_queue)
+                                     update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             # Simulated display: always set width/height from theme
             self.lcd = LcdSimulated(display_width=width, display_height=height)

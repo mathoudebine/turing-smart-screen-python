@@ -17,12 +17,13 @@ RGBColor = Tuple[int, int, int]
 # - "hsl(0, 100%, 50%)"
 Color = Union[str, RGBColor]
 
+
 def parse_color(color: Color) -> RGBColor:
     # even if undocumented, let's be nice and accept a list in lieu of a tuple
     if isinstance(color, tuple) or isinstance(color, list):
         if len(color) != 3:
             raise ValueError("RGB color must have 3 values")
-        return (int(color[0]), int(color[1]), int(color[2]))
+        return int(color[0]), int(color[1]), int(color[2])
 
     if not isinstance(color, str):
         raise ValueError("Color must be either an RGB tuple or a string")
@@ -42,7 +43,7 @@ def parse_color(color: Color) -> RGBColor:
 
     # fallback as a PIL color
     rgbcolor = ImageColor.getrgb(color)
-    if len(rgbcolor) == 4:
-        return (rgbcolor[0], rgbcolor[1], rgbcolor[2])
-    return rgbcolor
-
+    if len(rgbcolor) >= 4:
+        return rgbcolor[0], rgbcolor[1], rgbcolor[2]
+    else:
+        return rgbcolor
