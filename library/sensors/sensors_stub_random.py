@@ -93,15 +93,15 @@ class Memory(sensors.Memory):
 
 class Disk(sensors.Disk):
     @staticmethod
-    def disk_usage_percent() -> float:
+    def disk_usage_percent(path) -> float:
         return random.uniform(0, 100)
 
     @staticmethod
-    def disk_used() -> int:  # In bytes
+    def disk_used(path) -> int:  # In bytes
         return random.randint(1000000000, 2000000000000)
 
     @staticmethod
-    def disk_free() -> int:  # In bytes
+    def disk_free(path) -> int:  # In bytes
         return random.randint(1000000000, 2000000000000)
 
 
