@@ -1,0 +1,263 @@
+---
+author: "@tamingchaos"
+
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 71, 127, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 480
+
+STATS:
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 92
+        WIDTH: 245
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 203, 118, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 50, 40, 60
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 180, 100
+        BACKGROUND_IMAGE: background.png
+    MEMORY_USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 200
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 200, 200
+        BACKGROUND_IMAGE: background.png
+    MEMORY_TOTAL:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 255
+        BACKGROUND_IMAGE: background.png
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 152
+        WIDTH: 245
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 249, 200, 100
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 50, 40, 60
+    TEMPERATURE:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 100
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 180, 100
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 130
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 255
+        BACKGROUND_IMAGE: background.png
+    FAN_SPEED:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 580
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 150, 200, 255
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 332
+        WIDTH: 245
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 150, 200, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 50, 40, 60
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 212
+        WIDTH: 245
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 211, 173
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 50, 40, 60
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 580
+        Y: 200
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 211, 173
+        BACKGROUND_IMAGE: background.png
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 580
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 200, 200
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 30
+        Y: 272
+        WIDTH: 245
+        HEIGHT: 6
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 218, 115
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 50, 40, 60
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 580
+        Y: 100
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 218, 115
+        BACKGROUND_IMAGE: background.png
+    FREE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 580
+        Y: 130
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 255, 200
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    WLO:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 340
+          Y: 320
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 100, 200, 255
+          BACKGROUND_IMAGE: background.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 340
+          Y: 350
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 100, 255, 200
+          BACKGROUND_IMAGE: background.png
+    ETH:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 580
+          Y: 320
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 100, 200, 255
+          BACKGROUND_IMAGE: background.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 580
+          Y: 350
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 20
+          FONT_COLOR: 100, 255, 200
+          BACKGROUND_IMAGE: background.png
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        FORMAT: long
+        SHOW: True
+        X: 30
+        Y: 452
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 200, 180, 230
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 300
+        ANCHOR: lt
+    HOUR:
+      TEXT:
+        FORMAT: medium
+        SHOW: True
+        X: 580
+        Y: 452
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 200, 180, 230
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 200
+        ANCHOR: lt
+  UPTIME:
+    INTERVAL: 60
+    FORMATTED:
+      TEXT:
+        SHOW: True
+        X: 380
+        Y: 452
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 16
+        FONT_COLOR: 180, 160, 210
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 180
+        ANCHOR: lt

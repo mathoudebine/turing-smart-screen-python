@@ -68,9 +68,20 @@ elif HW_SENSORS == "STUB":
 elif HW_SENSORS == "STATIC":
     logger.warning("Stub sensors, not real HW sensors")
     import library.sensors.sensors_stub_static as sensors
+elif HW_SENSORS == "APPLE_SILICON":
+    if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        import library.sensors.sensors_apple_silicon as sensors
+    else:
+        logger.error("Apple Silicon sensor support is only available on Apple Silicon Macs")
+        try:
+            sys.exit(0)
+        except:
+            os._exit(0)
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
         import library.sensors.sensors_librehardwaremonitor as sensors
+    elif platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        import library.sensors.sensors_apple_silicon as sensors
     else:
         import library.sensors.sensors_python as sensors
 else:
