@@ -779,7 +779,7 @@ class Date:
         time_format = hour_theme_data.get("FORMAT", 'medium')
         display_themed_value(
             theme_data=hour_theme_data,
-            value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}"
+            value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}".replace('\u202f', ' ')
         )
 
 
