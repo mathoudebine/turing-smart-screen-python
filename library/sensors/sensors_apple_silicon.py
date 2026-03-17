@@ -587,16 +587,22 @@ class Cpu(sensors.Cpu):
         global _last_good_cpu_temp
         smc = _get_smc()
         best = math.nan
+        raw_best = math.nan
         for key in ['Tp09', 'Tp01', 'Tp05', 'Tp0D']:
             val = smc.read_float(key)
-            if not math.isnan(val) and _MIN_CPU_TEMP < val < 150:
-                if math.isnan(best) or val > best:
-                    best = val
+            if not math.isnan(val) and 0 < val < 150:
+                if math.isnan(raw_best) or val > raw_best:
+                    raw_best = val
+                if val > _MIN_CPU_TEMP:
+                    if math.isnan(best) or val > best:
+                        best = val
         with _temp_lock:
             if not math.isnan(best):
                 _last_good_cpu_temp = best
             elif not math.isnan(_last_good_cpu_temp):
                 best = _last_good_cpu_temp
+            elif not math.isnan(raw_best):
+                best = raw_best
         return best
 
     @staticmethod
@@ -638,16 +644,22 @@ class Gpu(sensors.Gpu):
 
         global _last_good_gpu_temp
         temp = math.nan
+        raw_best = math.nan
         for key in ['Tg0f', 'Tg0j', 'Tg0D', 'Tg05', 'Tg09', 'Tg01']:
             val = smc.read_float(key)
-            if not math.isnan(val) and _MIN_GPU_TEMP < val < 150:
-                if math.isnan(temp) or val > temp:
-                    temp = val
+            if not math.isnan(val) and 0 < val < 150:
+                if math.isnan(raw_best) or val > raw_best:
+                    raw_best = val
+                if val > _MIN_GPU_TEMP:
+                    if math.isnan(temp) or val > temp:
+                        temp = val
         with _temp_lock:
             if not math.isnan(temp):
                 _last_good_gpu_temp = temp
             elif not math.isnan(_last_good_gpu_temp):
                 temp = _last_good_gpu_temp
+            elif not math.isnan(raw_best):
+                temp = raw_best
 
         return float(load), float(mem_pct), float(mem_used_mb), float(mem_total_mb), float(temp)
 
