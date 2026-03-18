@@ -74,9 +74,9 @@ elif HW_SENSORS == "APPLE_SILICON":
     else:
         logger.error("Apple Silicon sensor support is only available on Apple Silicon Macs")
         try:
-            sys.exit(0)
-        except:
-            os._exit(0)
+            sys.exit(1)
+        except Exception:
+            os._exit(1)
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
         import library.sensors.sensors_librehardwaremonitor as sensors

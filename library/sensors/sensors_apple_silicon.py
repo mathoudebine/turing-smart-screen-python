@@ -58,11 +58,15 @@ class _SMCReader:
             return
         self._initialized = True
         self._conn = None
+        self._available = False
         self._smc_lock = threading.Lock()
-        self._iokit = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/IOKit.framework/IOKit')
-        self._cf = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation')
-        self._setup_functions()
-        self._open()
+        try:
+            self._iokit = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/IOKit.framework/IOKit')
+            self._cf = ctypes.cdll.LoadLibrary('/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation')
+            self._setup_functions()
+            self._open()
+        except Exception as e:
+            logger.warning(f"SMC init failed: {e}")
 
     def _setup_functions(self):
         iokit = self._iokit
@@ -80,6 +84,8 @@ class _SMCReader:
         iokit.IOServiceOpen.restype = ctypes.c_uint32
         iokit.IOServiceClose.argtypes = [ctypes.c_uint32]
         iokit.IOServiceClose.restype = ctypes.c_uint32
+        iokit.IOObjectRelease.argtypes = [ctypes.c_uint32]
+        iokit.IOObjectRelease.restype = ctypes.c_uint32
 
         self._mach_task_self = ctypes.cdll.LoadLibrary('/usr/lib/libSystem.B.dylib').mach_task_self
         self._mach_task_self.restype = ctypes.c_uint32
@@ -102,10 +108,12 @@ class _SMCReader:
             return
         conn = ctypes.c_uint32()
         result = self._iokit.IOServiceOpen(service, self._mach_task_self(), 0, ctypes.byref(conn))
+        self._iokit.IOObjectRelease(service)
         if result != 0:
             logger.warning(f"Could not open Apple SMC connection: {result:#x}")
             return
         self._conn = conn.value
+        self._available = True
 
     def _fcc(self, s):
         return int.from_bytes(s.encode('ascii'), byteorder='big')
@@ -121,7 +129,7 @@ class _SMCReader:
         return result, out
 
     def read_key(self, key_name):
-        if not self._conn:
+        if not self._available:
             return None
         with self._smc_lock:
             try:
@@ -208,7 +216,6 @@ class _IOReportReader:
         self._sub = None
         self._channels = None
         self._last_sample = None
-        self._last_delta = None
         self._last_time = None
         self._sample_interval = 1.0
         self._data_lock = threading.Lock()
@@ -339,7 +346,7 @@ class _IOReportReader:
                     parsed = self._parse_delta(delta, dt)
                     with self._data_lock:
                         self._parsed = parsed
-                        self._last_delta = delta
+                    self._cf.CFRelease(delta)
                     self._cf.CFRelease(self._last_sample)
                 else:
                     self._cf.CFRelease(self._last_sample)
@@ -352,8 +359,6 @@ class _IOReportReader:
     def _parse_delta(self, delta, dt):
         result = {
             'energy': {},
-            'cpu_freq': math.nan,
-            'gpu_freq': math.nan,
             'cpu_power': math.nan,
             'gpu_power': math.nan,
             'dram_power': math.nan,
@@ -374,11 +379,8 @@ class _IOReportReader:
 
         count = cf.CFArrayGetCount(channels_arr)
         energy_values = {}
-        cpu_residencies = {}
-        gpu_residencies = {}
 
         SIMPLE_FORMAT = 1
-        STATE_FORMAT = 2
 
         for i in range(count):
             ch = cf.CFArrayGetValueAtIndex(channels_arr, i)
@@ -393,28 +395,6 @@ class _IOReportReader:
             if group == "Energy Model" and fmt == SIMPLE_FORMAT:
                 val = iorep.IOReportSimpleGetIntegerValue(ch, None)
                 energy_values[name] = val
-
-            elif "CPU Stats" in group and fmt == STATE_FORMAT:
-                state_count = iorep.IOReportStateGetCount(ch)
-                if state_count > 0:
-                    states = {}
-                    for si in range(state_count):
-                        residency = iorep.IOReportStateGetResidency(ch, si)
-                        sname_cf = iorep.IOReportStateGetNameForIndex(ch, si)
-                        sname = self._cfstr_to_str(sname_cf)
-                        states[sname] = residency
-                    cpu_residencies[name] = states
-
-            elif "GPU Stats" in group and fmt == STATE_FORMAT:
-                state_count = iorep.IOReportStateGetCount(ch)
-                if state_count > 0:
-                    states = {}
-                    for si in range(state_count):
-                        residency = iorep.IOReportStateGetResidency(ch, si)
-                        sname_cf = iorep.IOReportStateGetNameForIndex(ch, si)
-                        sname = self._cfstr_to_str(sname_cf)
-                        states[sname] = residency
-                    gpu_residencies[name] = states
 
         result['energy'] = energy_values
 
@@ -565,21 +545,21 @@ class Cpu(sensors.Cpu):
     def percentage(interval: float) -> float:
         try:
             return psutil.cpu_percent(interval=interval)
-        except:
+        except Exception:
             return math.nan
 
     @staticmethod
     def frequency() -> float:
         try:
             return psutil.cpu_freq().current
-        except:
+        except Exception:
             return math.nan
 
     @staticmethod
     def load() -> Tuple[float, float, float]:
         try:
             return psutil.getloadavg()
-        except:
+        except Exception:
             return math.nan, math.nan, math.nan
 
     @staticmethod
@@ -675,13 +655,19 @@ class Gpu(sensors.Gpu):
     def frequency() -> float:
         return math.nan
 
+    _gpu_detected = None
+
     @staticmethod
     def is_available() -> bool:
+        if Gpu._gpu_detected is not None:
+            return Gpu._gpu_detected
         agx = _get_agx()
         model = agx.get('model', '')
         if model:
             logger.info(f"Detected Apple GPU: {model} ({agx.get('gpu-core-count', '?')} cores)")
+            Gpu._gpu_detected = True
             return True
+        Gpu._gpu_detected = False
         return False
 
 
@@ -690,28 +676,28 @@ class Memory(sensors.Memory):
     def swap_percent() -> float:
         try:
             return psutil.swap_memory().percent
-        except:
+        except Exception:
             return math.nan
 
     @staticmethod
     def virtual_percent() -> float:
         try:
             return psutil.virtual_memory().percent
-        except:
+        except Exception:
             return math.nan
 
     @staticmethod
     def virtual_used() -> int:
         try:
             return psutil.virtual_memory().total - psutil.virtual_memory().available
-        except:
+        except Exception:
             return -1
 
     @staticmethod
     def virtual_free() -> int:
         try:
             return psutil.virtual_memory().available
-        except:
+        except Exception:
             return -1
 
 
@@ -720,21 +706,21 @@ class Disk(sensors.Disk):
     def disk_usage_percent() -> float:
         try:
             return psutil.disk_usage("/").percent
-        except:
+        except Exception:
             return math.nan
 
     @staticmethod
     def disk_used() -> int:
         try:
             return psutil.disk_usage("/").used
-        except:
+        except Exception:
             return -1
 
     @staticmethod
     def disk_free() -> int:
         try:
             return psutil.disk_usage("/").free
-        except:
+        except Exception:
             return -1
 
 
@@ -750,17 +736,15 @@ class Net(sensors.Net):
 
             if if_name != "":
                 if if_name in pnic_after:
-                    try:
+                    if if_name in PNIC_BEFORE:
                         upload_rate = (pnic_after[if_name].bytes_sent - PNIC_BEFORE[if_name].bytes_sent) / interval
                         uploaded = pnic_after[if_name].bytes_sent
                         download_rate = (pnic_after[if_name].bytes_recv - PNIC_BEFORE[if_name].bytes_recv) / interval
                         downloaded = pnic_after[if_name].bytes_recv
-                    except:
-                        pass
-                    PNIC_BEFORE.update({if_name: pnic_after[if_name]})
+                    PNIC_BEFORE[if_name] = pnic_after[if_name]
                 else:
                     logger.warning("Network interface '%s' not found. Check names in config.yaml." % if_name)
 
             return upload_rate, uploaded, download_rate, downloaded
-        except:
+        except Exception:
             return -1, -1, -1, -1
