@@ -33,30 +33,30 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 370
-        Y: 70
+        X: 405
+        Y: 78
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 180, 100
         BACKGROUND_IMAGE: background.png
     MEMORY_USED:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 375
-        Y: 200
+        X: 405
+        Y: 203
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 200, 200
         BACKGROUND_IMAGE: background.png
     MEMORY_TOTAL:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 375
-        Y: 230
+        X: 405
+        Y: 233
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 200, 200, 255
         BACKGROUND_IMAGE: background.png
   CPU:
@@ -78,10 +78,10 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 370
-        Y: 100
+        X: 405
+        Y: 108
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 180, 100
         BACKGROUND_IMAGE: background.png
     FREQUENCY:
@@ -89,10 +89,10 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 375
-        Y: 130
+        X: 405
+        Y: 138
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 200, 200, 255
         BACKGROUND_IMAGE: background.png
     FAN_SPEED:
@@ -100,10 +100,10 @@ STATS:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 605
-        Y: 70
+        X: 655
+        Y: 78
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 150, 200, 255
         BACKGROUND_IMAGE: background.png
       GRAPH:
@@ -134,19 +134,19 @@ STATS:
       PERCENT_TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 605
-        Y: 200
+        X: 655
+        Y: 203
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 211, 173
         BACKGROUND_IMAGE: background.png
       USED:
         SHOW: True
         SHOW_UNIT: True
-        X: 605
-        Y: 230
+        X: 655
+        Y: 233
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 200, 200
         BACKGROUND_IMAGE: background.png
   DISK:
@@ -166,20 +166,20 @@ STATS:
       PERCENT_TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 605
-        Y: 100
+        X: 655
+        Y: 108
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 255, 218, 115
         BACKGROUND_IMAGE: background.png
     FREE:
       TEXT:
         SHOW: True
         SHOW_UNIT: True
-        X: 605
-        Y: 130
+        X: 655
+        Y: 138
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-        FONT_SIZE: 22
+        FONT_SIZE: 20
         FONT_COLOR: 200, 255, 200
         BACKGROUND_IMAGE: background.png
   NET:
@@ -188,38 +188,38 @@ STATS:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 365
-          Y: 320
+          X: 405
+          Y: 310
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 20
+          FONT_SIZE: 18
           FONT_COLOR: 100, 200, 255
           BACKGROUND_IMAGE: background.png
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 365
-          Y: 350
+          X: 405
+          Y: 340
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 20
+          FONT_SIZE: 18
           FONT_COLOR: 100, 255, 200
           BACKGROUND_IMAGE: background.png
     ETH:
       DOWNLOAD:
         TEXT:
           SHOW: True
-          X: 605
-          Y: 320
+          X: 655
+          Y: 310
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 20
+          FONT_SIZE: 18
           FONT_COLOR: 100, 200, 255
           BACKGROUND_IMAGE: background.png
       UPLOAD:
         TEXT:
           SHOW: True
-          X: 605
-          Y: 350
+          X: 655
+          Y: 340
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
-          FONT_SIZE: 20
+          FONT_SIZE: 18
           FONT_COLOR: 100, 255, 200
           BACKGROUND_IMAGE: background.png
   DATE:
