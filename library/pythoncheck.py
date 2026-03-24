@@ -24,15 +24,19 @@ import sys
 
 # Oldest / newest version supported
 MIN_PYTHON = (3, 9)
-MAX_PYTHON = (3, 13)
+MAX_PYTHON = (3, 14)
+# For Windows: max Python 3.13 until PythonNet support for 3.14
+MAX_PYTHON_WINDOWS = (3, 13)
 
 
 def check_python_version():
     current_version = sys.version_info[:2]
+    platform = sys.platform
 
-    if current_version < MIN_PYTHON or current_version > MAX_PYTHON:
+    if current_version < MIN_PYTHON or (platform == "win32" and current_version > MAX_PYTHON_WINDOWS) or (
+            platform != "win32" and current_version > MAX_PYTHON):
         print(f"[ERROR] Python {current_version[0]}.{current_version[1]} is not supported by this program. "
-              f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}-{MAX_PYTHON[0]}.{MAX_PYTHON[1]} required.")
+              f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}-{MAX_PYTHON[0]}.{MAX_PYTHON[1]} required on platform {platform}.")
         try:
             sys.exit(0)
         except:
