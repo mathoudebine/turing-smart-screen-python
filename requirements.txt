@@ -8,7 +8,7 @@ ruamel.yaml~=0.19.1    # For configuration editor
 sv-ttk~=2.6.1          # Tk Sun Valley theme for configuration editor
 tkinter-tooltip~=3.1.2 # Tooltips for configuration editor
 uptime~=3.0.1          # For System Uptime 
-requests~=2.32.5       # HTTP library
+requests~=2.33.0       # HTTP library
 ping3~=5.1.5           # ICMP ping implementation using raw socket
 pyinstaller~=6.19.0    # bundles a Python application and all its dependencies into a single package
 
