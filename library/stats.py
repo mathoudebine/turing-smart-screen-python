@@ -75,7 +75,7 @@ elif HW_SENSORS == "APPLE_SILICON":
         logger.error("Apple Silicon sensor support is only available on Apple Silicon Macs")
         try:
             sys.exit(1)
-        except Exception:
+        except BaseException:
             os._exit(1)
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':

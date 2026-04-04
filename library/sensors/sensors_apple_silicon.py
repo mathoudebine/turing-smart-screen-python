@@ -114,6 +114,14 @@ class _SMCReader:
             return
         self._conn = conn.value
         self._available = True
+        import atexit
+        atexit.register(self.close)
+
+    def close(self):
+        if self._conn is not None and self._available:
+            self._iokit.IOServiceClose(self._conn)
+            self._conn = None
+            self._available = False
 
     def _fcc(self, s):
         return int.from_bytes(s.encode('ascii'), byteorder='big')
@@ -312,6 +320,7 @@ class _IOReportReader:
                     merged = ch
                 else:
                     self._iorep.IOReportMergeChannels(merged, ch, None)
+                    self._cf.CFRelease(ch)
 
         if not merged:
             logger.warning("IOReport: no channels found")
@@ -588,11 +597,17 @@ class Cpu(sensors.Cpu):
     @staticmethod
     def fan_percent(fan_name: str = None) -> float:
         smc = _get_smc()
-        actual = smc.read_float('F0Ac')
+        fan_idx = 0
+        if fan_name and fan_name != "AUTO":
+            try:
+                fan_idx = int(fan_name.replace('F', '').replace('Ac', ''))
+            except (ValueError, AttributeError):
+                logger.debug(f"Apple Silicon: ignoring manual CPU_FAN '{fan_name}', using fan 0")
+        actual = smc.read_float(f'F{fan_idx}Ac')
         if math.isnan(actual):
             return math.nan
-        mn = smc.read_float('F0Mn')
-        mx = smc.read_float('F0Mx')
+        mn = smc.read_float(f'F{fan_idx}Mn')
+        mx = smc.read_float(f'F{fan_idx}Mx')
         if math.isnan(mn) or math.isnan(mx) or mx <= mn:
             return math.nan
         if actual <= 0:

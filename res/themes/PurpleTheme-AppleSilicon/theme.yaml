@@ -182,6 +182,38 @@ STATS:
         FONT_SIZE: 20
         FONT_COLOR: 200, 255, 200
         BACKGROUND_IMAGE: background.png
+  CUSTOM:
+    INTERVAL: 2
+    AppleSiliconCPUPower:
+      TEXT:
+        SHOW: True
+        X: 405
+        Y: 240
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 249, 200, 100
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 80
+    AppleSiliconGPUPower:
+      TEXT:
+        SHOW: True
+        X: 535
+        Y: 240
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 203, 118, 255
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 80
+    AppleSiliconTotalPower:
+      TEXT:
+        SHOW: True
+        X: 665
+        Y: 240
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 180, 100
+        BACKGROUND_IMAGE: background.png
+        WIDTH: 80
   NET:
     INTERVAL: 1
     WLO:
