@@ -1,0 +1,266 @@
+---
+author: "A Blade Of Grass"
+
+display:
+  DISPLAY_ORIENTATION: landscape
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      RADIAL:
+        SHOW: True
+        X: 74
+        Y: 97
+        RADIUS: 54
+        WIDTH: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 120
+        ANGLE_END: 60
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR: 100, 0, 255
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      GRAPH:
+        SHOW: True
+        X: 135
+        Y: 50
+        WIDTH: 90
+        HEIGHT: 8
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 10, 10, 40
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 175
+        Y: 65
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      GRAPH:
+        SHOW: True
+        X: 135
+        Y: 92
+        WIDTH: 90
+        HEIGHT: 8
+        MIN_VALUE: 0
+        MAX_VALUE: 5.3
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 10, 10, 40
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 135
+        Y: 105
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      RADIAL:
+        SHOW: True
+        X: 312
+        Y: 97
+        RADIUS: 54
+        WIDTH: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 120
+        ANGLE_END: 60
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR: 100, 0, 255
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      GRAPH:
+        SHOW: True
+        X: 375
+        Y: 50
+        WIDTH: 90
+        HEIGHT: 8
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 10, 10, 40
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 413
+        Y: 65
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        SHOW_UNIT: True
+        X: 413
+        Y: 65
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    MEMORY:
+      GRAPH:
+        SHOW: True
+        X: 375
+        Y: 92
+        WIDTH: 90
+        HEIGHT: 8
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 10, 10, 40
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 375
+        Y: 105
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      RADIAL:
+        SHOW: True
+        X: 73
+        Y: 252
+        RADIUS: 53
+        WIDTH: 7
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 120
+        ANGLE_END: 60
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR: 100, 0, 255
+        SHOW_TEXT: True
+        SHOW_UNIT: False
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 34
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    MOUNT_POINT: /var
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 188
+        Y: 201
+        WIDTH: 120
+        HEIGHT: 10
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 10, 10, 40
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 160
+        Y: 223
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 198
+        Y: 223
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TOTAL:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 258
+        Y: 223
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    WLO:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 195
+          Y: 274
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 195
+          Y: 294
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 333
+        Y: 205
+        WIDTH: 135
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ANCHOR: mt
+        FORMAT: "MM/dd/yyyy"
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 340
+        Y: 282
+        WIDTH: 135
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ANCHOR: mt
