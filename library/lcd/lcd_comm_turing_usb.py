@@ -41,7 +41,8 @@ from library.log import logger
 VENDOR_ID = 0x1cbe
 
 # Map of display supported product IDs and their respective resolution in portrait mode
-PRODUCT_ID = {0x0046: (320, 960),  # Turing 4.6"
+PRODUCT_ID = {0x0028: (480, 480),  # Turing 2.8" round (USB)
+    0x0046: (320, 960),  # Turing 4.6"
     0x0050: (720, 1280),  # Turing 5.2"
     0x0080: (800, 1280),  # Turing 8.0"
     0x0088: (480, 1920),  # Turing 8.8"

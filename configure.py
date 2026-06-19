@@ -36,7 +36,7 @@ import babel
 try:
     import tkinter.ttk as ttk
     from tkinter import *
-    from PIL import ImageTk
+    from PIL import ImageTk, ImageFont, ImageDraw
     import psutil
     import ruamel.yaml
     import sv_ttk
@@ -44,6 +44,7 @@ try:
     from PIL import Image
     from serial.tools.list_ports import comports
     from tktooltip import ToolTip
+
 except Exception as e:
     print("""Import error: %s
 Please follow start guide to install required packages: https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-how-to-start
@@ -76,11 +77,13 @@ SIZE_8_INCH = "8\""
 SIZE_8_8_INCH = "8.8\""
 SIZE_8_8_INCH_NEWREV = "8.8\" / 9.2\" (V1.X new HW rev.)"
 SIZE_12_3_INCH = "12.3\""
+SIZE_2_8_INCH_NEWREV = "2.8\" round (V1.X new HW rev.)"
 
 # List of sizes that can be selected
 size_list = (
     SIZE_0_96_INCH,
     SIZE_2_x_INCH,
+    SIZE_2_8_ROUND_USB,
     SIZE_3_5_INCH,
     SIZE_4_6_INCH,
     SIZE_5_INCH,
@@ -107,6 +110,7 @@ revision_and_size_to_model_map = {
     ('TUR_USB', SIZE_8_8_INCH): TURING_MODEL,
     ('TUR_USB', SIZE_8_8_INCH_NEWREV): TURING_MODEL,
     ('TUR_USB', SIZE_12_3_INCH): TURING_MODEL,
+    ('TUR_USB', SIZE_2_8_ROUND_USB): TURING_MODEL,
     ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
     ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
 
@@ -131,6 +135,7 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH_NEWREV): 'TUR_USB',
     (TURING_MODEL, SIZE_12_3_INCH): 'TUR_USB',
+    (TURING_MODEL, SIZE_2_8_ROUND_USB): 'TUR_USB',
     (USBPCMONITOR_MODEL, SIZE_3_5_INCH): 'A',
     (USBPCMONITOR_MODEL, SIZE_5_INCH): 'A',
     (WEACT_MODEL, SIZE_0_96_INCH): 'WEACT_B',
@@ -167,6 +172,26 @@ VERSION_FILE = MAIN_DIRECTORY / "version.txt"
 
 circular_mask = Image.open(MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
 DISABLED_COLOR = "#C0C0C0"
+
+
+def emoji_to_img(size, text):
+    # Use platform-specific emoji font
+    if sys.platform == "win32":
+        font = ImageFont.truetype("seguiemj.ttf", size=int(round(size * 72 / 96, 0)))
+        # pixels = points * 96 / 72 : 96 is windowsDPI
+        im = Image.new("RGBA", (size, size), (255, 255, 255, 0))
+        draw = ImageDraw.Draw(im)
+        draw.text((size / 2, size / 2), text, embedded_color=True, font=font, anchor="mm")
+    else:
+        emoji_font = str(MAIN_DIRECTORY / "res" / "fonts" / "NotoColorEmoji" / "NotoColorEmoji.ttf")
+        # Noto Color Emoji font can only be used with size=109
+        font = ImageFont.truetype(emoji_font, size=109)
+        bbox = font.getbbox(text)
+        im = Image.new("RGBA", bbox[2:], (255, 255, 255, 0))
+        draw = ImageDraw.Draw(im)
+        draw.text((0,0), text, embedded_color=True, font=font)
+        im.thumbnail((size, size), Image.Resampling.LANCZOS)
+    return ImageTk.PhotoImage(im)
 
 
 def get_theme_data(name: str):
@@ -227,7 +252,7 @@ class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
         self.window.title('Turing System Monitor configuration')
-        self.window.geometry("820x580")
+        self.window.geometry("820x590")
         self.window.iconphoto(True, PhotoImage(file=str(
             MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png")))  # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
@@ -237,7 +262,7 @@ class TuringConfigWindow:
         self.more_config_window = MoreConfigWindow(self)
 
         # Make TK look better with Sun Valley ttk theme
-        sv_ttk.set_theme("light")
+        sv_ttk.use_light_theme()
 
         self.theme_preview_img = None
         self.theme_preview = ttk.Label(self.window)
@@ -336,22 +361,30 @@ class TuringConfigWindow:
         version_label = ttk.Label(self.window, text=version, foreground=DISABLED_COLOR)
         version_label.place(x=5, y=550)
 
-        self.weather_ping_btn = ttk.Button(self.window, text="Weather & ping",
-                                           command=lambda: self.on_weatherping_click())
-        self.weather_ping_btn.place(x=80, y=520, height=50, width=130)
+        self.weather_ping_emoji = emoji_to_img(20, "⛅")
+        self.weather_ping_btn = ttk.Button(self.window, text="Weather\n& Ping", image=self.weather_ping_emoji,
+                                           compound="left", command=lambda: self.on_weatherping_click())
+        self.weather_ping_btn.place(x=80, y=520, height=60, width=130)
 
-        self.open_theme_folder_btn = ttk.Button(self.window, text="Open themes\nfolder",
-                                                command=lambda: self.on_open_theme_folder_click())
-        self.open_theme_folder_btn.place(x=220, y=520, height=50, width=130)
+        self.open_theme_emoji = emoji_to_img(20, "📂")
+        self.open_theme_folder_btn = ttk.Button(self.window, text="Open themes\nfolder", image=self.open_theme_emoji,
+                                                compound="left", command=lambda: self.on_open_theme_folder_click())
+        self.open_theme_folder_btn.place(x=220, y=520, height=60, width=130)
 
-        self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", command=lambda: self.on_theme_editor_click())
-        self.edit_theme_btn.place(x=360, y=520, height=50, width=130)
+        self.edit_theme_emoji = emoji_to_img(20, "🎨")
+        self.edit_theme_btn = ttk.Button(self.window, text="Edit theme", image=self.edit_theme_emoji, compound="left",
+                                         command=lambda: self.on_theme_editor_click())
+        self.edit_theme_btn.place(x=360, y=520, height=60, width=130)
 
-        self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
-        self.save_btn.place(x=500, y=520, height=50, width=130)
+        self.save_emoji = emoji_to_img(20, "💾")
+        self.save_btn = ttk.Button(self.window, text="Save settings", image=self.save_emoji, compound="left",
+                                   command=lambda: self.on_save_click())
+        self.save_btn.place(x=500, y=520, height=60, width=130)
 
-        self.save_run_btn = ttk.Button(self.window, text="Save and run", command=lambda: self.on_saverun_click())
-        self.save_run_btn.place(x=640, y=520, height=50, width=130)
+        self.save_run_emoji = emoji_to_img(20, "▶️")
+        self.save_run_btn = ttk.Button(self.window, text="Save and run", image=self.save_run_emoji, compound="left",
+                                       command=lambda: self.on_saverun_click())
+        self.save_run_btn.place(x=640, y=520, height=60, width=140)
 
         self.config = None
         self.load_config_values()
@@ -433,13 +466,15 @@ class TuringConfigWindow:
 
         # Guess display size from theme in the configuration
         size = get_theme_size(self.config['config']['THEME'])
-        size = size.replace(_SIZE_2_1_INCH, SIZE_2_x_INCH)  # If a theme is for 2.1" then it is for all 2.x"
-        size = size.replace(_SIZE_2_8_INCH, SIZE_2_x_INCH)  # If a theme is for 2.8" then it is for all 2.x"
-        size = size.replace(_SIZE_9_2_INCH,
-                            SIZE_8_8_INCH_NEWREV)  # If a theme is for 9.2" then it is for 8.8"/9.2" (new rev)
+        if size == _SIZE_2_1_INCH or size == _SIZE_2_8_INCH:
+            size = SIZE_2_x_INCH  # If a theme is for 2.1" or 2.8" then it is for all 2.x"
+        elif size == _SIZE_9_2_INCH:
+            size = SIZE_8_8_INCH_NEWREV  # If a theme is for 9.2" then it is for 8.8"/9.2" (new rev)
         try:
             if size == SIZE_8_8_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_8_8_INCH_NEWREV
+            if size == SIZE_2_x_INCH and self.config['display']['REVISION'] == 'TUR_USB':
+                size = SIZE_2_8_ROUND_USB
             self.size_cb.set(size)
         except:
             self.size_cb.current(0)
@@ -587,7 +622,7 @@ class TuringConfigWindow:
         size = self.size_cb.get()
 
         # For '2.1" / 2.8"' size, search for themes of both sizes
-        if size == SIZE_2_x_INCH:
+        if size == SIZE_2_x_INCH or size == SIZE_2_8_ROUND_USB:
             themes = get_themes(_SIZE_2_1_INCH)
             themes += get_themes(_SIZE_2_8_INCH)
         # For 8.8" & 9.2" sizes, search for themes of both sizes
@@ -657,7 +692,7 @@ class MoreConfigWindow:
         self.main_window = main_window
 
         # Make TK look better with Sun Valley ttk theme
-        sv_ttk.set_theme("light")
+        sv_ttk.use_light_theme()
 
         self.ping_label = ttk.Label(self.window, text='Hostname / IP to ping')
         self.ping_label.place(x=10, y=10)

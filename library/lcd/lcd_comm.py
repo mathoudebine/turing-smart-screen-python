@@ -357,7 +357,11 @@ class LcdComm(ABC):
             # Crop bitmap to keep only the progress bar background
             bar_image = bar_image.crop(box=(x, y, x + width, y + height))
 
-        # Draw progress bar
+        # Draw progress bar. Fill has to be computed from the offset
+        # into [min_value, max_value], not the raw value; otherwise a
+        # bar with min_value > 0 (e.g. a 25..95 temperature bar) is
+        # filled by the wrong fraction. DisplayRadialProgressBar below
+        # already does this correctly. See issue #954.
         if width > height:
             bar_filled_width = ((value - min_value) / (max_value - min_value) * width) - 1
             if bar_filled_width < 0:
