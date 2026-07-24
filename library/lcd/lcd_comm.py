@@ -83,6 +83,14 @@ class LcdComm(ABC):
             ImageFont.FreeTypeFont # value= a loaded freetype font
         ] = {}
 
+        # Remember the bounding box drawn by the last DisplayText() call at a given (x, y) origin, so the
+        # next call can redraw the union of the old and new areas and fully erase any previous text that is
+        # narrower/shorter than what replaces it, regardless of font metrics ("ghosting" prevention).
+        self.text_bbox_cache: Dict[
+            Tuple[int, int],  # key=(x, y) origin as passed to DisplayText()
+            Tuple[int, int, int, int]  # value=(left, top, right, bottom) actually drawn
+        ] = {}
+
     def get_width(self) -> int:
         if self.orientation == Orientation.PORTRAIT or self.orientation == Orientation.REVERSE_PORTRAIT:
             return self.display_width
@@ -304,6 +312,17 @@ class LcdComm(ABC):
             # Let's extend the bounding box to the next whole pixel in all directions
             left, top = math.floor(left), math.floor(top)
             right, bottom = math.ceil(right), math.ceil(bottom)
+
+            # Union with the area drawn last time at this same origin, so a new value that is narrower/shorter
+            # than the previous one still gets its old pixels repainted with the background (prevents ghosting
+            # of stale glyph fragments, independent of font metrics).
+            bbox_key = (x, y)
+            prev_bbox = self.text_bbox_cache.get(bbox_key)
+            self.text_bbox_cache[bbox_key] = (left, top, right, bottom)
+            if prev_bbox is not None:
+                prev_left, prev_top, prev_right, prev_bottom = prev_bbox
+                left, top = min(left, prev_left), min(top, prev_top)
+                right, bottom = max(right, prev_right), max(bottom, prev_bottom)
         else:
             left, top, right, bottom = x, y, x + width, y + height
 
