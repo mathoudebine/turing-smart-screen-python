@@ -26,6 +26,7 @@ import ctypes
 import math
 import os
 import sys
+import time
 from statistics import mean
 from typing import Tuple
 
@@ -466,6 +467,9 @@ class Disk(sensors.Disk):
 
 
 class Net(sensors.Net):
+    # Previous psutil counters, per interface: {interface name: (monotonic timestamp, counters)}
+    _psutil_before = {}
+
     @staticmethod
     def stats(if_name, interval) -> Tuple[
         int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
@@ -477,19 +481,51 @@ class Net(sensors.Net):
 
         if if_name != "":
             net_if = get_net_interface_and_update(if_name)
-            if net_if is not None:
-                for sensor in net_if.Sensors:
-                    if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
-                            "Data Uploaded") and sensor.Value is not None:
-                        uploaded = int(sensor.Value * 1000000000.0)
-                    elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
-                            "Data Downloaded") and sensor.Value is not None:
-                        downloaded = int(sensor.Value * 1000000000.0)
-                    elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
-                            "Upload Speed") and sensor.Value is not None:
-                        upload_rate = int(sensor.Value)
-                    elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
-                            "Download Speed") and sensor.Value is not None:
-                        download_rate = int(sensor.Value)
+            # LHM does not expose Data/Throughput sensors for every adapter it reports (e.g. some
+            # Wi-Fi adapters): all values would silently stay at 0 and the network widgets would
+            # display nothing. Read those interfaces from psutil, like disk stats above.
+            if net_if is None or not any(
+                    sensor.SensorType in (Hardware.SensorType.Data, Hardware.SensorType.Throughput)
+                    for sensor in net_if.Sensors):
+                return Net._stats_from_psutil(if_name)
+
+            for sensor in net_if.Sensors:
+                if sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                        "Data Uploaded") and sensor.Value is not None:
+                    uploaded = int(sensor.Value * 1000000000.0)
+                elif sensor.SensorType == Hardware.SensorType.Data and str(sensor.Name).startswith(
+                        "Data Downloaded") and sensor.Value is not None:
+                    downloaded = int(sensor.Value * 1000000000.0)
+                elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
+                        "Upload Speed") and sensor.Value is not None:
+                    upload_rate = int(sensor.Value)
+                elif sensor.SensorType == Hardware.SensorType.Throughput and str(sensor.Name).startswith(
+                        "Download Speed") and sensor.Value is not None:
+                    download_rate = int(sensor.Value)
+
+        return upload_rate, uploaded, download_rate, downloaded
+
+    @staticmethod
+    def _stats_from_psutil(if_name) -> Tuple[
+        int, int, int, int]:  # up rate (B/s), uploaded (B), dl rate (B/s), downloaded (B)
+
+        upload_rate = 0
+        uploaded = 0
+        download_rate = 0
+        downloaded = 0
+
+        counters = psutil.net_io_counters(pernic=True).get(if_name)
+        if counters is not None:
+            now = time.monotonic()
+            before = Net._psutil_before.get(if_name)
+            # Rates are computed from the elapsed time, so they stay correct even if this
+            # interface was not read on the previous cycle.
+            if before is not None and now > before[0]:
+                elapsed = now - before[0]
+                upload_rate = int(max(0, counters.bytes_sent - before[1].bytes_sent) / elapsed)
+                download_rate = int(max(0, counters.bytes_recv - before[1].bytes_recv) / elapsed)
+            uploaded = counters.bytes_sent
+            downloaded = counters.bytes_recv
+            Net._psutil_before[if_name] = (now, counters)
 
         return upload_rate, uploaded, download_rate, downloaded
