@@ -121,6 +121,11 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
 
 
 def display_themed_percent_value(theme_data, value):
+    # A sensor can transiently return nan: int(nan) raises ValueError, which would kill this
+    # stat's thread. Note this happens before the SHOW check below, i.e. even when hidden.
+    if value is None or math.isnan(value):
+        return
+
     display_themed_value(
         theme_data=theme_data,
         value=int(value),
@@ -130,6 +135,9 @@ def display_themed_percent_value(theme_data, value):
 
 
 def display_themed_temperature_value(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_value(
         theme_data=theme_data,
         value=int(value),
@@ -140,6 +148,9 @@ def display_themed_temperature_value(theme_data, value):
 
 def display_themed_progress_bar(theme_data, value):
     if not theme_data.get("SHOW", False):
+        return
+
+    if value is None or math.isnan(value):
         return
 
     display.lcd.DisplayProgressBar(
@@ -201,6 +212,9 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
 
 
 def display_themed_percent_radial_bar(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_radial_bar(
         theme_data=theme_data,
         value=int(value),
@@ -210,6 +224,9 @@ def display_themed_percent_radial_bar(theme_data, value):
 
 
 def display_themed_temperature_radial_bar(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_radial_bar(
         theme_data=theme_data,
         value=int(value),
