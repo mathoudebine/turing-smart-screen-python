@@ -12,6 +12,9 @@ config:
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
   THEME: 3.5inchTheme2
 
+  # Filesystem path used for disk usage statistics
+  DISK_PATH: "/"
+
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
   # - PYTHON         use Python libraries (psutils, GPUtil...) to read hardware sensors (supports all OS but not all HW)

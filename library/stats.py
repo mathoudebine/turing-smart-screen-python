@@ -648,10 +648,7 @@ class Disk:
     @classmethod
     def stats(cls):
         disk_theme_data = config.THEME_DATA['STATS']['DISK']
-        
-        path = "/"
-        if disk_theme_data['PATH'] is not None:
-            path = disk_theme_data['PATH']
+        path = config.CONFIG_DATA['config'].get('DISK_PATH') or "/"
 
         used = sensors.Disk.disk_used(path)
         free = sensors.Disk.disk_free(path)
