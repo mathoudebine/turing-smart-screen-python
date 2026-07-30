@@ -83,7 +83,7 @@ SIZE_2_8_INCH_NEWREV = "2.8\" round (V1.X new HW rev.)"
 size_list = (
     SIZE_0_96_INCH,
     SIZE_2_x_INCH,
-    SIZE_2_8_ROUND_USB,
+    SIZE_2_8_INCH_NEWREV,
     SIZE_3_5_INCH,
     SIZE_4_6_INCH,
     SIZE_5_INCH,
@@ -110,7 +110,7 @@ revision_and_size_to_model_map = {
     ('TUR_USB', SIZE_8_8_INCH): TURING_MODEL,
     ('TUR_USB', SIZE_8_8_INCH_NEWREV): TURING_MODEL,
     ('TUR_USB', SIZE_12_3_INCH): TURING_MODEL,
-    ('TUR_USB', SIZE_2_8_ROUND_USB): TURING_MODEL,
+    ('TUR_USB', SIZE_2_8_INCH_NEWREV): TURING_MODEL,
     ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
     ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
 
@@ -135,7 +135,7 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH_NEWREV): 'TUR_USB',
     (TURING_MODEL, SIZE_12_3_INCH): 'TUR_USB',
-    (TURING_MODEL, SIZE_2_8_ROUND_USB): 'TUR_USB',
+    (TURING_MODEL, SIZE_2_8_INCH_NEWREV): 'TUR_USB',
     (USBPCMONITOR_MODEL, SIZE_3_5_INCH): 'A',
     (USBPCMONITOR_MODEL, SIZE_5_INCH): 'A',
     (WEACT_MODEL, SIZE_0_96_INCH): 'WEACT_B',
@@ -474,7 +474,7 @@ class TuringConfigWindow:
             if size == SIZE_8_8_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_8_8_INCH_NEWREV
             if size == SIZE_2_x_INCH and self.config['display']['REVISION'] == 'TUR_USB':
-                size = SIZE_2_8_ROUND_USB
+                size = SIZE_2_8_INCH_NEWREV
             self.size_cb.set(size)
         except:
             self.size_cb.current(0)
@@ -622,7 +622,7 @@ class TuringConfigWindow:
         size = self.size_cb.get()
 
         # For '2.1" / 2.8"' size, search for themes of both sizes
-        if size == SIZE_2_x_INCH or size == SIZE_2_8_ROUND_USB:
+        if size == SIZE_2_x_INCH or size == SIZE_2_8_INCH_NEWREV:
             themes = get_themes(_SIZE_2_1_INCH)
             themes += get_themes(_SIZE_2_8_INCH)
         # For 8.8" & 9.2" sizes, search for themes of both sizes
