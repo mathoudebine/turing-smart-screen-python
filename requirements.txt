@@ -40,4 +40,4 @@ pyadl~=0.1; sys_platform=="win32"
 
 # Following packages are for LibreHardwareMonitor integration on Windows
 pythonnet~=3.0.5; sys_platform=="win32"
-pywin32>=311; sys_platform=="win32"
+pywin32>=312; sys_platform=="win32"
