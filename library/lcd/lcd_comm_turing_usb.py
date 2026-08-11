@@ -25,6 +25,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import threading
 import time
 from io import BytesIO
 from pathlib import Path
@@ -113,8 +114,11 @@ def _encode_jpeg_under_limit(image: Image.Image, *, max_bytes: int, quality: int
 
 
 def send_pil_image_auto(dev, image: Image.Image, *, max_bytes: int = MAX_IMAGE_PAYLOAD_DEFAULT, ) -> None:
-    # First try PNG (preferred)
-    png = _encode_png(image)
+    # This runs up to 2x/sec: use fast PNG compression, the device expects RGBA PNGs
+    # (compress_level=9 takes ~0.5s CPU per frame on photographic themes, level 1 ~25ms)
+    buffer = BytesIO()
+    image.save(buffer, format="PNG", compress_level=1)
+    png = buffer.getvalue()
     if len(png) <= max_bytes:
         send_image(dev, png)
         return
@@ -939,9 +943,38 @@ class LcdCommTuringUSB(LcdComm):
         self.display_width, self.display_height = PRODUCT_ID[self.dev_pid]
         # Store the current screen state as an image that will be continuously updated and sent
         self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
+        # The protocol only supports full-screen frames (no partial update), so encoding and
+        # sending the whole frame once per widget refresh pins several CPU cores. Widgets only
+        # paste into current_state; a single thread sends the composed frame at a capped rate.
+        self._state_lock = threading.Lock()
+        self._dev_lock = threading.Lock()
+        self._frame_dirty = threading.Event()
+        self._frame_send_period = 0.5
+        threading.Thread(target=self._frame_sender_loop, name="TuringUSB_Sender", daemon=True).start()
+
+    def _frame_sender_loop(self):
+        while True:
+            self._frame_dirty.wait()
+            self._frame_dirty.clear()
+            with self._state_lock:
+                frame = self.current_state.copy()
+            # Rotate image before sending to screen: all images sent to the screen are in portrait mode
+            if self.orientation == Orientation.LANDSCAPE:
+                frame = frame.transpose(Image.Transpose.ROTATE_270)
+            elif self.orientation == Orientation.REVERSE_LANDSCAPE:
+                frame = frame.transpose(Image.Transpose.ROTATE_90)
+            elif self.orientation == Orientation.PORTRAIT:
+                frame = frame.transpose(Image.Transpose.ROTATE_180)
+            try:
+                with self._dev_lock:
+                    send_pil_image_auto(self.dev, frame, max_bytes=MAX_IMAGE_PAYLOAD_DEFAULT)
+            except Exception:
+                logger.exception("Failed to send frame to Turing USB display")
+            time.sleep(self._frame_send_period)
 
     def InitializeComm(self):
-        send_sync_command(self.dev)
+        with self._dev_lock:
+            send_sync_command(self.dev)
 
     def Reset(self):
         # Do not enable the reset command for now on Turing USB models
@@ -949,7 +982,8 @@ class LcdCommTuringUSB(LcdComm):
         pass
 
     def Clear(self):
-        clear_image(self.dev)
+        with self._dev_lock:
+            clear_image(self.dev)
 
     def ScreenOff(self):
         # Turing USB models do not implement a "screen off" command (that we know of): use SetBrightness(0) instead
@@ -963,12 +997,14 @@ class LcdCommTuringUSB(LcdComm):
     def SetBrightness(self, level: int = 25):
         assert 0 <= level <= 100, 'Brightness level must be [0-100]'
         converted = int(level / 100 * 102)
-        send_brightness_command(self.dev, converted)
+        with self._dev_lock:
+            send_brightness_command(self.dev, converted)
 
     def SetOrientation(self, orientation: Orientation):
         self.orientation = orientation
         # Recreate new state with correct width/height now that screen orientation has changed
-        self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
+        with self._state_lock:
+            self.current_state = Image.new("RGBA", (self.get_width(), self.get_height()), (0, 0, 0, 0))
 
     def DisplayPILImage(self, image: Image.Image, x: int = 0, y: int = 0, image_width: int = 0, image_height: int = 0):
         # If the image height/width isn't provided, use the native image size
@@ -985,18 +1021,8 @@ class LcdCommTuringUSB(LcdComm):
         if image_width != image.size[0] or image_height != image.size[1]:
             image = image.crop((0, 0, image_width, image_height))
 
-        # Paste new image over existing screen state
-        self.current_state.paste(image, (x, y))
-
-        # Rotate image before sending to screen: all images sent to the screen are in portrait mode
-        if self.orientation == Orientation.LANDSCAPE:
-            base_image = self.current_state.transpose(Image.Transpose.ROTATE_270)
-        elif self.orientation == Orientation.REVERSE_LANDSCAPE:
-            base_image = self.current_state.transpose(Image.Transpose.ROTATE_90)
-        elif self.orientation == Orientation.PORTRAIT:
-            base_image = self.current_state.transpose(Image.Transpose.ROTATE_180)
-        else:  # Orientation.REVERSE_PORTRAIT is initial screen orientation
-            base_image = self.current_state
-
-        # Send image data (auto JPEG fallback when payload exceeds device limit)
-        send_pil_image_auto(self.dev, base_image, max_bytes=MAX_IMAGE_PAYLOAD_DEFAULT)
+        # Paste new image over existing screen state; the sender thread pushes the composed
+        # frame to the display at a capped rate (full-frame encode+send per widget is too slow)
+        with self._state_lock:
+            self.current_state.paste(image, (x, y))
+        self._frame_dirty.set()
