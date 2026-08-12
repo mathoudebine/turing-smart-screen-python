@@ -25,7 +25,7 @@ Pillow~=12.3.0; python_version >= "3.10"  # For Python 3.10+, use latest Pillow
 numpy~=2.0.2; python_version < "3.10"   # For Python 3.9, numpy 2.0.x is the latest supported
 numpy~=2.2.6; python_version == "3.10"  # For Python 3.10, numpy 2.2.x is the latest supported
 numpy~=2.4.4; python_version == "3.11"  # For Python 3.11, numpy 2.2.x is the latest supported
-numpy~=2.5.1; python_version > "3.11"   # For Python > 3.11, use latest numpy
+numpy~=2.5.2; python_version > "3.11"   # For Python > 3.11, use latest numpy
 
 # For Nvidia GPU on all platforms
 GPUtil~=1.4.0; python_version < "3.12"
