@@ -203,6 +203,14 @@ class Cpu(sensors.Cpu):
         except:
             pass
 
+        # Fallback to psutil if LHM doesn't return valid frequencies
+        try:
+            freq = psutil.cpu_freq()
+            if freq and freq.current > 0:
+                return freq.current
+        except:
+            pass
+
         # Frequencies reading is not supported on this CPU
         return math.nan
 
