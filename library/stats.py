@@ -68,9 +68,20 @@ elif HW_SENSORS == "STUB":
 elif HW_SENSORS == "STATIC":
     logger.warning("Stub sensors, not real HW sensors")
     import library.sensors.sensors_stub_static as sensors
+elif HW_SENSORS == "APPLE_SILICON":
+    if platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        import library.sensors.sensors_apple_silicon as sensors
+    else:
+        logger.error("Apple Silicon sensor support is only available on Apple Silicon Macs")
+        try:
+            sys.exit(1)
+        except BaseException:
+            os._exit(1)
 elif HW_SENSORS == "AUTO":
     if platform.system() == 'Windows':
         import library.sensors.sensors_librehardwaremonitor as sensors
+    elif platform.system() == 'Darwin' and platform.machine() == 'arm64':
+        import library.sensors.sensors_apple_silicon as sensors
     else:
         import library.sensors.sensors_python as sensors
 else:
@@ -769,7 +780,7 @@ class Date:
         time_format = hour_theme_data.get("FORMAT", 'medium')
         display_themed_value(
             theme_data=hour_theme_data,
-            value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}"
+            value=f"{babel.dates.format_time(date_now, format=time_format, locale=lc_time)}".replace('\u202f', ' ')
         )
 
 
