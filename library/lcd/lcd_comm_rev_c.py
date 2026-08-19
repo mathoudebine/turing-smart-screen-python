@@ -151,16 +151,19 @@ class LcdCommRevC(LcdComm):
                  update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
-        self.rom_version = 87
-        self.sub_revision = self._subrevision_from_size()
-        self._last_status_ts = 0.0
+        self._last_status_ts_113inch = 0.0
         self.openSerial()
-        # Full 11.3" frames are ~3.4 MB; the default write timeout is too short.
-        if self.lcd_serial is not None and self.sub_revision == SubRevision.REV_113INCH:
-            self.lcd_serial.write_timeout = 20
 
     def __del__(self):
         self.closeSerial()
+
+    def openSerial(self):
+        LcdComm.openSerial(self)
+        # Full 11.3" frames are ~3.4 MB; the default write timeout is too short.
+        # Set here rather than in __init__ so it survives the reconnect that
+        # WriteLine/ReadData perform on SerialException.
+        if self.lcd_serial is not None and self._subrevision_from_size() == SubRevision.REV_113INCH:
+            self.lcd_serial.write_timeout = 20
 
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
@@ -495,7 +498,7 @@ class LcdCommRevC(LcdComm):
                 logger.warning("11.3\" C8: missing full_png_sucess (%r)", ack[:80])
         # Vendor restarts the 0xcc sequence counter after a new full frame.
         Count.Start = 0
-        self._last_status_ts = 0.0
+        self._last_status_ts_113inch = 0.0
 
     def _write_113inch_c8_body(self, payload: bytearray) -> None:
         """Pad to 250 and write in 25_000-byte chunks (vendor URB size)."""
@@ -524,10 +527,10 @@ class LcdCommRevC(LcdComm):
     def _maybe_query_status_113inch(self):
         """Vendor polls 0xcf at ~1 Hz, never faster, and always before a 0xcc."""
         now = time.time()
-        if now - self._last_status_ts < 1.0:
+        if now - self._last_status_ts_113inch < 1.0:
             return
         self._send_command(Command.QUERY_STATUS, readsize=1024)
-        self._last_status_ts = now
+        self._last_status_ts_113inch = now
 
     def _pack_113inch_c8(self, image: Image.Image) -> Image.Image:
         """Pack a 440×1920 glass image into the vendor 1760×480 C8 canvas.
