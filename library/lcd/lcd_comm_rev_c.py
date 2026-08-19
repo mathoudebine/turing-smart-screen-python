@@ -125,7 +125,7 @@ class SubRevision(Enum):
     REV_2INCH = 1  # For 2.1" and 2.8" models
     REV_5INCH = 2
     REV_8INCH = 3
-    REV_113INCH = 4  # ShinySnake G600 / TURZX 11.3"; firmware chs_113inch, glass 440x1920
+    REV_113INCH = 4
 
 
 class Rev113Geometry:
@@ -156,7 +156,7 @@ class LcdCommRevC(LcdComm):
         self._last_status_ts = 0.0
         self.openSerial()
         # Full 11.3" frames are ~3.4 MB; the default write timeout is too short.
-        if self.lcd_serial is not None:
+        if self.lcd_serial is not None and self.sub_revision == SubRevision.REV_113INCH:
             self.lcd_serial.write_timeout = 20
 
     def __del__(self):
