@@ -1,0 +1,118 @@
+---
+author: "@mathoudebine"
+
+# 11.3" (ShinySnake G600 / TURZX) port of the Gradient theme. Native 440x1920
+# canvas -- background.png and every X/FONT_SIZE below are scaled by 440/480
+# from the original 8.8" Gradient theme (Y unchanged: both sizes are 1920
+# tall). See res/themes/Gradient46 for the precedent of a size-specific port
+# rather than a shared/rescaled-at-runtime asset.
+display:
+  DISPLAY_SIZE: 11.3"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 226, 21, 103
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 440
+    HEIGHT: 1920
+static_text:
+  DISK:
+   TEXT: DISK
+   X: 150
+   Y: 1804
+   FONT: roboto-mono/RobotoMono-Bold.ttf
+   FONT_SIZE: 59
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 73
+        Y: 240
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 119
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 123
+        Y: 154
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 55
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 73
+        Y: 720
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 119
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 123
+        Y: 635
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 55
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 134
+        Y: 1120
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 73
+        Y: 1192
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 119
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 134
+        Y: 1590
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 73
+        Y: 1664
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 119
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
