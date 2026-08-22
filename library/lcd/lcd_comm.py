@@ -44,6 +44,12 @@ class Orientation(IntEnum):
     REVERSE_LANDSCAPE = 3
 
 
+# The screen resets itself when the program starts, so its COM port can disappear or change for a
+# few seconds: opening it is retried instead of giving up (and exiting) on the first failure.
+SERIAL_OPEN_ATTEMPTS = 10
+SERIAL_OPEN_RETRY_DELAY = 1  # seconds
+
+
 class LcdComm(ABC):
     def __init__(self, com_port: str = "AUTO", display_width: int = 320, display_height: int = 480,
                  update_queue: Optional[queue.Queue] = None):
@@ -90,28 +96,36 @@ class LcdComm(ABC):
             return self.display_width
 
     def openSerial(self):
-        if self.com_port == 'AUTO':
-            self.com_port = self.auto_detect_com_port()
-            if not self.com_port:
-                logger.error(
-                    "Cannot find COM port automatically, please run Configuration again and select COM port manually")
-                try:
-                    sys.exit(0)
-                except:
-                    os._exit(0)
+        # self.com_port is kept as configured ("AUTO" or a port name): on AUTO the port is
+        # detected again at every attempt, since it can change while the screen resets.
+        for attempt in range(1, SERIAL_OPEN_ATTEMPTS + 1):
+            com_port = self.com_port
+            if com_port == 'AUTO':
+                com_port = self.auto_detect_com_port()
+                if not com_port:
+                    logger.warning(
+                        f"Cannot find COM port automatically, retrying ({attempt}/{SERIAL_OPEN_ATTEMPTS})")
+                    time.sleep(SERIAL_OPEN_RETRY_DELAY)
+                    continue
+                logger.debug(f"Auto detected COM port: {com_port}")
             else:
-                logger.debug(f"Auto detected COM port: {self.com_port}")
-        else:
-            logger.debug(f"Static COM port: {self.com_port}")
+                logger.debug(f"Static COM port: {com_port}")
 
-        try:
-            self.lcd_serial = serial.Serial(self.com_port, 115200, timeout=1, rtscts=True)
-        except Exception as e:
-            logger.error(f"Cannot open COM port {self.com_port}: {e}")
             try:
-                sys.exit(0)
-            except:
-                os._exit(0)
+                self.lcd_serial = serial.Serial(com_port, 115200, timeout=1, rtscts=True)
+                return
+            except Exception as e:
+                logger.warning(
+                    f"Cannot open COM port {com_port}: {e} - retrying ({attempt}/{SERIAL_OPEN_ATTEMPTS})")
+                time.sleep(SERIAL_OPEN_RETRY_DELAY)
+
+        logger.error(
+            f"Cannot open COM port after {SERIAL_OPEN_ATTEMPTS} attempts. If the screen is connected, run "
+            f"Configuration again and select the COM port manually")
+        try:
+            sys.exit(0)
+        except:
+            os._exit(0)
 
     def closeSerial(self):
         if self.lcd_serial is not None:
