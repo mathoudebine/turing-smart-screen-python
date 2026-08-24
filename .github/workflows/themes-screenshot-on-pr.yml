@@ -22,10 +22,10 @@ jobs:
 
     - name: Configure system monitor for screenshot
       run: |
-        # Use static data
-        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STATIC" config.yaml
+        # Use random data
+        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STUB" config.yaml
 
-    - name: Run system monitor for 5 seconds on all themes
+    - name: Run system monitor on all themes
       run: |
         for dir in res/themes/*/
         do
@@ -40,10 +40,8 @@ jobs:
             # For tests there is no real HW: use simulated LCD mode
             sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
         
-            # Run system-monitor for 10 seconds
-            python3 main.py > output.log 2>&1 &
-            sleep 10
-            killall -9 python3
+            # Run system-monitor in theme screenshot mode
+            python3 main.py -t 10 > output.log 2>&1
           
             # Rename screen capture
             cp screencap.png "screenshot-$theme.png"
