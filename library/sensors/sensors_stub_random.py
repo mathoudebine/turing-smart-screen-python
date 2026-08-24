@@ -27,6 +27,8 @@ from typing import Tuple
 import library.sensors.sensors as sensors
 
 
+random.seed(10)
+
 class Cpu(sensors.Cpu):
     @staticmethod
     def percentage(interval: float) -> float:
