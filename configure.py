@@ -29,19 +29,20 @@ import os
 import platform
 import subprocess
 import sys
-import webbrowser
-import requests
-import babel
 
 try:
-    import tkinter.ttk as ttk
-    from tkinter import *
-    from PIL import ImageTk, ImageFont, ImageDraw
+    import babel
+    import darkdetect
     import psutil
+    import requests
     import ruamel.yaml
     import sv_ttk
+    import tkinter.ttk as ttk
+    import webbrowser
+
+    from tkinter import *
+    from PIL import ImageTk, ImageFont, ImageDraw, Image
     from pathlib import Path
-    from PIL import Image
     from serial.tools.list_ports import comports
     from tktooltip import ToolTip
 
@@ -171,7 +172,12 @@ THEMES_DIR = MAIN_DIRECTORY / "res/themes"
 VERSION_FILE = MAIN_DIRECTORY / "version.txt"
 
 circular_mask = Image.open(MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
-DISABLED_COLOR = "#C0C0C0"
+
+DISABLED_TEXT_COLOR = "#C0C0C0" if darkdetect.isLight() else "#757575"
+ENABLED_TEXT_COLOR = "#000000" if darkdetect.isLight() else "#FFFFFF"
+LINK_TEXT_COLOR = "#a3a3ff"
+RED_TEXT_COLOR = "#FF0000" if darkdetect.isLight() else "#FF5C5C"
+ORANGE_TEXT_COLOR = "#FF8C00" if darkdetect.isLight() else "#FFA726"
 
 
 def emoji_to_img(size, text):
@@ -189,7 +195,7 @@ def emoji_to_img(size, text):
         bbox = font.getbbox(text)
         im = Image.new("RGBA", bbox[2:], (255, 255, 255, 0))
         draw = ImageDraw.Draw(im)
-        draw.text((0,0), text, embedded_color=True, font=font)
+        draw.text((0, 0), text, embedded_color=True, font=font)
         im.thumbnail((size, size), Image.Resampling.LANCZOS)
     return ImageTk.PhotoImage(im)
 
@@ -248,6 +254,25 @@ def get_fans():
     return fan_list
 
 
+def apply_theme_to_titlebar(root, is_dark):
+    if platform.system() != "Windows":
+        return
+
+    import pywinstyles
+    version = sys.getwindowsversion()
+
+    if version.major == 10 and version.build >= 22000:
+        # Windows 11: set the title bar color to the window background color for better appearance
+        if is_dark:
+            pywinstyles.change_header_color(root, "#1c1c1c")
+        else:
+            pywinstyles.change_header_color(root, "#fafafa")
+    elif version.major == 10:
+        # Windows 10: apply dark style
+        if is_dark:
+            pywinstyles.apply_style(root, "optimised")
+
+
 class TuringConfigWindow:
     def __init__(self):
         self.window = Tk()
@@ -256,13 +281,18 @@ class TuringConfigWindow:
         self.window.iconphoto(True, PhotoImage(file=str(
             MAIN_DIRECTORY / "res/icons/monitor-icon-17865/64.png")))  # When window gets focus again, reload theme preview in case it has been updated by theme editor
         self.window.bind("<FocusIn>", self.on_theme_change)
-        self.window.after(0, self.on_fan_speed_update)
 
         # Subwindow for weather/ping config.
         self.more_config_window = MoreConfigWindow(self)
 
-        # Make TK look better with Sun Valley ttk theme
-        sv_ttk.use_light_theme()
+        # Make TK look better with Sun Valley ttk theme and title bar color
+        if darkdetect.isDark():
+            sv_ttk.use_dark_theme()
+        else:
+            sv_ttk.use_light_theme()
+        apply_theme_to_titlebar(self.window, darkdetect.isDark())
+
+        self.window.after(0, self.on_fan_speed_update)
 
         self.theme_preview_img = None
         self.theme_preview = ttk.Label(self.window)
@@ -306,7 +336,7 @@ class TuringConfigWindow:
         self.brightness_val_label.place(x=550, y=195)
         self.brightness_warning_label = ttk.Label(self.window,
                                                   text="⚠ Turing 3.5\" displays can get hot at high brightness!",
-                                                  foreground='#ff8c00')
+                                                  foreground=ORANGE_TEXT_COLOR)
 
         sysmon_label = ttk.Label(self.window, text='System Monitor Configuration', font='bold')
         sysmon_label.place(x=370, y=260)
@@ -338,10 +368,10 @@ class TuringConfigWindow:
         # For Windows platform only
         self.lhm_admin_warning = ttk.Label(self.window,
                                            text="❌ Restart as admin. or select another Hardware monitoring",
-                                           foreground='#f00')
+                                           foreground=RED_TEXT_COLOR)
         # For platform != Windows
         self.cpu_fan_label = ttk.Label(self.window, text='CPU fan (？)')
-        self.cpu_fan_label.config(foreground="#a3a3ff", cursor="hand2")
+        self.cpu_fan_label.config(foreground=LINK_TEXT_COLOR, cursor="hand2")
         self.cpu_fan_cb = ttk.Combobox(self.window, values=get_fans(), state='readonly')
 
         self.tooltip = ToolTip(self.cpu_fan_label,
@@ -358,7 +388,7 @@ class TuringConfigWindow:
             except:
                 version = "0.0.0"
 
-        version_label = ttk.Label(self.window, text=version, foreground=DISABLED_COLOR)
+        version_label = ttk.Label(self.window, text=version, foreground=DISABLED_TEXT_COLOR)
         version_label.place(x=5, y=550)
 
         self.weather_ping_emoji = emoji_to_img(20, "⛅")
@@ -411,11 +441,11 @@ class TuringConfigWindow:
             author_name = theme_data.get('author', 'unknown')
             self.theme_author.config(text="Author: " + author_name)
             if author_name.startswith("@"):
-                self.theme_author.config(foreground="#a3a3ff", cursor="hand2")
+                self.theme_author.config(foreground=LINK_TEXT_COLOR, cursor="hand2")
                 self.theme_author.bind("<Button-1>",
                                        lambda e: webbrowser.open_new_tab("https://github.com/" + author_name[1:]))
             else:
-                self.theme_author.config(foreground="#a3a3a3", cursor="")
+                self.theme_author.config(foreground=DISABLED_TEXT_COLOR, cursor="")
                 self.theme_author.unbind("<Button-1>")
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
@@ -608,15 +638,15 @@ class TuringConfigWindow:
         self.show_hide_brightness_warning()
         model = self.model_cb.get()
         if model == SIMULATED_MODEL:
-            self.com_cb.configure(state="disabled", foreground=DISABLED_COLOR)
-            self.orient_cb.configure(state="disabled", foreground=DISABLED_COLOR)
+            self.com_cb.configure(state="disabled", foreground=DISABLED_TEXT_COLOR)
+            self.orient_cb.configure(state="disabled", foreground=DISABLED_TEXT_COLOR)
             self.brightness_slider.configure(state="disabled")
-            self.brightness_val_label.configure(foreground=DISABLED_COLOR)
+            self.brightness_val_label.configure(foreground=DISABLED_TEXT_COLOR)
         else:
-            self.com_cb.configure(state="readonly", foreground="#000")
-            self.orient_cb.configure(state="readonly", foreground="#000")
+            self.com_cb.configure(state="readonly", foreground=ENABLED_TEXT_COLOR)
+            self.orient_cb.configure(state="readonly", foreground=ENABLED_TEXT_COLOR)
             self.brightness_slider.configure(state="normal")
-            self.brightness_val_label.configure(foreground="#000")
+            self.brightness_val_label.configure(foreground=ENABLED_TEXT_COLOR)
 
     def on_size_change(self, e=None):
         size = self.size_cb.get()
@@ -643,11 +673,11 @@ class TuringConfigWindow:
     def on_hwlib_change(self, e=None):
         hwlib = [k for k, v in hw_lib_map.items() if v == self.hwlib_cb.get()][0]
         if hwlib == "STUB" or hwlib == "STATIC":
-            self.eth_cb.configure(state="disabled", foreground=DISABLED_COLOR)
-            self.wl_cb.configure(state="disabled", foreground=DISABLED_COLOR)
+            self.eth_cb.configure(state="disabled", foreground=DISABLED_TEXT_COLOR)
+            self.wl_cb.configure(state="disabled", foreground=DISABLED_TEXT_COLOR)
         else:
-            self.eth_cb.configure(state="readonly", foreground="#000")
-            self.wl_cb.configure(state="readonly", foreground="#000")
+            self.eth_cb.configure(state="readonly", foreground=ENABLED_TEXT_COLOR)
+            self.wl_cb.configure(state="readonly", foreground=ENABLED_TEXT_COLOR)
 
         if sys.platform == "win32":
             import ctypes
@@ -691,8 +721,12 @@ class MoreConfigWindow:
 
         self.main_window = main_window
 
-        # Make TK look better with Sun Valley ttk theme
-        sv_ttk.use_light_theme()
+        # Make TK look better with Sun Valley ttk theme and title bar color
+        if darkdetect.isDark():
+            sv_ttk.use_dark_theme()
+        else:
+            sv_ttk.use_light_theme()
+        apply_theme_to_titlebar(self.window, darkdetect.isDark())
 
         self.ping_label = ttk.Label(self.window, text='Hostname / IP to ping')
         self.ping_label.place(x=10, y=10)
@@ -709,7 +743,7 @@ class MoreConfigWindow:
         weather_api_link_label = ttk.Label(self.window,
                                            text="Click here to subscribe to OpenWeatherMap One Call API 3.0.")
         weather_api_link_label.place(x=10, y=140)
-        weather_api_link_label.config(foreground="#a3a3ff", cursor="hand2")
+        weather_api_link_label.config(foreground=LINK_TEXT_COLOR, cursor="hand2")
         weather_api_link_label.bind("<Button-1>",
                                     lambda e: webbrowser.open_new_tab("https://openweathermap.org/api"))
 
@@ -721,7 +755,7 @@ class MoreConfigWindow:
         latlong_label = ttk.Label(self.window,
                                   text="You can use online services to get your latitude/longitude e.g. latlong.net (click here)")
         latlong_label.place(x=10, y=210)
-        latlong_label.config(foreground="#a3a3ff", cursor="hand2")
+        latlong_label.config(foreground=LINK_TEXT_COLOR, cursor="hand2")
         latlong_label.bind("<Button-1>",
                            lambda e: webbrowser.open_new_tab("https://www.latlong.net/"))
 
@@ -773,7 +807,7 @@ class MoreConfigWindow:
 
         self.citysearch_warn_label = ttk.Label(self.window, text="")
         self.citysearch_warn_label.place(x=20, y=600)
-        self.citysearch_warn_label.config(foreground="#ff0000")
+        self.citysearch_warn_label.config(foreground=RED_TEXT_COLOR)
 
         self.save_btn = ttk.Button(self.window, text="Save settings", command=lambda: self.on_save_click())
         self.save_btn.place(x=590, y=620, height=50, width=130)
