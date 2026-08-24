@@ -51,7 +51,7 @@ def write_theme_previews_to_file(themes, file, size):
     i = 0
     for theme in themes:
         file.write(
-            f"<td>{theme}<img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
+            f"<td>{theme}<br/><img src=\"https://raw.githubusercontent.com/mathoudebine/turing-smart-screen-python/main/res/themes/{theme}/preview.png\" width=\"150\"/></td>")
         i = i + 1
         if i >= 5:
             file.write("</table><table>")
