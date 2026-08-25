@@ -2,7 +2,9 @@
 author: "A Blade Of Grass"
 
 display:
+  DISPLAY_SIZE: 3.5"
   DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 100, 0, 255
 
 static_images:
   BACKGROUND:
@@ -117,13 +119,6 @@ STATS:
         BACKGROUND_COLOR: 10, 10, 40
       TEXT:
         SHOW: True
-        SHOW_UNIT: True
-        X: 413
-        Y: 65
-        FONT: roboto/Roboto-Bold.ttf
-        FONT_SIZE: 22
-        FONT_COLOR: 255, 255, 255
-        BACKGROUND_IMAGE: background.png
         SHOW_UNIT: True
         X: 413
         Y: 65
