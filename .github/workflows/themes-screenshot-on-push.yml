@@ -6,6 +6,10 @@ on:
       - main
       - 'releases/**'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   system-monitor-theme-screenshot:
     name: Update themes screenshot and generate list
