@@ -617,7 +617,7 @@ class TuringConfigWindow:
             # Load binary (for releases) or Python file with system interpreter
             theme_editor = next(MAIN_DIRECTORY.glob("theme-editor*"))
             if platform.system() == "Windows":
-                subprocess.Popen([str(theme_editor), self.theme_cb.get()], shell=True)
+                subprocess.Popen([str(theme_editor), self.theme_cb.get()], creationflags=0x08000000)
             else:
                 subprocess.Popen([str(theme_editor), self.theme_cb.get()])
 
@@ -635,7 +635,7 @@ class TuringConfigWindow:
             # Load binary (for releases) or Python file with system interpreter
             main_file = next(MAIN_DIRECTORY.glob("main*"))
             if platform.system() == "Windows":
-                subprocess.Popen([str(main_file)], shell=True)
+                subprocess.Popen([str(main_file)], creationflags=0x08000000)
             else:
                 subprocess.Popen([str(main_file)])
 

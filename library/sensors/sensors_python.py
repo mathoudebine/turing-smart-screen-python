@@ -30,6 +30,60 @@ from typing import Tuple
 
 # Nvidia GPU
 import GPUtil
+
+if platform.system() == "Windows":
+    import subprocess
+    import shutil
+    import os
+
+    def _no_window_getGPUs():
+        nvidia_smi = shutil.which('nvidia-smi')
+        if nvidia_smi is None:
+            nvidia_smi = "%s\\Program Files\\NVIDIA Corporation\\NVSMI\\nvidia-smi.exe" % os.environ.get('systemdrive', 'C:')
+
+        creationflags = 0x08000000  # CREATE_NO_WINDOW
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+
+        try:
+            p = subprocess.Popen(
+                [nvidia_smi, "--query-gpu=index,uuid,utilization.gpu,memory.total,memory.used,memory.free,driver_version,name,gpu_serial,display_active,display_mode,temperature.gpu", "--format=csv,noheader,nounits"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                creationflags=creationflags,
+                startupinfo=startupinfo
+            )
+            stdout, _ = p.communicate()
+            output = stdout.decode('UTF-8', errors='ignore')
+            lines = [l for l in output.splitlines() if l.strip()]
+            GPUs = []
+            for line in lines:
+                vals = [v.strip() for v in line.split(',')]
+                if len(vals) >= 12:
+                    def _cast(s):
+                        try:
+                            return float(s)
+                        except:
+                            return float('nan')
+                    deviceIds = int(vals[0]) if vals[0].isdigit() else 0
+                    uuid = vals[1]
+                    gpuUtil = _cast(vals[2]) / 100
+                    memTotal = _cast(vals[3])
+                    memUsed = _cast(vals[4])
+                    memFree = _cast(vals[5])
+                    driver = vals[6]
+                    gpu_name = vals[7]
+                    serial = vals[8]
+                    display_active = vals[9]
+                    display_mode = vals[10]
+                    temp_gpu = _cast(vals[11])
+                    GPUs.append(GPUtil.GPU(deviceIds, uuid, gpuUtil, memTotal, memUsed, memFree, driver, gpu_name, serial, display_mode, display_active, temp_gpu))
+            return GPUs
+        except Exception:
+            return []
+
+    GPUtil.getGPUs = _no_window_getGPUs
 # CPU & disk sensors
 import psutil
 
