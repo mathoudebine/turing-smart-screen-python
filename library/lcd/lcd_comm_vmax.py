@@ -10,6 +10,7 @@
 import io
 import re
 import time
+import threading
 from typing import Optional, Tuple
 from enum import IntEnum
 import serial
@@ -34,12 +35,27 @@ class LcdCommVmax(LcdComm):
         super().__init__(com_port, display_width, display_height, update_queue)
         self.serial_number = None
         self.brightness = 100
+
         # Canvas for full frame composition
+        self._canvas_lock = threading.Lock()
         self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
+        self._frame_event = threading.Event()
+        self._running = True
+
         self.openSerial()
+
+        # Start dedicated frame worker thread to smoothly stream frames without flooding serial
+        self._worker_thread = threading.Thread(target=self._render_worker, name="VmaxRenderWorker", daemon=True)
+        self._worker_thread.start()
 
     def __del__(self):
         self.closeSerial()
+
+    def closeSerial(self):
+        self._running = False
+        if hasattr(self, "_frame_event"):
+            self._frame_event.set()
+        super().closeSerial()
 
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
@@ -65,7 +81,14 @@ class LcdCommVmax(LcdComm):
                 logger.debug(f"Static COM port: {com_port}")
 
             try:
-                self.lcd_serial = serial.Serial(com_port, 115200, timeout=1, write_timeout=1, rtscts=False, dsrdtr=False)
+                self.lcd_serial = serial.Serial(
+                    com_port,
+                    115200,
+                    timeout=2.0,
+                    write_timeout=2.0,
+                    rtscts=False,
+                    dsrdtr=False
+                )
                 self.lcd_serial.dtr = True
                 self.lcd_serial.rts = True
                 self.lcd_serial.reset_input_buffer()
@@ -99,15 +122,17 @@ class LcdCommVmax(LcdComm):
                 logger.info(f"Detected hardware panel geometry: {w}x{h}")
                 self.display_width = w
                 self.display_height = h
-                self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
+                with self._canvas_lock:
+                    self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
 
     def Reset(self):
         self.serial_flush_input()
         self.Clear()
 
     def Clear(self):
-        self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
-        self._send_full_frame(self._canvas)
+        with self._canvas_lock:
+            self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
+        self._frame_event.set()
 
     def ScreenOff(self):
         self.SetBrightness(0)
@@ -118,14 +143,18 @@ class LcdCommVmax(LcdComm):
     def SetBrightness(self, level: int):
         self.brightness = max(0, min(100, int(level)))
         cmd = bytes([0xAA, 0xBB, self.brightness, 0xCC, 0xDD])
-        if self.update_queue:
-            with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [cmd]))
-        else:
-            self.WriteData(cmd)
+        try:
+            if self.lcd_serial and self.lcd_serial.is_open:
+                self.serial_write(cmd)
+        except Exception as e:
+            logger.error(f"Failed to set brightness: {e}")
 
     def SetOrientation(self, orientation: Orientation):
         self.orientation = orientation
+        with self._canvas_lock:
+            target_w = self.get_width()
+            target_h = self.get_height()
+            self._canvas = Image.new("RGB", (target_w, target_h), (0, 0, 0))
 
     def DisplayPILImage(
             self,
@@ -137,28 +166,20 @@ class LcdCommVmax(LcdComm):
         if image_width != 0 and image_height != 0 and (image.size[0] != image_width or image.size[1] != image_height):
             image = image.resize((image_width, image_height))
 
-        # Check if full frame matching current orientation
         target_w = self.get_width()
         target_h = self.get_height()
 
-        if x == 0 and y == 0 and image.size == (target_w, target_h):
-            # Direct full frame
-            frame = self._orient_image(image)
-            self._send_full_frame(frame)
-        else:
-            # Partial update onto canvas
-            if self.orientation in (Orientation.LANDSCAPE, Orientation.REVERSE_LANDSCAPE):
-                # In landscape logical coordinates
-                if not hasattr(self, "_logical_canvas") or self._logical_canvas.size != (target_w, target_h):
-                    self._logical_canvas = Image.new("RGB", (target_w, target_h), (0, 0, 0))
-                self._logical_canvas.paste(image, (x, y))
-                frame = self._orient_image(self._logical_canvas)
-                self._send_full_frame(frame)
+        with self._canvas_lock:
+            if self._canvas.size != (target_w, target_h):
+                self._canvas = Image.new("RGB", (target_w, target_h), (0, 0, 0))
+
+            if x == 0 and y == 0 and image.size == (target_w, target_h):
+                self._canvas.paste(image, (0, 0))
             else:
-                # In portrait logical coordinates
                 self._canvas.paste(image, (x, y))
-                frame = self._orient_image(self._canvas)
-                self._send_full_frame(frame)
+
+        # Notify worker thread that canvas updated
+        self._frame_event.set()
 
     def _orient_image(self, img: Image.Image) -> Image.Image:
         """Transforms logical image to match physical portrait panel (width x height)."""
@@ -171,8 +192,6 @@ class LcdCommVmax(LcdComm):
                 img = img.resize((self.display_width, self.display_height))
             return img.rotate(180)
         elif self.orientation == Orientation.LANDSCAPE:
-            # Logical is (display_height, display_width), e.g. (1920, 462)
-            # Physical panel is (display_width, display_height), e.g. (462, 1920)
             if img.size != (self.display_height, self.display_width):
                 img = img.resize((self.display_height, self.display_width))
             return img.rotate(90, expand=True)
@@ -182,16 +201,41 @@ class LcdCommVmax(LcdComm):
             return img.rotate(270, expand=True)
         return img
 
-    def _send_full_frame(self, img: Image.Image):
-        # Convert to RGB and encode as high quality JPEG
-        if img.mode != "RGB":
-            img = img.convert("RGB")
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=90)
-        jpeg_bytes = buf.getvalue()
+    def _render_worker(self):
+        """Worker loop that encodes and streams the composite canvas at a steady, stable pace."""
+        min_frame_interval = 0.08  # Max ~12 FPS: smooth and avoids USB/chip buffer saturation
+        last_frame_time = 0.0
 
-        if self.update_queue:
-            with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [jpeg_bytes]))
-        else:
-            self.WriteData(jpeg_bytes)
+        while self._running:
+            # Wait for frame event
+            signaled = self._frame_event.wait(timeout=0.1)
+            if not self._running:
+                break
+            if not signaled:
+                continue
+
+            self._frame_event.clear()
+
+            # Pacing to avoid overloading Artinchip hardware decoder
+            now = time.time()
+            elapsed = now - last_frame_time
+            if elapsed < min_frame_interval:
+                time.sleep(min_frame_interval - elapsed)
+
+            with self._canvas_lock:
+                frame_to_send = self._orient_image(self._canvas.copy())
+
+            if frame_to_send.mode != "RGB":
+                frame_to_send = frame_to_send.convert("RGB")
+
+            buf = io.BytesIO()
+            frame_to_send.save(buf, format="JPEG", quality=88)
+            jpeg_bytes = buf.getvalue()
+
+            try:
+                if self.lcd_serial and self.lcd_serial.is_open:
+                    self.serial_write(jpeg_bytes)
+                    self.lcd_serial.flush()
+                    last_frame_time = time.time()
+            except Exception as e:
+                logger.warning(f"Warning writing frame to screen: {e}")
