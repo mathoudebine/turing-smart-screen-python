@@ -13,10 +13,14 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - 'releases/**'
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analyze:

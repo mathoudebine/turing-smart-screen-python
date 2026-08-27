@@ -2,6 +2,13 @@ name: System monitor - themes screenshot (on PR)
 
 on:
   pull_request:
+    paths:
+      - 'library/**'
+      - 'res/themes/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   system-monitor-theme-screenshot:
