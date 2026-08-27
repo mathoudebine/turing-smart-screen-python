@@ -1,0 +1,115 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 8.8"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 239, 47
+
+static_images:
+  BACKGROUND:
+    PATH:  background.png
+    X: 0
+    Y: 0
+    WIDTH: 1920
+    HEIGHT: 480
+
+static_text:
+  CPU:
+   TEXT: CPU
+   X: 1120
+   Y: 44
+   FONT: racespace/RACESPACEREGULAR-Extended.otf
+   FONT_SIZE: 34
+   FONT_COLOR: 255, 239, 47
+   BACKGROUND_IMAGE: background.png
+  GPU:
+   TEXT: GPU
+   X: 1120
+   Y: 85
+   FONT: racespace/RACESPACEREGULAR-Extended.otf
+   FONT_SIZE: 34
+   FONT_COLOR: 255, 239, 47
+   BACKGROUND_IMAGE: background.png
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1204
+        Y: 40
+        WIDTH: 73
+        HEIGHT: 37
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 34
+        FONT_COLOR: 255, 239, 47
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 1296
+        Y: 40
+        WIDTH: 374
+        HEIGHT: 30
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 239, 47
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 255, 255, 255
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1780
+        Y: 40
+        WIDTH: 73
+        HEIGHT: 37
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 34
+        FONT_COLOR: 255, 239, 47
+        BACKGROUND_IMAGE: background.png
+
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 1296
+        Y: 84
+        WIDTH: 374
+        HEIGHT: 30
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 239, 47
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 255, 255, 255
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1204
+        Y: 81
+        WIDTH: 73
+        HEIGHT: 37
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 34
+        FONT_COLOR: 255, 239, 47
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1780
+        Y: 81
+        WIDTH: 73
+        HEIGHT: 37
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 34
+        FONT_COLOR: 255, 239, 47
+        BACKGROUND_IMAGE: background.png

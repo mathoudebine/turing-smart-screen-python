@@ -1,0 +1,51 @@
+name: Generate Linux Packages
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  generate-windows-installer:
+    name: Generate Linux Packages
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Git Checkout ${{github.event.release.tag_name}}
+      uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Run PyInstaller to create binaries
+      run: |
+        pyinstaller --noconfirm turing-system-monitor.spec
+        echo "${{github.event.release.tag_name}}" > ./dist/turing-system-monitor/version.txt
+        ln -s configure ./dist/turing-system-monitor/turing-smart-screen
+
+    - name: Create archive from generated binaries
+      run: |
+        rm -rf "./dist/turing-system-monitor/res/themes/--Theme examples"
+        tar -czvf "turing-system-monitor-${{github.event.release.tag_name}}-linux.tar.gz" -C "./dist/turing-system-monitor/" .
+
+    - name: '📦 Archive Linux binaries'
+      uses: actions/upload-artifact@v7
+      with:
+        name: turing-system-monitor-${{github.event.release.tag_name}}-linux
+        path: turing-system-monitor-${{github.event.release.tag_name}}-linux.tar.gz
+        if-no-files-found: error
+
+    - name: '📩 Publish Linux binaries to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} turing-system-monitor-${{github.event.release.tag_name}}-linux.tar.gz
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

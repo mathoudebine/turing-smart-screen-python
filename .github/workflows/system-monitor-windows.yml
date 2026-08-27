@@ -1,0 +1,77 @@
+name: System monitor (Windows)
+
+on:
+  push:
+    branches:
+      - main
+      - 'releases/**'
+  pull_request:
+
+jobs:
+  system-monitor:
+    name: System monitor (Windows)
+    runs-on: windows-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.14"]
+        theme: [ "3.5inchTheme2" ]
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v7
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Configure system monitor
+      run: |
+        # For tests there is no real HW: use simulated LCD mode
+        (Get-Content config.yaml) -replace "^  REVISION.*$","  REVISION: SIMU" | Set-Content  config.yaml
+        
+        # Setup selected theme in config.yaml
+        echo "Using theme ${{ matrix.theme }}"
+        (Get-Content config.yaml) -replace "^  THEME.*$","  THEME: ${{ matrix.theme }}" | Set-Content  config.yaml
+
+    - name: Run system monitor for 20 seconds
+      run: |
+        Start-Process -NoNewWindow python3 main.py -RedirectStandardOutput output.log -RedirectStandardError error.log
+        sleep 20
+        add-content output.log (get-content error.log)
+
+    - name: Check output for errors
+      run: |
+        echo "######## Output : ########"
+        cat output.log
+        
+        $SEL = Select-String -Path output.log -Pattern "error"
+        if ($SEL -ne $null)
+        {
+            throw "Program failed to run, see output above"
+        }
+        $SEL = Select-String -Path output.log -Pattern "traceback"
+        if ($SEL -ne $null)
+        {
+            throw "Program failed to run, see output above"
+        }
+        $SEL = Select-String -Path output.log -Pattern "exception"
+        if ($SEL -ne $null)
+        {
+            throw "Program failed to run, see output above"
+        }
+
+    - name: Prepare screenshot for archiving
+      run: |
+        cp screencap.png screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}.png
+
+    - name: Archive a screenshot
+      uses: actions/upload-artifact@v7
+      with:
+        name: screenshot-py${{ matrix.python-version }}-${{ matrix.theme }}
+        path: screenshot-*.png

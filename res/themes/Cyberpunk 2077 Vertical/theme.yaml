@@ -1,0 +1,164 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 8.8"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 255, 239, 47
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 1920
+
+static_text:
+  CPU:
+   TEXT: CPU
+   X: 344
+   Y: 1273
+   FONT: racespace/RACESPACEREGULAR-Extended.otf
+   FONT_SIZE: 24
+   FONT_COLOR: 0, 0, 0
+   BACKGROUND_IMAGE: background.png
+  GPU:
+   TEXT: GPU
+   X: 344
+   Y: 1343
+   FONT: racespace/RACESPACEREGULAR-Extended.otf
+   FONT_SIZE: 24
+   FONT_COLOR: 0, 0, 0
+   BACKGROUND_IMAGE: background.png
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 326
+        Y: 1655
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 160
+        Y: 1270
+        WIDTH: 174
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 255, 255, 255
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 326
+        Y: 1597
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 244
+        Y: 1300
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 160
+        Y: 1340
+        WIDTH: 174
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 255, 255, 255
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 326
+        Y: 1779
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 326
+        Y: 1722
+        WIDTH: 100
+        HEIGHT: 44
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    FREQUENCY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 244
+        Y: 1370
+        WIDTH: 130
+        HEIGHT: 30
+        ANCHOR: mm
+        FONT: racespace/RACESPACEREGULAR-Extended.otf
+        FONT_SIZE: 24
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 163
+        Y: 1435
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 145
+        Y: 1499
+        FONT: jetbrains-mono/JetBrainsMono-ExtraBold.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png

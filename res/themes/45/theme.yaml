@@ -1,0 +1,100 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 2.1"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 40, 178, 171
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 480
+
+STATS:
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        SHOW: True
+        X: 31
+        Y: 280
+        WIDTH: 419
+        HEIGHT: 34
+        ANCHOR: mm
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 22
+        Y: 177
+        WIDTH: 437
+        HEIGHT: 96
+        ANCHOR: mm
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 100
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 50, 50, 50
+        BACKGROUND_IMAGE: background.png
+  NET:
+    INTERVAL: 1
+    ETH:  # For Wi-Fi stats change ETH to WLO
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 147
+          Y: 140
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 271
+          Y: 140
+          FONT: roboto-mono/RobotoMono-Regular.ttf
+          FONT_SIZE: 16
+          FONT_COLOR: 255, 255, 255
+          # BACKGROUND_COLOR: 132, 154, 165
+          BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 197
+        Y: 384
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+  CPU:
+    PERCENTAGE:
+      # In seconds. Longer intervals cause this to refresh more slowly.
+      # Setting to lower values will display near real time data,
+      # but may cause significant CPU usage or the display not to update properly
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 214
+        Y: 433
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png

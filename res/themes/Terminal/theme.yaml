@@ -1,0 +1,181 @@
+---
+author: "@Ebag333"
+
+display:
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+static_text:
+  TEXT_EXAMPLE:
+   TEXT: Add your custom text here!
+   X: 20
+   Y: 400
+   FONT: geforce/GeForce-Bold.ttf
+   FONT_SIZE: 20
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background.png
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 71
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 100
+        Y: 91
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+    LOAD:
+      INTERVAL: 5
+      ONE:
+        TEXT:
+          SHOW: True
+          SHOW_UNIT: True
+          X: 110
+          Y: 110
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIVE:
+        TEXT:
+          SHOW: TRUE
+          SHOW_UNIT: True
+          X: 183
+          Y: 110
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+      FIFTEEN:
+        TEXT:
+          SHOW: TRUE
+          SHOW_UNIT: True
+          X: 265
+          Y: 110
+          FONT: roboto/Roboto-Bold.ttf
+          FONT_SIZE: 13
+          FONT_COLOR: 200, 200, 200
+          BACKGROUND_COLOR: 50, 50, 50
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 197
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+    MEMORY:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 215
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+    TEMPERATURE:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 115
+        Y: 235
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+  MEMORY:
+    INTERVAL: 5
+    SWAP:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 285
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 303
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 115
+        Y: 357
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 10
+        Y: 20
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+        WIDTH: 130
+        ANCHOR: lt
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 205
+        Y: 17
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 18
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 50, 50
+        WIDTH: 100
+        ANCHOR: lt

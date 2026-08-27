@@ -1,0 +1,171 @@
+---
+author: "@takattila"
+
+display:
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 0, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+static_text:
+  CPU_PERCENT_TEXT:
+    TEXT: "%  CPU"
+    X: 170
+    Y: 10
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 204, 204, 204
+    BACKGROUND_IMAGE: background.png
+  CPU_TEMP_TEXT:
+    TEXT: "°C CPU"
+    X: 170
+    Y: 362
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 204, 204, 204
+    BACKGROUND_IMAGE: background.png
+  CPU_MODEL_PERCENT:
+    TEXT: Intel i5-10400
+    X: 170
+    Y: 51
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 12
+    FONT_COLOR: 233, 0, 255
+    BACKGROUND_IMAGE: background.png
+  CPU_MODEL_TEMP:
+    TEXT: Intel i5-10400
+    X: 170
+    Y: 406
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 12
+    FONT_COLOR: 114, 0, 255
+    BACKGROUND_IMAGE: background.png
+  RAM_TEXT:
+    TEXT: "%  RAM"
+    X: 170
+    Y: 125
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 204, 204, 204
+    BACKGROUND_IMAGE: background.png
+  RAM_MODEL:
+    TEXT: Kingston Fury DDR4
+    X: 170
+    Y: 168
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 12
+    FONT_COLOR: 255, 0, 180
+    BACKGROUND_IMAGE: background.png
+  GPU_TEXT:
+    TEXT: "%  GPU"
+    X: 170
+    Y: 245
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 204, 204, 204
+    BACKGROUND_IMAGE: background.png
+  GPU_MODEL:
+    TEXT: NVIDIA RTX 3060
+    X: 170
+    Y: 287
+    FONT: generale-mono/GeneraleMonoA.ttf
+    FONT_SIZE: 12
+    FONT_COLOR: 0, 120, 255
+    BACKGROUND_IMAGE: background.png
+STATS:
+  CPU:
+    PERCENTAGE: 
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 5
+        Y: 35
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 75
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 170
+        Y: 64
+        WIDTH: 150
+        HEIGHT: 50
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 233, 0, 255
+        BAR_OUTLINE: True
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 5
+        Y: 390
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 75
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 170
+        Y: 420
+        WIDTH: 150
+        HEIGHT: 50
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 114, 0, 255
+        BAR_OUTLINE: True
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 5
+        Y: 150
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 75
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 170
+        Y: 182
+        WIDTH: 150
+        HEIGHT: 50
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 180
+        BAR_OUTLINE: True
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 5
+        Y: 270
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 75
+        FONT_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+      GRAPH:
+        SHOW: True
+        X: 170
+        Y: 300
+        WIDTH: 150
+        HEIGHT: 50
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 120, 255
+        BAR_OUTLINE: True
+        BACKGROUND_IMAGE: background.png

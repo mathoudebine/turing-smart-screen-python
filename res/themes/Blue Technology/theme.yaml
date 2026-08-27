@@ -1,0 +1,71 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 8.8"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 0, 0, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 1920
+    HEIGHT: 480
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 436
+        Y: 200
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 100
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 84
+        Y: 208
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1220
+        Y: 200
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 100
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1626
+        Y: 208
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    FPS:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 768
+        Y: 190
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 116
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png

@@ -1,0 +1,237 @@
+author: "@hicwic"
+
+display:
+  # Specify the display size in inch for this theme: 3.5" (default) or 5"
+  DISPLAY_SIZE: 3.5"
+
+  # Specify the display orientation for this theme: portrait or landscape (reverse orientation is managed in config.yaml)
+  DISPLAY_ORIENTATION: landscape
+
+  # Backplate RGB LED color (for HW revision 'flagship' devices only), set one that match your theme dominant color
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+
+  
+
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      RADIAL:
+        SHOW: True
+        X: 120
+        Y: 100
+        RADIUS: 80
+        WIDTH: 26
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 110
+        ANGLE_END: 250
+        ANGLE_STEPS: 10
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR:  0, 250, 0
+        BAR_BACKGROUND_COLOR:  0, 50, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 250, 0
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+        CUSTOM_BBOX: [0, 0, 80, 160]
+        TEXT_OFFSET: [-30, 0]
+    TEMPERATURE:
+      INTERVAL: 5
+      RADIAL:
+        SHOW: True
+        X: 300
+        Y: 180
+        RADIUS: 80
+        WIDTH: 26
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 200
+        ANGLE_END: 340
+        ANGLE_STEPS: 10
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR:  0, 250, 0
+        BAR_BACKGROUND_COLOR:  0, 50, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 0, 250, 0
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+        CUSTOM_BBOX: [0, 0, 160, 80]
+        TEXT_OFFSET: [-10, -20]
+    FAN_SPEED:
+      INTERVAL: 5
+      RADIAL:
+        SHOW: True
+        X: 173
+        Y: 230
+        RADIUS: 31
+        WIDTH: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 220
+        ANGLE_END: 210
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: True
+        BAR_COLOR: 200, 100, 50
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 248, 177, 51
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 1
+    VIRTUAL:
+      #RADIAL:
+      #  SHOW: FALSE
+      # X: 66
+      #  Y: 151
+       # RADIUS: 31
+      # WIDTH: 13
+      #  MIN_VALUE: 0
+      #  MAX_VALUE: 100
+      #  ANGLE_START: 20
+      #  ANGLE_END: 20
+      #  ANGLE_STEPS: 1
+      #  ANGLE_SEP: 25
+      #  CLOCKWISE: True
+      #  BAR_COLOR: 200, 100, 50
+      #  SHOW_TEXT: True
+      #  SHOW_UNIT: True
+      #  FONT: roboto/Roboto-Bold.ttf
+      #  FONT_SIZE: 13
+      #  FONT_COLOR: 248, 177, 51
+        # BACKGROUND_COLOR: 0, 0, 0
+      #  BACKGROUND_IMAGE: background.png
+      RADIAL:
+        SHOW: True
+        X: 87
+        Y: 240
+        RADIUS: 39
+        WIDTH: 15
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 20
+        ANGLE_END: 20
+        ANGLE_STEPS: 1
+        ANGLE_SEP: 25
+        CLOCKWISE: True
+        BAR_COLOR: 0, 0, 200
+        BAR_BACKGROUND_COLOR:  0, 0, 50
+        DRAW_BAR_BACKGROUND: True
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 248, 177, 51
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png        
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      RADIAL:
+        SHOW: True
+        X: 120
+        Y: 100
+        RADIUS: 80
+        WIDTH: 26
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 70
+        ANGLE_END: 290
+        ANGLE_STEPS: 10
+        ANGLE_SEP: 0
+        CLOCKWISE: False
+        BAR_COLOR: 255, 0, 0
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 0, 0
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        CUSTOM_BBOX: [80, 0, 160, 160]
+        TEXT_OFFSET: [30, 0]
+    TEMPERATURE:
+      RADIAL:
+        SHOW: True
+        X: 300
+        Y: 180
+        RADIUS: 80
+        WIDTH: 26
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 160
+        ANGLE_END: 20
+        ANGLE_STEPS: 10
+        ANGLE_SEP: 0
+        CLOCKWISE: False
+        BAR_COLOR:  255, 0, 0
+        BAR_BACKGROUND_COLOR:  50, 0, 0
+        DRAW_BAR_BACKGROUND: True
+        BAR_DECORATION: Ellipse
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 0, 0
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+        CUSTOM_BBOX: [0, 80, 160, 160]
+        TEXT_OFFSET: [10, 20]
+    FAN_SPEED:
+      RADIAL:
+        SHOW: True
+        X: 430
+        Y: 68
+        RADIUS: 31
+        WIDTH: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 320
+        ANGLE_END: 320
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 0
+        CLOCKWISE: False
+        BAR_COLOR: 200, 100, 50
+        BAR_BACKGROUND_COLOR:  100, 50, 25
+        DRAW_BAR_BACKGROUND: True        
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 248, 177, 51
+        #BACKGROUND_COLOR: 200, 200, 200
+        BACKGROUND_IMAGE: background.png
+
+ 
+
+

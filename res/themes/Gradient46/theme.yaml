@@ -1,0 +1,83 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 4.6"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 226, 21, 103
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 960
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 40
+        Y: 160
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 110
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 40
+        Y: 480
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 430
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 80
+        Y: 740
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 30
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 40
+        Y: 790
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png

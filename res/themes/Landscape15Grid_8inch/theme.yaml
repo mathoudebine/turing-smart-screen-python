@@ -1,0 +1,307 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 8"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 0, 0, 255
+
+static_text:
+  CPULOAD:
+   TEXT: CPU Load
+   X: 61
+   Y: 217
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  CPUTEMP:
+   TEXT: CPU Temp°
+   X: 301
+   Y: 217
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  CPUCLOCK:
+   TEXT: CPU Clock
+   X: 550
+   Y: 217
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  GPULOAD:
+   TEXT: GPU Load
+   X: 61
+   Y: 467
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  GPUTEMP:
+   TEXT: GPU Temp°
+   X: 301
+   Y: 467
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  GPURAM:
+   TEXT: GPU RAM
+   X: 557
+   Y: 467
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  RAMLOAD:
+   TEXT: RAM Load
+   X: 797
+   Y: 217
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  RAMFREE:
+   TEXT: RAM Free
+   X: 1053
+   Y: 217
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  ETHDOWN:
+   TEXT: ETH Downl.
+   X: 790
+   Y: 467
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  ETHUP:
+   TEXT: ETH Upload
+   X: 1037
+   Y: 467
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  WLDOWN:
+   TEXT: WL Downl.
+   X: 797
+   Y: 717
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  WLUP:
+   TEXT: WL Upload
+   X: 1046
+   Y: 717
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  DISKLOAD:
+   TEXT: DISK Load
+   X: 304
+   Y: 717
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+  DISKFREE:
+   TEXT: DISK Free
+   X: 557
+   Y: 717
+   FONT: roboto/Roboto-Bold.ttf
+   FONT_SIZE: 38
+   FONT_COLOR: 255, 255, 255
+   BACKGROUND_IMAGE: background_grid.png
+
+static_images:
+  BACKGROUND:
+    PATH: background_grid.png
+    X: 0
+    Y: 0
+    WIDTH: 1280
+    HEIGHT: 800
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 64
+        Y: 110
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 576
+        Y: 110
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 296
+        Y: 110
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 64
+        Y: 352
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 296
+        Y: 352
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    MEMORY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 544
+        Y: 352
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 816
+        Y: 110
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+      FREE:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 1043
+        Y: 110
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  NET:
+    INTERVAL: 1
+    WLO:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 1034
+          Y: 607
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 35
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 781
+          Y: 607
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 35
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+    ETH:
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 1034
+          Y: 357
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 35
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 781
+          Y: 357
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 35
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 320
+        Y: 602
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    FREE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 544
+        Y: 602
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 64
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    DAY: # Format (Y/M/D ordering, month/day translations...) will match your computer locale
+      TEXT:
+        FORMAT: short # short (2/20/23) / medium (Feb 20, 2023) / long (February 20, 2023) / full (Monday, February 20, 2023)
+        SHOW: True
+        X: 46
+        Y: 717
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 32
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 208
+        ANCHOR: lt
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time)
+        SHOW: True
+        X: 46
+        Y: 613
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 45
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 208
+        ANCHOR: lt

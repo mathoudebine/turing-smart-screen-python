@@ -1,0 +1,73 @@
+name: Generate Windows Packages (Debug)
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  generate-windows-installer:
+    name: Generate Windows Packages (Debug)
+    runs-on: windows-latest
+
+    steps:
+    - name: Git Checkout ${{github.event.release.tag_name}}
+      uses: actions/checkout@v7
+
+    - name: Set up Python
+      uses: actions/setup-python@v7
+      with:
+        python-version: '3.14'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+
+    - name: Set version number for PyInstaller
+      run: |
+        python.exe tools\windows-installer\generate-version-info.py ${{github.event.release.tag_name}} debug
+
+    - name: Run PyInstaller to create binaries
+      run: |
+        pyinstaller.exe --noconfirm turing-system-monitor-debug.spec
+        "${{github.event.release.tag_name}}-debug" | Out-File ".\dist\turing-system-monitor\version.txt"
+
+    - name: Create InnoSetup installer from generated binaries
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
+      with:
+        path: tools/windows-installer/turing-system-monitor.iss
+        options: /O+
+
+    - name: Create portable zip archive from generated binaries
+      run: |
+        Remove-Item -r ".\dist\turing-system-monitor\res\themes\--Theme examples\"
+        7z a -tzip turing-system-monitor-${{github.event.release.tag_name}}-debug-portable-windows.zip ".\dist\turing-system-monitor"
+
+    - name: '📦 Archive Windows installer'
+      uses: actions/upload-artifact@v7
+      with:
+        name: turing-system-monitor-${{github.event.release.tag_name}}-debug-windows
+        path: tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug-windows.exe
+        if-no-files-found: error
+
+    - name: '📦 Archive Windows portable archive'
+      uses: actions/upload-artifact@v7
+      with:
+        name: turing-system-monitor-${{github.event.release.tag_name}}-debug-portable-windows
+        path: turing-system-monitor-${{github.event.release.tag_name}}-debug-portable-windows.zip
+        if-no-files-found: error
+
+    - name: '📩 Publish Windows installer to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} tools\windows-installer\Output\turing-system-monitor-${{github.event.release.tag_name}}-debug-windows.exe
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: '📩 Publish Windows portable zip to Release'
+      run: |
+        gh release upload ${{github.event.release.tag_name}} turing-system-monitor-${{github.event.release.tag_name}}-debug-portable-windows.zip
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

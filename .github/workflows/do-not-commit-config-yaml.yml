@@ -1,0 +1,23 @@
+name: Do not commit user configuration
+
+on:
+  pull_request:
+    paths:
+      - 'config.yaml'
+
+jobs:
+  check-config:
+    name: Check config.yaml
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify config.yaml was not changed
+        run: |
+          if git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -q '^config\.yaml$'; then
+            echo "::error file=config.yaml::config.yaml has been modified. Did you commit your configuration by mistake?"
+            exit 1
+          fi

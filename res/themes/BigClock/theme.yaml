@@ -1,0 +1,40 @@
+---
+author: "@RussNelson"
+
+display:
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 255, 0, 0
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+
+STATS:
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 10
+        Y: 32
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 0, 0, 0
+        WIDTH: 460
+        ANCHOR: mm
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 10
+        Y: 176
+        FONT: roboto/Roboto-Bold.ttf
+        FONT_SIZE: 80
+        FONT_COLOR: 200, 200, 200
+        BACKGROUND_COLOR: 50, 0, 0
+        WIDTH: 460
+        ANCHOR: mm

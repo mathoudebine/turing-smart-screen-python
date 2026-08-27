@@ -1,0 +1,123 @@
+---
+author: "@mathoudebine"
+
+display:
+  DISPLAY_SIZE: 8.8"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 125, 184, 55
+
+static_images:
+  BACKGROUND:
+    PATH:  background.png
+    X: 0
+    Y: 0
+    WIDTH: 1920
+    HEIGHT: 480
+
+static_text:
+  CPU:
+   TEXT: DISK
+   X: 75
+   Y: 344
+   WIDTH: 118
+   HEIGHT: 28
+   ANCHOR: mm
+   FONT: geforce/GeForce-Bold.ttf
+   FONT_SIZE: 22
+   FONT_COLOR: 0, 0, 0
+   BACKGROUND_COLOR: 125, 184, 55
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 64
+        Y: 234
+        WIDTH: 160
+        HEIGHT: 64
+        ANCHOR: lm
+        FONT: geforce/GeForce-Bold.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 125, 184, 55
+        BACKGROUND_IMAGE: background.png
+
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 64
+        Y: 100
+        WIDTH: 160
+        HEIGHT: 64
+        ANCHOR: lm
+        FONT: geforce/GeForce-Bold.ttf
+        FONT_SIZE: 60
+        FONT_COLOR: 125, 184, 55
+        BACKGROUND_IMAGE: background.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 1460
+        Y: 140
+        WIDTH: 400
+        HEIGHT: 150
+        ANCHOR: lm
+        FONT: geforce/GeForce-Bold.ttf
+        FONT_SIZE: 180
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+
+  MEMORY:
+    INTERVAL: 1
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 223
+        Y: 375
+        WIDTH: 117
+        HEIGHT: 45
+        ANCHOR: mm
+        FONT: geforce/GeForce-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 125, 184, 55
+        BACKGROUND_IMAGE: background.png
+
+  DISK:
+    INTERVAL: 10
+    USED:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 76
+        Y: 375
+        WIDTH: 117
+        HEIGHT: 45
+        ANCHOR: mm
+        FONT: geforce/GeForce-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 125, 184, 55
+        BACKGROUND_IMAGE: background.png
+  DATE:
+    # For time display, it is recommended not to change the interval: keep to 1
+    INTERVAL: 1
+    HOUR: # Format (12/24h, timezone translations) will match your computer locale
+      TEXT:
+        FORMAT: short # short (6:48 PM) / medium (6:48:53 PM) / long (6:48:53 PM UTC) / full (6:48:53 PM Coordinated Universal Time) / custom pattern e.g. "HH:mm:ss zzz" (6:48:53 EDT)
+        SHOW: False
+        X: 1644
+        Y: 330
+        WIDTH: 254
+        HEIGHT: 56
+        FONT: roboto/Roboto-Medium.ttf
+        FONT_SIZE: 70
+        FONT_COLOR: 205, 205, 205
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: rt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html

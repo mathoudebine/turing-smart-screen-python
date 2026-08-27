@@ -1,0 +1,255 @@
+---
+author: "@alexwbaule"
+
+display:
+  DISPLAY_SIZE: 8"
+  DISPLAY_ORIENTATION: portrait
+  DISPLAY_RGB_LED: 0, 0, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 1280
+static_text:
+  DISK_USED_LABEL:
+    TEXT: "Used:"
+    X: 207
+    Y: 984
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+  DISK_FREE_LABEL:
+    TEXT: "Free:"
+    X: 207
+    Y: 1070
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+  DISK_TOTAL_LABEL:
+    TEXT: "Total:"
+    X: 207
+    Y: 1027
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 38
+    FONT_COLOR: 255, 255, 255
+    BACKGROUND_COLOR: 132, 154, 165
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 475
+        Y: 64
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+      GRAPH:
+        SHOW: True
+        X: 500
+        Y: 112
+        WIDTH: 250
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+    FREQUENCY:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 500
+        Y: 160
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 49
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+    TEMPERATURE:
+      INTERVAL: 5
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 333
+        Y: 112
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      GRAPH:
+        SHOW: True
+        X: 500
+        Y: 416
+        WIDTH: 250
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 475
+        Y: 368
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+    MEMORY:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 500
+        Y: 464
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+    TEMPERATURE:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 333
+        Y: 416
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      GRAPH:
+        SHOW: True
+        X: 500
+        Y: 720
+        WIDTH: 250
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: True
+        BACKGROUND_COLOR: 0, 0, 0
+      USED:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 500
+        Y: 768
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+      PERCENT_TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 475
+        Y: 672
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+  DISK:
+    INTERVAL: 10
+    USED:
+      GRAPH:
+        SHOW: True
+        X: 207
+        Y: 944
+        WIDTH: 297
+        HEIGHT: 24
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 0, 0, 255
+        BAR_OUTLINE: False
+        BACKGROUND_COLOR: 0, 0, 0
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 340
+        Y: 984
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+    TOTAL:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 340
+        Y: 1027
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+    FREE:
+      TEXT:
+        SHOW: TRUE
+        SHOW_UNIT: True
+        X: 340
+        Y: 1070
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 38
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+
+  DATE:
+    INTERVAL: 1
+    DAY:
+      TEXT:
+        SHOW: True
+        X: 25
+        Y: 1184
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        WIDTH: 383
+        ANCHOR: lt
+    HOUR:
+      TEXT:
+        SHOW: True
+        X: 25
+        Y: 1229
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_COLOR: 132, 154, 165
+        WIDTH: 383
+        ANCHOR: lt
+
+  WEATHER:
+    # For optimal use, if you don't want to trigger the free threshold daily call (1000 calls), the interval should be 90 MINIMUM (not really useful as the API didn't update that quickly)
+    INTERVAL: 300
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        X: 450
+        Y: 1229
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png 
+        WIDTH: 333
+        ANCHOR: rt
+    WEATHER_DESCRIPTION:
+      TEXT:
+        SHOW: True
+        X: 450
+        Y: 1184
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 41
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png 
+        WIDTH: 333
+        ANCHOR: rt
