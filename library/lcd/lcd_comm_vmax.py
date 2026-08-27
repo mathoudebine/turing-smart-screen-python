@@ -51,6 +51,30 @@ class LcdCommVmax(LcdComm):
                 return p.device
         return None
 
+    def openSerial(self):
+        for attempt in range(1, 11):
+            com_port = self.com_port
+            if com_port == 'AUTO':
+                com_port = self.auto_detect_com_port()
+                if not com_port:
+                    logger.warning(f"Cannot find HL-VMAX COM port automatically, retrying ({attempt}/10)")
+                    time.sleep(1)
+                    continue
+                logger.debug(f"Auto detected COM port: {com_port}")
+            else:
+                logger.debug(f"Static COM port: {com_port}")
+
+            try:
+                self.lcd_serial = serial.Serial(com_port, 115200, timeout=1, write_timeout=1, rtscts=False, dsrdtr=False)
+                self.lcd_serial.dtr = True
+                self.lcd_serial.rts = True
+                self.lcd_serial.reset_input_buffer()
+                self.lcd_serial.reset_output_buffer()
+                return
+            except Exception as e:
+                logger.warning(f"Cannot open COM port {com_port}: {e} - retrying ({attempt}/10)")
+                time.sleep(1)
+
     def InitializeComm(self):
         logger.debug("Initializing HL-VMAX communication...")
         self.serial_flush_input()
