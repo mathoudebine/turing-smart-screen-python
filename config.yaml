@@ -10,7 +10,7 @@ config:
   # Theme to use (located in res/themes)
   # Use the name of the folder as value
   # Choose a theme made for your screen size (see DISPLAY_SIZE inside theme.yaml)
-  THEME: 3.5inchTheme2
+  THEME: "Cyberpunk 2077 Vertical"
 
   # Hardware sensors reading
   # Choose the appropriate method for reading your hardware sensors:
@@ -18,7 +18,7 @@ config:
   # - LHM            use LibreHardwareMonitor library to read hardware sensors (Windows only - NEEDS ADMIN RIGHTS)
   # - STUB / STATIC  use random/static data instead of real hardware sensors
   # - AUTO           use the best method based on your OS: Windows OS will use LHM, other OS will use Python libraries
-  HW_SENSORS: AUTO
+  HW_SENSORS: PYTHON
 
   # Network interfaces
   # Linux/MacOS interfaces are named "eth0", "wlan0", "wlp1s0", "enp2s0"...
@@ -59,14 +59,15 @@ display:
   # - TUR_USB   for Turing HW revisions 1.x: 4.6"/5.2"/8.0"/8.8"/9.2"
   # - WEACT_A   for WeAct Studio Display FS V1 3.5"
   # - WEACT_B   for WeAct Studio Display FS V1 0.96"
+  # - VMAX      for Solarmax / HL-VMAX (Artinchip VID 0x33C3 PID 0xF101)
   # - SIMU for simulated display (image written in screencap.png). Width & height will be detected from the theme
   # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-  REVISION: A
+  REVISION: VMAX
 
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
   # Warning: revision A display can get hot at high brightness!
-  BRIGHTNESS: 20
+  BRIGHTNESS: 80
 
   # Display reverse: true/false
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
@@ -77,4 +78,4 @@ display:
   # By default, this program resets the display on startup, in case it is in a degraded state from previous runs.
   # This behavior causes the display to disconnect/reconnect, and the COM port to change.
   # On some displays (like rev. A) it can be an issue, in this case change the value to "false".
-  RESET_ON_STARTUP: true
+  RESET_ON_STARTUP: false

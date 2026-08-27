@@ -38,6 +38,7 @@ from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_comm_turing_usb import LcdCommTuringUSB
 from library.lcd.lcd_comm_weact_a import LcdCommWeActA
 from library.lcd.lcd_comm_weact_b import LcdCommWeActB
+from library.lcd.lcd_comm_vmax import LcdCommVmax
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -49,11 +50,11 @@ COM_PORT = "AUTO"
 
 # Display revision: see config.yaml comments for values
 # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-REVISION = "A"
+REVISION = "VMAX"
 
 # Display width & height in pixels for portrait orientation
 # /!\ Do not switch width/height here for landscape, use lcd_comm.SetOrientation below
-WIDTH, HEIGHT = 320, 480
+WIDTH, HEIGHT = 462, 1920
 
 assert WIDTH <= HEIGHT, "Indicate display width/height for PORTRAIT orientation: width <= height"
 
@@ -96,6 +97,9 @@ if __name__ == "__main__":
     elif REVISION == "WEACT_B":
         logger.info("Selected Hardware WeAct Studio Display FS V1 0.96\"")
         lcd_comm = LcdCommWeActB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
+    elif REVISION in ("VMAX", "SOLARMAX"):
+        logger.info("Selected Hardware Solarmax / HL-VMAX (Artinchip)")
+        lcd_comm = LcdCommVmax(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "SIMU":
         logger.info("Selected Simulated LCD")
         lcd_comm = LcdSimulated(display_width=WIDTH, display_height=HEIGHT)
