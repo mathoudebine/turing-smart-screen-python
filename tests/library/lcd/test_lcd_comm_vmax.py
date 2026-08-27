@@ -1,5 +1,4 @@
 import unittest
-import time
 from PIL import Image
 
 from library.lcd.lcd_comm_vmax import LcdCommVmax, HANDSHAKE
@@ -19,28 +18,23 @@ class TestLcdCommVmax(unittest.TestCase):
         lcd.SetBrightness(80)
         writes = [args[0] for name, args, _ in lcd.lcd_serial.mock_calls if name == "write"]
         self.assertIn(bytes([0xAA, 0xBB, 80, 0xCC, 0xDD]), writes)
-        lcd.closeSerial()
 
     def test_display_pil_image_portrait(self):
         lcd = MockedLcdCommVmax(display_width=100, display_height=200)
         lcd.SetOrientation(Orientation.PORTRAIT)
         img = Image.new("RGB", (100, 200), (255, 0, 0))
         lcd.DisplayPILImage(img)
-        time.sleep(0.2)
         writes = [args[0] for name, args, _ in lcd.lcd_serial.mock_calls if name == "write"]
         self.assertTrue(len(writes) > 0)
         self.assertTrue(writes[0].startswith(b"\xff\xd8\xff"))
         self.assertTrue(writes[0].endswith(b"\xff\xd9"))
-        lcd.closeSerial()
 
     def test_display_pil_image_landscape(self):
         lcd = MockedLcdCommVmax(display_width=100, display_height=200)
         lcd.SetOrientation(Orientation.LANDSCAPE)
         img = Image.new("RGB", (200, 100), (0, 255, 0))
         lcd.DisplayPILImage(img)
-        time.sleep(0.2)
         writes = [args[0] for name, args, _ in lcd.lcd_serial.mock_calls if name == "write"]
         self.assertTrue(len(writes) > 0)
         self.assertTrue(writes[0].startswith(b"\xff\xd8\xff"))
         self.assertTrue(writes[0].endswith(b"\xff\xd9"))
-        lcd.closeSerial()

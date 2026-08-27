@@ -39,23 +39,13 @@ class LcdCommVmax(LcdComm):
         # Canvas for full frame composition
         self._canvas_lock = threading.Lock()
         self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
-        self._frame_event = threading.Event()
-        self._running = True
+        self._frame_pending = False
+        self._serial_lock = threading.Lock()
 
         self.openSerial()
 
-        # Start dedicated frame worker thread to smoothly stream frames without flooding serial
-        self._worker_thread = threading.Thread(target=self._render_worker, name="VmaxRenderWorker", daemon=True)
-        self._worker_thread.start()
-
     def __del__(self):
         self.closeSerial()
-
-    def closeSerial(self):
-        self._running = False
-        if hasattr(self, "_frame_event"):
-            self._frame_event.set()
-        super().closeSerial()
 
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
@@ -68,50 +58,52 @@ class LcdCommVmax(LcdComm):
         return None
 
     def openSerial(self):
-        for attempt in range(1, 11):
-            com_port = self.com_port
-            if com_port == 'AUTO':
-                com_port = self.auto_detect_com_port()
-                if not com_port:
-                    logger.warning(f"Cannot find HL-VMAX COM port automatically, retrying ({attempt}/10)")
-                    time.sleep(1)
-                    continue
-                logger.debug(f"Auto detected COM port: {com_port}")
-            else:
-                logger.debug(f"Static COM port: {com_port}")
+        with self._serial_lock:
+            for attempt in range(1, 11):
+                com_port = self.com_port
+                if com_port == 'AUTO':
+                    com_port = self.auto_detect_com_port()
+                    if not com_port:
+                        logger.warning(f"Cannot find HL-VMAX COM port automatically, retrying ({attempt}/10)")
+                        time.sleep(1)
+                        continue
+                    logger.debug(f"Auto detected COM port: {com_port}")
+                else:
+                    logger.debug(f"Static COM port: {com_port}")
 
-            try:
-                self.lcd_serial = serial.Serial(
-                    com_port,
-                    115200,
-                    timeout=2.0,
-                    write_timeout=2.0,
-                    rtscts=False,
-                    dsrdtr=False
-                )
-                self.lcd_serial.dtr = True
-                self.lcd_serial.rts = True
-                self.lcd_serial.reset_input_buffer()
-                self.lcd_serial.reset_output_buffer()
-                return
-            except Exception as e:
-                logger.warning(f"Cannot open COM port {com_port}: {e} - retrying ({attempt}/10)")
-                time.sleep(1)
+                try:
+                    self.lcd_serial = serial.Serial(
+                        com_port,
+                        115200,
+                        timeout=2.0,
+                        write_timeout=2.0,
+                        rtscts=False,
+                        dsrdtr=False
+                    )
+                    self.lcd_serial.dtr = True
+                    self.lcd_serial.rts = True
+                    self.lcd_serial.reset_input_buffer()
+                    self.lcd_serial.reset_output_buffer()
+                    return
+                except Exception as e:
+                    logger.warning(f"Cannot open COM port {com_port}: {e} - retrying ({attempt}/10)")
+                    time.sleep(1)
 
     def InitializeComm(self):
-        logger.debug("Initializing HL-VMAX communication...")
-        self.serial_flush_input()
-        try:
-            self.serial_write(HANDSHAKE)
-            raw = self.serial_read(SN_LEN)
-            if len(raw) == SN_LEN:
-                self.serial_number = raw.decode("ascii", errors="replace").strip()
-                logger.info(f"Connected to HL-VMAX screen, Serial Number: {self.serial_number}")
-                self._parse_geometry(self.serial_number)
-            else:
-                logger.warning(f"Unexpected handshake response length: {len(raw)} bytes")
-        except Exception as e:
-            logger.error(f"Failed during HL-VMAX handshake: {e}")
+        with self._serial_lock:
+            logger.debug("Initializing HL-VMAX communication...")
+            self.serial_flush_input()
+            try:
+                self.serial_write(HANDSHAKE)
+                raw = self.serial_read(SN_LEN)
+                if len(raw) == SN_LEN:
+                    self.serial_number = raw.decode("ascii", errors="replace").strip()
+                    logger.info(f"Connected to HL-VMAX screen, Serial Number: {self.serial_number}")
+                    self._parse_geometry(self.serial_number)
+                else:
+                    logger.warning(f"Unexpected handshake response length: {len(raw)} bytes")
+            except Exception as e:
+                logger.error(f"Failed during HL-VMAX handshake: {e}")
 
     def _parse_geometry(self, sn: str):
         # Format example: VMAXD160462*1920S262001750 or VMAXA170320*1480S261001155
@@ -126,13 +118,14 @@ class LcdCommVmax(LcdComm):
                     self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
 
     def Reset(self):
-        self.serial_flush_input()
+        with self._serial_lock:
+            self.serial_flush_input()
         self.Clear()
 
     def Clear(self):
         with self._canvas_lock:
             self._canvas = Image.new("RGB", (self.display_width, self.display_height), (0, 0, 0))
-        self._frame_event.set()
+        self._enqueue_render()
 
     def ScreenOff(self):
         self.SetBrightness(0)
@@ -143,11 +136,19 @@ class LcdCommVmax(LcdComm):
     def SetBrightness(self, level: int):
         self.brightness = max(0, min(100, int(level)))
         cmd = bytes([0xAA, 0xBB, self.brightness, 0xCC, 0xDD])
-        try:
-            if self.lcd_serial and self.lcd_serial.is_open:
-                self.serial_write(cmd)
-        except Exception as e:
-            logger.error(f"Failed to set brightness: {e}")
+        if self.update_queue:
+            with self.update_queue_mutex:
+                self.update_queue.put((self._send_brightness_direct, [cmd]))
+        else:
+            self._send_brightness_direct(cmd)
+
+    def _send_brightness_direct(self, cmd: bytes):
+        with self._serial_lock:
+            try:
+                if self.lcd_serial and self.lcd_serial.is_open:
+                    self.serial_write(cmd)
+            except Exception as e:
+                logger.warning(f"Failed to send brightness command: {e}")
 
     def SetOrientation(self, orientation: Orientation):
         self.orientation = orientation
@@ -178,8 +179,38 @@ class LcdCommVmax(LcdComm):
             else:
                 self._canvas.paste(image, (x, y))
 
-        # Notify worker thread that canvas updated
-        self._frame_event.set()
+        self._enqueue_render()
+
+    def _enqueue_render(self):
+        if self.update_queue:
+            with self.update_queue_mutex:
+                if not self._frame_pending:
+                    self._frame_pending = True
+                    self.update_queue.put((self._render_and_send_frame, []))
+        else:
+            self._render_and_send_frame()
+
+    def _render_and_send_frame(self):
+        with self.update_queue_mutex:
+            self._frame_pending = False
+
+        with self._canvas_lock:
+            frame_to_send = self._orient_image(self._canvas.copy())
+
+        if frame_to_send.mode != "RGB":
+            frame_to_send = frame_to_send.convert("RGB")
+
+        buf = io.BytesIO()
+        frame_to_send.save(buf, format="JPEG", quality=88)
+        jpeg_bytes = buf.getvalue()
+
+        with self._serial_lock:
+            try:
+                if self.lcd_serial and self.lcd_serial.is_open:
+                    self.serial_write(jpeg_bytes)
+                    self.lcd_serial.flush()
+            except Exception as e:
+                logger.warning(f"Failed to send frame to HL-VMAX: {e}")
 
     def _orient_image(self, img: Image.Image) -> Image.Image:
         """Transforms logical image to match physical portrait panel (width x height)."""
@@ -200,42 +231,3 @@ class LcdCommVmax(LcdComm):
                 img = img.resize((self.display_height, self.display_width))
             return img.rotate(270, expand=True)
         return img
-
-    def _render_worker(self):
-        """Worker loop that encodes and streams the composite canvas at a steady, stable pace."""
-        min_frame_interval = 0.08  # Max ~12 FPS: smooth and avoids USB/chip buffer saturation
-        last_frame_time = 0.0
-
-        while self._running:
-            # Wait for frame event
-            signaled = self._frame_event.wait(timeout=0.1)
-            if not self._running:
-                break
-            if not signaled:
-                continue
-
-            self._frame_event.clear()
-
-            # Pacing to avoid overloading Artinchip hardware decoder
-            now = time.time()
-            elapsed = now - last_frame_time
-            if elapsed < min_frame_interval:
-                time.sleep(min_frame_interval - elapsed)
-
-            with self._canvas_lock:
-                frame_to_send = self._orient_image(self._canvas.copy())
-
-            if frame_to_send.mode != "RGB":
-                frame_to_send = frame_to_send.convert("RGB")
-
-            buf = io.BytesIO()
-            frame_to_send.save(buf, format="JPEG", quality=88)
-            jpeg_bytes = buf.getvalue()
-
-            try:
-                if self.lcd_serial and self.lcd_serial.is_open:
-                    self.serial_write(jpeg_bytes)
-                    self.lcd_serial.flush()
-                    last_frame_time = time.time()
-            except Exception as e:
-                logger.warning(f"Warning writing frame to screen: {e}")
