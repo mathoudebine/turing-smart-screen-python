@@ -67,7 +67,7 @@ display:
   # Display Brightness
   # Set this as the desired %, 0 being completely dark and 100 being max brightness
   # Warning: revision A display can get hot at high brightness!
-  BRIGHTNESS: 20
+  BRIGHTNESS: 80
 
   # Display reverse: true/false
   # Set to true to reverse display orientation (landscape <-> reverse landscape, portrait <-> reverse portrait)
@@ -78,4 +78,4 @@ display:
   # By default, this program resets the display on startup, in case it is in a degraded state from previous runs.
   # This behavior causes the display to disconnect/reconnect, and the COM port to change.
   # On some displays (like rev. A) it can be an issue, in this case change the value to "false".
-  RESET_ON_STARTUP: true
+  RESET_ON_STARTUP: false
