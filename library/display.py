@@ -139,9 +139,7 @@ class Display:
         # Set backplate RGB LED color (for supported HW only)
         self.lcd.SetBackplateLedColor(config.THEME_DATA['display'].get("DISPLAY_RGB_LED", (255, 255, 255)))
 
-        # The LCD controller may lose its configured orientation during sleep/hibernate.
         orientation = _get_theme_orientation()
-        logger.info("Restoring display orientation: %s" % orientation.name)
         self.lcd.SetOrientation(orientation)
 
     def turn_off(self):
