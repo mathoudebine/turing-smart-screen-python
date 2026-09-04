@@ -29,7 +29,7 @@ import os
 import platform
 import random
 import sys
-from typing import List
+from typing import List, Optional
 
 import babel.dates
 import requests
@@ -122,6 +122,11 @@ def display_themed_value(theme_data, value, min_size=0, unit=''):
 
 
 def display_themed_percent_value(theme_data, value):
+    # A sensor can transiently return nan: int(nan) raises ValueError, which would kill this
+    # stat's thread. Note this happens before the SHOW check below, i.e. even when hidden.
+    if value is None or math.isnan(value):
+        return
+
     display_themed_value(
         theme_data=theme_data,
         value=int(value),
@@ -131,6 +136,9 @@ def display_themed_percent_value(theme_data, value):
 
 
 def display_themed_temperature_value(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_value(
         theme_data=theme_data,
         value=int(value),
@@ -141,6 +149,9 @@ def display_themed_temperature_value(theme_data, value):
 
 def display_themed_progress_bar(theme_data, value):
     if not theme_data.get("SHOW", False):
+        return
+
+    if value is None or math.isnan(value):
         return
 
     display.lcd.DisplayProgressBar(
@@ -202,6 +213,9 @@ def display_themed_radial_bar(theme_data, value, min_size=0, unit='', custom_tex
 
 
 def display_themed_percent_radial_bar(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_radial_bar(
         theme_data=theme_data,
         value=int(value),
@@ -211,6 +225,9 @@ def display_themed_percent_radial_bar(theme_data, value):
 
 
 def display_themed_temperature_radial_bar(theme_data, value):
+    if value is None or math.isnan(value):
+        return
+
     display_themed_radial_bar(
         theme_data=theme_data,
         value=int(value),
@@ -245,10 +262,14 @@ def display_themed_line_graph(theme_data, values):
     )
 
 
-def save_last_value(value: float, last_values: List[float], history_size: int):
+def save_last_value(value: Optional[float], last_values: List[float], history_size: int):
     # Initialize last values list the first time with given size
     if len(last_values) != history_size:
         last_values[:] = last_values_list(size=history_size)
+    # A sensor may transiently return None: store it as the nan "no data" marker, else
+    # math.isnan() in DisplayLineGraph raises TypeError on every later redraw of this graph.
+    if value is None:
+        value = math.nan
     # Store the value to the list that can then be used for line graph
     last_values.append(value)
     # Also remove the oldest value from list
@@ -933,22 +954,26 @@ class Ping:
             delay = random.randint(5, 120)
         else:
             delay = ping(dest_addr=PING_DEST, unit="ms")
+            if delay is None or delay is False:
+                # ping3 returns None on timeout and False on unknown host: no delay to display
+                delay = math.nan
 
         save_last_value(delay, cls.last_values_ping,
                         theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))
         # logger.debug(f"Ping delay: {delay}ms")
 
-        display_themed_progress_bar(theme_data['GRAPH'], delay)
-        display_themed_radial_bar(
-            theme_data=theme_data['RADIAL'],
-            value=int(delay),
-            unit="ms",
-            min_size=6
-        )
-        display_themed_value(
-            theme_data=theme_data['TEXT'],
-            value=int(delay),
-            unit="ms",
-            min_size=6
-        )
+        if not math.isnan(delay):
+            display_themed_progress_bar(theme_data['GRAPH'], delay)
+            display_themed_radial_bar(
+                theme_data=theme_data['RADIAL'],
+                value=int(delay),
+                unit="ms",
+                min_size=6
+            )
+            display_themed_value(
+                theme_data=theme_data['TEXT'],
+                value=int(delay),
+                unit="ms",
+                min_size=6
+            )
         display_themed_line_graph(theme_data['LINE_GRAPH'], cls.last_values_ping)
