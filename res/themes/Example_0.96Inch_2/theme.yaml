@@ -75,10 +75,6 @@ STATS:
         MIN_SIZE: 0
         X: 130
         Y: 5
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -112,10 +108,6 @@ STATS:
         MIN_SIZE: 0
         X: 155
         Y: 4
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -150,10 +142,6 @@ STATS:
         MIN_SIZE: 0
         X: 130
         Y: 25
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -189,10 +177,6 @@ STATS:
         MIN_SIZE: 0
         X: 130
         Y: 40
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -210,10 +194,6 @@ STATS:
         MIN_SIZE: 0
         X: 155
         Y: 39
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -232,10 +212,6 @@ STATS:
         SHOW: true
         X: 155
         Y: 62
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
@@ -251,10 +227,6 @@ STATS:
         SHOW: true
         X: 155
         Y: 70
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         WIDTH: 0   # Uncomment to force a static width
         HEIGHT: 0   # Uncomment to force static height
         FONT: fusion-pixel/fusion-pixel-10px-monospaced-zh_hans.otf
