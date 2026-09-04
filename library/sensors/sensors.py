@@ -105,17 +105,17 @@ class Memory(ABC):
 class Disk(ABC):
     @staticmethod
     @abstractmethod
-    def disk_usage_percent() -> float:
+    def disk_usage_percent(path: str = "/") -> float:
         pass
 
     @staticmethod
     @abstractmethod
-    def disk_used() -> int:  # In bytes
+    def disk_used(path: str = "/") -> int:  # In bytes
         pass
 
     @staticmethod
     @abstractmethod
-    def disk_free() -> int:  # In bytes
+    def disk_free(path: str = "/") -> int:  # In bytes
         pass
 
 
