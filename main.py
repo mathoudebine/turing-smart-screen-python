@@ -103,17 +103,14 @@ if __name__ == "__main__":
 
         # Remove tray icon just before exit
         if tray_icon:
-            tray_icon.visible = False
+            tray_icon.stop()
+            time.sleep(0.5)
 
         # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
             sys.exit(0)
         except:
             os._exit(0)
-
-    def on_signal_caught(signum, frame=None):
-        logger.info("Caught signal %d, exiting" % signum)
-        clean_stop()
 
     def on_configure_tray(tray_icon, item):
         logger.info("Configure from tray icon")
@@ -136,39 +133,6 @@ if __name__ == "__main__":
         logger.info("Exit from tray icon")
         clean_stop(tray_icon)
 
-
-    def on_clean_exit(*args):
-        logger.info("Program will now exit")
-        clean_stop()
-
-
-    if platform.system() == "Windows":
-        def on_win32_ctrl_event(event):
-            """Handle Windows console control events (like Ctrl-C)."""
-            if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT):
-                logger.debug("Caught Windows control event %s, exiting" % event)
-                clean_stop()
-            return 0
-
-
-        def on_win32_wm_event(hWnd, msg, wParam, lParam):
-            """Handle Windows window message events (like ENDSESSION, CLOSE, DESTROY)."""
-            logger.debug("Caught Windows window message event %s" % msg)
-            if msg == win32con.WM_POWERBROADCAST:
-                # WM_POWERBROADCAST is used to detect computer going to/resuming from sleep
-                if wParam == win32con.PBT_APMSUSPEND:
-                    logger.info("Computer is going to sleep, display will turn off")
-                    display.turn_off()
-                elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
-                    logger.info("Computer is resuming from sleep, display will turn on")
-                    display.turn_on()
-                    # Some models have troubles displaying back the previous bitmap after being turned off/on
-                    display.display_static_images()
-                    display.display_static_text()
-            else:
-                # For any other events, the program will stop
-                logger.info("Program will now exit")
-                clean_stop()
 
     # Create a tray icon for the program, with an Exit entry in menu
     try:
@@ -206,6 +170,42 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Set the different stopping event handlers, to send a complete frame to the LCD before exit
+    def on_clean_exit(*args):
+        logger.info("Program will now exit")
+        clean_stop(tray_icon)
+
+    def on_signal_caught(signum, frame=None):
+        logger.info("Caught signal %d, exiting" % signum)
+        clean_stop(tray_icon)
+
+    if platform.system() == "Windows":
+        def on_win32_ctrl_event(event):
+            """Handle Windows console control events (like Ctrl-C)."""
+            if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT):
+                logger.debug("Caught Windows control event %s, exiting" % event)
+                clean_stop(tray_icon)
+            return 0
+
+
+        def on_win32_wm_event(hWnd, msg, wParam, lParam):
+            """Handle Windows window message events (like ENDSESSION, CLOSE, DESTROY)."""
+            logger.debug("Caught Windows window message event %s" % msg)
+            if msg == win32con.WM_POWERBROADCAST:
+                # WM_POWERBROADCAST is used to detect computer going to/resuming from sleep
+                if wParam == win32con.PBT_APMSUSPEND:
+                    logger.info("Computer is going to sleep, display will turn off")
+                    display.turn_off()
+                elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
+                    logger.info("Computer is resuming from sleep, display will turn on")
+                    display.turn_on()
+                    # Some models have troubles displaying back the previous bitmap after being turned off/on
+                    display.display_static_images()
+                    display.display_static_text()
+            else:
+                # For any other events, the program will stop
+                logger.info("Program will now exit")
+                clean_stop(tray_icon)
+
     atexit.register(on_clean_exit)
     signal.signal(signal.SIGINT, on_signal_caught)
     signal.signal(signal.SIGTERM, on_signal_caught)
