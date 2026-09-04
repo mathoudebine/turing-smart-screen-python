@@ -1,0 +1,308 @@
+---
+# Mission Center Theme V2 - Fixed Layout
+# For Turing Smart Screen 3.5" Landscape (480x320)
+author: "@dogukanveziroglu"
+
+display:
+  DISPLAY_SIZE: "3.5\""
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 0, 180, 216
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 480
+    HEIGHT: 320
+
+# Layout: 4 panels (234x154 each)
+# CPU: x=4, y=4    | GPU: x=242, y=4
+# RAM: x=4, y=162  | NET: x=242, y=162
+# Graph area in each panel: starts y+26, height=96
+
+static_text:
+  CPU_LABEL:
+    TEXT: "CPU"
+    X: 12
+    Y: 8
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 0, 180, 216
+    BACKGROUND_IMAGE: background.png
+
+  GPU_LABEL:
+    TEXT: "GPU"
+    X: 250
+    Y: 8
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 138, 43, 226
+    BACKGROUND_IMAGE: background.png
+
+  RAM_LABEL:
+    TEXT: "RAM"
+    X: 12
+    Y: 166
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 34, 197, 94
+    BACKGROUND_IMAGE: background.png
+
+  VRAM_LABEL:
+    TEXT: "VRAM"
+    X: 250
+    Y: 166
+    FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+    FONT_SIZE: 13
+    FONT_COLOR: 251, 146, 60
+    BACKGROUND_IMAGE: background.png
+
+STATS:
+  # ========== CPU PANEL (x=4, y=4) ==========
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 170
+        Y: 6
+        WIDTH: 65
+        HEIGHT: 18
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+      LINE_GRAPH:
+        SHOW: True
+        X: 10
+        Y: 30
+        WIDTH: 222
+        HEIGHT: 96
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 40
+        AUTOSCALE: False
+        LINE_COLOR: 0, 180, 216
+        LINE_WIDTH: 2
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+        FILL: True
+        FILL_COLOR: 0, 180, 216, 80
+        ANTIALIAS: True
+
+    FREQUENCY:
+      INTERVAL: 2
+      TEXT:
+        SHOW: False
+
+    TEMPERATURE:
+      INTERVAL: 2
+      TEXT:
+        SHOW: False
+
+  # ========== GPU PANEL (x=242, y=4) ==========
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 408
+        Y: 6
+        WIDTH: 65
+        HEIGHT: 18
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+      LINE_GRAPH:
+        SHOW: True
+        X: 248
+        Y: 30
+        WIDTH: 222
+        HEIGHT: 96
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 40
+        AUTOSCALE: False
+        LINE_COLOR: 138, 43, 226
+        LINE_WIDTH: 2
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+        FILL: True
+        FILL_COLOR: 138, 43, 226, 80
+        ANTIALIAS: True
+
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 250
+        Y: 128
+        WIDTH: 60
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+
+    MEMORY_PERCENT:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 408
+        Y: 164
+        WIDTH: 65
+        HEIGHT: 18
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+      LINE_GRAPH:
+        SHOW: True
+        X: 248
+        Y: 188
+        WIDTH: 222
+        HEIGHT: 96
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 40
+        AUTOSCALE: False
+        LINE_COLOR: 251, 146, 60
+        LINE_WIDTH: 2
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+        FILL: True
+        FILL_COLOR: 251, 146, 60, 80
+        ANTIALIAS: True
+
+    MEMORY_USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 250
+        Y: 286
+        WIDTH: 80
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+
+    MEMORY_TOTAL:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 340
+        Y: 286
+        WIDTH: 80
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+
+    FREQUENCY:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 250
+        Y: 144
+        WIDTH: 90
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+
+  # ========== RAM PANEL (x=4, y=162) ==========
+  MEMORY:
+    INTERVAL: 2
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 170
+        Y: 164
+        WIDTH: 65
+        HEIGHT: 18
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+      LINE_GRAPH:
+        SHOW: True
+        X: 10
+        Y: 188
+        WIDTH: 222
+        HEIGHT: 96
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        HISTORY_SIZE: 40
+        AUTOSCALE: False
+        LINE_COLOR: 34, 197, 94
+        LINE_WIDTH: 2
+        AXIS: False
+        BACKGROUND_IMAGE: background.png
+        FILL: True
+        FILL_COLOR: 34, 197, 94, 80
+        ANTIALIAS: True
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 12
+        Y: 286
+        WIDTH: 75
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+      TOTAL:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 95
+        Y: 286
+        WIDTH: 80
+        HEIGHT: 16
+        FONT: roboto-mono/RobotoMono-Regular.ttf
+        FONT_SIZE: 11
+        FONT_COLOR: 200, 205, 220
+        BACKGROUND_IMAGE: background.png
+
+  # ========== VRAM PANEL (x=242, y=162) - GPU Memory ==========
+  # Panel graph area: Y=188 to Y=284 (96px)
+  NET:
+    INTERVAL: 999
+    ETH:
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+      UPLOAD:
+        TEXT:
+          SHOW: False
+    WLO:
+      DOWNLOAD:
+        TEXT:
+          SHOW: False
+      UPLOAD:
+        TEXT:
+          SHOW: False
+
+  DATE:
+    INTERVAL: 999
+    HOUR:
+      TEXT:
+        SHOW: False
+
+  DISK:
+    INTERVAL: 999
+    USED:
+      PERCENT_TEXT:
+        SHOW: False
