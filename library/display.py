@@ -74,6 +74,8 @@ def _get_theme_size() -> tuple[int, int]:
         return 800, 1280
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '8.8"':
         return 480, 1920
+    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '11.3"':
+        return 440, 1920
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '9.2"':
         return 480, 1920 # 9.2" displays are 1920x462 but using 1920x480 to be compatible with 8.8" themes
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '12.3"':
