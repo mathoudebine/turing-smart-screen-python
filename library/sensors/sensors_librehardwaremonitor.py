@@ -465,6 +465,24 @@ class Disk(sensors.Disk):
     def disk_free() -> int:  # In bytes
         return psutil.disk_usage("/").free
 
+    @staticmethod
+    def disk_temperature() -> float:  # In °C
+        # LibreHardwareMonitor enumerates physical drives. Mapping a drive back
+        # to the "/" mountpoint is not reliably available here, so the first
+        # storage device that reports a temperature is used - correct for the
+        # common single-drive case.
+        try:
+            for hardware in handle.Hardware:
+                if hardware.HardwareType == Hardware.HardwareType.Storage:
+                    hardware.Update()
+                    for sensor in hardware.Sensors:
+                        if sensor.SensorType == Hardware.SensorType.Temperature and sensor.Value is not None:
+                            return float(sensor.Value)
+        except:
+            pass
+
+        return math.nan
+
 
 class Net(sensors.Net):
     # Previous psutil counters, per interface: {interface name: (monotonic timestamp, counters)}
