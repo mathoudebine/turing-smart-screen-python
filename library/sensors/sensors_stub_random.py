@@ -106,6 +106,10 @@ class Disk(sensors.Disk):
     def disk_free() -> int:  # In bytes
         return random.randint(1000000000, 2000000000000)
 
+    @staticmethod
+    def disk_temperature() -> float:  # In °C
+        return random.uniform(30, 60)
+
 
 class Net(sensors.Net):
     @staticmethod

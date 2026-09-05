@@ -120,6 +120,10 @@ class Disk(sensors.Disk):
     def disk_free() -> int:  # In bytes
         return int(DISK_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
 
+    @staticmethod
+    def disk_temperature() -> float:  # In °C
+        return TEMPERATURE_SENSOR_VALUE
+
 
 class Net(sensors.Net):
     @staticmethod

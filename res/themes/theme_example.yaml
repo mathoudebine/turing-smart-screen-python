@@ -1213,6 +1213,65 @@ STATS:
         BACKGROUND_IMAGE: background.png
         ALIGN: left  # left / center / right
         ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+    # Disk temperature (°C) of the drive backing "/".
+    # On Linux, SATA drives need the 'drivetemp' kernel module loaded
+    # (sudo modprobe drivetemp); NVMe drives expose it natively. On Windows it is
+    # read through LibreHardwareMonitor. Where no sensor is available the fields
+    # are left blank. This section is optional: themes without it are unaffected.
+    # Refreshes together with the other DISK stats (uses the DISK INTERVAL above).
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+        SHOW_UNIT: True
+        X: 204
+        Y: 460
+        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
+        # To avoid this use one of these 2 methods (or both):
+        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
+        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100°C")
+        # WIDTH: 200   # Uncomment to force a static width
+        # HEIGHT: 50   # Uncomment to force static height
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 23
+        FONT_COLOR: 255, 255, 255
+        # BACKGROUND_COLOR: 132, 154, 165
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left  # left / center / right
+        ANCHOR: lt   # Check https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
+      GRAPH:
+        SHOW: False
+        X: 115
+        Y: 490
+        WIDTH: 178
+        HEIGHT: 13
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        BAR_COLOR: 255, 0, 0
+        BAR_OUTLINE: False
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
+        REVERSE_DIRECTION: False
+      RADIAL:
+        SHOW: False
+        X: 100
+        Y: 510
+        RADIUS: 40
+        WIDTH: 10
+        MIN_VALUE: 0
+        MAX_VALUE: 100
+        ANGLE_START: 120
+        ANGLE_END: 60
+        ANGLE_STEPS: 20
+        ANGLE_SEP: 5
+        CLOCKWISE: True
+        BAR_COLOR: 0, 255, 0
+        SHOW_TEXT: True
+        SHOW_UNIT: True
+        FONT: roboto-mono/RobotoMono-Bold.ttf
+        FONT_SIZE: 13
+        FONT_COLOR: 200, 200, 200
+        # BACKGROUND_COLOR: 0, 0, 0
+        BACKGROUND_IMAGE: background.png
   NET:
     INTERVAL: 1
     WLO:
