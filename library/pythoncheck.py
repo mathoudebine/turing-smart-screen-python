@@ -35,5 +35,5 @@ def check_python_version():
               f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}-{MAX_PYTHON[0]}.{MAX_PYTHON[1]} required on platform {sys.platform}.")
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
