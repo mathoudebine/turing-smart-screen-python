@@ -132,7 +132,7 @@ class LcdComm(ABC):
             f"Configuration again and select the COM port manually")
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
 
     def closeSerial(self):

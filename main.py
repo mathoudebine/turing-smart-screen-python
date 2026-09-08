@@ -59,12 +59,12 @@ Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen
         e))
     try:
         sys.exit(0)
-    except:
+    except Exception:
         os._exit(0)
 
 try:
     import pystray
-except:
+except Exception:
     # If pystray cannot be loaded do not stop the program, just ignore it. The tray icon will not be displayed.
     pass
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         # We force the exit to avoid waiting for other scheduled tasks: they may have a long delay!
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
 
     def on_signal_caught(signum, frame=None):
@@ -122,7 +122,7 @@ if __name__ == "__main__":
             # Load Python file with local python interpreter (useful for venvs)
             configure_file = next(MAIN_DIRECTORY.glob("configure.py"))
             subprocess.Popen([sys.executable, str(configure_file)])
-        except:
+        except Exception:
             # Load binary (for releases) or Python file with system interpreter
             configure_file = next(MAIN_DIRECTORY.glob("configure*"))
             if platform.system() == "Windows":
@@ -191,7 +191,7 @@ if __name__ == "__main__":
         if platform.system() != "Darwin":
             tray_icon.run_detached()
             logger.info("Tray icon has been displayed")
-    except:
+    except Exception:
         tray_icon = None
         logger.warning("Tray icon is not supported on your platform")
 

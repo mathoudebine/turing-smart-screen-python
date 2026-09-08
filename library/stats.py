@@ -61,7 +61,7 @@ elif HW_SENSORS == "LHM":
         logger.error("LibreHardwareMonitor integration is only available on Windows")
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
 elif HW_SENSORS == "STUB":
     logger.warning("Stub sensors, not real HW sensors")
@@ -78,7 +78,7 @@ else:
     logger.error("Unsupported HW_SENSORS value in config.yaml")
     try:
         sys.exit(0)
-    except:
+    except Exception:
         os._exit(0)
 
 import library.sensors.sensors_custom as sensors_custom
@@ -752,7 +752,7 @@ class Date:
                 lc_time = locale.getdefaultlocale()[0]
             else:
                 lc_time = babel.dates.LC_TIME
-        except:
+        except Exception:
             lc_time = None
 
         if not lc_time:
