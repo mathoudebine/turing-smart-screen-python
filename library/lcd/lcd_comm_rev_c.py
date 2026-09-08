@@ -130,6 +130,21 @@ class LcdCommRevC(LcdComm):
                  update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
+
+        self.rom_version = 87  # Default ROM version, actual value detected by _hello() on InitializeComm()
+
+        # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
+        # Rely on width/height for sub-revision detection instead
+        if self.display_width == 480 and self.display_height == 480:
+            self.sub_revision = SubRevision.REV_2INCH
+        elif self.display_width == 480 and self.display_height == 800:
+            self.sub_revision = SubRevision.REV_5INCH
+        elif self.display_width == 480 and self.display_height == 1920:
+            self.sub_revision = SubRevision.REV_8INCH
+        else:
+            self.sub_revision = SubRevision.UNKNOWN
+            logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
+
         self.openSerial()
 
     def __del__(self):
@@ -214,7 +229,6 @@ class LcdCommRevC(LcdComm):
 
     def _hello(self):
         # This command reads LCD answer on serial link, so it bypasses the queue
-        self.sub_revision = SubRevision.UNKNOWN
         self.serial_flush_input()
         self._send_command(Command.HELLO, bypass_queue=True)
         response = ''.join(
@@ -229,17 +243,6 @@ class LcdCommRevC(LcdComm):
                 filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
             self.serial_flush_input()
             logger.debug("Display ID returned: %s" % response)
-
-        # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
-        # Rely on width/height for sub-revision detection
-        if self.display_width == 480 and self.display_height == 480:
-            self.sub_revision = SubRevision.REV_2INCH
-        elif self.display_width == 480 and self.display_height == 800:
-            self.sub_revision = SubRevision.REV_5INCH
-        elif self.display_width == 480 and self.display_height == 1920:
-            self.sub_revision = SubRevision.REV_8INCH
-        else:
-            logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
 
         # Detect ROM version
         try:
