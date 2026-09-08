@@ -59,11 +59,11 @@ def load_theme():
         logger.info("Loading theme %s from %s" % (CONFIG_DATA['config']['THEME'], theme_path / "theme.yaml"))
         THEME_DATA = load_yaml(MAIN_DIRECTORY / theme_path / "theme.yaml")
         THEME_DATA['PATH'] = str(MAIN_DIRECTORY / theme_path) + "/"
-    except:
+    except Exception:
         logger.error("Theme not found or contains errors!")
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
 
     copy_default(THEME_DEFAULT, THEME_DATA)
@@ -76,7 +76,7 @@ def check_theme_compatible(display_size: str):
             'THEME'] + " is not compatible with your display revision " + CONFIG_DATA["display"]["REVISION"])
         try:
             sys.exit(0)
-        except:
+        except Exception:
             os._exit(0)
 
 
