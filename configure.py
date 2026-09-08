@@ -53,7 +53,7 @@ Or the troubleshooting page: https://github.com/mathoudebine/turing-smart-screen
         e))
     try:
         sys.exit(0)
-    except:
+    except Exception:
         os._exit(0)
 
 from library.sensors.sensors_python import sensors_fans, is_cpu_fan
@@ -382,10 +382,10 @@ class TuringConfigWindow:
 
         try:
             version = open(VERSION_FILE).readline()
-        except:
+        except Exception:
             try:
                 version = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('utf-8')
-            except:
+            except Exception:
                 version = "0.0.0"
 
         version_label = ttk.Label(self.window, text=version, foreground=DISABLED_TEXT_COLOR)
@@ -431,7 +431,7 @@ class TuringConfigWindow:
             if theme_data and theme_data['display'].get("DISPLAY_SIZE", '3.5"') == _SIZE_2_1_INCH:
                 # This is a circular screen: apply a circle mask over the preview
                 theme_preview.paste(circular_mask, mask=circular_mask)
-        except:
+        except Exception:
             theme_preview = Image.open(MAIN_DIRECTORY / "res/docs/no-preview.png")
         finally:
             theme_preview.thumbnail((320, 480), Image.Resampling.LANCZOS)
@@ -460,14 +460,14 @@ class TuringConfigWindow:
 
         try:
             self.theme_cb.set(self.config['config']['THEME'])
-        except:
+        except Exception:
             self.theme_cb.set("")
 
         self.load_theme_preview()
 
         try:
             self.hwlib_cb.set(hw_lib_map[self.config['config']['HW_SENSORS']])
-        except:
+        except Exception:
             self.hwlib_cb.current(0)
 
         try:
@@ -475,7 +475,7 @@ class TuringConfigWindow:
                 self.eth_cb.current(0)
             else:
                 self.eth_cb.set(self.config['config']['ETH'])
-        except:
+        except Exception:
             self.eth_cb.current(0)
 
         try:
@@ -483,7 +483,7 @@ class TuringConfigWindow:
                 self.wl_cb.current(0)
             else:
                 self.wl_cb.set(self.config['config']['WLO'])
-        except:
+        except Exception:
             self.wl_cb.current(0)
 
         try:
@@ -491,7 +491,7 @@ class TuringConfigWindow:
                 self.com_cb.current(0)
             else:
                 self.com_cb.set(self.config['config']['COM_PORT'])
-        except:
+        except Exception:
             self.com_cb.current(0)
 
         # Guess display size from theme in the configuration
@@ -506,24 +506,24 @@ class TuringConfigWindow:
             if size == SIZE_2_x_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_2_8_INCH_NEWREV
             self.size_cb.set(size)
-        except:
+        except Exception:
             self.size_cb.current(0)
 
         # Guess model from revision and size
         revision = self.config['display']['REVISION']
         try:
             self.model_cb.set(revision_and_size_to_model_map[(revision, size)])
-        except:
+        except Exception:
             self.model_cb.current(0)
 
         try:
             self.orient_cb.set(reverse_map[self.config['display']['DISPLAY_REVERSE']])
-        except:
+        except Exception:
             self.orient_cb.current(0)
 
         try:
             self.brightness_slider.set(int(self.config['display']['BRIGHTNESS']))
-        except:
+        except Exception:
             self.brightness_slider.set(50)
 
         try:
@@ -531,7 +531,7 @@ class TuringConfigWindow:
                 self.cpu_fan_cb.current(0)
             else:
                 self.cpu_fan_cb.set(self.config['config']['CPU_FAN'])
-        except:
+        except Exception:
             self.cpu_fan_cb.current(0)
 
         # Reload content on screen
@@ -602,7 +602,7 @@ class TuringConfigWindow:
             # Load Python file with local python interpreter (useful for venvs)
             theme_editor = next(MAIN_DIRECTORY.glob("theme-editor.py"))
             subprocess.Popen([sys.executable, str(theme_editor), self.theme_cb.get()])
-        except:
+        except Exception:
             # Load binary (for releases) or Python file with system interpreter
             theme_editor = next(MAIN_DIRECTORY.glob("theme-editor*"))
             if platform.system() == "Windows":
@@ -620,7 +620,7 @@ class TuringConfigWindow:
             # Load Python file with local python interpreter (useful for venvs)
             main_file = next(MAIN_DIRECTORY.glob("main.py"))
             subprocess.Popen([sys.executable, str(main_file)])
-        except:
+        except Exception:
             # Load binary (for releases) or Python file with system interpreter
             main_file = next(MAIN_DIRECTORY.glob("main*"))
             if platform.system() == "Windows":
@@ -821,7 +821,7 @@ class MoreConfigWindow:
             return True
         try:
             float(coord)
-        except:
+        except Exception:
             return False
         return True
 
@@ -836,32 +836,32 @@ class MoreConfigWindow:
 
         try:
             self.ping_entry.insert(0, self.config['config']['PING'])
-        except:
+        except Exception:
             self.ping_entry.insert(0, "8.8.8.8")
 
         try:
             self.api_entry.insert(0, self.config['config']['WEATHER_API_KEY'])
-        except:
+        except Exception:
             pass
 
         try:
             self.lat_entry.insert(0, self.config['config']['WEATHER_LATITUDE'])
-        except:
+        except Exception:
             self.lat_entry.insert(0, "45.75")
 
         try:
             self.long_entry.insert(0, self.config['config']['WEATHER_LONGITUDE'])
-        except:
+        except Exception:
             self.long_entry.insert(0, "45.75")
 
         try:
             self.unit_cb.set(weather_unit_map[self.config['config']['WEATHER_UNITS']])
-        except:
+        except Exception:
             self.unit_cb.set(0)
 
         try:
             self.lang_cb.set(weather_lang_map[self.config['config']['WEATHER_LANGUAGE']])
-        except:
+        except Exception:
             self.lang_cb.set(weather_lang_map["en"])
 
     def citysearch_show_warning(self, warning):
@@ -880,7 +880,7 @@ class MoreConfigWindow:
         try:
             request = requests.get(OPENWEATHER_GEOAPI_URL, timeout=5, params={"appid": api_key, "lang": lang,
                                                                               "q": city, "limit": 10})
-        except:
+        except Exception:
             self.citysearch_show_warning("Error fetching OpenWeatherMap Geo API")
             return
 
