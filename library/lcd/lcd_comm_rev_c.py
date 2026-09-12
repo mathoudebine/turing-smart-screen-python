@@ -139,7 +139,7 @@ class LcdCommRevC(LcdComm):
     def auto_detect_com_port() -> Optional[str]:
         # If sleeping device is detected through serial number or vid/pid, try to wake it up
         for com_port in comports():
-            if com_port.serial_number == 'USB7INCH' or com_port.serial_number == 'CT21INCH':
+            if com_port.serial_number in ('USB7INCH', 'CT21INCH', 'CT88INCH'):
                 LcdCommRevC._wake_up_device(com_port)
             elif com_port.vid == 0x1a86 and com_port.pid == 0xca21:
                 LcdCommRevC._wake_up_device(com_port)

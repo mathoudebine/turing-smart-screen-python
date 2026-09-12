@@ -128,4 +128,10 @@ If you have trouble running the program as described in the wiki, please check [
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=mathoudebine/turing-smart-screen-python&type=Date)](https://star-history.com/#mathoudebine/turing-smart-screen-python&Date)
+<a href="https://www.star-history.com/?repos=mathoudebine%2Fturing-smart-screen-python&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=mathoudebine/turing-smart-screen-python&type=date&theme=dark&legend=top-left&sealed_token=1BULWtfZBsenXy6zd-C2Td6C9UGczg0IYaXK8qrDQy2yhkZvBSdB0kZ5ufjXAD_6CCCaT_VYzmD5XqpPAQwYhe0tlrxJfnRax70YliRnMnqqW2FjVnNEEw9yqhXZir4mhQsrMy4JyyiCdP_BT2yKw8GeVlIcxfxqo6MRk7v0-w-nVPm6bexDVxyG-KPC" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=mathoudebine/turing-smart-screen-python&type=date&legend=top-left&sealed_token=1BULWtfZBsenXy6zd-C2Td6C9UGczg0IYaXK8qrDQy2yhkZvBSdB0kZ5ufjXAD_6CCCaT_VYzmD5XqpPAQwYhe0tlrxJfnRax70YliRnMnqqW2FjVnNEEw9yqhXZir4mhQsrMy4JyyiCdP_BT2yKw8GeVlIcxfxqo6MRk7v0-w-nVPm6bexDVxyG-KPC" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=mathoudebine/turing-smart-screen-python&type=date&legend=top-left&sealed_token=1BULWtfZBsenXy6zd-C2Td6C9UGczg0IYaXK8qrDQy2yhkZvBSdB0kZ5ufjXAD_6CCCaT_VYzmD5XqpPAQwYhe0tlrxJfnRax70YliRnMnqqW2FjVnNEEw9yqhXZir4mhQsrMy4JyyiCdP_BT2yKw8GeVlIcxfxqo6MRk7v0-w-nVPm6bexDVxyG-KPC" />
+ </picture>
+</a>

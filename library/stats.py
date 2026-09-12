@@ -27,6 +27,7 @@ import locale
 import math
 import os
 import platform
+import random
 import sys
 from typing import List
 
@@ -739,8 +740,8 @@ class Net:
 class Date:
     @staticmethod
     def stats():
-        if HW_SENSORS == "STATIC":
-            # For static sensors, use predefined date/time
+        if HW_SENSORS in ["STATIC", "STUB"]:
+            # For static or stubbed sensors, use predefined date/time
             date_now = datetime.datetime.fromtimestamp(1694014609)
         else:
             date_now = datetime.datetime.now()
@@ -776,8 +777,8 @@ class Date:
 class SystemUptime:
     @staticmethod
     def stats():
-        if HW_SENSORS == "STATIC":
-            # For static sensors, use predefined uptime
+        if HW_SENSORS in ["STATIC", "STUB"]:
+            # For static or stubbed sensors, use predefined uptime
             uptimesec = 4294036
         else:
             uptimesec = int(uptime())
@@ -924,7 +925,14 @@ class Ping:
     def stats(cls):
         theme_data = config.THEME_DATA['STATS']['PING']
 
-        delay = ping(dest_addr=PING_DEST, unit="ms")
+        if HW_SENSORS == "STATIC":
+            # For static sensors, use predefined ping delay
+            delay = 50
+        elif HW_SENSORS == "STUB":
+            # For stub sensors, use random ping delay
+            delay = random.randint(5, 120)
+        else:
+            delay = ping(dest_addr=PING_DEST, unit="ms")
 
         save_last_value(delay, cls.last_values_ping,
                         theme_data['LINE_GRAPH'].get("HISTORY_SIZE", DEFAULT_HISTORY_SIZE))

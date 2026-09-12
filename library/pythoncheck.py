@@ -24,10 +24,7 @@ import sys
 
 # Oldest / newest version supported
 MIN_PYTHON = (3, 9)
-# For Windows: max Python 3.13 until PythonNet support for 3.14
-MAX_PYTHON_WINDOWS = (3, 13)
-MAX_PYTHON_OTHERS = (3, 14)
-MAX_PYTHON = MAX_PYTHON_WINDOWS if sys.platform == "win32" else MAX_PYTHON_OTHERS
+MAX_PYTHON = (3, 14)
 
 
 def check_python_version():

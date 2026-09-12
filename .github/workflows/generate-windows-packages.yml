@@ -4,6 +4,10 @@ on:
   release:
     types: [ published ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -14,12 +18,12 @@ jobs:
 
     steps:
     - name: Git Checkout ${{github.event.release.tag_name}}
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Set up Python
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
-        python-version: '3.13'
+        python-version: '3.14'
 
     - name: Install dependencies
       run: |
@@ -36,7 +40,7 @@ jobs:
         "${{github.event.release.tag_name}}" | Out-File ".\dist\turing-system-monitor\version.txt"
 
     - name: Create InnoSetup installer from generated binaries
-      uses: Minionguyjpro/Inno-Setup-Action@v1.2.8
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
       with:
         path: tools/windows-installer/turing-system-monitor.iss
         options: /O+

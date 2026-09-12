@@ -7,6 +7,10 @@
 name: 'Dependency Review'
 on: [pull_request]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -16,6 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v5

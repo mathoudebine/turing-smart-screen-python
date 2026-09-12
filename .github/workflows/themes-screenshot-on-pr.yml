@@ -2,6 +2,13 @@ name: System monitor - themes screenshot (on PR)
 
 on:
   pull_request:
+    paths:
+      - 'library/**'
+      - 'res/themes/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   system-monitor-theme-screenshot:
@@ -9,9 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up Python 3.x
-      uses: actions/setup-python@v6
+      uses: actions/setup-python@v7
       with:
         python-version: "3.14"
 
@@ -22,10 +29,10 @@ jobs:
 
     - name: Configure system monitor for screenshot
       run: |
-        # Use static data
-        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STATIC" config.yaml
+        # Use random data
+        sed -i "/HW_SENSORS:/c\  HW_SENSORS: STUB" config.yaml
 
-    - name: Run system monitor for 5 seconds on all themes
+    - name: Run system monitor on all themes
       run: |
         for dir in res/themes/*/
         do
@@ -40,10 +47,8 @@ jobs:
             # For tests there is no real HW: use simulated LCD mode
             sed -i "/REVISION:/c\  REVISION: SIMU" config.yaml
         
-            # Run system-monitor for 10 seconds
-            python3 main.py > output.log 2>&1 &
-            sleep 10
-            killall -9 python3
+            # Run system-monitor in theme screenshot mode
+            python3 main.py -t 10 > output.log 2>&1
           
             # Rename screen capture
             cp screencap.png "screenshot-$theme.png"

@@ -33,6 +33,7 @@ import os
 import sys
 
 try:
+    import argparse
     import atexit
     import locale
     import platform
@@ -68,6 +69,7 @@ except:
     pass
 
 MAIN_DIRECTORY = Path(__file__).resolve().parent
+DELAY_BETWEEN_THREADS = 0.25
 
 if __name__ == "__main__":
 
@@ -193,6 +195,16 @@ if __name__ == "__main__":
         tray_icon = None
         logger.warning("Tray icon is not supported on your platform")
 
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description="Turing System Monitor")
+    parser.add_argument(
+        "-t", "--theme-screenshots",
+        type=int,
+        default=None,
+        help="Run n iterations in automated mode to generate themes screenshots."
+    )
+    args = parser.parse_args()
+
     # Set the different stopping event handlers, to send a complete frame to the LCD before exit
     atexit.register(on_clean_exit)
     signal.signal(signal.SIGINT, on_signal_caught)
@@ -208,7 +220,8 @@ if __name__ == "__main__":
     display.initialize_display()
 
     # Start serial queue handler
-    scheduler.QueueHandler()
+    if not args.theme_screenshots:
+        scheduler.QueueHandler()
 
     # Create all static images
     display.display_static_images()
@@ -217,27 +230,50 @@ if __name__ == "__main__":
     display.display_static_text()
 
     # Wait for static images/text to be displayed before starting monitoring (to avoid filling the queue while waiting)
-    wait_for_empty_queue(10)
+    if not args.theme_screenshots:
+        wait_for_empty_queue(10)
 
     # Start sensor scheduled reading. Avoid starting them all at the same time to optimize load
     logger.info("Starting system monitoring")
     import library.stats as stats
 
-    scheduler.CPUPercentage(); time.sleep(0.25)
-    scheduler.CPUFrequency(); time.sleep(0.25)
-    scheduler.CPULoad(); time.sleep(0.25)
-    scheduler.CPUTemperature(); time.sleep(0.25)
-    scheduler.CPUFanSpeed(); time.sleep(0.25)
-    if stats.Gpu.is_available():
-        scheduler.GpuStats(); time.sleep(0.25)
-    scheduler.MemoryStats(); time.sleep(0.25)
-    scheduler.DiskStats(); time.sleep(0.25)
-    scheduler.NetStats(); time.sleep(0.25)
-    scheduler.DateStats(); time.sleep(0.25)
-    scheduler.SystemUptimeStats(); time.sleep(0.25)
-    scheduler.CustomStats(); time.sleep(0.25)
-    scheduler.WeatherStats(); time.sleep(0.25)
-    scheduler.PingStats(); time.sleep(0.25)
+    if not args.theme_screenshots:
+        scheduler.CPUPercentage(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.CPUFrequency(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.CPULoad(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.CPUTemperature(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.CPUFanSpeed(); time.sleep(DELAY_BETWEEN_THREADS)
+        if stats.Gpu.is_available():
+            scheduler.GpuStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.MemoryStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.DiskStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.NetStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.DateStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.SystemUptimeStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.CustomStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.WeatherStats(); time.sleep(DELAY_BETWEEN_THREADS)
+        scheduler.PingStats(); time.sleep(DELAY_BETWEEN_THREADS)
+    else:
+        logger.info("Theme screenshots mode enabled - program will run %d iterations then close." % args.theme_screenshots)
+        # Run a predefined number of time to generate theme screenshot then close
+        for i in range(0, args.theme_screenshots):
+            logger.debug("Iteration #" + str(i))
+            stats.CPU.percentage()
+            stats.CPU.frequency()
+            stats.CPU.load()
+            stats.CPU.temperature()
+            stats.CPU.fan_speed()
+            stats.Gpu.stats()
+            stats.Memory.stats()
+            stats.Disk.stats()
+            stats.Net.stats()
+            stats.Date.stats()
+            stats.SystemUptime.stats()
+            stats.Custom.stats()
+            stats.Weather.stats()
+            stats.Ping.stats()
+        logger.debug("Finished theme generation, program will close.")
+        clean_stop()
 
     # OS-specific tasks
     if tray_icon and platform.system() == "Darwin":  # macOS-specific

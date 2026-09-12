@@ -79,10 +79,6 @@ STATS:
         SHOW_UNIT: True
         X: 100
         Y: 20
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -154,10 +150,6 @@ STATS:
         SHOW_UNIT: True
         X: 100
         Y: 87
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -230,10 +222,6 @@ STATS:
           SHOW_UNIT: True
           X: 110
           Y: 106
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -249,10 +237,6 @@ STATS:
           SHOW_UNIT: True
           X: 183
           Y: 106
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -268,10 +252,6 @@ STATS:
           SHOW_UNIT: True
           X: 265
           Y: 106
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -291,10 +271,6 @@ STATS:
         SHOW_UNIT: True
         X: 154
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -366,10 +342,6 @@ STATS:
         SHOW_UNIT: True
         X: 154
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -477,10 +449,6 @@ STATS:
         SHOW_UNIT: True
         X: 250
         Y: 140
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -548,10 +516,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 195
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -585,10 +549,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 195
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -604,10 +564,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 195
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -623,10 +579,6 @@ STATS:
         SHOW_UNIT: True
         X: 154
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -694,10 +646,6 @@ STATS:
         SHOW_UNIT: True
         X: 154
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -765,10 +713,6 @@ STATS:
         SHOW_UNIT: True
         X: 154
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -836,10 +780,6 @@ STATS:
         SHOW_UNIT: True
         X: 100
         Y: 87
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -1017,10 +957,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 290
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1035,10 +971,6 @@ STATS:
         SHOW_UNIT: True
         X: 182
         Y: 129
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1053,10 +985,6 @@ STATS:
         SHOW_UNIT: True
         X: 182
         Y: 129
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1071,10 +999,6 @@ STATS:
         SHOW_UNIT: True
         X: 250
         Y: 240
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1144,10 +1068,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 405
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1162,10 +1082,6 @@ STATS:
         SHOW_UNIT: True
         X: 46
         Y: 402
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1181,10 +1097,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 375
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1200,10 +1112,6 @@ STATS:
         SHOW_UNIT: True
         X: 204
         Y: 435
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1221,10 +1129,6 @@ STATS:
           SHOW: FALSE
           X: 4
           Y: 311
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1257,10 +1161,6 @@ STATS:
           SHOW: FALSE
           X: 90
           Y: 311
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1275,10 +1175,6 @@ STATS:
           SHOW: FALSE
           X: 4
           Y: 261
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1311,10 +1207,6 @@ STATS:
           SHOW: FALSE
           X: 90
           Y: 261
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1330,10 +1222,6 @@ STATS:
           SHOW: FALSE
           X: 254
           Y: 311
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1366,10 +1254,6 @@ STATS:
           SHOW: FALSE
           X: 192
           Y: 311
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1384,10 +1268,6 @@ STATS:
           SHOW: FALSE
           X: 254
           Y: 261
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1420,10 +1300,6 @@ STATS:
           SHOW: FALSE
           X: 192
           Y: 261
-          # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-          # To avoid this use one of these 2 methods (or both):
-          #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-          #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
           # WIDTH: 200   # Uncomment to force a static width
           # HEIGHT: 50   # Uncomment to force static height
           FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1442,10 +1318,6 @@ STATS:
         SHOW: False
         X: 10
         Y: 16
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -1461,10 +1333,6 @@ STATS:
         SHOW: False
         X: 205
         Y: 13
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: roboto-mono/RobotoMono-Bold.ttf
@@ -1482,10 +1350,6 @@ STATS:
         SHOW: FALSE
         X: 192
         Y: 261
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1500,10 +1364,6 @@ STATS:
         SHOW: FALSE
         X: 192
         Y: 261
-        # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-        # To avoid this use one of these 2 methods (or both):
-        #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-        #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
         # WIDTH: 200   # Uncomment to force a static width
         # HEIGHT: 50   # Uncomment to force static height
         FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
@@ -1620,10 +1480,6 @@ STATS:
       SHOW_UNIT: True
       X: 204
       Y: 405
-      # Text sensors may vary in size and create "ghosting" effects where old value stay displayed under the new one.
-      # To avoid this use one of these 2 methods (or both):
-      #   - either use a monospaced font (fonts with "mono" in name, see res/fonts/ for available fonts)
-      #   - or force a static width/height for the text field. Be sure to have enough space for the longest value that can be displayed (e.g. "100%" for a percentage)
       # WIDTH: 200   # Uncomment to force a static width
       # HEIGHT: 50   # Uncomment to force static height
       FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
