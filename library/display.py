@@ -149,6 +149,15 @@ class Display:
         # Turn off backplate RGB LED
         self.lcd.SetBackplateLedColor(led_color=(0, 0, 0))
 
+    def close(self):
+        # Close the communication with the display. Called explicitly on exit: the program ends
+        # with os._exit(), so the LcdComm* driver destructors that would close it never run.
+        try:
+            self.lcd.closeSerial()
+        except Exception as e:
+            # Closing must not prevent the program from exiting
+            logger.warning("Failed to close communication with display: %s" % str(e), exc_info=True)
+
     def display_static_images(self):
         if config.THEME_DATA.get('static_images', False):
             for image in config.THEME_DATA['static_images']:

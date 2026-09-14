@@ -20,6 +20,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+import queue
 import sched
 import threading
 import time
@@ -28,8 +29,12 @@ from functools import wraps
 
 import library.config as config
 import library.stats as stats
+from library.log import logger
 
 STOPPING = False
+
+# Time the queue handler waits for a new request before checking whether to stop, in seconds
+QUEUE_GET_TIMEOUT = 0.1
 
 
 def async_job(threadname=None):
@@ -58,10 +63,14 @@ def schedule(interval):
 
         def periodic(scheduler, periodic_interval, action, actionargs=()):
             """ Wrap the scheduler with our periodic interval """
-            if not STOPPING:
-                # If the program is not stopping: re-schedule the task for future execution
-                scheduler.enter(periodic_interval, 1, periodic,
-                                (scheduler, periodic_interval, action, actionargs))
+            if STOPPING:
+                # The program is stopping: do not run the action, it would queue a new frame
+                # behind the "turn off screen" requests that clean_stop() just queued
+                return
+
+            # Re-schedule the task for future execution
+            scheduler.enter(periodic_interval, 1, periodic,
+                            (scheduler, periodic_interval, action, actionargs))
             action(*actionargs)
 
         @wraps(func)
@@ -186,20 +195,34 @@ def PingStats():
 
 
 @async_job("Queue_Handler")
-@schedule(timedelta(milliseconds=1).total_seconds())
 def QueueHandler():
-    # Do next action waiting in the queue
-    if STOPPING:
-        # Empty the action queue to allow program to exit cleanly
-        while not config.update_queue.empty():
-            f, args = config.update_queue.get()
+    # Not scheduled with @schedule: the scheduled job blocked in an untimed get(), so it could
+    # never notice STOPPING, and it was not re-scheduled once STOPPING was set. This loop keeps
+    # draining until the queue is empty, then ends.
+    while True:
+        try:
+            f, args = config.update_queue.get(timeout=QUEUE_GET_TIMEOUT)
+        except queue.Empty:
+            if STOPPING:
+                return
+            continue
+
+        try:
             f(*args)
-    else:
-        # Execute first action in the queue
-        f, args = config.update_queue.get()
-        if f:
-            f(*args)
+        except Exception:
+            # Keep draining: this thread is the only consumer, and if it dies the queue is
+            # never emptied again and every later clean_stop() waits for its full timeout
+            logger.error("Failed to send a request to the display", exc_info=True)
+        finally:
+            config.update_queue.task_done()
 
 
 def is_queue_empty() -> bool:
-    return config.update_queue.empty()
+    # The queue being empty is not enough: the request taken from it may still be being sent
+    # to the display, and exiting at that point would cut the data in the middle. The count of
+    # unfinished tasks only drops back to zero once task_done() is called, i.e. once the request
+    # has actually been processed. That counter is what queue.Queue.join() waits on, but only
+    # its behaviour is documented, not the attribute name: reading it directly relies on a
+    # CPython implementation detail, in exchange for the timeout that join() does not offer.
+    # https://docs.python.org/3/library/queue.html#queue.Queue.join
+    return config.update_queue.unfinished_tasks == 0
