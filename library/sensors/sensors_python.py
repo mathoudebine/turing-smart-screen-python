@@ -21,7 +21,9 @@
 # This file will use Python libraries (psutil, GPUtil, etc.) to get hardware sensors
 # For all platforms (Linux, Windows, macOS) but not all HW is supported
 
+import glob
 import math
+import os
 import platform
 import sys
 from collections import namedtuple
@@ -34,6 +36,7 @@ import GPUtil
 import psutil
 
 import library.sensors.sensors as sensors
+from library.sensors.gpu_fdinfo import DrmFdinfoSampler
 from library.log import logger
 
 # AMD GPU on Linux
@@ -312,59 +315,120 @@ class GpuNvidia(sensors.Gpu):
 
 
 class GpuAmd(sensors.Gpu):
+    _fdinfo_sampler = DrmFdinfoSampler()
+
+    @staticmethod
+    def _amdgpu_sysfs_devices():
+        devices = []
+        for device in glob.glob("/sys/class/drm/card*/device"):
+            try:
+                with open(os.path.join(device, "vendor"), encoding="ascii") as handle:
+                    vendor = handle.read().strip().lower()
+            except OSError:
+                continue
+            driver = os.path.basename(os.path.realpath(os.path.join(device, "driver")))
+            if vendor == "0x1002" and driver == "amdgpu":
+                devices.append(device)
+        return devices
+
+    @staticmethod
+    def _sysfs_gpu_busy_percent():
+        for device in GpuAmd._amdgpu_sysfs_devices():
+            try:
+                with open(os.path.join(device, "gpu_busy_percent"), encoding="ascii") as handle:
+                    load = float(handle.read().strip())
+            except (OSError, ValueError):
+                continue
+            if math.isfinite(load) and 0 <= load <= 100:
+                return load
+        return math.nan
+
+    @staticmethod
+    def _gpu_load(amd_gpu=None):
+        load = GpuAmd._sysfs_gpu_busy_percent()
+        if math.isfinite(load):
+            return load
+
+        if amd_gpu is None and pyamdgpuinfo:
+            try:
+                if pyamdgpuinfo.detect_gpus() > 0:
+                    amd_gpu = pyamdgpuinfo.get_gpu(0)
+            except Exception:
+                pass
+        if amd_gpu is not None:
+            try:
+                load = float(amd_gpu.query_load()) * 100
+                if math.isfinite(load) and 0 <= load <= 100:
+                    return load
+            except Exception:
+                pass
+
+        load = GpuAmd._fdinfo_sampler.busy_percent()
+        if load is not None and math.isfinite(load):
+            return load
+
+        if pyadl:
+            try:
+                load = float(pyadl.ADLManager.getInstance().getDevices()[0].getCurrentUsage())
+                if math.isfinite(load) and 0 <= load <= 100:
+                    return load
+            except Exception:
+                pass
+        return math.nan
+
     @staticmethod
     def stats() -> Tuple[
         float, float, float, float, float]:  # load (%) / used mem (%) / used mem (Mb) / total mem (Mb) / temp (°C)
+        memory_used_bytes = math.nan
+        memory_total_bytes = math.nan
+        memory_used = math.nan
+        memory_total = math.nan
+        memory_percentage = math.nan
+        temperature = math.nan
+        amd_gpu = None
+
         if pyamdgpuinfo:
-            # Unlike other sensors, AMD GPU with pyamdgpuinfo pulls in all the stats at once
-            pyamdgpuinfo.detect_gpus()
-            amd_gpu = pyamdgpuinfo.get_gpu(0)
-
             try:
-                memory_used_bytes = amd_gpu.query_vram_usage()
-                memory_used = memory_used_bytes / 1024 / 1024
-            except:
-                memory_used_bytes = math.nan
-                memory_used = math.nan
+                if pyamdgpuinfo.detect_gpus() > 0:
+                    amd_gpu = pyamdgpuinfo.get_gpu(0)
+                else:
+                    amd_gpu = None
+            except Exception:
+                amd_gpu = None
 
+            if amd_gpu:
+                try:
+                    memory_used_bytes = amd_gpu.query_vram_usage()
+                    memory_used = memory_used_bytes / 1024 / 1024
+                except Exception:
+                    pass
+                try:
+                    memory_total_bytes = amd_gpu.memory_info["vram_size"]
+                    memory_total = memory_total_bytes / 1024 / 1024
+                except Exception:
+                    pass
+                try:
+                    memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
+                except Exception:
+                    pass
+                try:
+                    temperature = amd_gpu.query_temperature()
+                except Exception:
+                    pass
+
+        load = GpuAmd._gpu_load(amd_gpu)
+
+        if pyadl:
             try:
-                memory_total_bytes = amd_gpu.memory_info["vram_size"]
-                memory_total = memory_total_bytes / 1024 / 1024
-            except:
-                memory_total_bytes = math.nan
-                memory_total = math.nan
+                amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
+                if not math.isfinite(load):
+                    load = amd_gpu.getCurrentUsage()
+                if not math.isfinite(temperature):
+                    temperature = amd_gpu.getCurrentTemperature()
+            except Exception:
+                pass
 
-            try:
-                memory_percentage = (memory_used_bytes / memory_total_bytes) * 100
-            except:
-                memory_percentage = math.nan
-
-            try:
-                load = amd_gpu.query_load() * 100
-            except:
-                load = math.nan
-
-            try:
-                temperature = amd_gpu.query_temperature()
-            except:
-                temperature = math.nan
-
-            return load, memory_percentage, memory_used, memory_total, temperature
-        elif pyadl:
-            amd_gpu = pyadl.ADLManager.getInstance().getDevices()[0]
-
-            try:
-                load = amd_gpu.getCurrentUsage()
-            except:
-                load = math.nan
-
-            try:
-                temperature = amd_gpu.getCurrentTemperature()
-            except:
-                temperature = math.nan
-
-            # GPU memory data not supported by pyadl
-            return load, math.nan, math.nan, math.nan, temperature
+        return load, memory_percentage, memory_used, memory_total, temperature
 
     @staticmethod
     def fps() -> int:
@@ -406,15 +470,24 @@ class GpuAmd(sensors.Gpu):
 
     @staticmethod
     def is_available() -> bool:
-        try:
-            if pyamdgpuinfo and pyamdgpuinfo.detect_gpus() > 0:
-                return True
-            elif pyadl and len(pyadl.ADLManager.getInstance().getDevices()) > 0:
-                return True
-            else:
-                return False
-        except:
-            return False
+        available = False
+        if pyamdgpuinfo:
+            try:
+                if pyamdgpuinfo.detect_gpus() > 0:
+                    available = True
+            except Exception:
+                pass
+        if not available and pyadl:
+            try:
+                if len(pyadl.ADLManager.getInstance().getDevices()) > 0:
+                    available = True
+            except Exception:
+                pass
+        if not available:
+            available = bool(GpuAmd._amdgpu_sysfs_devices())
+        if available and not math.isfinite(GpuAmd._sysfs_gpu_busy_percent()):
+            GpuAmd._fdinfo_sampler.busy_percent()
+        return available
 
 
 class Memory(sensors.Memory):
