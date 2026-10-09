@@ -1,0 +1,198 @@
+---
+author: "Honorati"
+
+display:
+  DISPLAY_SIZE: 3.5"
+  DISPLAY_ORIENTATION: poltrait
+  DISPLAY_RGB_LED: 255, 255, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background.png
+    X: 0
+    Y: 0
+    WIDTH: 320
+    HEIGHT: 480
+
+STATS:
+
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 2
+      TEXT: 
+        SHOW: True
+        SHOW_UNIT: True
+        X: 130
+        Y: 233
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt
+
+    TEMPERATURE:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 173
+        Y: 233
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 193, 7
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+        ANCHOR: lt
+
+  GPU:  
+    INTERVAL: 2
+    PERCENTAGE:  
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 130
+        Y: 308
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt
+
+    TEMPERATURE:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 173
+        Y: 308
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 25
+        FONT_COLOR: 255, 193, 7
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+        ANCHOR: lt
+
+  MEMORY: 
+    INTERVAL: 5
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 60
+        Y: 365
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+        ANCHOR: lt
+
+      USED:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 10
+        Y: 395
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+        ANCHOR: lt
+        
+      FREE:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 10
+        Y: 415
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: left
+        ANCHOR: lt
+        
+  DISK: 
+    INTERVAL: 60
+    USED:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 310
+        Y: 395
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt      
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 247
+        Y: 365
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt
+        
+    TOTAL:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 310
+        Y: 415
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 15
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt
+
+
+  NET:
+    INTERVAL: 1
+    ETH:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 162
+          Y: 428
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 14
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+          ALIGN: center
+          ANCHOR: mt
+
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 162
+          Y: 446
+          FONT: generale-mono/GeneraleMonoA.ttf
+          FONT_SIZE: 14
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background.png
+          ALIGN: center
+          ANCHOR: mt
+
+        
+  DATE:
+    INTERVAL: 1
+    HOUR:
+      TEXT:
+        FORMAT: short
+        SHOW: True 
+        X: 310
+        Y: 10
+        FONT: generale-mono/GeneraleMonoA.ttf
+        FONT_SIZE: 20
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background.png
+        ALIGN: right
+        ANCHOR: rt
+
