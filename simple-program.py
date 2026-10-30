@@ -50,11 +50,13 @@ COM_PORT = "AUTO"
 
 # Display revision: see config.yaml comments for values
 # To identify your smart screen: https://github.com/mathoudebine/turing-smart-screen-python/wiki/Hardware-revisions
-REVISION = "VMAX"
+REVISION = "A"
+# REVISION = "VMAX"  # For Solarmax / HL-VMAX displays
 
 # Display width & height in pixels for portrait orientation
 # /!\ Do not switch width/height here for landscape, use lcd_comm.SetOrientation below
-WIDTH, HEIGHT = 462, 1920
+WIDTH, HEIGHT = 320, 480
+# WIDTH, HEIGHT = 462, 1920  # For 9.2" / 16.0" VMAX displays
 
 assert WIDTH <= HEIGHT, "Indicate display width/height for PORTRAIT orientation: width <= height"
 

@@ -118,8 +118,15 @@ revision_and_size_to_model_map = {
     ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
     ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
     ('VMAX', SIZE_11_3_INCH): SOLARMAX_MODEL,
+    ('VMAX', '11.3"'): SOLARMAX_MODEL,
+    ('VMAX', _SIZE_9_2_INCH): SOLARMAX_MODEL,
     ('VMAX', SIZE_8_8_INCH): SOLARMAX_MODEL,
     ('VMAX', SIZE_8_8_INCH_NEWREV): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_11_3_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', '11.3"'): SOLARMAX_MODEL,
+    ('SOLARMAX', _SIZE_9_2_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_8_8_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_8_8_INCH_NEWREV): SOLARMAX_MODEL,
 
     ('SIMU', SIZE_0_96_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_2_x_INCH): SIMULATED_MODEL,
@@ -135,6 +142,8 @@ revision_and_size_to_model_map = {
 model_and_size_to_revision_map = {
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
     (SOLARMAX_MODEL, SIZE_11_3_INCH): 'VMAX',
+    (SOLARMAX_MODEL, '11.3"'): 'VMAX',
+    (SOLARMAX_MODEL, _SIZE_9_2_INCH): 'VMAX',
     (SOLARMAX_MODEL, SIZE_8_8_INCH): 'VMAX',
     (SOLARMAX_MODEL, SIZE_8_8_INCH_NEWREV): 'VMAX',
     (TURING_MODEL, SIZE_2_x_INCH): 'C',
@@ -511,11 +520,15 @@ class TuringConfigWindow:
             size = SIZE_2_x_INCH  # If a theme is for 2.1" or 2.8" then it is for all 2.x"
         elif size == _SIZE_9_2_INCH:
             size = SIZE_8_8_INCH_NEWREV  # If a theme is for 9.2" then it is for 8.8"/9.2" (new rev)
+        elif size == '11.3"':
+            size = SIZE_11_3_INCH
         try:
             if size == SIZE_8_8_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_8_8_INCH_NEWREV
             if size == SIZE_2_x_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_2_8_INCH_NEWREV
+            if size in (SIZE_8_8_INCH, SIZE_8_8_INCH_NEWREV) and self.config['display']['REVISION'] in ('VMAX', 'SOLARMAX'):
+                size = SIZE_11_3_INCH
             self.size_cb.set(size)
         except:
             self.size_cb.current(0)
@@ -670,6 +683,10 @@ class TuringConfigWindow:
         elif size == SIZE_8_8_INCH_NEWREV or size == SIZE_8_8_INCH:
             themes = get_themes(SIZE_8_8_INCH)
             themes += get_themes(_SIZE_9_2_INCH)
+        elif size == SIZE_11_3_INCH:
+            themes = get_themes('11.3"')
+            themes += get_themes(_SIZE_9_2_INCH)
+            themes += get_themes(SIZE_8_8_INCH)
         else:
             themes = get_themes(size)
 

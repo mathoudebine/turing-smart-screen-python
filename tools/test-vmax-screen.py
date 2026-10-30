@@ -1,17 +1,15 @@
 import sys
-import os
 import time
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
-# Add turing-smart-screen-python to sys.path
-BASE_DIR = Path(__file__).resolve().parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
+# Add repository root to sys.path
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-from library.lcd.lcd_comm_vmax import LcdCommVmax
-from library.lcd.lcd_comm import Orientation
-from library.log import logger
+from library.lcd.lcd_comm_vmax import LcdCommVmax  # noqa: E402
+from library.lcd.lcd_comm import Orientation  # noqa: E402
 
 print("==================================================")
 print("Testing HL-VMAX / Solarmax in turing-smart-screen")
@@ -92,7 +90,7 @@ try:
     lcd.closeSerial()
     print("Test finished successfully!")
 
-except Exception as e:
+except Exception:
     import traceback
     print("Error during test:")
     traceback.print_exc()

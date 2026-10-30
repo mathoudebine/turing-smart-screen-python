@@ -8,11 +8,12 @@
 #
 
 import io
+import os
 import re
+import sys
 import time
 import threading
-from typing import Optional, Tuple
-from enum import IntEnum
+from typing import Optional
 import serial
 from serial.tools.list_ports import comports
 from PIL import Image
@@ -35,6 +36,7 @@ class LcdCommVmax(LcdComm):
         super().__init__(com_port, display_width, display_height, update_queue)
         self.serial_number = None
         self.brightness = 100
+        self._saved_brightness = 100
 
         # Canvas for full frame composition
         self._canvas_lock = threading.Lock()
@@ -91,6 +93,15 @@ class LcdCommVmax(LcdComm):
                     logger.warning(f"Cannot open COM port {com_port}: {e} - retrying ({attempt}/10)")
                     time.sleep(1)
 
+            logger.error(
+                "Cannot open HL-VMAX COM port after 10 attempts. "
+                "If the screen is connected, check USB cable or select COM port manually."
+            )
+            try:
+                sys.exit(0)
+            except Exception:
+                os._exit(0)
+
     def InitializeComm(self):
         with self._serial_lock:
             logger.debug("Initializing HL-VMAX communication...")
@@ -115,7 +126,8 @@ class LcdCommVmax(LcdComm):
         # Format example: VMAXD160462*1920S262001750 or VMAXA170320*1480S261001155
         m = re.search(r"(\d{3,4})\s*\*\s*(\d{2,5})", sn)
         if m:
-            w, h = int(m.group(1)), int(m.group(2))
+            raw_w, raw_h = int(m.group(1)), int(m.group(2))
+            w, h = min(raw_w, raw_h), max(raw_w, raw_h)
             if w >= 100 and h >= 100:
                 logger.info(f"Detected hardware panel geometry: {w}x{h}")
                 self.display_width = w
@@ -142,10 +154,13 @@ class LcdCommVmax(LcdComm):
         self._enqueue_render()
 
     def ScreenOff(self):
+        if self.brightness > 0:
+            self._saved_brightness = self.brightness
         self.SetBrightness(0)
 
     def ScreenOn(self):
-        self.SetBrightness(self.brightness if self.brightness > 0 else 100)
+        restored = self._saved_brightness if self._saved_brightness > 0 else (self.brightness if self.brightness > 0 else 100)
+        self.SetBrightness(restored)
 
     def SetBrightness(self, level: int):
         self.brightness = max(0, min(100, int(level)))
@@ -235,13 +250,13 @@ class LcdCommVmax(LcdComm):
         elif self.orientation == Orientation.REVERSE_PORTRAIT:
             if img.size != (self.display_width, self.display_height):
                 img = img.resize((self.display_width, self.display_height))
-            return img.rotate(180)
+            return img.transpose(Image.Transpose.ROTATE_180)
         elif self.orientation == Orientation.LANDSCAPE:
             if img.size != (self.display_height, self.display_width):
                 img = img.resize((self.display_height, self.display_width))
-            return img.rotate(270, expand=True)
+            return img.transpose(Image.Transpose.ROTATE_270)
         elif self.orientation == Orientation.REVERSE_LANDSCAPE:
             if img.size != (self.display_height, self.display_width):
                 img = img.resize((self.display_height, self.display_width))
-            return img.rotate(90, expand=True)
+            return img.transpose(Image.Transpose.ROTATE_90)
         return img
