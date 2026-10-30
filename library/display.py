@@ -27,6 +27,7 @@ from library.lcd.lcd_comm_turing_usb import LcdCommTuringUSB
 from library.lcd.lcd_comm_rev_d import LcdCommRevD
 from library.lcd.lcd_comm_weact_a import LcdCommWeActA
 from library.lcd.lcd_comm_weact_b import LcdCommWeActB
+from library.lcd.lcd_comm_vmax import LcdCommVmax
 from library.lcd.lcd_simulated import LcdSimulated
 from library.log import logger
 
@@ -76,6 +77,8 @@ def _get_theme_size() -> tuple[int, int]:
         return 480, 1920
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '9.2"':
         return 480, 1920 # 9.2" displays are 1920x462 but using 1920x480 to be compatible with 8.8" themes
+    elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '11.3"':
+        return 320, 1480
     elif config.THEME_DATA["display"].get("DISPLAY_SIZE", '') == '12.3"':
         return 720, 1920
     else:
@@ -109,6 +112,9 @@ class Display:
         elif config.CONFIG_DATA["display"]["REVISION"] == "WEACT_B":
             self.lcd = LcdCommWeActB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
+        elif config.CONFIG_DATA["display"]["REVISION"] in ("VMAX", "SOLARMAX"):
+            self.lcd = LcdCommVmax(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                  update_queue=config.update_queue, display_width=width, display_height=height)
         elif config.CONFIG_DATA["display"]["REVISION"] == "SIMU":
             # Simulated display: always set width/height from theme
             self.lcd = LcdSimulated(display_width=width, display_height=height)
