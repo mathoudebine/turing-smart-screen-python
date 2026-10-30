@@ -5,6 +5,10 @@ on:
     paths:
       - 'config.yaml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-config:
     name: Check config.yaml
