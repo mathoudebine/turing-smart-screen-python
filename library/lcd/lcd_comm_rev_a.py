@@ -173,7 +173,9 @@ class LcdCommRevA(LcdComm):
         byteBuffer[8] = (width & 255)
         byteBuffer[9] = (height >> 8)
         byteBuffer[10] = (height & 255)
-        self.serial_write(bytes(byteBuffer))
+        # Serialize orientation with the other display commands. A direct write can race
+        # the queue worker when Windows resumes and scheduled sensor redraws start again.
+        self.SendLine(bytes(byteBuffer))
 
     def DisplayPILImage(
             self,
