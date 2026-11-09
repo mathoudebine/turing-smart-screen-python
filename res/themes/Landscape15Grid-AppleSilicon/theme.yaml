@@ -1,0 +1,192 @@
+---
+author: "@tamingchaos"
+
+display:
+  DISPLAY_SIZE: 5"
+  DISPLAY_ORIENTATION: landscape
+  DISPLAY_RGB_LED: 0, 100, 255
+
+static_images:
+  BACKGROUND:
+    PATH: background_grid.png
+    X: 0
+    Y: 0
+    WIDTH: 800
+    HEIGHT: 480
+
+STATS:
+  CPU:
+    PERCENTAGE:
+      INTERVAL: 1
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 10
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    TEMPERATURE:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 170
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    FAN_SPEED:
+      INTERVAL: 2
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 330
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  GPU:
+    INTERVAL: 1
+    PERCENTAGE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 490
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    TEMPERATURE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 650
+        Y: 70
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    MEMORY_PERCENT:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 10
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  MEMORY:
+    INTERVAL: 5
+    VIRTUAL:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 170
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+      FREE:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 330
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  DISK:
+    INTERVAL: 10
+    USED:
+      PERCENT_TEXT:
+        SHOW: True
+        SHOW_UNIT: True
+        X: 490
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+    FREE:
+      TEXT:
+        SHOW: True
+        SHOW_UNIT: False
+        X: 650
+        Y: 230
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 40
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+  NET:
+    INTERVAL: 1
+    WLO:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 10
+          Y: 380
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 28
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 170
+          Y: 380
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 28
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+    ETH:
+      DOWNLOAD:
+        TEXT:
+          SHOW: True
+          X: 330
+          Y: 380
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 28
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+      UPLOAD:
+        TEXT:
+          SHOW: True
+          X: 490
+          Y: 380
+          FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+          FONT_SIZE: 28
+          FONT_COLOR: 255, 255, 255
+          BACKGROUND_IMAGE: background_grid.png
+  DATE:
+    INTERVAL: 1
+    HOUR:
+      TEXT:
+        FORMAT: short
+        SHOW: True
+        X: 650
+        Y: 370
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 28
+        FONT_COLOR: 255, 255, 255
+        BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 145
+        ANCHOR: lt
+    DAY:
+      TEXT:
+        FORMAT: short
+        SHOW: True
+        X: 650
+        Y: 405
+        FONT: jetbrains-mono/JetBrainsMono-Bold.ttf
+        FONT_SIZE: 22
+        FONT_COLOR: 200, 200, 230
+        BACKGROUND_IMAGE: background_grid.png
+        WIDTH: 145
+        ANCHOR: lt

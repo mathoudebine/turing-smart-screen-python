@@ -99,3 +99,51 @@ class ExampleCustomTextOnlyData(CustomDataSource):
     def last_values(self) -> List[float]:
         # If a custom data class only has text values, it won't be possible to display line graph
         pass
+
+
+# Apple Silicon IOReport power metrics (only functional when APPLE_SILICON sensors are active)
+class _IOReportPowerBase(CustomDataSource):
+    _key = ''
+    _history = None
+
+    def _get_power(self) -> float:
+        try:
+            from library.sensors.sensors_apple_silicon import _get_ioreport
+            data = _get_ioreport().get_data()
+            return data.get(self._key, math.nan)
+        except Exception:
+            return math.nan
+
+    def as_numeric(self) -> float:
+        val = self._get_power()
+        if self._history is None:
+            self._history = [math.nan] * 30
+        self._history.append(val if not math.isnan(val) else 0)
+        self._history.pop(0)
+        return val
+
+    def as_string(self) -> str:
+        val = self.as_numeric()
+        if math.isnan(val):
+            return "--W"
+        return f'{val:.1f}W'
+
+    def last_values(self) -> List[float]:
+        if self._history is None:
+            return [math.nan] * 30
+        return list(self._history)
+
+
+class AppleSiliconCPUPower(_IOReportPowerBase):
+    _key = 'cpu_power'
+    _history = [math.nan] * 30
+
+
+class AppleSiliconGPUPower(_IOReportPowerBase):
+    _key = 'gpu_power'
+    _history = [math.nan] * 30
+
+
+class AppleSiliconTotalPower(_IOReportPowerBase):
+    _key = 'total_power'
+    _history = [math.nan] * 30
