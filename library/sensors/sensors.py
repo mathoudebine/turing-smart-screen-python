@@ -118,6 +118,11 @@ class Disk(ABC):
     def disk_free() -> int:  # In bytes
         pass
 
+    @staticmethod
+    @abstractmethod
+    def disk_temperature() -> float:  # In °C
+        pass
+
 
 class Net(ABC):
     @staticmethod

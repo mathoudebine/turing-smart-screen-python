@@ -646,6 +646,7 @@ class Memory:
 
 class Disk:
     last_values_disk_usage = []
+    disk_temp_warning_shown = False
 
     @classmethod
     def stats(cls):
@@ -680,6 +681,32 @@ class Disk:
             min_size=5,
             unit=" G"
         )
+
+        # Disk temperature. Optional: themes written before this existed have no
+        # TEMPERATURE section, so skip quietly rather than raising KeyError.
+        disk_temp_theme_data = disk_theme_data.get('TEMPERATURE')
+        if disk_temp_theme_data:
+            disk_temperature = sensors.Disk.disk_temperature()
+
+            disk_temp_text_data = disk_temp_theme_data.get('TEXT', {})
+            disk_temp_radial_data = disk_temp_theme_data.get('RADIAL', {})
+            disk_temp_graph_data = disk_temp_theme_data.get('GRAPH', {})
+
+            if math.isnan(disk_temperature):
+                # Do NOT disable the fields permanently here: some SATA SSDs only
+                # answer the SMART temperature query intermittently, so a failed
+                # read is usually transient. Warn once and skip this cycle.
+                if not cls.disk_temp_warning_shown and (
+                        disk_temp_text_data.get('SHOW') or disk_temp_radial_data.get('SHOW')
+                        or disk_temp_graph_data.get('SHOW')):
+                    cls.disk_temp_warning_shown = True
+                    logger.warning(
+                        "Disk temperature unavailable. On Linux, SATA drives need the "
+                        "'drivetemp' kernel module loaded: sudo modprobe drivetemp")
+            else:
+                display_themed_temperature_value(disk_temp_text_data, disk_temperature)
+                display_themed_progress_bar(disk_temp_graph_data, disk_temperature)
+                display_themed_temperature_radial_bar(disk_temp_radial_data, disk_temperature)
 
 
 class Net:

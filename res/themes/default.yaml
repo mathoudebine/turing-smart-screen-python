@@ -165,6 +165,13 @@ STATS:
     FREE:
       TEXT:
         SHOW: False
+    TEMPERATURE:
+      TEXT:
+        SHOW: False
+      GRAPH:
+        SHOW: False
+      RADIAL:
+        SHOW: False
   NET:
     INTERVAL: 0
     WLO:
