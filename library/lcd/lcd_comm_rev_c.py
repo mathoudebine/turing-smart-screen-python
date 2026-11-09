@@ -27,6 +27,7 @@ from enum import Enum
 from math import ceil
 from typing import Optional, Tuple
 
+import numpy as np
 import serial
 from PIL import Image
 from serial.tools.list_ports import comports
@@ -75,6 +76,10 @@ class Command(Enum):
     # STOP COMMANDS
     STOP_VIDEO = bytearray((0x79, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
     STOP_MEDIA = bytearray((0x96, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    # 11.3" / chs_113inch vendor sequence (ShinySnake G600 / TURZX)
+    PRE_FULL_FRAME = bytearray((0x81, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    STOP_SESSION = bytearray((0x87, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
+    OPTIONS_113INCH = bytearray((0x7d, 0xef, 0x69, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0xaa))
 
     # IMAGE QUERY STATUS
     QUERY_STATUS = bytearray((0xcf, 0xef, 0x69, 0x00, 0x00, 0x00, 0x01))
@@ -86,6 +91,7 @@ class Command(Enum):
     DISPLAY_BITMAP_2INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x0E, 0x10))
     DISPLAY_BITMAP_5INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x17, 0x70))
     DISPLAY_BITMAP_8INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x38, 0x40))
+    DISPLAY_BITMAP_113INCH = bytearray((0xc8, 0xef, 0x69, 0x00)) + bytearray((0x33, 0x90))
 
     STARTMODE_DEFAULT = bytearray((0x00,))
     STARTMODE_IMAGE = bytearray((0x01,))
@@ -119,21 +125,45 @@ class SubRevision(Enum):
     REV_2INCH = 1  # For 2.1" and 2.8" models
     REV_5INCH = 2
     REV_8INCH = 3
+    REV_113INCH = 4
+
+
+class Rev113Geometry:
+    # Every other Rev C size's C8 wire canvas matches its glass 1:1, so
+    # display_width/display_height (from LcdComm) are enough on their own.
+    # 11.3" is the only size where that's not true. Its C8 canvas is a
+    # reshape of the glass, not the same shape. So it's the only one that
+    # needs a second set of dimensions at all.
+    C8_WIDTH = 1760
+    C8_HEIGHT = 480
+    GLASS_WIDTH = 440
+    GLASS_HEIGHT = 1920
+    REV_113_WIDTH = GLASS_WIDTH
+    REV_113_HEIGHT = GLASS_HEIGHT
 
 
 WAKE_RETRIES = 15
 
 
-# This class is for Turing Smart Screen 2.1" / 2.8" / 5" / 8" screens
+# This class is for Turing Smart Screen 2.1" / 2.8" / 5" / 8.8" / 11.3" screens
 class LcdCommRevC(LcdComm):
     def __init__(self, com_port: str = "AUTO", display_width: int = 480, display_height: int = 800,
                  update_queue: Optional[queue.Queue] = None):
         logger.debug("HW revision: C")
         LcdComm.__init__(self, com_port, display_width, display_height, update_queue)
+        self._last_status_ts_113inch = 0.0
         self.openSerial()
 
     def __del__(self):
         self.closeSerial()
+
+    def openSerial(self):
+        LcdComm.openSerial(self)
+        # Full 11.3" frames are ~3.4 MB; the default write timeout is too short.
+        # Set here rather than in __init__ so it survives the reconnect that
+        # WriteLine/ReadData perform on SerialException.
+        if self.lcd_serial is not None and self._subrevision_from_size() == SubRevision.REV_113INCH:
+            self.lcd_serial.write_timeout = 20
 
     @staticmethod
     def auto_detect_com_port() -> Optional[str]:
@@ -212,34 +242,54 @@ class LcdCommRevC(LcdComm):
             if readsize:
                 self.update_queue.put((self.ReadData, [readsize]))
 
+    def _subrevision_from_size(self) -> SubRevision:
+        if self.display_width == 480 and self.display_height == 480:
+            return SubRevision.REV_2INCH
+        if self.display_width == 480 and self.display_height == 800:
+            return SubRevision.REV_5INCH
+        if self.display_width == 480 and self.display_height == 1920:
+            return SubRevision.REV_8INCH
+        if self.display_width == Rev113Geometry.REV_113_WIDTH and self.display_height == Rev113Geometry.REV_113_HEIGHT:
+            return SubRevision.REV_113INCH
+        return SubRevision.UNKNOWN
+
+    @staticmethod
+    def _decode_hello(raw: bytes) -> str:
+        # IDs are ASCII and model-dependent length. The 8.8" ID is 23 chars
+        # (chs_88inch.dev1_rom1.90); the 11.3" ID is 24
+        # (chs_113inch.dev1_rom1.90). A hardcoded 23-byte read truncates the
+        # latter to rom1.9 and the ROM parse falls back to 87 (BGR instead of BGRA).
+        return ''.join(c for c in raw.decode(errors="ignore") if c in set(string.printable)).split('\x00')[0].strip()
+
+    def _read_hello(self) -> str:
+        self._send_command(Command.HELLO, bypass_queue=True)
+        return self._decode_hello(self.serial_read(64))
+
     def _hello(self):
         # This command reads LCD answer on serial link, so it bypasses the queue
         self.sub_revision = SubRevision.UNKNOWN
         self.serial_flush_input()
-        self._send_command(Command.HELLO, bypass_queue=True)
-        response = ''.join(
-            filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
+        response = self._read_hello()
         self.serial_flush_input()
         logger.debug("Display ID returned: %s" % response)
         while not response.startswith("chs_"):
             logger.warning("Display returned invalid or unsupported ID, try again in 1 second")
             time.sleep(1)
-            self._send_command(Command.HELLO, bypass_queue=True)
-            response = ''.join(
-                filter(lambda x: x in set(string.printable), str(self.serial_read(23).decode(errors="ignore"))))
+            response = self._read_hello()
             self.serial_flush_input()
             logger.debug("Display ID returned: %s" % response)
 
-        # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
-        # Rely on width/height for sub-revision detection
-        if self.display_width == 480 and self.display_height == 480:
-            self.sub_revision = SubRevision.REV_2INCH
-        elif self.display_width == 480 and self.display_height == 800:
-            self.sub_revision = SubRevision.REV_5INCH
-        elif self.display_width == 480 and self.display_height == 1920:
-            self.sub_revision = SubRevision.REV_8INCH
+        # 11.3" identifies itself; do not classify it as the 8.8" (also 480x1920).
+        if response.startswith("chs_113inch"):
+            self.sub_revision = SubRevision.REV_113INCH
+            self.display_width = Rev113Geometry.REV_113_WIDTH
+            self.display_height = Rev113Geometry.REV_113_HEIGHT
         else:
-            logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
+            # Note: ID returned by display are not reliable for some models e.g. 2.1" displays return "chs_5inch"
+            # Rely on width/height for sub-revision detection
+            self.sub_revision = self._subrevision_from_size()
+            if self.sub_revision == SubRevision.UNKNOWN:
+                logger.error(f"Unsupported resolution {self.display_width}x{self.display_height} for revision C")
 
         # Detect ROM version
         try:
@@ -247,7 +297,7 @@ class LcdCommRevC(LcdComm):
             if self.rom_version < 80 or self.rom_version > 100:
                 logger.warning("ROM version %d may be invalid, use default ROM version 87" % self.rom_version)
                 self.rom_version = 87
-        except:
+        except Exception:
             logger.warning("Display returned invalid or unsupported ID, use default ROM version 87")
             self.rom_version = 87
 
@@ -257,6 +307,15 @@ class LcdCommRevC(LcdComm):
         self._hello()
 
     def Reset(self):
+        if self.display_width == Rev113Geometry.REV_113_WIDTH and self.display_height == Rev113Geometry.REV_113_HEIGHT:
+            self.serial_flush_input()
+            ident = self._read_hello()
+            self.serial_flush_input()
+            if ident.startswith("chs_113inch"):
+                logger.info("11.3\" panel: skipping firmware RESTART")
+                return
+            # Declared size matched but the panel didn't identify as 11.3" -- fall through to normal RESTART.
+
         logger.info("Display reset (COM port may change)...")
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self._send_command(Command.RESTART, bypass_queue=True)
@@ -294,6 +353,9 @@ class LcdCommRevC(LcdComm):
         # logger.info("Calling ScreenOn")
         self._send_command(Command.STOP_VIDEO)
         self._send_command(Command.STOP_MEDIA, readsize=1024)
+        if getattr(self, "sub_revision", None) == SubRevision.REV_113INCH:
+            # Vendor sends 0x81 after STOP_MEDIA before the first frame.
+            self._send_command(Command.PRE_FULL_FRAME)
         # self._send_command(Command.SET_BRIGHTNESS, payload=bytearray([255]))
 
     def SetBrightness(self, level: int = 25):
@@ -314,6 +376,10 @@ class LcdCommRevC(LcdComm):
         #   b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
         #   self._send_command(Command.OPTIONS, payload=b)
         # else:
+        if getattr(self, "sub_revision", None) == SubRevision.REV_113INCH:
+            # Vendor payload is 0xAA rather than STARTMODE_DEFAULT (0x2D).
+            self._send_command(Command.OPTIONS_113INCH)
+            return
         b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
         self._send_command(Command.OPTIONS, payload=b)
 
@@ -324,6 +390,21 @@ class LcdCommRevC(LcdComm):
             image_width: int = 0,
             image_height: int = 0
     ):
+        # For full-screen images on the 11.3" display route through a custm full-frame sender
+        # Needed since on the 11.3" the c8 canvas size != the physical glass size
+        if (
+            getattr(self, "sub_revision", None) == SubRevision.REV_113INCH
+            and x == 0 and y == 0
+            and image.size in (
+                (Rev113Geometry.GLASS_WIDTH, Rev113Geometry.GLASS_HEIGHT),  # 440×1920 declared theme size == native glass
+                (Rev113Geometry.C8_WIDTH, Rev113Geometry.C8_HEIGHT),  # 1760×480 native C8 wire canvas
+                (480, Rev113Geometry.GLASS_HEIGHT),  # 480×1920 borrowed 8.8" theme, scale don't crop
+            )
+        ):
+            with self.update_queue_mutex:
+                self._display_full_113inch(image)
+            return
+
         # If the image height/width isn't provided, use the native image size
         if not image_height:
             image_height = image.size[1]
@@ -346,33 +427,154 @@ class LcdCommRevC(LcdComm):
 
         if x == 0 and y == 0 and (image_width == self.get_width()) and (image_height == self.get_height()):
             with self.update_queue_mutex:
-                self._send_command(Command.PRE_UPDATE_BITMAP)
-                self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
+                if self.sub_revision == SubRevision.REV_113INCH:
+                    self._display_full_113inch(image)
+                else:
+                    self._send_command(Command.PRE_UPDATE_BITMAP)
+                    self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
 
-                if self.sub_revision == SubRevision.REV_5INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
-                elif self.sub_revision == SubRevision.REV_2INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
-                elif self.sub_revision == SubRevision.REV_8INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
+                    if self.sub_revision == SubRevision.REV_5INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
+                    elif self.sub_revision == SubRevision.REV_2INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
+                    elif self.sub_revision == SubRevision.REV_8INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
+                    else:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
 
-                self._send_command(display_bmp_cmd,
-                                   payload=bytearray(
-                                       int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
-                self._send_command(Command.SEND_PAYLOAD,
-                                   payload=bytearray(self._generate_full_image(image)),
-                                   readsize=1024)
-                self._send_command(Command.QUERY_STATUS, readsize=1024)
+                    self._send_command(display_bmp_cmd,
+                                       payload=bytearray(
+                                           int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
+                    self._send_command(Command.SEND_PAYLOAD,
+                                       payload=bytearray(self._generate_full_image(image)),
+                                       readsize=1024)
+                    self._send_command(Command.QUERY_STATUS, readsize=1024)
         else:
             with self.update_queue_mutex:
                 img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP)
-                self._send_command(Command.SEND_PAYLOAD, payload=pyd)
-                self._send_command(Command.SEND_PAYLOAD, payload=img)
-                self._send_command(Command.QUERY_STATUS, readsize=1024)
+                if self.sub_revision == SubRevision.REV_113INCH:
+                    # Poll status at most ~1 Hz; faster 0xcf jams this ROM.
+                    self._maybe_query_status_113inch()
+                    self._send_command(Command.SEND_PAYLOAD, payload=pyd)
+                    self._send_command(Command.SEND_PAYLOAD, payload=img)
+                else:
+                    self._send_command(Command.SEND_PAYLOAD, payload=pyd)
+                    self._send_command(Command.SEND_PAYLOAD, payload=img)
+                    self._send_command(Command.QUERY_STATUS, readsize=1024)
             Count.Start += 1
 
+    def _display_full_113inch(self, image: Image.Image):
+        """Full-frame 0xc8 path for chs_113inch.
+
+        PRE_UPDATE + 0x2C block + 0xc8 00 33 90, BGRA with a 0x00 every 249
+        bytes, no 0xEF69 terminator, padded to 250. Sent twice. ACK is the
+        ASCII string 'full_png_sucess'. No extra W*W/64 size word.
+
+        Every send here uses bypass_queue=True. _write_113inch_c8_body/
+        _wait_113inch_full_png_success always write/read the serial port directly
+        (there's no way to chunk a body write or an ACK wait through
+        update_queue), so if the header commands above were left to go
+        through the queue instead, main.py's real update_queue could
+        dequeue and send the body on a *different* thread before the
+        queued header command actually went out -- a real ordering race
+        that only shows up when a queue is configured (i.e. real main.py
+        use, not a standalone script that constructs the driver without
+        one). That's what caused the intermittent "missing full_png_sucess"
+        seen running a real theme end-to-end 2026-08-17: the background
+        frame silently raced its own header and got dropped.
+        """
+        self._send_command(Command.PRE_UPDATE_BITMAP, bypass_queue=True)
+        self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP, bypass_queue=True)
+        payload = bytearray(self._generate_full_image(image))
+        # Send twice and wait for 'full_png_sucess' after each. Without the
+        # ACK wait the second copy piles onto the first and mixed pixels tear.
+        for _ in range(2):
+            self._send_command(Command.DISPLAY_BITMAP_113INCH, bypass_queue=True)
+            # Write the body in 25 KiB chunks; a single 3.4 MB write returns
+            # as soon as the tty buffer fills.
+            self._write_113inch_c8_body(payload)
+            ack = self._wait_113inch_full_png_success()
+            if "full_png_sucess" not in ack:
+                logger.warning("11.3\" C8: missing full_png_sucess (%r)", ack[:80])
+        # Vendor restarts the 0xcc sequence counter after a new full frame.
+        Count.Start = 0
+        self._last_status_ts_113inch = 0.0
+
+    def _write_113inch_c8_body(self, payload: bytearray) -> None:
+        """Pad to 250 and write in 25_000-byte chunks (vendor URB size)."""
+        msg = bytes(payload)
+        if len(msg) % 250:
+            msg += bytes(250 - (len(msg) % 250))
+        if self.lcd_serial is not None:
+            self.lcd_serial.reset_input_buffer()
+        for i in range(0, len(msg), 25000):
+            self.WriteData(bytearray(msg[i : i + 25000]))
+            if self.lcd_serial is not None:
+                self.lcd_serial.flush()
+
+    def _wait_113inch_full_png_success(self, timeout: float = 8.0) -> str:
+        deadline = time.time() + timeout
+        buf = b""
+        while time.time() < deadline:
+            chunk = self.serial_read(1024)
+            if chunk:
+                buf += chunk
+                text = self._decode_hello(buf)
+                if "full_png_sucess" in text:
+                    return text
+        return self._decode_hello(buf)
+
+    def _maybe_query_status_113inch(self):
+        """Vendor polls 0xcf at ~1 Hz, never faster, and always before a 0xcc."""
+        now = time.time()
+        if now - self._last_status_ts_113inch < 1.0:
+            return
+        self._send_command(Command.QUERY_STATUS, readsize=1024)
+        self._last_status_ts_113inch = now
+
+    def _pack_113inch_c8(self, image: Image.Image) -> Image.Image:
+        """Pack a 440×1920 glass image into the vendor 1760×480 C8 canvas.
+
+        Canvas pixel (cy, cx) is glass pixel (4*cy + cx//440, cx%440): each
+        canvas row packs 4 consecutive glass rows side by side. That is
+        exactly a (1920, 440, 3) -> (480, 1760, 3) numpy reshape, no
+        interpolation. A native 1760×480 image is sent unchanged; anything
+        else is resized to the true 440×1920 glass resolution first.
+        """
+        if image.size == (Rev113Geometry.C8_WIDTH, Rev113Geometry.C8_HEIGHT):
+            return image
+        if image.mode not in ("RGB", "RGBA"):
+            image = image.convert("RGB")
+        if image.size != (Rev113Geometry.GLASS_WIDTH, Rev113Geometry.GLASS_HEIGHT):
+            image = image.resize((Rev113Geometry.GLASS_WIDTH, Rev113Geometry.GLASS_HEIGHT), Image.Resampling.LANCZOS)
+        glass = np.asarray(image.convert("RGB"))  # (1920, 440, 3)
+        canvas = glass.reshape(Rev113Geometry.C8_HEIGHT, Rev113Geometry.C8_WIDTH, 3)  # (480, 1760, 3)
+        return Image.fromarray(canvas, "RGB")
+
+    def _map_113inch_view_to_glass(
+            self, x: int, y: int, width: int, height: int
+    ) -> Tuple[int, int, int, int]:
+        """Declared 440×1760 widget rect → true 440×1920 glass rect.
+
+        x/width are unscaled (declared width == glass width). y/height scale
+        by 1920/1760 to fill the taller glass.
+        """
+        view_h = self.display_height or Rev113Geometry.REV_113_HEIGHT
+        glass_h = Rev113Geometry.GLASS_HEIGHT
+        dx = x
+        dy = int(round(y * glass_h / view_h))
+        dw = width
+        dh = max(1, int(round(height * glass_h / view_h)))
+        if dy >= glass_h:
+            dy = glass_h - 1
+        if dy + dh > glass_h:
+            dh = glass_h - dy
+        return dx, dy, dw, dh
+
     def _generate_full_image(self, image: Image.Image) -> bytes:
-        if self.sub_revision == SubRevision.REV_8INCH:
+        if self.sub_revision == SubRevision.REV_113INCH:
+            image = self._pack_113inch_c8(image)
+        elif self.sub_revision == SubRevision.REV_8INCH:
             # Switch landscape/portrait mode for 8"
             if self.orientation == Orientation.LANDSCAPE:
                 image = image.rotate(270, expand=True)
@@ -397,6 +599,9 @@ class LcdCommRevC(LcdComm):
     def _generate_update_image(
             self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
     ) -> Tuple[bytearray, bytearray]:
+        if self.sub_revision == SubRevision.REV_113INCH:
+            return self._generate_update_image_113inch(image, x, y, count, cmd)
+
         x0, y0 = x, y
         if self.sub_revision == SubRevision.REV_8INCH:
             # Switch landscape/portrait mode for 8"
@@ -442,12 +647,16 @@ class LcdCommRevC(LcdComm):
 
         for h, line in enumerate(chunked(img_data, image.width * pixel_size)):
             if self.sub_revision == SubRevision.REV_8INCH:
-                # Switch landscape/portrait mode for 8"
+                # Switch landscape/portrait mode for 8" / 11.3"
                 img_raw_data += int(((x0 + h) * self.display_width) + y0).to_bytes(3, "big")
             else:
                 img_raw_data += int(((x0 + h) * self.display_height) + y0).to_bytes(3, "big")
             img_raw_data += int(image.width).to_bytes(2, "big")
             img_raw_data += line
+
+        if self.sub_revision == SubRevision.REV_113INCH and self._update_payload_needs_dummy(img_raw_data):
+            # Dummy visible-pixel field; shifts 0xEF69 off a packet boundary (PR #348).
+            img_raw_data += bytes((0x80, 0x00, 0x00, 0x00, 0x00))
 
         image_size = int(len(img_raw_data) + 2).to_bytes(3, "big")  # The +2 is for the "ef69" that will be added later.
 
@@ -465,3 +674,61 @@ class LcdCommRevC(LcdComm):
         img_raw_data += b'\xef\x69'
 
         return img_raw_data, payload
+
+    def _generate_update_image_113inch(
+            self, image: Image.Image, x: int, y: int, count: int, cmd: Optional[Command] = None
+    ) -> Tuple[bytearray, bytearray]:
+        """Encode a partial update into the 1760×480 C8 canvas.
+
+        Callers use the declared 440×1760 portrait; x/y are scaled into the
+        true 440×1920 glass first (_map_113inch_view_to_glass). Each glass
+        row then decomposes into a canvas row + sub-slot (glass_row =
+        4*canvas_row + sub, see class docstring): start = canvas_row*1760 +
+        sub*440 + x + col. Records are n=16 BGRA spans; image_size includes
+        the trailing ef69.
+        """
+        x, y, dst_w, dst_h = self._map_113inch_view_to_glass(x, y, image.width, image.height)
+        if image.size != (dst_w, dst_h):
+            image = image.resize((dst_w, dst_h), Image.Resampling.LANCZOS)
+        img_data, _ = image_to_BGRA(image)
+        stride = image.width * 4
+        span = 16
+        img_raw_data = bytearray()
+        for h, line in enumerate(chunked(img_data, stride)):
+            glass_row = y + h
+            canvas_row, sub = divmod(glass_row, 4)
+            row_x0 = sub * Rev113Geometry.GLASS_WIDTH + x
+            col = 0
+            while col < image.width:
+                n = min(span, image.width - col)
+                start = canvas_row * Rev113Geometry.C8_WIDTH + row_x0 + col
+                img_raw_data += int(start).to_bytes(3, "big")
+                img_raw_data += int(n).to_bytes(2, "big")
+                img_raw_data += line[col * 4 : (col + n) * 4]
+                col += n
+        img_raw_data += b"\xef\x69"
+        image_size = int(len(img_raw_data)).to_bytes(3, "big")
+        payload = bytearray()
+        if cmd:
+            payload.extend(cmd.value)
+        payload.extend(image_size)
+        payload.extend(Padding.NULL.value * 3)
+        payload.extend(count.to_bytes(4, "big"))
+        if len(img_raw_data) > 250:
+            img_raw_data = bytearray(b"\x00").join(chunked(bytes(img_raw_data), 249))
+        return img_raw_data, payload
+
+    @staticmethod
+    def _update_payload_needs_dummy(img_raw_data: bytearray) -> bool:
+        """True if ef69 would sit at the start or end of the final 250-byte packet."""
+        body = bytes(img_raw_data)
+        if len(body) > 250:
+            body = b'\x00'.join(chunked(body, 249))
+        candidate = body + b'\xef\x69'
+        n = len(candidate) if len(candidate) % 250 == 0 else 250 * ceil(len(candidate) / 250)
+        last = (candidate + bytes(n - len(candidate)))[-250:]
+        return (
+            (last[:2] == b'\xef\x69' and set(last[2:]) <= {0})
+            or last[-2:] == b'\xef\x69'
+            or (last[0] == 0x69 and last[1:5] == b'\x00\x00\x00\x00')
+        )
