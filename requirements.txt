@@ -21,7 +21,7 @@ requests~=2.34.2; python_version >= "3.10"
 
 # Image generation
 Pillow~=11.3.0; python_version < "3.10"   # For Python 3.9, Pillow 11.x is the latest supported
-Pillow~=12.3.0; python_version >= "3.10"  # For Python 3.10+, use latest Pillow
+Pillow~=13.0.0; python_version >= "3.10"  # For Python 3.10+, use latest Pillow
 
 # Efficient image serialization
 numpy~=2.0.2; python_version < "3.10"   # For Python 3.9, numpy 2.0.x is the latest supported
