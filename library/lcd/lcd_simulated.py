@@ -70,6 +70,7 @@ class LcdSimulated(LcdComm):
             logger.debug("To see your simulated screen, open http://%s:%d in a browser" % ("localhost", WEBSERVER_PORT))
             threading.Thread(target=self.webServer.serve_forever).start()
         except OSError:
+            self.webServer = None
             logger.error("Error starting webserver! An instance might already be running on port %d." % WEBSERVER_PORT)
 
     def __del__(self):
@@ -80,8 +81,9 @@ class LcdSimulated(LcdComm):
         return None
 
     def closeSerial(self):
-        logger.debug("Shutting down web server")
-        self.webServer.shutdown()
+        if self.webServer is not None:
+            logger.debug("Shutting down web server")
+            self.webServer.shutdown()
 
     def InitializeComm(self):
         pass

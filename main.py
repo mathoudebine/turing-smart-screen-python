@@ -39,14 +39,18 @@ try:
     import platform
     import signal
     import subprocess
+    import threading
     import time
     from pathlib import Path
     from PIL import Image
 
     if platform.system() == 'Windows':
+        import ctypes
         import win32api
         import win32con
         import win32gui
+        import win32process
+        import win32ts
 
     from library.log import logger
     import library.scheduler as scheduler
@@ -90,16 +94,43 @@ if __name__ == "__main__":
 
         logger.debug("(Waited %.1fs)" % wait_time)
 
-    def clean_stop(tray_icon=None):
-        # Turn screen and LEDs off before stopping
-        display.turn_off()
+    # Set when the queue handler thread is started, so clean_stop() can wait for it
+    queue_handler_thread = None
 
-        # Do not stop the program now in case data transmission was in progress
-        # Instead, ask the scheduler to empty the action queue before stopping
-        scheduler.STOPPING = True
+    # Guards the shutdown of the display: the end of the session, the log off and the tray
+    # Exit can fire at once, and running the sequence twice would cut the data being sent
+    stop_display_lock = threading.Lock()
+    display_stopped = False
 
-        # Waiting for all pending request to be sent to display
-        wait_for_empty_queue(5)
+    def stop_display(timeout: int = 5):
+        """Turn the display off and close the communication with it. Only runs once."""
+        global display_stopped
+
+        with stop_display_lock:
+            if display_stopped:
+                return
+            display_stopped = True
+
+            # Turn screen and LEDs off before stopping
+            display.turn_off()
+
+            # Do not stop the program now in case data transmission was in progress
+            # Instead, ask the scheduler to empty the action queue before stopping
+            scheduler.STOPPING = True
+
+            # Waiting for all pending request to be sent to display
+            wait_for_empty_queue(timeout)
+
+            # Wait for the queue handler to stop before closing: a request still being sent
+            # would fail on the closed port, and WriteLine() reopens the port when that happens
+            if queue_handler_thread is not None:
+                queue_handler_thread.join(timeout=1)
+
+            # Close the communication with the display
+            display.close()
+
+    def clean_stop(tray_icon=None, timeout: int = 5):
+        stop_display(timeout)
 
         # Remove tray icon just before exit
         if tray_icon:
@@ -145,30 +176,82 @@ if __name__ == "__main__":
     if platform.system() == "Windows":
         def on_win32_ctrl_event(event):
             """Handle Windows console control events (like Ctrl-C)."""
-            if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT):
+            if event in (win32con.CTRL_C_EVENT, win32con.CTRL_BREAK_EVENT, win32con.CTRL_CLOSE_EVENT,
+                         win32con.CTRL_LOGOFF_EVENT, win32con.CTRL_SHUTDOWN_EVENT):
                 logger.debug("Caught Windows control event %s, exiting" % event)
                 clean_stop()
             return 0
 
 
+        # Message sent to a window registered with WTSRegisterSessionNotification, and the
+        # session change it reports on log off. Neither of them is exposed by pywin32.
+        WM_WTSSESSION_CHANGE = 0x02B1
+        WTS_SESSION_LOGOFF = 0x5
+
+
+        def shutdown_block_reason(hWnd, reason=None):
+            """Tell the system why the shutdown is being held, or clear that reason."""
+            try:
+                if reason:
+                    ctypes.windll.user32.ShutdownBlockReasonCreate(ctypes.c_void_p(hWnd),
+                                                                   ctypes.c_wchar_p(reason))
+                else:
+                    ctypes.windll.user32.ShutdownBlockReasonDestroy(ctypes.c_void_p(hWnd))
+            except Exception as e:
+                # Asking the system to wait is a courtesy: the shutdown goes on without it
+                logger.warning("Failed to set the shutdown block reason: %s" % str(e))
+
+
         def on_win32_wm_event(hWnd, msg, wParam, lParam):
             """Handle Windows window message events (like ENDSESSION, CLOSE, DESTROY)."""
-            logger.debug("Caught Windows window message event %s" % msg)
+            logger.debug("Caught Windows window message event 0x%04X (wParam 0x%X)" % (msg, wParam))
+
             if msg == win32con.WM_POWERBROADCAST:
                 # WM_POWERBROADCAST is used to detect computer going to/resuming from sleep
                 if wParam == win32con.PBT_APMSUSPEND:
                     logger.info("Computer is going to sleep, display will turn off")
                     display.turn_off()
+                    # Suspending interrupts the transfer, so wait for the command to be sent.
+                    # The scheduler keeps running: the display is used again on resume
+                    wait_for_empty_queue(2)
                 elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
                     logger.info("Computer is resuming from sleep, display will turn on")
                     display.turn_on()
                     # Some models have troubles displaying back the previous bitmap after being turned off/on
                     display.display_static_images()
                     display.display_static_text()
-            else:
-                # For any other events, the program will stop
-                logger.info("Program will now exit")
-                clean_stop()
+                return True
+
+            if msg == win32con.WM_QUERYENDSESSION:
+                # The session is ending: turn the display off while the system is still
+                # waiting for an answer, but do not exit here. Returning TRUE is what lets the
+                # shutdown carry on, and the program stops on the WM_ENDSESSION that follows.
+                # The work is done now rather than on WM_ENDSESSION because that message is not
+                # guaranteed to be delivered: once every application has answered, the system is
+                # free to terminate them. The cost is a display left off if the shutdown ends up
+                # being cancelled, which a restart of the program undoes.
+                logger.info("Session is ending, display will turn off")
+                shutdown_block_reason(hWnd, "Turning the display off")
+                stop_display(2)
+                shutdown_block_reason(hWnd)
+                return True
+
+            if msg == win32con.WM_ENDSESSION and not wParam:
+                # The session is not ending after all: another application refused the shutdown.
+                # The display was already turned off by WM_QUERYENDSESSION and cannot be brought
+                # back without restarting the program, but there is no reason to exit either.
+                logger.warning("Session is not ending after all, display stays off")
+                return 0
+
+            if msg == WM_WTSSESSION_CHANGE:
+                # This notification also reports lock, unlock and fast user switching
+                if wParam != WTS_SESSION_LOGOFF:
+                    return 0
+                logger.info("User is logging off")
+
+            # WM_ENDSESSION and any other event: the program will stop
+            logger.info("Program will now exit")
+            clean_stop(timeout=2)
 
     # Create a tray icon for the program, with an Exit entry in menu
     try:
@@ -214,6 +297,12 @@ if __name__ == "__main__":
         signal.signal(signal.SIGQUIT, on_signal_caught)
     if platform.system() == "Windows":
         win32api.SetConsoleCtrlHandler(on_win32_ctrl_event, True)
+        # Be notified before regular applications when the session ends: the turn-off command
+        # travels over a serial port and has to reach the display before the system goes down
+        try:
+            win32process.SetProcessShutdownParameters(0x3FF, 0)
+        except Exception as e:
+            logger.warning("Failed to raise the shutdown notification priority: %s" % str(e))
 
     # Initialize the display
     logger.info("Initialize display")
@@ -221,7 +310,7 @@ if __name__ == "__main__":
 
     # Start serial queue handler
     if not args.theme_screenshots:
-        scheduler.QueueHandler()
+        queue_handler_thread = scheduler.QueueHandler()
 
     # Create all static images
     display.display_static_images()
@@ -298,7 +387,8 @@ if __name__ == "__main__":
                       win32con.WM_QUIT: on_win32_wm_event,
                       win32con.WM_DESTROY: on_win32_wm_event,
                       win32con.WM_CLOSE: on_win32_wm_event,
-                      win32con.WM_POWERBROADCAST: on_win32_wm_event}
+                      win32con.WM_POWERBROADCAST: on_win32_wm_event,
+                      WM_WTSSESSION_CHANGE: on_win32_wm_event}
 
         wndclass.lpfnWndProc = messageMap
 
@@ -316,10 +406,21 @@ if __name__ == "__main__":
                                            0,
                                            hinst,
                                            None)
-            while True:
-                # Receive and dispatch window messages
-                win32gui.PumpWaitingMessages()
-                time.sleep(0.5)
+            logger.debug("Windows event window created (handle %s)" % hwnd)
+
+            # An application with no visible window is not a reliable target for the end of
+            # session broadcast: this notification goes to the window that asked for it
+            try:
+                win32ts.WTSRegisterSessionNotification(hwnd, win32ts.NOTIFY_FOR_THIS_SESSION)
+            except Exception as e:
+                logger.warning("Failed to register for session notifications: %s" % str(e))
+
+            # Receive and dispatch window messages. PumpMessages blocks until the loop is
+            # over, so events are handled as they arrive instead of on the next poll
+            win32gui.PumpMessages()
+
+            logger.info("Program will now exit")
+            clean_stop()
 
         except Exception as e:
             logger.error("Exception while creating event window: %s" % str(e))
