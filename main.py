@@ -190,6 +190,12 @@ if __name__ == "__main__":
         # For platforms != macOS, display the tray icon now with non-blocking function
         if platform.system() != "Darwin":
             tray_icon.run_detached()
+            # GTK-based backends (Linux) only schedule the icon on the GLib main loop: it must be running for the
+            # icon to appear and respond to clicks
+            if tray_icon.__module__ in ("pystray._appindicator", "pystray._gtk"):
+                import threading
+                from gi.repository import GLib
+                threading.Thread(target=GLib.MainLoop().run, daemon=True).start()
             logger.info("Tray icon has been displayed")
     except:
         tray_icon = None
