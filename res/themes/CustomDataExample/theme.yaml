@@ -16,6 +16,69 @@ static_images:
     HEIGHT: 320
 
 STATS:
+  DISK:
+    INTERVAL: 10
+    MOUNTS:
+    - '/':
+        USED:
+          TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 155
+            Y: 338
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 26
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+          PERCENT_TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 170
+            Y: 430
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 30
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+        FREE:
+          TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 155
+            Y: 383
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 26
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+    - '/boot/efi':
+        USED:
+          TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 155
+            Y: 338
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 26
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+          PERCENT_TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 170
+            Y: 430
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 30
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
+        FREE:
+          TEXT:
+            SHOW: True
+            SHOW_UNIT: True
+            X: 155
+            Y: 383
+            FONT: generale-mono/GeneraleMonoA.ttf
+            FONT_SIZE: 26
+            FONT_COLOR: 2, 216, 243
+            BACKGROUND_IMAGE: background.png
   DATE:
     INTERVAL: 1
     HOUR:

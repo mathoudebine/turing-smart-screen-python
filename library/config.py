@@ -40,7 +40,10 @@ MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
 FONTS_DIR = str(MAIN_DIRECTORY / "res" / "fonts") + "/"
 CONFIG_DATA = load_yaml(MAIN_DIRECTORY / "config.yaml")
 THEME_DEFAULT = load_yaml(MAIN_DIRECTORY / "res/themes/default.yaml")
+THEME_DISK_DEFAULT = load_yaml("res/themes/default_disk.yaml")
 THEME_DATA = None
+
+
 
 
 def copy_default(default, theme):
@@ -68,6 +71,10 @@ def load_theme():
 
     copy_default(THEME_DEFAULT, THEME_DATA)
 
+    if THEME_DATA['STATS']['DISK'].get("MOUNTS", False):
+        for mount in THEME_DATA['STATS']['DISK']['MOUNTS']:
+            mountpoint = [k for k, v in mount.items()][0]
+            copy_default(THEME_DISK_DEFAULT, mount[mountpoint])
 
 def check_theme_compatible(display_size: str):
     # Check if theme is compatible with hardware revision
