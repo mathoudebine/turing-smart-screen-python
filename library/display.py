@@ -89,8 +89,15 @@ class Display:
         self.lcd = None
         width, height = _get_theme_size()
         if config.CONFIG_DATA["display"]["REVISION"] == "A":
-            self.lcd = LcdCommRevA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
-                                   update_queue=config.update_queue)
+            if config.CONFIG_DATA["display"].get("USB_BULK", False):
+                try:
+                    from library.lcd.lcd_comm_rev_a_usb import LcdCommRevAUsb
+                    self.lcd = LcdCommRevAUsb(update_queue=config.update_queue)
+                except Exception as e:
+                    logger.warning(f"USB bulk transport unavailable ({e}), falling back to the serial port")
+            if self.lcd is None:
+                self.lcd = LcdCommRevA(com_port=config.CONFIG_DATA['config']['COM_PORT'],
+                                       update_queue=config.update_queue)
         elif config.CONFIG_DATA["display"]["REVISION"] == "B":
             self.lcd = LcdCommRevB(com_port=config.CONFIG_DATA['config']['COM_PORT'],
                                    update_queue=config.update_queue)
