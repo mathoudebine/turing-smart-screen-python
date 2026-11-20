@@ -88,6 +88,16 @@ Some themes are already included for a quick start!
 * Auto-detect COM port based on the selected smart screen model.
 * Tray icon with Exit option, useful when the program is running in background.
 
+### Selecting the configuration file
+By default, `main.py`, `configure.py` and `theme-editor.py` use the `config.yaml` file located next to the program.
+To use another file (for example to keep your personal configuration out of reach of program updates):
+
+* Command-line option: `python main.py --config /path/to/my-config.yaml` (also works on `configure.py` and `theme-editor.py`);
+* Environment variable: `TURING_CONFIG_FILE=/path/to/my-config.yaml`.
+
+The command-line option takes precedence over the environment variable, which takes precedence over the default file.
+Themes, fonts and other assets are always read from the program folders, whatever the configuration file location.
+
 ### [> List and preview of included themes](res/themes/themes.md)
 <img src="res/themes/3.5inchTheme2/preview.png" height="150" /> <img src="res/themes/Terminal/preview.png" height="150" /> <img src="res/themes/Cyberpunk-net/preview.png" height="150" /> <img src="res/themes/bash-dark-green-gpu/preview.png" height="150" /> <img src="res/themes/Landscape6Grid/preview.png" width="150" /> <img src="res/themes/LandscapeMagicBlue/preview.png" width="150" /> <img src="res/themes/LandscapeEarth/preview.png" width="150" /> ... [view full list](res/themes/themes.md)
 ### [> Themes creation/edition (using theme editor)](https://github.com/mathoudebine/turing-smart-screen-python/wiki/System-monitor-:-themes)

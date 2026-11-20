@@ -171,6 +171,29 @@ MAIN_DIRECTORY = Path(__file__).resolve().parent
 THEMES_DIR = MAIN_DIRECTORY / "res/themes"
 VERSION_FILE = MAIN_DIRECTORY / "version.txt"
 
+import argparse
+
+from library.config_path import CONFIG_FILE_ENV_VAR, ConfigPathError, resolve_config_path
+
+try:
+    # Honours --config/-c and TURING_CONFIG_FILE, default to the file next to the program
+    CONFIG_FILE = resolve_config_path(sys.argv, os.environ, MAIN_DIRECTORY / "config.yaml")
+except ConfigPathError as e:
+    print(f"[ERROR] Cannot use configuration file: {e}")
+    sys.exit(1)
+
+# The value was already consumed above when resolving CONFIG_FILE; this parser
+# only documents the option and its environment variable in --help
+_arg_parser = argparse.ArgumentParser(description="Turing Smart Screen configuration tool")
+_arg_parser.add_argument(
+    "-c", "--config",
+    type=str,
+    default=None,
+    help=f"Path to the configuration file (default: config.yaml next to the program or "
+         f"the {CONFIG_FILE_ENV_VAR} environment variable)"
+)
+_arg_parser.parse_known_args()
+
 circular_mask = Image.open(MAIN_DIRECTORY / "res/backgrounds/circular-mask.png")
 
 DISABLED_TEXT_COLOR = "#C0C0C0" if darkdetect.isLight() else "#757575"
@@ -450,7 +473,7 @@ class TuringConfigWindow:
             self.theme_author.place(x=10, y=self.theme_preview_img.height() + 15)
 
     def load_config_values(self):
-        with open(MAIN_DIRECTORY / "config.yaml", "rt", encoding='utf8') as stream:
+        with open(CONFIG_FILE, "rt", encoding='utf8') as stream:
             self.config, ind, bsi = ruamel.yaml.util.load_yaml_guess_indent(stream)
 
         # Check if theme is valid
@@ -567,7 +590,7 @@ class TuringConfigWindow:
         self.config['display']['DISPLAY_REVERSE'] = [k for k, v in reverse_map.items() if v == self.orient_cb.get()][0]
         self.config['display']['BRIGHTNESS'] = int(self.brightness_slider.get())
 
-        with open(MAIN_DIRECTORY / "config.yaml", "w", encoding='utf-8') as file:
+        with open(CONFIG_FILE, "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def save_additional_config(self, ping: str, api_key: str, lat: str, long: str, unit: str, lang: str):
@@ -578,7 +601,7 @@ class TuringConfigWindow:
         self.config['config']['WEATHER_UNITS'] = unit
         self.config['config']['WEATHER_LANGUAGE'] = lang
 
-        with open(MAIN_DIRECTORY / "config.yaml", "w", encoding='utf-8') as file:
+        with open(CONFIG_FILE, "w", encoding='utf-8') as file:
             ruamel.yaml.YAML().dump(self.config, file)
 
     def on_theme_change(self, e=None):

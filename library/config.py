@@ -27,6 +27,7 @@ from pathlib import Path
 import yaml
 
 from library.log import logger
+from library.config_path import ConfigPathError, resolve_config_path
 
 
 def load_yaml(configfile):
@@ -38,7 +39,20 @@ def load_yaml(configfile):
 PATH = sys.path[0]
 MAIN_DIRECTORY = Path(__file__).parent.parent.resolve()
 FONTS_DIR = str(MAIN_DIRECTORY / "res" / "fonts") + "/"
-CONFIG_DATA = load_yaml(MAIN_DIRECTORY / "config.yaml")
+try:
+    # Selected via --config/-c, TURING_CONFIG_FILE or the default next to the program
+    CONFIG_FILE = resolve_config_path(sys.argv, os.environ, MAIN_DIRECTORY / "config.yaml")
+except ConfigPathError as e:
+    logger.error(f"Cannot use configuration file: {e}")
+    sys.exit(1)
+logger.debug(f"Using configuration file: {CONFIG_FILE}")
+try:
+    CONFIG_DATA = load_yaml(CONFIG_FILE)
+except Exception as e:
+    # SystemExit is a BaseException, so this non-zero exit survives main.py's
+    # "import error" guard instead of being reported as a package problem.
+    logger.error(f"Cannot load configuration file {CONFIG_FILE}: {e}")
+    sys.exit(1)
 THEME_DEFAULT = load_yaml(MAIN_DIRECTORY / "res/themes/default.yaml")
 THEME_DATA = None
 
@@ -85,3 +99,7 @@ load_theme()
 
 # Queue containing the serial requests to send to the screen
 update_queue = queue.Queue()
+
+# Reference to the active display driver instance (set by library.display), used by the
+# queue writer to access the per-region unchanged-payload deduplication cache
+display_driver = None

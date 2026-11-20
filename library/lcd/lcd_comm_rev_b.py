@@ -104,7 +104,7 @@ class LcdCommRevB(LcdComm):
         else:
             # Lock queue mutex then queue the request
             with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [byteBuffer]))
+                self._queue_request(self.WriteData, [byteBuffer])
 
     def _hello(self):
         hello = [ord('H'), ord('E'), ord('L'), ord('L'), ord('O')]
@@ -147,6 +147,8 @@ class LcdCommRevB(LcdComm):
 
     def Clear(self):
         # HW revision B does not implement a Clear command: display a blank image on the whole screen
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         # Force an orientation in case the screen is currently configured with one different from the theme
         backup_orientation = self.orientation
         self.SetOrientation(orientation=Orientation.PORTRAIT)
@@ -234,23 +236,28 @@ class LcdCommRevB(LcdComm):
             (x0, y0) = (self.get_width() - x - image_width, self.get_height() - y - image_height)
             (x1, y1) = (self.get_width() - x - 1, self.get_height() - y - 1)
 
-        self.SendCommand(Command.DISPLAY_BITMAP,
-                         payload=[(x0 >> 8) & 255, x0 & 255,
-                                  (y0 >> 8) & 255, y0 & 255,
-                                  (x1 >> 8) & 255, x1 & 255,
-                                  (y1 >> 8) & 255, y1 & 255])
-
         rgb565be = self.serialize_image(image, image_height, image_width)
 
-        # Lock queue mutex then queue all the requests for the image data
+        # Lock queue mutex then queue the window command, all the requests for the image data and the cooldown
+        # as a single transmission unit so a newer frame of the same region can supersede it as a whole
         with self.update_queue_mutex:
-            # Send image data by multiple of "display width" bytes
-            for chunk in chunked(rgb565be, self.get_width() * 8):
-                self.SendLine(chunk)
+            self._begin_tu((x0, y0, image_width, image_height))
+            try:
+                self.SendCommand(Command.DISPLAY_BITMAP,
+                                 payload=[(x0 >> 8) & 255, x0 & 255,
+                                          (y0 >> 8) & 255, y0 & 255,
+                                          (x1 >> 8) & 255, x1 & 255,
+                                          (y1 >> 8) & 255, y1 & 255])
 
-            # Implement a cooldown between two bitmaps, because we are not listening to events coming from the display
-            # Cooldown of 0.05 decreases "corrupted bitmap" significantly without slowing down too much
-            if self.update_queue:
-                self.update_queue.put((time.sleep, [0.05]))
-            else:
-                time.sleep(0.05)
+                # Send image data by multiple of "display width" bytes
+                for chunk in chunked(rgb565be, self.get_width() * 8):
+                    self.SendLine(chunk)
+
+                # Implement a cooldown between two bitmaps, because we are not listening to events coming from the display
+                # Cooldown of 0.05 decreases "corrupted bitmap" significantly without slowing down too much
+                if self.update_queue:
+                    self._queue_request(time.sleep, [0.05])
+                else:
+                    time.sleep(0.05)
+            finally:
+                self._end_tu()

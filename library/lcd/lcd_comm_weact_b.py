@@ -73,7 +73,7 @@ class LcdCommWeActB(LcdComm):
         else:
             # Lock queue mutex then queue the request
             with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [byteBuffer]))
+                self._queue_request(self.WriteData, [byteBuffer])
 
     def SendCommand(self, byteBuffer, bypass_queue: bool = False):
         # If no queue for async requests, or if asked explicitly to do the request sequentially: do request now
@@ -82,7 +82,7 @@ class LcdCommWeActB(LcdComm):
         else:
             # Lock queue mutex then queue the request
             with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [byteBuffer]))
+                self._queue_request(self.WriteData, [byteBuffer])
 
     def InitializeComm(self,use_compress:int = 0):
         byteBuffer = bytearray(2)
@@ -110,6 +110,8 @@ class LcdCommWeActB(LcdComm):
         pass
 
     def Clear(self):
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         self.Full((0,0,0))
     
     def Full(self,color: Tuple[int, int, int] = (0, 0, 0)):
@@ -238,8 +240,13 @@ class LcdCommWeActB(LcdComm):
         #             self.SendLine(chunk_with_header)
         # else:
         # Lock queue mutex then queue all the requests for the image data
+        # as a single transmission unit that a newer frame of the same region can supersede
         with self.update_queue_mutex:
-            self.SendLine(byteBuffer)
-            for chunk in serialize.chunked(rgb565le,line_to_send_size):
-                self.SendLine(chunk)
+            self._begin_tu((x0, y0, image_width, image_height))
+            try:
+                self.SendLine(byteBuffer)
+                for chunk in serialize.chunked(rgb565le,line_to_send_size):
+                    self.SendLine(chunk)
+            finally:
+                self._end_tu()
                 
