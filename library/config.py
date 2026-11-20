@@ -85,3 +85,7 @@ load_theme()
 
 # Queue containing the serial requests to send to the screen
 update_queue = queue.Queue()
+
+# Reference to the active display driver instance (set by library.display), used by the
+# queue writer to access the per-region unchanged-payload deduplication cache
+display_driver = None

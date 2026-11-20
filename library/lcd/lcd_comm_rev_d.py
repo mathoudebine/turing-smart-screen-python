@@ -79,7 +79,7 @@ class LcdCommRevD(LcdComm):
         else:
             # Lock queue mutex then queue the request
             with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [message]))
+                self._queue_request(self.WriteData, [message])
 
     def InitializeComm(self):
         pass
@@ -90,6 +90,8 @@ class LcdCommRevD(LcdComm):
 
     def Clear(self):
         # HW revision D does not implement a Clear command: display a blank image on the whole screen
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         color = 0xFFFF  # RGB565 White color
         color_bytes = bytearray(color.to_bytes(2, "big"))
         self.SendCommand(cmd=Command.DISPCOLOR, payload=color_bytes)
@@ -165,23 +167,28 @@ class LcdCommRevD(LcdComm):
             (x1, y1) = (self.display_width - y - 1, x + image_width - 1)
             image_width, image_height = image_height, image_width
 
-        # Send bitmap size
-        image_data = bytearray()
-        image_data += x0.to_bytes(2, "big")
-        image_data += x1.to_bytes(2, "big")
-        image_data += y0.to_bytes(2, "big")
-        image_data += y1.to_bytes(2, "big")
-        self.SendCommand(cmd=Command.BLOCKWRITE, payload=image_data)
-
-        # Prepare bitmap data transmission
-        self.SendCommand(Command.INTOPICMODE)
-
         rgb565be = image_to_RGB565(image, "big")
 
-        # Lock queue mutex then queue all the requests for the image data
+        # Lock queue mutex then queue the window commands, all the requests for the image data and the
+        # end-of-bitmap marker as a single transmission unit that a newer frame of the same region can supersede
         with self.update_queue_mutex:
-            for chunk in chunked(rgb565be, 63):
-                self.SendLine(b"\x50" + chunk)
+            self._begin_tu((x0, y0, image_width, image_height))
+            try:
+                # Send bitmap size
+                image_data = bytearray()
+                image_data += x0.to_bytes(2, "big")
+                image_data += x1.to_bytes(2, "big")
+                image_data += y0.to_bytes(2, "big")
+                image_data += y1.to_bytes(2, "big")
+                self.SendCommand(cmd=Command.BLOCKWRITE, payload=image_data)
 
-        # Indicate the complete bitmap has been transmitted
-        self.SendCommand(Command.OUTPICMODE)
+                # Prepare bitmap data transmission
+                self.SendCommand(Command.INTOPICMODE)
+
+                for chunk in chunked(rgb565be, 63):
+                    self.SendLine(b"\x50" + chunk)
+
+                # Indicate the complete bitmap has been transmitted
+                self.SendCommand(Command.OUTPICMODE)
+            finally:
+                self._end_tu()

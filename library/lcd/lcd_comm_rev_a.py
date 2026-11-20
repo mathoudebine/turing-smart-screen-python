@@ -91,7 +91,7 @@ class LcdCommRevA(LcdComm):
         else:
             # Lock queue mutex then queue the request
             with self.update_queue_mutex:
-                self.update_queue.put((self.WriteData, [byteBuffer]))
+                self._queue_request(self.WriteData, [byteBuffer])
 
     def _hello(self):
         hello = bytearray([Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO, Command.HELLO])
@@ -125,6 +125,8 @@ class LcdCommRevA(LcdComm):
 
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self.SendCommand(Command.RESET, 0, 0, 0, 0, bypass_queue=True)
         self.closeSerial()
@@ -133,6 +135,8 @@ class LcdCommRevA(LcdComm):
         self.openSerial()
 
     def Clear(self):
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         self.SetOrientation(Orientation.PORTRAIT)  # Bug: orientation needs to be PORTRAIT before clearing
         self.SendCommand(Command.CLEAR, 0, 0, 0, 0)
         self.SetOrientation()  # Restore default orientation
@@ -210,10 +214,15 @@ class LcdCommRevA(LcdComm):
 
         rgb565le = image_to_RGB565(image, "little")
 
-        self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
-
-        # Lock queue mutex then queue all the requests for the image data
+        # Lock queue mutex then queue the window command and all the requests for the image data
+        # as a single transmission unit so a newer frame of the same region can supersede the whole image
         with self.update_queue_mutex:
-            # Send image data by multiple of "display width" bytes
-            for chunk in chunked(rgb565le, width * 8):
-                self.SendLine(chunk)
+            self._begin_tu((x0, y0, image_width, image_height))
+            try:
+                self.SendCommand(Command.DISPLAY_BITMAP, x0, y0, x1, y1)
+
+                # Send image data by multiple of "display width" bytes
+                for chunk in chunked(rgb565le, width * 8):
+                    self.SendLine(chunk)
+            finally:
+                self._end_tu()
