@@ -198,6 +198,14 @@ if __name__ == "__main__":
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description="Turing System Monitor")
     parser.add_argument(
+        "-c", "--config",
+        type=str,
+        default=None,
+        help="Path to the configuration file (default: config.yaml next to the program or "
+             "the TURING_CONFIG_FILE environment variable). Already applied at startup, "
+             "when the configuration is first loaded."
+    )
+    parser.add_argument(
         "-t", "--theme-screenshots",
         type=int,
         default=None,
