@@ -82,7 +82,7 @@ if __name__ == "__main__":
         logger.info("Selected Hardware Revision B (XuanFang screen 3.5\" version B / flagship)")
         lcd_comm = LcdCommRevB(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "C":
-        logger.info("Selected Hardware Revision C (Turing Smart Screen 5\")")
+        logger.info("Selected Hardware Revision C (Turing 2.1\"/2.8\"/5\"/8.8\"/11.3\")")
         lcd_comm = LcdCommRevC(com_port=COM_PORT, display_width=WIDTH, display_height=HEIGHT)
     elif REVISION == "D":
         logger.info("Selected Hardware Revision D (Kipye Qiye Smart Display 3.5\")")

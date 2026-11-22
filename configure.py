@@ -77,6 +77,7 @@ SIZE_5_2_INCH = "5.2\""
 SIZE_8_INCH = "8\""
 SIZE_8_8_INCH = "8.8\""
 SIZE_8_8_INCH_NEWREV = "8.8\" / 9.2\" (V1.X new HW rev.)"
+SIZE_11_3_INCH = "11.3\""
 SIZE_12_3_INCH = "12.3\""
 SIZE_2_8_INCH_NEWREV = "2.8\" round (V1.X new HW rev.)"
 
@@ -92,6 +93,7 @@ size_list = (
     SIZE_8_INCH,
     SIZE_8_8_INCH,
     SIZE_8_8_INCH_NEWREV,
+    SIZE_11_3_INCH,
     SIZE_12_3_INCH,
 )
 
@@ -104,6 +106,7 @@ revision_and_size_to_model_map = {
     ('C', SIZE_2_x_INCH): TURING_MODEL,
     ('C', SIZE_5_INCH): TURING_MODEL,
     ('C', SIZE_8_8_INCH): TURING_MODEL,
+    ('C', SIZE_11_3_INCH): TURING_MODEL,
     ('D', SIZE_3_5_INCH): KIPYE_MODEL,
     ('TUR_USB', SIZE_4_6_INCH): TURING_MODEL,
     ('TUR_USB', SIZE_5_2_INCH): TURING_MODEL,
@@ -123,6 +126,7 @@ revision_and_size_to_model_map = {
     ('SIMU', SIZE_5_2_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_8_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_8_8_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_11_3_INCH): SIMULATED_MODEL,
 }
 # This map is used to write the correct config.yaml "REVISION" from selected smart screen model and size
 model_and_size_to_revision_map = {
@@ -134,6 +138,7 @@ model_and_size_to_revision_map = {
     (TURING_MODEL, SIZE_5_INCH): 'C',
     (TURING_MODEL, SIZE_8_INCH): 'TUR_USB',
     (TURING_MODEL, SIZE_8_8_INCH): 'C',
+    (TURING_MODEL, SIZE_11_3_INCH): 'C',
     (TURING_MODEL, SIZE_8_8_INCH_NEWREV): 'TUR_USB',
     (TURING_MODEL, SIZE_12_3_INCH): 'TUR_USB',
     (TURING_MODEL, SIZE_2_8_INCH_NEWREV): 'TUR_USB',
@@ -151,6 +156,7 @@ model_and_size_to_revision_map = {
     (SIMULATED_MODEL, SIZE_5_2_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_8_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_8_8_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_11_3_INCH): 'SIMU',
 }
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
@@ -659,6 +665,9 @@ class TuringConfigWindow:
         elif size == SIZE_8_8_INCH_NEWREV or size == SIZE_8_8_INCH:
             themes = get_themes(SIZE_8_8_INCH)
             themes += get_themes(_SIZE_9_2_INCH)
+        elif size == SIZE_11_3_INCH:
+            themes = get_themes(SIZE_11_3_INCH)
+            themes += get_themes(SIZE_8_8_INCH)
         else:
             themes = get_themes(size)
 
