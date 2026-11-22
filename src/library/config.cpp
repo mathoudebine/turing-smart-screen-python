@@ -47,8 +47,8 @@ bool is_main_directory(const fs::path &dir)
     return fs::is_regular_file(dir / "config.yaml", ec) && fs::is_directory(dir / "res" / "themes", ec);
 }
 
-// The programs are built into build/bin/: look for config.yaml and res/ in the executable directory and its parents,
-// then in the current directory
+}  // namespace
+
 fs::path find_main_directory()
 {
     std::error_code ec;
@@ -65,8 +65,6 @@ fs::path find_main_directory()
     }
     return fs::current_path();
 }
-
-}  // namespace
 
 YAML::Node load_yaml(const fs::path &configfile)
 {

@@ -24,7 +24,6 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // C++ port of main.py: the system monitor main program, displaying HW sensors on the screen using themes.
-// TODO(C++ port, phase 4): tray icon with its "Configure" and "Exit" menu entries
 
 #include <chrono>
 #include <csignal>
@@ -36,17 +35,38 @@
 #include <string>
 #include <thread>
 
+#include <filesystem>
+#include <memory>
+
 #include <pthread.h>
+#include <spawn.h>
+#include <unistd.h>
 
 #include "library/config.h"
 #include "library/display.h"
 #include "library/log.h"
 #include "library/scheduler.h"
 #include "library/stats.h"
+#include "library/tray_icon.h"
+
+extern char **environ;
 
 namespace {
 
 constexpr auto DELAY_BETWEEN_THREADS = std::chrono::milliseconds(250);
+
+// Signal sent to this process by the tray icon menu to stop the program (handled like the other stopping signals)
+constexpr int STOP_FROM_TRAY_SIGNAL = SIGUSR1;
+
+std::unique_ptr<TrayIcon> tray_icon;
+
+// Directory containing this program (build/bin/)
+std::filesystem::path program_directory()
+{
+    std::error_code ec;
+    const std::filesystem::path exe = std::filesystem::read_symlink("/proc/self/exe", ec);
+    return ec ? std::filesystem::current_path() : exe.parent_path();
+}
 
 void wait_for_empty_queue(int timeout = 5)
 {
@@ -74,8 +94,43 @@ void wait_for_empty_queue(int timeout = 5)
     // Waiting for all pending request to be sent to display
     wait_for_empty_queue(5);
 
+    // Remove tray icon just before exit
+    if (tray_icon) {
+        tray_icon->stop();
+    }
+
     // We force the exit to avoid waiting for other scheduled tasks: they may be in a long blocking call!
     std::_Exit(0);
+}
+
+void on_configure_tray()
+{
+    logger.info("Configure from tray icon");
+
+    // Start the configuration program, built in the same directory. The stopping signals are blocked in this
+    // program: they must not be blocked in the new process.
+    const std::string configure_file = (program_directory() / "configure").string();
+    posix_spawnattr_t attr;
+    posix_spawnattr_init(&attr);
+    sigset_t no_signals;
+    sigemptyset(&no_signals);
+    posix_spawnattr_setsigmask(&attr, &no_signals);
+    posix_spawnattr_setflags(&attr, POSIX_SPAWN_SETSIGMASK);
+    char *const spawn_argv[] = {const_cast<char *>(configure_file.c_str()), nullptr};
+    pid_t pid;
+    const int ret = posix_spawn(&pid, configure_file.c_str(), nullptr, &attr, spawn_argv, environ);
+    posix_spawnattr_destroy(&attr);
+    if (ret != 0) {
+        logger.error("Cannot start {}: {}", configure_file, std::strerror(ret));
+    }
+
+    kill(getpid(), STOP_FROM_TRAY_SIGNAL);
+}
+
+void on_exit_tray()
+{
+    logger.info("Exit from tray icon");
+    kill(getpid(), STOP_FROM_TRAY_SIGNAL);
 }
 
 void print_usage(const char *program)
@@ -140,7 +195,23 @@ int main(int argc, char *argv[])
     sigaddset(&stop_signals, SIGINT);
     sigaddset(&stop_signals, SIGTERM);
     sigaddset(&stop_signals, SIGQUIT);
+    sigaddset(&stop_signals, STOP_FROM_TRAY_SIGNAL);
     pthread_sigmask(SIG_BLOCK, &stop_signals, nullptr);
+
+    // Create a tray icon for the program, with Configure and Exit entries in menu
+    std::vector<std::string> icon_paths;
+    for (const char *size: {"24", "32", "48", "64", "128"}) {
+        icon_paths.push_back((config::find_main_directory() / "res/icons/monitor-icon-17865" / (std::string(size) + ".png")).string());
+    }
+    tray_icon = std::make_unique<TrayIcon>("Turing System Monitor", "Turing System Monitor", icon_paths,
+                                           std::vector<TrayIcon::MenuItem>{
+                                               {"Configure", on_configure_tray},
+                                               {"", nullptr},  // separator
+                                               {"Exit", on_exit_tray},
+                                           });
+    if (!tray_icon->run_detached()) {
+        tray_icon.reset();
+    }
 
     try {
         // Load config.yaml and the theme
@@ -220,6 +291,8 @@ int main(int argc, char *argv[])
     // Wait for a stopping signal (Ctrl+C, kill...), then stop cleanly
     int signum = 0;
     sigwait(&stop_signals, &signum);
-    logger.info("Caught signal {}, exiting", signum);
+    if (signum != STOP_FROM_TRAY_SIGNAL) {
+        logger.info("Caught signal {}, exiting", signum);
+    }
     clean_stop();
 }

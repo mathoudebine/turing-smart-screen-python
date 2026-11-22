@@ -17,7 +17,7 @@
 #   make CXXFLAGS=-fsanitize=address LDFLAGS=-fsanitize=address
 #
 # Build dependencies (Ubuntu packages):
-#   build-essential pkg-config libyaml-cpp-dev libfreetype-dev libharfbuzz-dev libpng-dev libjpeg-dev
+#   build-essential pkg-config libyaml-cpp-dev libfreetype-dev libharfbuzz-dev libglib2.0-dev libpng-dev libjpeg-dev
 #   libusb-1.0-0-dev libcurl4-openssl-dev libicu-dev libgtkmm-4.0-dev libgtest-dev
 
 CXX      ?= g++
@@ -37,7 +37,7 @@ OBJ_DIR   := $(BUILD_DIR)/obj
 BIN_DIR   := $(BUILD_DIR)/bin
 
 # pkg-config modules, grouped by what links them
-LIB_PKGS  := yaml-cpp freetype2 harfbuzz libpng libjpeg libusb-1.0 libcurl icu-uc icu-i18n
+LIB_PKGS  := yaml-cpp freetype2 harfbuzz libpng libjpeg libusb-1.0 libcurl icu-uc icu-i18n gio-2.0
 GUI_PKGS  := gtkmm-4.0
 TEST_PKGS := gtest gtest_main
 
@@ -135,7 +135,7 @@ deps:
 		fi; \
 	done; \
 	if [ $$missing -eq 1 ]; then \
-		echo "Install them with: sudo apt install build-essential pkg-config libyaml-cpp-dev libfreetype-dev libharfbuzz-dev \
+		echo "Install them with: sudo apt install build-essential pkg-config libyaml-cpp-dev libfreetype-dev libharfbuzz-dev libglib2.0-dev \
 libpng-dev libjpeg-dev libusb-1.0-0-dev libcurl4-openssl-dev libicu-dev libgtkmm-4.0-dev libgtest-dev"; \
 		exit 1; \
 	fi

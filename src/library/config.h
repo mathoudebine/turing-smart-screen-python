@@ -49,6 +49,10 @@ extern YAML::Node THEME_DATA;
 // Queue containing the serial requests to send to the screen
 extern UpdateQueue update_queue;
 
+// Directory containing config.yaml and res/: the executable directory or one of its parents (programs are built
+// into build/bin/), otherwise the current directory
+std::filesystem::path find_main_directory();
+
 // Throws YAML::Exception if the file cannot be loaded or parsed
 YAML::Node load_yaml(const std::filesystem::path &configfile);
 
