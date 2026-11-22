@@ -15,6 +15,9 @@ WorkingDirectory=/opt/turing-smart-screen-python/
 
 ExecStart=python3 main.py
 
+; Optional: keep a personal configuration file out of program updates
+;Environment=TURING_CONFIG_FILE=/etc/turing-smart-screen-python/config.yaml
+
 ; Always restart the script
 Restart=always
 

@@ -115,6 +115,9 @@ class Display:
         else:
             logger.error("Unknown display revision '", config.CONFIG_DATA["display"]["REVISION"], "'")
 
+        # Expose the driver so the queue writer (scheduler) can reach its dedup cache
+        config.display_driver = self.lcd
+
     def initialize_display(self):
         # Reset screen in case it was in an unstable state (screen is also cleared)
         # Can be disabled by config. option. Assume true if key not present in config.yaml

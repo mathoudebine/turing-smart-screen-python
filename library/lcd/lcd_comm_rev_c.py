@@ -207,10 +207,11 @@ class LcdCommRevC(LcdComm):
             if readsize:
                 self.ReadData(readsize)
         else:
-            # Lock queue mutex then queue the request
-            self.update_queue.put((self.WriteData, [message]))
-            if readsize:
-                self.update_queue.put((self.ReadData, [readsize]))
+            # Lock queue mutex then queue the request (write+read pair must stay in the same transmission unit)
+            with self.update_queue_mutex:
+                self._queue_request(self.WriteData, [message])
+                if readsize:
+                    self._queue_request(self.ReadData, [readsize])
 
     def _hello(self):
         # This command reads LCD answer on serial link, so it bypasses the queue
@@ -258,6 +259,8 @@ class LcdCommRevC(LcdComm):
 
     def Reset(self):
         logger.info("Display reset (COM port may change)...")
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         # Reset command bypasses queue because it is run when queue threads are not yet started
         self._send_command(Command.RESTART, bypass_queue=True)
         self.closeSerial()
@@ -274,6 +277,8 @@ class LcdCommRevC(LcdComm):
 
     def Clear(self):
         # This hardware does not implement a Clear command: display a blank image on the whole screen
+        # Screen content is lost, unchanged-region dedup cache no longer reflects the display
+        self._clear_dedup_cache()
         # Force an orientation in case the screen is currently configured with one different from the theme
         backup_orientation = self.orientation
         self.SetOrientation(orientation=Orientation.PORTRAIT)
@@ -345,30 +350,40 @@ class LcdCommRevC(LcdComm):
         assert image_width > 0, 'Image width must be > 0'
 
         if x == 0 and y == 0 and (image_width == self.get_width()) and (image_height == self.get_height()):
+            # Queue the whole full-screen update as one transmission unit (write/read pairs included)
             with self.update_queue_mutex:
-                self._send_command(Command.PRE_UPDATE_BITMAP)
-                self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
+                self._begin_tu((0, 0, self.get_width(), self.get_height()))
+                try:
+                    self._send_command(Command.PRE_UPDATE_BITMAP)
+                    self._send_command(Command.START_DISPLAY_BITMAP, padding=Padding.START_DISPLAY_BITMAP)
 
-                if self.sub_revision == SubRevision.REV_5INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
-                elif self.sub_revision == SubRevision.REV_2INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
-                elif self.sub_revision == SubRevision.REV_8INCH:
-                    display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
+                    if self.sub_revision == SubRevision.REV_5INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_5INCH
+                    elif self.sub_revision == SubRevision.REV_2INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_2INCH
+                    elif self.sub_revision == SubRevision.REV_8INCH:
+                        display_bmp_cmd = Command.DISPLAY_BITMAP_8INCH
 
-                self._send_command(display_bmp_cmd,
-                                   payload=bytearray(
-                                       int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
-                self._send_command(Command.SEND_PAYLOAD,
-                                   payload=bytearray(self._generate_full_image(image)),
-                                   readsize=1024)
-                self._send_command(Command.QUERY_STATUS, readsize=1024)
+                    self._send_command(display_bmp_cmd,
+                                       payload=bytearray(
+                                           int(self.display_width * self.display_width / 64).to_bytes(2, "big")))
+                    self._send_command(Command.SEND_PAYLOAD,
+                                       payload=bytearray(self._generate_full_image(image)),
+                                       readsize=1024)
+                    self._send_command(Command.QUERY_STATUS, readsize=1024)
+                finally:
+                    self._end_tu()
         else:
+            # Queue the whole partial-region update as one transmission unit (write/read pairs included)
             with self.update_queue_mutex:
-                img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP)
-                self._send_command(Command.SEND_PAYLOAD, payload=pyd)
-                self._send_command(Command.SEND_PAYLOAD, payload=img)
-                self._send_command(Command.QUERY_STATUS, readsize=1024)
+                self._begin_tu((x, y, image_width, image_height))
+                try:
+                    img, pyd = self._generate_update_image(image, x, y, Count.Start, Command.UPDATE_BITMAP)
+                    self._send_command(Command.SEND_PAYLOAD, payload=pyd)
+                    self._send_command(Command.SEND_PAYLOAD, payload=img)
+                    self._send_command(Command.QUERY_STATUS, readsize=1024)
+                finally:
+                    self._end_tu()
             Count.Start += 1
 
     def _generate_full_image(self, image: Image.Image) -> bytes:

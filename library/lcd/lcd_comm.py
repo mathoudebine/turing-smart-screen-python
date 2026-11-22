@@ -71,8 +71,21 @@ class LcdComm(ABC):
         self.update_queue = update_queue
 
         # Mutex to protect the queue in case a thread want to add multiple requests (e.g. image data) that should not be
-        # mixed with other requests in-between
-        self.update_queue_mutex = threading.Lock()
+        # mixed with other requests in-between.
+        # Reentrant: a queued image burst holds it while its inner SendCommand() queues the window command too,
+        # so the whole image forms a single transmission unit (see _begin_tu/_end_tu).
+        self.update_queue_mutex = threading.RLock()
+
+        # Active transmission unit (TU): while a coalescible image is being queued, all items put on the
+        # queue carry the region key and id of this unit so the queue writer can drop superseded frames.
+        # Set/read only while update_queue_mutex is held.
+        self._tu_counter = 0
+        self._tu_id: Optional[int] = None
+        self._tu_region_key: Optional[Tuple[int, int, int, int]] = None
+
+        # Per-region last device payload transmitted by the queue writer (keyed by TU region), used to skip
+        # re-sending byte-identical content. Cleared by Clear()/Reset() since the screen state is then lost.
+        self._last_sent_payload: Dict[Tuple[int, int, int, int], bytes] = {}
 
         # Create a cache to store opened images, to avoid opening and loading from the filesystem every time
         self.image_cache = {}  # { key=path, value=PIL.Image }
@@ -155,13 +168,36 @@ class LcdComm(ABC):
         if self.lcd_serial is not None:
             self.lcd_serial.reset_input_buffer()
 
+    def _begin_tu(self, region_key: Tuple[int, int, int, int]):
+        # Start a coalescible transmission unit: every request queued until _end_tu() belongs to one
+        # rendered image at (x, y, width, height) and can be superseded as a whole by a newer image
+        # covering the same region. The caller must hold update_queue_mutex.
+        self._tu_counter += 1
+        self._tu_id = self._tu_counter
+        self._tu_region_key = region_key
+
+    def _end_tu(self):
+        # End the current transmission unit. The caller must hold update_queue_mutex.
+        self._tu_id = None
+        self._tu_region_key = None
+
+    def _queue_request(self, fn, args: list):
+        # Queue a single request tagged with the active transmission unit (region key + id).
+        # The caller must hold update_queue_mutex.
+        self.update_queue.put((fn, args, self._tu_region_key, self._tu_id))
+
+    def _clear_dedup_cache(self):
+        # Forget the per-region last transmitted payloads: called when the screen content is lost
+        # (Clear/Reset) so identical content afterwards must be transmitted again.
+        self._last_sent_payload.clear()
+
     def WriteData(self, byteBuffer: bytearray):
         self.WriteLine(bytes(byteBuffer))
 
     def SendLine(self, line: bytes):
         if self.update_queue:
             # Queue the request. Mutex is locked by caller to queue multiple lines
-            self.update_queue.put((self.WriteLine, [line]))
+            self._queue_request(self.WriteLine, [line])
         else:
             # If no queue for async requests: do request now
             self.WriteLine(line)

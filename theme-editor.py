@@ -44,17 +44,29 @@ except:
     except:
         os._exit(0)
 
-if len(sys.argv) != 2:
-    print("Usage :")
-    print("        theme-editor.py theme-name")
-    print("Examples : ")
-    print("        theme-editor.py 3.5inchTheme2")
-    print("        theme-editor.py Landscape6Grid")
-    print("        theme-editor.py Cyberpunk")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+import argparse
+
+_parser = argparse.ArgumentParser(
+    description="Turing Smart Screen theme editor",
+    epilog="Examples :\n"
+           "        theme-editor.py 3.5inchTheme2\n"
+           "        theme-editor.py Landscape6Grid\n"
+           "        theme-editor.py Cyberpunk",
+)
+_parser.add_argument(
+    "theme",
+    type=str,
+    help="Theme name to edit (directory name under res/themes/)",
+)
+_parser.add_argument(
+    "-c", "--config",
+    type=str,
+    default=None,
+    help="Path to the configuration file (default: config.yaml next to the program or "
+         "the TURING_CONFIG_FILE environment variable). Already applied at startup, "
+         "when the configuration is first loaded."
+)
+_args = _parser.parse_args()
 
 import library.log
 
@@ -68,7 +80,7 @@ logger.setLevel(logging.DEBUG)
 from library import config
 
 config.CONFIG_DATA["config"]["HW_SENSORS"] = "STATIC"  # For theme editor always use stub data
-config.CONFIG_DATA["config"]["THEME"] = sys.argv[1]  # Theme is given as argument
+config.CONFIG_DATA["config"]["THEME"] = _args.theme  # Theme is given as argument
 
 config.load_theme()
 
