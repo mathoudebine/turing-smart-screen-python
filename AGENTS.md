@@ -6,6 +6,8 @@
 - Wherever possible, one Python file becomes one `.h` + `.cpp` pair with the same base name (program entry points such as `main.cpp` have no header).
 - Build with the root `Makefile` (C++20, g++, dependencies found with `pkg-config`): `make deps`, `make`, `make test`, `make clean`. Programs are built into `build/bin/` (`main`, `configure`, `theme-editor`, `simple-program`).
 - GUI programs (`configure`, `theme-editor`) use GTK 4 through gtkmm-4.0.
+- Files without Python counterpart replace Python dependencies: `src/library/lcd/image` (Pillow `Image`/`ImageDraw`), `src/library/lcd/font` (Pillow `ImageFont`, FreeType), `src/library/lcd/serial_port` (pyserial, termios).
+- The library is initialized explicitly with `config::init()` (Python loads it on import); theme values are read with `config::get()` / `config::get_color()`, which return the default value for missing or empty keys.
 - The rendering does not need to be pixel-identical to the Python/Pillow version, only close to it.
 - `config.yaml` and `res/` (themes, fonts, images) are shared, unchanged, by the Python and C++ versions.
 - The Python code stays complete and working until the C++ programs work end-to-end; then every converted Python file is deleted in one cleanup step. Until then, the Python sections below still describe the reference implementation, and the cross-platform rule applies to Python code only.

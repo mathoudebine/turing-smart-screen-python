@@ -13,6 +13,9 @@
 #   make clean        remove build/
 #   make DEBUG=1      build without optimizations, with debug symbols
 #
+# CPPFLAGS, CXXFLAGS, LDFLAGS and LDLIBS given on the command line are added to the project flags, e.g.:
+#   make CXXFLAGS=-fsanitize=address LDFLAGS=-fsanitize=address
+#
 # Build dependencies (Ubuntu packages):
 #   build-essential pkg-config libyaml-cpp-dev libfreetype-dev libpng-dev libjpeg-dev
 #   libusb-1.0-0-dev libcurl4-openssl-dev libicu-dev libgtkmm-4.0-dev libgtest-dev
@@ -46,9 +49,9 @@ GUI_LIBS    := $(shell $(PKG_CONFIG) --libs $(GUI_PKGS) 2>/dev/null)
 TEST_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(TEST_PKGS) 2>/dev/null)
 TEST_LIBS   := $(shell $(PKG_CONFIG) --libs $(TEST_PKGS) 2>/dev/null)
 
-CPPFLAGS += -I$(SRC_DIR) -MMD -MP
-CXXFLAGS += $(CXXSTD) $(WARNINGS) $(OPTFLAGS) $(LIB_CFLAGS)
-LDLIBS   += $(LIB_LIBS) -pthread
+ALL_CPPFLAGS = -I$(SRC_DIR) -MMD -MP $(CPPFLAGS)
+ALL_CXXFLAGS = $(CXXSTD) $(WARNINGS) $(OPTFLAGS) $(LIB_CFLAGS) $(CXXFLAGS)
+ALL_LDLIBS   = $(LDLIBS) $(LIB_LIBS) -pthread
 
 # Shared library code (library/ in Python), linked into every program
 LIB_SRCS := $(shell find $(SRC_DIR)/library -name '*.cpp' 2>/dev/null)
@@ -83,35 +86,35 @@ $(LIB_A): $(LIB_OBJS)
 
 $(BIN_DIR)/main: $(MAIN_OBJS) $(LIB_A)
 	@mkdir -p $(@D)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(ALL_LDLIBS)
 
 $(BIN_DIR)/simple-program: $(SIMPLE_PROGRAM_OBJS) $(LIB_A)
 	@mkdir -p $(@D)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(ALL_LDLIBS)
 
 $(BIN_DIR)/configure: $(CONFIGURE_OBJS) $(LIB_A)
 	@mkdir -p $(@D)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(GUI_LIBS) $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(GUI_LIBS) $(ALL_LDLIBS)
 
 $(BIN_DIR)/theme-editor: $(THEME_EDITOR_OBJS) $(LIB_A)
 	@mkdir -p $(@D)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(GUI_LIBS) $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(GUI_LIBS) $(ALL_LDLIBS)
 
 # GUI programs need the gtkmm include paths
-$(CONFIGURE_OBJS) $(THEME_EDITOR_OBJS): CXXFLAGS += $(GUI_CFLAGS)
+$(CONFIGURE_OBJS) $(THEME_EDITOR_OBJS): ALL_CXXFLAGS += $(GUI_CFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) -c -o $@ $<
 
 # Tests
 $(OBJ_DIR)/tests/%.o: $(TEST_DIR)/%.cpp
 	@mkdir -p $(@D)
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(TEST_CFLAGS) -c -o $@ $<
+	$(CXX) $(ALL_CPPFLAGS) $(ALL_CXXFLAGS) $(TEST_CFLAGS) -c -o $@ $<
 
 $(TEST_BIN): $(TEST_OBJS) $(LIB_A)
 	@mkdir -p $(@D)
-	$(CXX) $(LDFLAGS) -o $@ $^ $(TEST_LIBS) $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(TEST_LIBS) $(ALL_LDLIBS)
 
 test:
 ifeq ($(strip $(TEST_SRCS)),)
