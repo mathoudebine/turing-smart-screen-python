@@ -23,7 +23,7 @@ import os
 import sys
 
 # Oldest / newest version supported
-MIN_PYTHON = (3, 9)
+MIN_PYTHON = (3, 10)
 MAX_PYTHON = (3, 14)
 
 
