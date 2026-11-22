@@ -120,7 +120,8 @@ class LcdComm(ABC):
                 logger.debug(f"Static COM port: {com_port}")
 
             try:
-                self.lcd_serial = serial.Serial(com_port, 115200, timeout=1, rtscts=True)
+                # Exclusive lock: a second instance must not interleave commands with this one (corrupts the display)
+                self.lcd_serial = serial.Serial(com_port, 115200, timeout=1, rtscts=True, exclusive=True)
                 return
             except Exception as e:
                 logger.warning(
