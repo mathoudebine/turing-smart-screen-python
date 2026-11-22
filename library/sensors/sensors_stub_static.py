@@ -109,16 +109,17 @@ class Memory(sensors.Memory):
 
 class Disk(sensors.Disk):
     @staticmethod
-    def disk_usage_percent() -> float:
+    def disk_usage_percent(path) -> float:
         return PERCENTAGE_SENSOR_VALUE
 
     @staticmethod
-    def disk_used() -> int:  # In bytes
+    def disk_used(path) -> int:  # In bytes
         return int(DISK_TOTAL_SIZE_GB / 100 * PERCENTAGE_SENSOR_VALUE) * 1000000000
 
     @staticmethod
-    def disk_free() -> int:  # In bytes
+    def disk_free(path) -> int:  # In bytes
         return int(DISK_TOTAL_SIZE_GB / 100 * (100 - PERCENTAGE_SENSOR_VALUE)) * 1000000000
+
 
 
 class Net(sensors.Net):

@@ -453,23 +453,23 @@ class Memory(sensors.Memory):
 
 class Disk(sensors.Disk):
     @staticmethod
-    def disk_usage_percent() -> float:
+    def disk_usage_percent(path) -> float:
         try:
-            return psutil.disk_usage("/").percent
+            return psutil.disk_usage(path).percent
         except:
             return math.nan
 
     @staticmethod
-    def disk_used() -> int:  # In bytes
+    def disk_used(path) -> int:  # In bytes
         try:
-            return psutil.disk_usage("/").used
+            return psutil.disk_usage(path).used
         except:
             return -1
 
     @staticmethod
-    def disk_free() -> int:  # In bytes
+    def disk_free(path) -> int:  # In bytes
         try:
-            return psutil.disk_usage("/").free
+            return psutil.disk_usage(path).free
         except:
             return -1
 
