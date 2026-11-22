@@ -31,6 +31,7 @@ import serial
 from PIL import Image
 from serial.tools.list_ports import comports
 
+import library.config as config
 from library.lcd.lcd_comm import Orientation, LcdComm
 from library.lcd.serialize import image_to_BGRA, image_to_BGR, chunked
 from library.log import logger
@@ -311,11 +312,31 @@ class LcdCommRevC(LcdComm):
         # logger.info(f"Call SetOrientation to: {self.orientation.name}")
 
         # if self.orientation == Orientation.REVERSE_LANDSCAPE or self.orientation == Orientation.REVERSE_PORTRAIT:
-        #   b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
+        #   b = self._start_mode() + Padding.NULL.value + Command.FLIP_180.value + SleepInterval.OFF.value
         #   self._send_command(Command.OPTIONS, payload=b)
         # else:
-        b = Command.STARTMODE_DEFAULT.value + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
+        b = self._start_mode() + Padding.NULL.value + Command.NO_FLIP.value + SleepInterval.OFF.value
         self._send_command(Command.OPTIONS, payload=b)
+
+    @staticmethod
+    def _start_mode() -> bytearray:
+        # Byte 0 of the OPTIONS payload selects what the panel shows at power-on,
+        # a choice the firmware keeps across power cycles until it is changed
+        # again. This driver always sent DEFAULT, which blanks the panel until
+        # the host connects; the STARTMODE config option lets the panel instead
+        # replay the last image or video it was sent (useful with an SD card).
+        modes = {
+            "DEFAULT": Command.STARTMODE_DEFAULT,  # show nothing until the host connects
+            "IMAGE": Command.STARTMODE_IMAGE,      # replay the last image sent to the panel
+            "VIDEO": Command.STARTMODE_VIDEO,      # replay the last video sent to the panel
+        }
+        name = str(config.CONFIG_DATA["display"].get("STARTMODE", "DEFAULT")).upper()
+        if name not in modes:
+            logger.warning("Unknown STARTMODE '%s' in config.yaml, using DEFAULT" % name)
+            name = "DEFAULT"
+        if name != "DEFAULT":
+            logger.debug("Display start mode at power-on: %s" % name)
+        return modes[name].value
 
     def DisplayPILImage(
             self,
