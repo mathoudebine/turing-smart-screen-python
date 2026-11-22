@@ -63,6 +63,7 @@ USBPCMONITOR_MODEL = "UsbPCMonitor"
 XUANFANG_MODEL = "XuanFang rev. B & flagship"
 KIPYE_MODEL = "Kipye Qiye Smart Display"
 WEACT_MODEL = "WeAct Studio Display FS V1"
+SOLARMAX_MODEL = "Solarmax / HL-VMAX (Artinchip)"
 SIMULATED_MODEL = "Simulated screen"
 
 _SIZE_2_1_INCH = "2.1\""  # Only for retro compatibility
@@ -77,6 +78,7 @@ SIZE_5_2_INCH = "5.2\""
 SIZE_8_INCH = "8\""
 SIZE_8_8_INCH = "8.8\""
 SIZE_8_8_INCH_NEWREV = "8.8\" / 9.2\" (V1.X new HW rev.)"
+SIZE_11_3_INCH = "11.3\" / 9.2\" (320x1480 / 462x1920)"
 SIZE_12_3_INCH = "12.3\""
 SIZE_2_8_INCH_NEWREV = "2.8\" round (V1.X new HW rev.)"
 
@@ -92,6 +94,7 @@ size_list = (
     SIZE_8_INCH,
     SIZE_8_8_INCH,
     SIZE_8_8_INCH_NEWREV,
+    SIZE_11_3_INCH,
     SIZE_12_3_INCH,
 )
 
@@ -114,6 +117,16 @@ revision_and_size_to_model_map = {
     ('TUR_USB', SIZE_2_8_INCH_NEWREV): TURING_MODEL,
     ('WEACT_A', SIZE_3_5_INCH): WEACT_MODEL,
     ('WEACT_B', SIZE_0_96_INCH): WEACT_MODEL,
+    ('VMAX', SIZE_11_3_INCH): SOLARMAX_MODEL,
+    ('VMAX', '11.3"'): SOLARMAX_MODEL,
+    ('VMAX', _SIZE_9_2_INCH): SOLARMAX_MODEL,
+    ('VMAX', SIZE_8_8_INCH): SOLARMAX_MODEL,
+    ('VMAX', SIZE_8_8_INCH_NEWREV): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_11_3_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', '11.3"'): SOLARMAX_MODEL,
+    ('SOLARMAX', _SIZE_9_2_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_8_8_INCH): SOLARMAX_MODEL,
+    ('SOLARMAX', SIZE_8_8_INCH_NEWREV): SOLARMAX_MODEL,
 
     ('SIMU', SIZE_0_96_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_2_x_INCH): SIMULATED_MODEL,
@@ -123,10 +136,16 @@ revision_and_size_to_model_map = {
     ('SIMU', SIZE_5_2_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_8_INCH): SIMULATED_MODEL,
     ('SIMU', SIZE_8_8_INCH): SIMULATED_MODEL,
+    ('SIMU', SIZE_11_3_INCH): SIMULATED_MODEL,
 }
 # This map is used to write the correct config.yaml "REVISION" from selected smart screen model and size
 model_and_size_to_revision_map = {
     (KIPYE_MODEL, SIZE_3_5_INCH): 'D',
+    (SOLARMAX_MODEL, SIZE_11_3_INCH): 'VMAX',
+    (SOLARMAX_MODEL, '11.3"'): 'VMAX',
+    (SOLARMAX_MODEL, _SIZE_9_2_INCH): 'VMAX',
+    (SOLARMAX_MODEL, SIZE_8_8_INCH): 'VMAX',
+    (SOLARMAX_MODEL, SIZE_8_8_INCH_NEWREV): 'VMAX',
     (TURING_MODEL, SIZE_2_x_INCH): 'C',
     (TURING_MODEL, SIZE_3_5_INCH): 'A',
     (TURING_MODEL, SIZE_4_6_INCH): 'TUR_USB',
@@ -151,6 +170,7 @@ model_and_size_to_revision_map = {
     (SIMULATED_MODEL, SIZE_5_2_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_8_INCH): 'SIMU',
     (SIMULATED_MODEL, SIZE_8_8_INCH): 'SIMU',
+    (SIMULATED_MODEL, SIZE_11_3_INCH): 'SIMU',
 }
 hw_lib_map = {"AUTO": "Automatic", "LHM": "LibreHardwareMonitor (admin.)", "PYTHON": "Python libraries",
               "STUB": "Fake random data", "STATIC": "Fake static data"}
@@ -500,11 +520,15 @@ class TuringConfigWindow:
             size = SIZE_2_x_INCH  # If a theme is for 2.1" or 2.8" then it is for all 2.x"
         elif size == _SIZE_9_2_INCH:
             size = SIZE_8_8_INCH_NEWREV  # If a theme is for 9.2" then it is for 8.8"/9.2" (new rev)
+        elif size == '11.3"':
+            size = SIZE_11_3_INCH
         try:
             if size == SIZE_8_8_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_8_8_INCH_NEWREV
             if size == SIZE_2_x_INCH and self.config['display']['REVISION'] == 'TUR_USB':
                 size = SIZE_2_8_INCH_NEWREV
+            if size in (SIZE_8_8_INCH, SIZE_8_8_INCH_NEWREV) and self.config['display']['REVISION'] in ('VMAX', 'SOLARMAX'):
+                size = SIZE_11_3_INCH
             self.size_cb.set(size)
         except:
             self.size_cb.current(0)
@@ -606,7 +630,7 @@ class TuringConfigWindow:
             # Load binary (for releases) or Python file with system interpreter
             theme_editor = next(MAIN_DIRECTORY.glob("theme-editor*"))
             if platform.system() == "Windows":
-                subprocess.Popen([str(theme_editor), self.theme_cb.get()], shell=True)
+                subprocess.Popen([str(theme_editor), self.theme_cb.get()], creationflags=0x08000000)
             else:
                 subprocess.Popen([str(theme_editor), self.theme_cb.get()])
 
@@ -624,7 +648,7 @@ class TuringConfigWindow:
             # Load binary (for releases) or Python file with system interpreter
             main_file = next(MAIN_DIRECTORY.glob("main*"))
             if platform.system() == "Windows":
-                subprocess.Popen([str(main_file)], shell=True)
+                subprocess.Popen([str(main_file)], creationflags=0x08000000)
             else:
                 subprocess.Popen([str(main_file)])
 
@@ -659,6 +683,10 @@ class TuringConfigWindow:
         elif size == SIZE_8_8_INCH_NEWREV or size == SIZE_8_8_INCH:
             themes = get_themes(SIZE_8_8_INCH)
             themes += get_themes(_SIZE_9_2_INCH)
+        elif size == SIZE_11_3_INCH:
+            themes = get_themes('11.3"')
+            themes += get_themes(_SIZE_9_2_INCH)
+            themes += get_themes(SIZE_8_8_INCH)
         else:
             themes = get_themes(size)
 

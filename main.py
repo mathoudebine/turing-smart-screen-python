@@ -126,7 +126,7 @@ if __name__ == "__main__":
             # Load binary (for releases) or Python file with system interpreter
             configure_file = next(MAIN_DIRECTORY.glob("configure*"))
             if platform.system() == "Windows":
-                subprocess.Popen([str(configure_file)], shell=True)
+                subprocess.Popen([str(configure_file)], creationflags=0x08000000)
             else:
                 subprocess.Popen([str(configure_file)])
 

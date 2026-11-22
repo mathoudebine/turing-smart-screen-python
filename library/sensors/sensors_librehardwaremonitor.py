@@ -36,13 +36,21 @@ from win32api import *
 
 import library.sensors.sensors as sensors
 from library.log import logger
+from pathlib import Path
 
 # Import LibreHardwareMonitor dll to Python
-lhm_dll = os.getcwd() + '\\external\\LibreHardwareMonitor\\LibreHardwareMonitorLib.dll'
+base_dir = Path(getattr(sys, '_MEIPASS', Path(__file__).resolve().parents[2]))
+lhm_dir = base_dir / "external" / "LibreHardwareMonitor"
+if not (lhm_dir / "LibreHardwareMonitorLib.dll").exists():
+    lhm_dir = Path(os.getcwd()) / "external" / "LibreHardwareMonitor"
+
+lhm_dll = str(lhm_dir / "LibreHardwareMonitorLib.dll")
+hidsharp_dll = str(lhm_dir / "HidSharp.dll")
+
 # noinspection PyUnresolvedReferences
 clr.AddReference(lhm_dll)
 # noinspection PyUnresolvedReferences
-clr.AddReference(os.getcwd() + '\\external\\LibreHardwareMonitor\\HidSharp.dll')
+clr.AddReference(hidsharp_dll)
 # noinspection PyUnresolvedReferences
 from LibreHardwareMonitor import Hardware
 
@@ -55,25 +63,33 @@ logger.debug("Found LibreHardwareMonitorLib %s" % ".".join([str(HIWORD(ms_file_v
                                                             str(HIWORD(ls_file_version)),
                                                             str(LOWORD(ls_file_version))]))
 
-if ctypes.windll.shell32.IsUserAnAdmin() == 0:
-    logger.error(
-        "Program is not running as administrator. Please run with admin rights or choose another HW_SENSORS option in "
-        "config.yaml")
-    try:
-        sys.exit(0)
-    except:
-        os._exit(0)
+is_admin = ctypes.windll.shell32.IsUserAnAdmin() != 0
+if not is_admin:
+    logger.warning(
+        "Program is not running as administrator. Motherboard fan/temp sensors may be limited. "
+        "Run as administrator for full hardware sensor access.")
 
 handle = Hardware.Computer()
 handle.IsCpuEnabled = True
 handle.IsGpuEnabled = True
 handle.IsMemoryEnabled = True
-handle.IsMotherboardEnabled = True  # For CPU Fan Speed
-handle.IsControllerEnabled = True  # For CPU Fan Speed
+handle.IsMotherboardEnabled = is_admin  # Motherboard ring0 driver needs admin rights
+handle.IsControllerEnabled = is_admin   # Fan controller needs admin rights
 handle.IsNetworkEnabled = True
 handle.IsStorageEnabled = True
 handle.IsPsuEnabled = False
-handle.Open()
+try:
+    handle.Open()
+except Exception as e:
+    logger.warning(f"Error opening LHM hardware computer: {e}")
+    # Retry without motherboard/controller if failed
+    if handle.IsMotherboardEnabled or handle.IsControllerEnabled:
+        handle.IsMotherboardEnabled = False
+        handle.IsControllerEnabled = False
+        try:
+            handle.Open()
+        except Exception:
+            pass
 for hardware in handle.Hardware:
     if hardware.HardwareType == Hardware.HardwareType.Cpu:
         logger.info("Found CPU: %s" % hardware.Name)
