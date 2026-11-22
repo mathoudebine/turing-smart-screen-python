@@ -161,10 +161,17 @@ if __name__ == "__main__":
                     display.turn_off()
                 elif wParam == win32con.PBT_APMRESUMEAUTOMATIC:
                     logger.info("Computer is resuming from sleep, display will turn on")
+                    # Windows may resume the process before the USB/serial endpoint is fully
+                    # ready. Also allow queued pre-suspend writes to finish before restoring
+                    # display state and redrawing the theme.
+                    logger.info("Waiting 1.0s for USB display to settle after resume")
+                    time.sleep(1.0)
+                    wait_for_empty_queue(2)
                     display.turn_on()
                     # Some models have troubles displaying back the previous bitmap after being turned off/on
                     display.display_static_images()
                     display.display_static_text()
+                    logger.info("Resume redraw queued")
             else:
                 # For any other events, the program will stop
                 logger.info("Program will now exit")
