@@ -28,8 +28,14 @@ from functools import wraps
 
 import library.config as config
 import library.stats as stats
+from library.log import logger
 
 STOPPING = False
+
+# Some jobs run every millisecond, so a job failing at every run would flood the log file:
+# only log the same failing job once per this delay (in seconds).
+ERROR_LOG_MIN_INTERVAL = 1.0
+_last_error_log = {}
 
 
 def async_job(threadname=None):
@@ -62,7 +68,16 @@ def schedule(interval):
                 # If the program is not stopping: re-schedule the task for future execution
                 scheduler.enter(periodic_interval, 1, periodic,
                                 (scheduler, periodic_interval, action, actionargs))
-            action(*actionargs)
+            # A failing sensor read must not kill this stat's thread: the next run is already
+            # scheduled above, so log the error and keep going.
+            try:
+                action(*actionargs)
+            except Exception:
+                name = getattr(action, "__name__", str(action))
+                now = time.monotonic()
+                if now - _last_error_log.get(name, 0.0) >= ERROR_LOG_MIN_INTERVAL:
+                    _last_error_log[name] = now
+                    logger.exception("Scheduled job '%s' failed, skipping this cycle", name)
 
         @wraps(func)
         def wrap(
