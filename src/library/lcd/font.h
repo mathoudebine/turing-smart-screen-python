@@ -16,7 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// TrueType font rendering with FreeType, replacing the subset of Pillow (PIL.ImageFont, ImageDraw.text/textbbox)
+// TrueType font rendering with FreeType and HarfBuzz (text shaping: kerning, ligatures...), like Pillow with raqm,
+// replacing the subset of Pillow (PIL.ImageFont, ImageDraw.text/textbbox)
 // used by the Python code. No Python counterpart: this file replaces a Python dependency.
 //
 // Text anchors follow Pillow (https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html), 2 characters:
@@ -66,6 +67,7 @@ private:
     {
         unsigned int index;
         long pen_x;  // 26.6 fixed point
+        long pen_y;  // 26.6 fixed point, y axis going up
     };
 
     struct Layout
@@ -81,6 +83,7 @@ private:
     // Anchor point coordinates relative to the text origin (left of the baseline), 26.6, y axis going up
     void anchor_offset(const Layout &layout, const std::string &anchor, long &x_anchor, long &y_anchor) const;
 
-    void *face = nullptr;  // FT_Face
+    void *face = nullptr;     // FT_Face
+    void *hb_font = nullptr;  // hb_font_t
     mutable std::mutex mutex;
 };

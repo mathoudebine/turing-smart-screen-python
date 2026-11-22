@@ -27,6 +27,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <hb-ft.h>
+#include <hb.h>
 
 namespace {
 
@@ -43,39 +45,6 @@ FT_Library freetype_library()
         return lib;
     }();
     return library;
-}
-
-// Decode UTF-8 text into Unicode code points (invalid bytes are replaced by U+FFFD)
-std::vector<char32_t> decode_utf8(const std::string &text)
-{
-    std::vector<char32_t> result;
-    for (size_t i = 0; i < text.size();) {
-        const auto c = static_cast<unsigned char>(text[i]);
-        int len = c < 0x80 ? 1 : (c >> 5) == 0x6 ? 2 : (c >> 4) == 0xE ? 3 : (c >> 3) == 0x1E ? 4 : 0;
-        if (len == 0 || i + len > text.size()) {
-            result.push_back(0xFFFD);
-            i++;
-            continue;
-        }
-        char32_t cp = len == 1 ? c : c & (0xFF >> (len + 1));
-        bool valid = true;
-        for (int k = 1; k < len; k++) {
-            const auto cc = static_cast<unsigned char>(text[i + k]);
-            if ((cc >> 6) != 0x2) {
-                valid = false;
-                break;
-            }
-            cp = (cp << 6) | (cc & 0x3F);
-        }
-        if (!valid) {
-            result.push_back(0xFFFD);
-            i++;
-            continue;
-        }
-        result.push_back(cp);
-        i += len;
-    }
-    return result;
 }
 
 long floor_div64(long v) { return static_cast<long>(std::floor(v / 64.0)); }
@@ -96,11 +65,17 @@ Font::Font(const std::string &path, int size)
         throw std::runtime_error("Cannot set size " + std::to_string(size) + " for font " + path);
     }
     face = ft_face;
+
+    // Text shaping with HarfBuzz, using hinted glyph metrics like Pillow
+    hb_font_t *font = hb_ft_font_create_referenced(ft_face);
+    hb_ft_font_set_load_flags(font, FT_LOAD_DEFAULT);
+    hb_font = font;
 }
 
 Font::~Font()
 {
     std::lock_guard lock(freetype_mutex);
+    hb_font_destroy(static_cast<hb_font_t *>(hb_font));
     FT_Done_Face(static_cast<FT_Face>(face));
 }
 
@@ -108,25 +83,30 @@ Font::Layout Font::layout(const std::string &text) const
 {
     auto ft_face = static_cast<FT_Face>(face);
     Layout result;
-    long pen_x = 0;
-    FT_UInt previous = 0;
 
-    for (char32_t cp: decode_utf8(text)) {
-        const FT_UInt index = FT_Get_Char_Index(ft_face, cp);
-        if (previous != 0 && FT_HAS_KERNING(ft_face)) {
-            FT_Vector delta;
-            if (FT_Get_Kerning(ft_face, previous, index, FT_KERNING_DEFAULT, &delta) == 0) {
-                pen_x += delta.x;
-            }
-        }
+    hb_buffer_t *buffer = hb_buffer_create();
+    hb_buffer_add_utf8(buffer, text.c_str(), static_cast<int>(text.size()), 0, -1);
+    hb_buffer_guess_segment_properties(buffer);
+    hb_shape(static_cast<hb_font_t *>(hb_font), buffer, nullptr, 0);
+
+    unsigned int count = 0;
+    const hb_glyph_info_t *infos = hb_buffer_get_glyph_infos(buffer, &count);
+    const hb_glyph_position_t *positions = hb_buffer_get_glyph_positions(buffer, &count);
+
+    long pen_x = 0;
+    for (unsigned int i = 0; i < count; i++) {
+        const FT_UInt index = infos[i].codepoint;
+        const long glyph_x = pen_x + positions[i].x_offset;
+        const long glyph_y = positions[i].y_offset;
+        pen_x += positions[i].x_advance;
+
         if (FT_Load_Glyph(ft_face, index, FT_LOAD_DEFAULT) != 0) {
             continue;
         }
-
         const FT_Glyph_Metrics &m = ft_face->glyph->metrics;
         if (m.width > 0 && m.height > 0) {
-            const long x_min = pen_x + m.horiBearingX, x_max = x_min + m.width;
-            const long y_max = m.horiBearingY, y_min = y_max - m.height;
+            const long x_min = glyph_x + m.horiBearingX, x_max = x_min + m.width;
+            const long y_max = glyph_y + m.horiBearingY, y_min = y_max - m.height;
             if (!result.has_ink) {
                 result.ink_x_min = x_min;
                 result.ink_x_max = x_max;
@@ -140,11 +120,10 @@ Font::Layout Font::layout(const std::string &text) const
                 result.ink_y_max = std::max(result.ink_y_max, y_max);
             }
         }
-
-        result.glyphs.push_back({index, pen_x});
-        pen_x += ft_face->glyph->advance.x;
-        previous = index;
+        result.glyphs.push_back({index, glyph_x, glyph_y});
     }
+    hb_buffer_destroy(buffer);
+
     result.advance = pen_x;
     return result;
 }
@@ -210,7 +189,7 @@ void Font::draw(Image &image, double x, double y, const std::string &text, RGBCo
         const FT_GlyphSlot slot = ft_face->glyph;
         const FT_Bitmap &bitmap = slot->bitmap;
         const long gx = origin_x + floor_div64(glyph.pen_x) + slot->bitmap_left;
-        const long gy = baseline - slot->bitmap_top;
+        const long gy = baseline - floor_div64(glyph.pen_y) - slot->bitmap_top;
 
         for (unsigned int row = 0; row < bitmap.rows; row++) {
             for (unsigned int col = 0; col < bitmap.width; col++) {

@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <condition_variable>
 #include <deque>
 #include <functional>
@@ -64,6 +65,9 @@ public:
     // Wait for a request and remove it from the queue
     Request get();
 
+    // Same as get(), but returns std::nullopt if no request arrives within the timeout
+    std::optional<Request> get(std::chrono::milliseconds timeout);
+
     bool empty() const;
 
 private:
@@ -75,7 +79,7 @@ private:
 // Parameters of LcdComm::DisplayText()
 struct TextOptions
 {
-    std::string text;
+    std::string text = "";
     int x = 0;
     int y = 0;
     int width = 0;
@@ -85,7 +89,7 @@ struct TextOptions
     RGBColor font_color = {0, 0, 0};
     RGBColor background_color = {255, 255, 255};
     // Provide the background image path to display text with transparent background
-    std::optional<std::string> background_image;
+    std::optional<std::string> background_image = std::nullopt;
     std::string align = "left";
     std::string anchor = "la";
 };
@@ -104,7 +108,7 @@ struct ProgressBarOptions
     bool bar_outline = true;
     RGBColor background_color = {255, 255, 255};
     // Provide the background image path to display progress bar with transparent background
-    std::optional<std::string> background_image;
+    std::optional<std::string> background_image = std::nullopt;
     bool reverse_direction = false;
 };
 
@@ -115,7 +119,7 @@ struct LineGraphOptions
     int y = 0;
     int width = 0;
     int height = 0;
-    std::vector<double> values;  // NaN values are not plotted
+    std::vector<double> values = {};  // NaN values are not plotted
     double min_value = 0;
     double max_value = 100;
     bool autoscale = false;
@@ -127,7 +131,7 @@ struct LineGraphOptions
     int axis_font_size = 10;
     RGBColor background_color = {255, 255, 255};
     // Provide the background image path to display plot graph with transparent background
-    std::optional<std::string> background_image;
+    std::optional<std::string> background_image = std::nullopt;
     std::string axis_minmax_format = "{:0.0f}";  // std::format syntax
 };
 
@@ -147,7 +151,7 @@ struct RadialProgressBarOptions
     bool clockwise = true;
     double value = 50;
     // Text displayed in the center. If empty, the percentage is displayed
-    std::optional<std::string> text;
+    std::optional<std::string> text = std::nullopt;
     bool with_text = true;
     std::string font = "./res/fonts/roboto/Roboto-Black.ttf";
     int font_size = 20;
@@ -155,12 +159,12 @@ struct RadialProgressBarOptions
     RGBColor bar_color = {0, 0, 0};
     RGBColor background_color = {255, 255, 255};
     // Provide the background image path to display progress bar with transparent background
-    std::optional<std::string> background_image;
+    std::optional<std::string> background_image = std::nullopt;
     std::tuple<int, int, int, int> custom_bbox = {0, 0, 0, 0};
     std::pair<int, int> text_offset = {0, 0};
     RGBColor bar_background_color = {0, 0, 0};
     bool draw_bar_background = false;
-    std::string bar_decoration;  // "" or "Ellipse"
+    std::string bar_decoration = "";  // "" or "Ellipse"
 };
 
 class LcdComm

@@ -6,7 +6,8 @@
 - Wherever possible, one Python file becomes one `.h` + `.cpp` pair with the same base name (program entry points such as `main.cpp` have no header).
 - Build with the root `Makefile` (C++20, g++, dependencies found with `pkg-config`): `make deps`, `make`, `make test`, `make clean`. Programs are built into `build/bin/` (`main`, `configure`, `theme-editor`, `simple-program`).
 - GUI programs (`configure`, `theme-editor`) use GTK 4 through gtkmm-4.0.
-- Files without Python counterpart replace Python dependencies: `src/library/lcd/image` (Pillow `Image`/`ImageDraw`), `src/library/lcd/font` (Pillow `ImageFont`, FreeType), `src/library/lcd/serial_port` (pyserial, termios).
+- Files without Python counterpart replace Python dependencies: `src/library/lcd/image` (Pillow `Image`/`ImageDraw`), `src/library/lcd/font` (Pillow `ImageFont` with raqm: FreeType + HarfBuzz), `src/library/lcd/serial_port` (pyserial, termios), `src/library/ping` (ping3, ICMP socket).
+- `src/library/sensors/sensors_python` keeps its name (selected by `HW_SENSORS: PYTHON`/`AUTO`) but reads Linux `/proc` and `/sys` directly instead of psutil/GPUtil/pyamdgpuinfo, plus NVIDIA NVML loaded at runtime. Custom sensors (`sensors_custom`) are C++ classes registered in `custom_data_sources()`: adding one requires rebuilding.
 - The library is initialized explicitly with `config::init()` (Python loads it on import); theme values are read with `config::get()` / `config::get_color()`, which return the default value for missing or empty keys.
 - The rendering does not need to be pixel-identical to the Python/Pillow version, only close to it.
 - `config.yaml` and `res/` (themes, fonts, images) are shared, unchanged, by the Python and C++ versions.

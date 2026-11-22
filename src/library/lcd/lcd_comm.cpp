@@ -82,6 +82,17 @@ UpdateQueue::Request UpdateQueue::get()
     return request;
 }
 
+std::optional<UpdateQueue::Request> UpdateQueue::get(std::chrono::milliseconds timeout)
+{
+    std::unique_lock lock(mutex);
+    if (!not_empty.wait_for(lock, timeout, [this] { return !requests.empty(); })) {
+        return std::nullopt;
+    }
+    Request request = std::move(requests.front());
+    requests.pop_front();
+    return request;
+}
+
 bool UpdateQueue::empty() const
 {
     std::lock_guard lock(mutex);
