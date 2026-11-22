@@ -40,5 +40,6 @@ pyamdgpuinfo~=2.1.6; sys_platform=="linux" and python_version <= "3.12"
 pyadl~=0.1; sys_platform=="win32"
 
 # Following packages are for LibreHardwareMonitor integration on Windows
-pythonnet~=3.1.0
+pythonnet~=3.1.0; sys_platform=="win32" and python_version == "3.10"  # For Python 3.10, pythonnet 3.1.x is the latest supported
+pythonnet~=3.2.1; sys_platform=="win32" and python_version > "3.10"   # For Python > 3.10, use latest pythonnet
 pywin32>=312; sys_platform=="win32"
