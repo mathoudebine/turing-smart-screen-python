@@ -24,7 +24,10 @@
 
 #include "library/config.h"
 
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
+#include <fstream>
 
 #include "library/log.h"
 
@@ -82,6 +85,159 @@ void copy_default(const YAML::Node &default_values, YAML::Node theme)
         } else if (value.IsMap() && theme_value.IsMap()) {
             copy_default(value, theme_value);
         }
+    }
+}
+
+std::string yaml_scalar(const std::string &value)
+{
+    static const std::vector<std::string> special_words = {"true", "false", "yes", "no", "on", "off", "null", "~", "y",
+                                                           "n"};
+    std::string lower;
+    for (unsigned char c: value) {
+        lower.push_back(static_cast<char>(std::tolower(c)));
+    }
+    bool plain = !value.empty() && value.front() != ' ' && value.back() != ' ' &&
+                 std::find(special_words.begin(), special_words.end(), lower) == special_words.end() &&
+                 std::string("-?:,[]{}#&*!|>'\"%@`").find(value.front()) == std::string::npos &&
+                 value.find(": ") == std::string::npos && value.find(" #") == std::string::npos;
+    for (unsigned char c: value) {
+        if (c < 0x20 || c == '"' || c == '\\') {
+            plain = false;
+        }
+    }
+    if (plain) {
+        return value;
+    }
+    std::string quoted = "\"";
+    for (char c: value) {
+        if (c == '"' || c == '\\') {
+            quoted.push_back('\\');
+        }
+        quoted.push_back(c);
+    }
+    return quoted + "\"";
+}
+
+namespace {
+
+// Length of the YAML value at the start of text (up to the comment or the end of line)
+size_t yaml_value_length(const std::string &text)
+{
+    if (!text.empty() && (text[0] == '"' || text[0] == '\'')) {
+        const char quote = text[0];
+        for (size_t i = 1; i < text.size(); i++) {
+            if (text[i] == '\\' && quote == '"') {
+                i++;
+            } else if (text[i] == quote) {
+                if (quote == '\'' && i + 1 < text.size() && text[i + 1] == '\'') {
+                    i++;  // '' is an escaped quote in single-quoted strings
+                } else {
+                    return i + 1;
+                }
+            }
+        }
+        return text.size();
+    }
+    const size_t comment = text.find(" #");
+    size_t length = comment == std::string::npos ? text.size() : comment;
+    while (length > 0 && text[length - 1] == ' ') {
+        length--;
+    }
+    return length;
+}
+
+}  // namespace
+
+std::string update_yaml_text(const std::string &text, const std::vector<YamlUpdate> &updates)
+{
+    std::vector<std::string> lines;
+    {
+        size_t start = 0, end;
+        while ((end = text.find('\n', start)) != std::string::npos) {
+            lines.push_back(text.substr(start, end - start));
+            start = end + 1;
+        }
+        if (start < text.size()) {
+            lines.push_back(text.substr(start));
+        }
+    }
+
+    auto indentation = [](const std::string &line) { return line.find_first_not_of(' '); };
+    auto is_content = [&](const std::string &line) {
+        const size_t indent = indentation(line);
+        return indent != std::string::npos && line[indent] != '#';
+    };
+
+    for (const auto &update: updates) {
+        // Section: top-level "section:" line
+        size_t section_line = lines.size();
+        for (size_t i = 0; i < lines.size(); i++) {
+            if (lines[i].rfind(update.section + ":", 0) == 0) {
+                section_line = i;
+                break;
+            }
+        }
+        if (section_line == lines.size()) {
+            lines.push_back(update.section + ":");
+            lines.push_back("  " + update.key + ": " + update.value);
+            continue;
+        }
+
+        // Keys of the section: lines indented until the next top-level content line
+        size_t section_end = section_line + 1;
+        size_t last_content = section_line;
+        bool found = false;
+        for (; section_end < lines.size(); section_end++) {
+            const std::string &line = lines[section_end];
+            if (is_content(line) && indentation(line) == 0) {
+                break;
+            }
+            if (!is_content(line)) {
+                continue;
+            }
+            last_content = section_end;
+            const size_t indent = indentation(line);
+            if (line.compare(indent, update.key.size() + 1, update.key + ":") == 0) {
+                // Replace the value, keep the comment
+                size_t value_start = indent + update.key.size() + 1;
+                while (value_start < line.size() && line[value_start] == ' ') {
+                    value_start++;
+                }
+                const size_t value_length = yaml_value_length(line.substr(value_start));
+                lines[section_end] = line.substr(0, indent) + update.key + ": " + update.value +
+                                     line.substr(value_start + value_length);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            const std::string indent = last_content > section_line
+                                           ? lines[last_content].substr(0, indentation(lines[last_content]))
+                                           : "  ";
+            lines.insert(lines.begin() + static_cast<long>(last_content) + 1, indent + update.key + ": " + update.value);
+        }
+    }
+
+    std::string result;
+    for (const auto &line: lines) {
+        result += line + "\n";
+    }
+    return result;
+}
+
+void update_yaml_file(const fs::path &path, const std::vector<YamlUpdate> &updates)
+{
+    std::ifstream in(path);
+    if (!in) {
+        throw std::runtime_error("Cannot read " + path.string());
+    }
+    const std::string text((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    in.close();
+    const std::string updated = update_yaml_text(text, updates);
+    std::ofstream out(path, std::ios::trunc);
+    out << updated;
+    if (!out) {
+        throw std::runtime_error("Cannot write " + path.string());
     }
 }
 

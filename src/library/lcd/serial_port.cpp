@@ -65,9 +65,10 @@ std::string read_sysfs(const fs::path &path)
 }  // namespace
 
 SerialPort::SerialPort(const std::string &port, int baudrate, double timeout_s, bool rtscts)
-    : port_name(port), timeout(timeout_s)
+    : port_name(port.find('/') == std::string::npos ? "/dev/" + port : port), timeout(timeout_s)
 {
-    fd = ::open(port.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
+    // A port name without directory (e.g. "ttyACM0", as written by the Python configuration program) is in /dev
+    fd = ::open(port_name.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC);
     if (fd < 0) {
         throw SerialException("could not open port " + port + ": " + std::strerror(errno));
     }

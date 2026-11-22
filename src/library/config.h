@@ -31,6 +31,7 @@
 #include <filesystem>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 #include <yaml-cpp/yaml.h>
 
@@ -58,6 +59,27 @@ YAML::Node load_yaml(const std::filesystem::path &configfile);
 
 // Recursively supply default values into a map of maps of maps ...
 void copy_default(const YAML::Node &default_values, YAML::Node theme);
+
+// A value to write in config.yaml: section ("config" or "display"), key, and value already formatted as YAML
+// (use yaml_scalar() for strings)
+struct YamlUpdate
+{
+    std::string section;
+    std::string key;
+    std::string value;
+};
+
+// String formatted as a YAML scalar: plain if possible, double-quoted otherwise (empty string, special characters,
+// values that YAML would read as another type like "true" or "null")
+std::string yaml_scalar(const std::string &value);
+
+// Update the values in the YAML text of a configuration file, keeping everything else unchanged (comments, order,
+// formatting), like ruamel.yaml does in Python. Missing keys are added at the end of their section, missing sections
+// at the end of the text.
+std::string update_yaml_text(const std::string &text, const std::vector<YamlUpdate> &updates);
+
+// Same as update_yaml_text() on a file. Throws std::runtime_error if the file cannot be read or written.
+void update_yaml_file(const std::filesystem::path &path, const std::vector<YamlUpdate> &updates);
 
 // Load the theme selected in config.yaml into THEME_DATA. Exits the program if the theme cannot be loaded.
 void load_theme();
