@@ -1,5 +1,16 @@
 # AGENTS.md
 
+## C++ Port (in progress)
+- The Python code is being converted to C++. Target platform: **Linux only (Ubuntu 26.04 LTS)**; Windows and macOS support is dropped in the C++ code.
+- C++ sources live in `src/` (`src/library/` mirrors `library/`, `src/tools/` mirrors `tools/`); C++ unit tests live in `tests/cpp/` (GoogleTest).
+- Wherever possible, one Python file becomes one `.h` + `.cpp` pair with the same base name (program entry points such as `main.cpp` have no header).
+- Build with the root `Makefile` (C++20, g++, dependencies found with `pkg-config`): `make deps`, `make`, `make test`, `make clean`. Programs are built into `build/bin/` (`main`, `configure`, `theme-editor`, `simple-program`).
+- GUI programs (`configure`, `theme-editor`) use GTK 4 through gtkmm-4.0.
+- The rendering does not need to be pixel-identical to the Python/Pillow version, only close to it.
+- `config.yaml` and `res/` (themes, fonts, images) are shared, unchanged, by the Python and C++ versions.
+- The Python code stays complete and working until the C++ programs work end-to-end; then every converted Python file is deleted in one cleanup step. Until then, the Python sections below still describe the reference implementation, and the cross-platform rule applies to Python code only.
+- Not converted: `library/pythoncheck.py`, `library/sensors/sensors_librehardwaremonitor.py` (Windows only), `tools/windows-installer/`.
+
 ## Project Goal
 - Python system monitor for USB-C/TFT displays (Turing, XuanFang, Kipye, WeAct) with 3 usage modes: main app (`main.py`), config tool (`configure.py`), and theme editor (`theme-editor.py`).
 - The design clearly separates **sensor collection**, **theme rendering**, and **hardware driver** so multiple display revisions can be supported without changing business logic.
