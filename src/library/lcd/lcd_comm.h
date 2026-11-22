@@ -228,6 +228,9 @@ public:
 
     std::shared_ptr<Font> open_font(const std::string &name, int size);
 
+    // If set, openSerial() uses this function to create the serial port instead of opening a real one (tests)
+    static inline std::function<std::unique_ptr<SerialPort>()> serial_factory;
+
     std::unique_ptr<SerialPort> lcd_serial;
 
     // String containing absolute path to serial port e.g. "/dev/ttyACM1" or "AUTO" for auto-discovery

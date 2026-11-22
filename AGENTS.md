@@ -12,7 +12,8 @@
 - The rendering does not need to be pixel-identical to the Python/Pillow version, only close to it.
 - `config.yaml` and `res/` (themes, fonts, images) are shared, unchanged, by the Python and C++ versions.
 - The Python code stays complete and working until the C++ programs work end-to-end; then every converted Python file is deleted in one cleanup step. Until then, the Python sections below still describe the reference implementation, and the cross-platform rule applies to Python code only.
-- Not converted: `library/pythoncheck.py`, `library/sensors/sensors_librehardwaremonitor.py` (Windows only), `tools/windows-installer/`.
+- Display drivers are tested without hardware: `LcdComm::serial_factory` replaces the serial port by `MockSerial` (`tests/cpp/library/lcd/serial_mock.h`), and the recorded data is compared with the Python golden files (`tests/library/lcd/golden/`, revisions A, B, D) or with FNV-1a hashes of the current Python drivers output (revision C, whose golden files are outdated, and WeAct A/B).
+- Not converted: `library/pythoncheck.py`, `library/sensors/sensors_librehardwaremonitor.py` (Windows only), `tools/windows-installer/`, and the H.264 video / file upload helpers of `library/lcd/lcd_comm_turing_usb.py` (not used by the programs).
 
 ## Project Goal
 - Python system monitor for USB-C/TFT displays (Turing, XuanFang, Kipye, WeAct) with 3 usage modes: main app (`main.py`), config tool (`configure.py`), and theme editor (`theme-editor.py`).

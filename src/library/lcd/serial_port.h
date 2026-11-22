@@ -48,32 +48,38 @@ public:
     // Open the port in raw 8N1 mode. Throws SerialException on error.
     // timeout: read/write timeout in seconds; rtscts: hardware flow control
     SerialPort(const std::string &port, int baudrate, double timeout, bool rtscts);
-    ~SerialPort();
+    virtual ~SerialPort();
 
     SerialPort(const SerialPort &) = delete;
     SerialPort &operator=(const SerialPort &) = delete;
 
-    void close();
+    virtual void close();
 
-    bool is_open() const { return fd >= 0; }
+    virtual bool is_open() const { return fd >= 0; }
 
     const std::string &port() const { return port_name; }
 
     // Write all data. Throws SerialTimeoutException / SerialException
-    void write(const std::vector<uint8_t> &data);
-    void write(const uint8_t *data, size_t size);
+    virtual void write(const std::vector<uint8_t> &data);
 
     // Read up to size bytes, returns less if the timeout expires
-    std::vector<uint8_t> read(size_t size);
+    virtual std::vector<uint8_t> read(size_t size);
 
     // Read until the timeout expires
-    std::vector<uint8_t> readall();
+    virtual std::vector<uint8_t> readall();
 
     // Wait until all data is written
-    void flush();
+    virtual void flush();
 
     // Discard data received and not read yet
-    void reset_input_buffer();
+    virtual void reset_input_buffer();
+
+    // Number of bytes received and not read yet
+    virtual size_t in_waiting();
+
+protected:
+    // For test doubles that do not open a real port
+    SerialPort() = default;
 
 private:
     bool wait(bool for_write, double timeout_s);

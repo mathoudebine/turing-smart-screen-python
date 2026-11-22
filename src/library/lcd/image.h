@@ -77,6 +77,21 @@ public:
     // Copy the image with its top-left corner at (x, y). Parts out of this image are ignored
     void paste(const Image &image, int x, int y);
 
+    enum class Transpose { ROTATE_90, ROTATE_180, ROTATE_270 };
+
+    // Rotated copy, counter-clockwise (like PIL Image.transpose)
+    Image transpose(Transpose method) const;
+
+    // Rotated copy by a multiple of 90 degrees counter-clockwise, the size is swapped for 90/270 (like PIL
+    // Image.rotate(angle, expand=True)). Throws std::invalid_argument for other angles.
+    Image rotate(int angle) const;
+
+    // PNG file content. Throws std::runtime_error on error.
+    std::vector<uint8_t> encode_png() const;
+
+    // JPEG file content, quality 1-100, chroma subsampling: 0 (4:4:4), 1 (4:2:2) or 2 (4:2:0), like PIL
+    std::vector<uint8_t> encode_jpeg(int quality, int subsampling) const;
+
 private:
     int width_ = 0;
     int height_ = 0;

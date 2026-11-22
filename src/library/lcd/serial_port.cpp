@@ -140,13 +140,10 @@ bool SerialPort::wait(bool for_write, double timeout_s)
     return ret > 0;
 }
 
-void SerialPort::write(const std::vector<uint8_t> &data)
+void SerialPort::write(const std::vector<uint8_t> &buffer)
 {
-    write(data.data(), data.size());
-}
-
-void SerialPort::write(const uint8_t *data, size_t size)
-{
+    const uint8_t *data = buffer.data();
+    const size_t size = buffer.size();
     if (fd < 0) {
         throw SerialException("Attempting to use a port that is not open");
     }
@@ -215,6 +212,15 @@ void SerialPort::flush()
     if (fd >= 0) {
         ::tcdrain(fd);
     }
+}
+
+size_t SerialPort::in_waiting()
+{
+    int count = 0;
+    if (fd < 0 || ::ioctl(fd, FIONREAD, &count) != 0) {
+        return 0;
+    }
+    return static_cast<size_t>(count);
 }
 
 void SerialPort::reset_input_buffer()

@@ -42,11 +42,12 @@ GUI_PKGS  := gtkmm-4.0
 TEST_PKGS := gtest gtest_main
 
 PKG_CONFIG ?= pkg-config
-LIB_CFLAGS  := $(shell $(PKG_CONFIG) --cflags $(LIB_PKGS) 2>/dev/null)
+# Dependencies headers are included as system headers: their warnings are not reported
+LIB_CFLAGS  := $(patsubst -I%,-isystem %,$(shell $(PKG_CONFIG) --cflags $(LIB_PKGS) 2>/dev/null))
 LIB_LIBS    := $(shell $(PKG_CONFIG) --libs $(LIB_PKGS) 2>/dev/null)
-GUI_CFLAGS  := $(shell $(PKG_CONFIG) --cflags $(GUI_PKGS) 2>/dev/null)
+GUI_CFLAGS  := $(patsubst -I%,-isystem %,$(shell $(PKG_CONFIG) --cflags $(GUI_PKGS) 2>/dev/null))
 GUI_LIBS    := $(shell $(PKG_CONFIG) --libs $(GUI_PKGS) 2>/dev/null)
-TEST_CFLAGS := $(shell $(PKG_CONFIG) --cflags $(TEST_PKGS) 2>/dev/null)
+TEST_CFLAGS := $(patsubst -I%,-isystem %,$(shell $(PKG_CONFIG) --cflags $(TEST_PKGS) 2>/dev/null))
 TEST_LIBS   := $(shell $(PKG_CONFIG) --libs $(TEST_PKGS) 2>/dev/null)
 
 ALL_CPPFLAGS = -I$(SRC_DIR) -MMD -MP $(CPPFLAGS)

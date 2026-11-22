@@ -25,6 +25,7 @@
 #include <cmath>
 #include <csetjmp>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <memory>
@@ -333,6 +334,102 @@ void Image::paste(const Image &image, int x, int y)
                     &image.pixels[(static_cast<size_t>(row) * image.width_ + x_start) * 3],
                     static_cast<size_t>(x_end - x_start) * 3);
     }
+}
+
+Image Image::transpose(Transpose method) const
+{
+    const bool swap = method != Transpose::ROTATE_180;
+    Image result(swap ? height_ : width_, swap ? width_ : height_);
+    for (int y = 0; y < height_; y++) {
+        for (int x = 0; x < width_; x++) {
+            int nx, ny;
+            switch (method) {
+                case Transpose::ROTATE_90:  // counter-clockwise
+                    nx = y;
+                    ny = width_ - 1 - x;
+                    break;
+                case Transpose::ROTATE_180:
+                    nx = width_ - 1 - x;
+                    ny = height_ - 1 - y;
+                    break;
+                default:  // ROTATE_270 counter-clockwise = 90 clockwise
+                    nx = height_ - 1 - y;
+                    ny = x;
+                    break;
+            }
+            std::memcpy(&result.pixels[(static_cast<size_t>(ny) * result.width_ + nx) * 3],
+                        &pixels[(static_cast<size_t>(y) * width_ + x) * 3], 3);
+        }
+    }
+    return result;
+}
+
+Image Image::rotate(int angle) const
+{
+    switch (((angle % 360) + 360) % 360) {
+        case 0: return *this;
+        case 90: return transpose(Transpose::ROTATE_90);
+        case 180: return transpose(Transpose::ROTATE_180);
+        case 270: return transpose(Transpose::ROTATE_270);
+        default: throw std::invalid_argument("Only rotations by multiples of 90 degrees are supported");
+    }
+}
+
+std::vector<uint8_t> Image::encode_png() const
+{
+    png_image png{};
+    png.version = PNG_IMAGE_VERSION;
+    png.width = static_cast<png_uint_32>(width_);
+    png.height = static_cast<png_uint_32>(height_);
+    png.format = PNG_FORMAT_RGB;
+    png_alloc_size_t size = 0;
+    if (!png_image_write_to_memory(&png, nullptr, &size, 0, pixels.data(), 0, nullptr)) {
+        throw std::runtime_error(std::string("Cannot encode PNG image: ") + png.message);
+    }
+    std::vector<uint8_t> result(size);
+    if (!png_image_write_to_memory(&png, result.data(), &size, 0, pixels.data(), 0, nullptr)) {
+        throw std::runtime_error(std::string("Cannot encode PNG image: ") + png.message);
+    }
+    result.resize(size);
+    return result;
+}
+
+std::vector<uint8_t> Image::encode_jpeg(int quality, int subsampling) const
+{
+    jpeg_compress_struct cinfo{};
+    JpegErrorManager err{};
+    cinfo.err = jpeg_std_error(&err.pub);
+    err.pub.error_exit = jpeg_error_exit;
+    unsigned char *buffer = nullptr;
+    unsigned long size = 0;
+    if (setjmp(err.jump)) {
+        jpeg_destroy_compress(&cinfo);
+        std::free(buffer);
+        throw std::runtime_error(std::string("Cannot encode JPEG image: ") + err.message);
+    }
+
+    jpeg_create_compress(&cinfo);
+    jpeg_mem_dest(&cinfo, &buffer, &size);
+    cinfo.image_width = static_cast<JDIMENSION>(width_);
+    cinfo.image_height = static_cast<JDIMENSION>(height_);
+    cinfo.input_components = 3;
+    cinfo.in_color_space = JCS_RGB;
+    jpeg_set_defaults(&cinfo);
+    jpeg_set_quality(&cinfo, std::clamp(quality, 1, 100), TRUE);
+    // Luma sampling factors: 4:4:4 = 1x1, 4:2:2 = 2x1, 4:2:0 = 2x2
+    cinfo.comp_info[0].h_samp_factor = subsampling == 0 ? 1 : 2;
+    cinfo.comp_info[0].v_samp_factor = subsampling == 2 ? 2 : 1;
+    jpeg_start_compress(&cinfo, TRUE);
+    while (cinfo.next_scanline < cinfo.image_height) {
+        auto row = const_cast<JSAMPROW>(pixels.data() + static_cast<size_t>(cinfo.next_scanline) * width_ * 3);
+        jpeg_write_scanlines(&cinfo, &row, 1);
+    }
+    jpeg_finish_compress(&cinfo);
+    jpeg_destroy_compress(&cinfo);
+
+    std::vector<uint8_t> result(buffer, buffer + size);
+    std::free(buffer);
+    return result;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------

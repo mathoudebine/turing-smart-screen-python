@@ -128,6 +128,11 @@ int LcdComm::get_height() const
 
 void LcdComm::openSerial()
 {
+    if (serial_factory) {
+        lcd_serial = serial_factory();
+        return;
+    }
+
     // com_port is kept as configured ("AUTO" or a port name): on AUTO the port is
     // detected again at every attempt, since it can change while the screen resets.
     for (int attempt = 1; attempt <= SERIAL_OPEN_ATTEMPTS; attempt++) {

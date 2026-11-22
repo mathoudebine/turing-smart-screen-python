@@ -28,6 +28,13 @@
 #include <string>
 
 #include "library/config.h"
+#include "library/lcd/lcd_comm_rev_a.h"
+#include "library/lcd/lcd_comm_rev_b.h"
+#include "library/lcd/lcd_comm_rev_c.h"
+#include "library/lcd/lcd_comm_rev_d.h"
+#include "library/lcd/lcd_comm_turing_usb.h"
+#include "library/lcd/lcd_comm_weact_a.h"
+#include "library/lcd/lcd_comm_weact_b.h"
 #include "library/lcd/lcd_simulated.h"
 #include "library/log.h"
 
@@ -90,14 +97,31 @@ Display::Display()
     const YAML::Node &cfg = config::CONFIG_DATA;
     const std::string revision = config::get(cfg["display"], "REVISION", "");
 
-    if (revision == "SIMU") {
+    const std::string com_port = config::get(cfg["config"], "COM_PORT", "AUTO");
+
+    if (revision == "A") {
+        lcd = std::make_unique<LcdCommRevA>(com_port, 320, 480, &config::update_queue);
+    } else if (revision == "B") {
+        lcd = std::make_unique<LcdCommRevB>(com_port, 320, 480, &config::update_queue);
+    } else if (revision == "C") {
+        // Because of issue with Turing rev. C size auto-detection, manually configure screen width/height from theme
+        lcd = std::make_unique<LcdCommRevC>(com_port, width, height, &config::update_queue);
+    } else if (revision == "D") {
+        lcd = std::make_unique<LcdCommRevD>(com_port, 320, 480, &config::update_queue);
+    } else if (revision == "TUR_USB") {
+        try {
+            lcd = std::make_unique<LcdCommTuringUSB>();
+        } catch (const std::runtime_error &e) {
+            logger.error("Cannot open Turing USB display: {}", e.what());
+            std::_Exit(1);
+        }
+    } else if (revision == "WEACT_A") {
+        lcd = std::make_unique<LcdCommWeActA>(com_port, 320, 480, &config::update_queue);
+    } else if (revision == "WEACT_B") {
+        lcd = std::make_unique<LcdCommWeActB>(com_port, 80, 160, &config::update_queue);
+    } else if (revision == "SIMU") {
         // Simulated display: always set width/height from theme
         lcd = std::make_unique<LcdSimulated>("AUTO", width, height);
-    } else if (revision == "A" || revision == "B" || revision == "C" || revision == "D" || revision == "TUR_USB" ||
-               revision == "WEACT_A" || revision == "WEACT_B") {
-        // TODO(C++ port, phase 3): hardware drivers
-        logger.error("Display revision '{}' is not supported yet by the C++ version, use SIMU", revision);
-        std::_Exit(1);
     } else {
         logger.error("Unknown display revision '{}'", revision);
         std::_Exit(1);
