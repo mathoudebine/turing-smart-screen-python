@@ -78,3 +78,8 @@ display:
   # This behavior causes the display to disconnect/reconnect, and the COM port to change.
   # On some displays (like rev. A) it can be an issue, in this case change the value to "false".
   RESET_ON_STARTUP: true
+
+  # Rev. A only: send to the display over raw USB bulk transfers (pyusb/libusb) instead of the serial port: true/false
+  # Fixes corrupted images on macOS (issue #7). Requires libusb, e.g. "brew install libusb".
+  # Falls back to the serial port if the display cannot be opened over USB.
+  USB_BULK: false
